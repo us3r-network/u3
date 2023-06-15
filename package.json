@@ -1,0 +1,17 @@
+{
+  "name": "@us3r-network/u3-monorepo",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/us3r-network/u3.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/us3r-network/u3/issues"
+  },
+  "homepage": "https://github.com/us3r-network/u3#readme"
+}
