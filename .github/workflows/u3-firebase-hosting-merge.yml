@@ -28,7 +28,7 @@ jobs:
           REACT_APP_NAME: 'U3'
           REACT_APP_API_BASE_URL: '${{ vars.REACT_APP_API_BASE_URL }}'
           REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: '${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}'
-          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_MAINNET_HOST }}'
+          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_HOST }}'
           REACT_APP_CHROME_EXTENSION_URL: '${{ vars.REACT_APP_CHROME_EXTENSION_URL }}'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
@@ -54,11 +54,10 @@ jobs:
           yarn 
           yarn build
         env:
-          CI: false
           REACT_APP_NAME: 'U3 DEV'
           REACT_APP_API_BASE_URL: '${{ vars.REACT_APP_API_BASE_URL }}'
           REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: '${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}'
-          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_MAINNET_HOST }}'
+          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_HOST }}'
           REACT_APP_CHROME_EXTENSION_URL: '${{ vars.REACT_APP_CHROME_EXTENSION_URL }}'
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
