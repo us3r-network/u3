@@ -18,11 +18,6 @@ export const MEDIA_BREAK_POINTS = {
 };
 export const MOBILE_BREAK_POINT = 768;
 
-export const WL_INFO_URL = 'https://info.wl.xyz';
-export const WL_TWITTER_URL = 'https://twitter.com/realwlxyz';
-export const WL_DISCORD_URL = 'https://discord.com/invite/ZXEgc3UrjB';
-
-export const WL_APP_VERSION = process.env.REACT_APP_VERSION;
 export const CHROME_EXTENSION_URL = process.env.REACT_APP_CHROME_EXTENSION_URL;
 
 export const UPLOAD_IMAGE_SIZE_LIMIT = 500 * 1024;
