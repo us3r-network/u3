@@ -1,6 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useFavorAction } from '@us3r-network/link';
+import { useProfileState } from '@us3r-network/profile';
 import { formatFilterShowName } from '../../../utils/filter';
 import {
   DappExploreListItemResponse,
@@ -34,6 +35,7 @@ export default function Header({
   hiddenEdit,
   ...otherProps
 }: Props) {
+  const { profile, updateProfile } = useProfileState();
   const { isFavored } = useFavorAction(data.linkStreamId);
   const navigate = useNavigate();
   const { isAdmin } = useLogin();
@@ -125,7 +127,18 @@ export default function Header({
                 Open Dapp
               </OpenButton>
             ) : (
-              <DappFavorButton linkId={data.linkStreamId} />
+              <DappFavorButton
+                linkId={data.linkStreamId}
+                onSuccessfullyFavor={(favored) => {
+                  if (favored) {
+                    updateProfile({
+                      tags: Array.from(
+                        new Set([...profile.tags, `${data.name} User`])
+                      ),
+                    });
+                  }
+                }}
+              />
             ))
           )}
         </RightButtons>
