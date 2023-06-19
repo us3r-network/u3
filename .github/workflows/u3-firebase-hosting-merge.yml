@@ -54,6 +54,7 @@ jobs:
           yarn 
           yarn build
         env:
+          CI: false
           REACT_APP_NAME: 'U3 DEV'
           REACT_APP_API_BASE_URL: '${{ vars.REACT_APP_API_BASE_URL }}'
           REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: '${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}'
