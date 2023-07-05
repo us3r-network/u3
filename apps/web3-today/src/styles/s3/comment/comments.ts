@@ -33,10 +33,10 @@ export default css`
       margin-top: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
       background: #1b1e23;
       [data-state-element='Item'] {
-        padding: 10px 0px;
+        padding: 10px;
+        margin-top: 10px;
         border-bottom: 1px solid #39424c;
         color: #fff;
         font-weight: 500;

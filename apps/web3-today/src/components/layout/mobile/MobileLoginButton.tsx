@@ -7,17 +7,14 @@
  */
 import { UserAvatar } from '@us3r-network/profile';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
 
 import useLogin from '../../../hooks/useLogin';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
-import LogoutSvg from '../../common/icons/svgs/logout.svg';
 
 type Props = {
   onLogout?: () => void;
 };
 export default function MobileLoginButton({ onLogout }: Props) {
-  const navigate = useNavigate();
   const { isLogin, login } = useLogin();
 
   return (
@@ -26,20 +23,13 @@ export default function MobileLoginButton({ onLogout }: Props) {
         if (!isLogin) {
           login();
         } else {
-          navigate('/profile');
-          // onLogout();
+          onLogout();
         }
       }}
     >
       <MobileLoginButtonBody className="wl-user-button_login-body">
         {isLogin ? (
-          <>
-            <UserAvatar className="user-avatar" />
-            {/* <MobileLoginButtonName className="wl-user-button_login-name">
-              {sessId}
-            </MobileLoginButtonName>
-            <LogoutIconButton src={LogoutSvg} /> */}
-          </>
+          <UserAvatar className="user-avatar" />
         ) : (
           <NoLoginText className="wl-user-button_no-login-text">
             Login

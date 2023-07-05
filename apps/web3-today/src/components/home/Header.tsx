@@ -21,12 +21,7 @@ export default function Header() {
     <Wrapper>
       <Avatar />
       <Title>
-        Welcome to Web 3 Today
-        <UserName>
-          {({ username, isLoading }) =>
-            !isLoading && username ? username : null
-          }
-        </UserName>
+        Welcome to Web3 Today{' '}
         {session && (
           <>
             , <UserName /> !
@@ -38,15 +33,18 @@ export default function Header() {
       ) : (
         <LogoutButtonStyled />
       )}
-      <RightBox>
-        <BookmarkButton
-          onClick={() => {
-            navigate('/favorite');
-          }}
-        >
-          <BookmarkSvg />
-        </BookmarkButton>
-      </RightBox>
+
+      {session && (
+        <RightBox>
+          <BookmarkButton
+            onClick={() => {
+              navigate('/favorite');
+            }}
+          >
+            <BookmarkSvg />
+          </BookmarkButton>
+        </RightBox>
+      )}
     </Wrapper>
   );
 }

@@ -8,7 +8,6 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { ReactComponent as LogoIconSvg } from '../../imgs/logo-icon.svg';
 import LogoutConfirmModal from '../LogoutConfirmModal';
 import useLogin from '../../../hooks/useLogin';
 import MobileLoginButton from './MobileLoginButton';
@@ -21,13 +20,11 @@ export default function MobileHomeHeader() {
   return (
     <MobileHomeHeaderWrapper>
       <LogoBox onClick={() => navigate('/')}>
-        <LogoIconBox>
-          <LogoIconSvg />
-        </LogoIconBox>
+        <LogoImg src="logo.png" />
 
         {/* <LogoText>Alpha</LogoText> */}
       </LogoBox>
-      <Title>U3.XYZ</Title>
+      <Title>Web3 Today</Title>
       <MobileLoginButton
         onLogout={() => {
           setOpenLogoutConfirm(true);
@@ -71,12 +68,10 @@ const LogoBox = styled.div`
   transition: all 0.3s ease-out;
   cursor: pointer;
 `;
-const LogoIconBox = styled.div`
+const LogoImg = styled.img`
   width: 36px;
   height: 36px;
-  path {
-    fill: #fff;
-  }
+  border-radius: 10px;
 `;
 const Title = styled.div`
   font-style: italic;

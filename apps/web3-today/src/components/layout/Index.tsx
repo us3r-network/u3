@@ -12,14 +12,13 @@ import { isMobile } from 'react-device-detect';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/useGoogleAnalytics';
-import Menu from './menu';
-import MobileHeader from './mobile/MobileHeader';
+import MobileHomeHeader from './mobile/MobileHomeHeader';
 
 function Layout() {
   useGAPageView();
   return (
     <LayoutWrapper id="layout-wrapper">
-      {/* {isMobile ? <MobileHeader /> : <Menu />} */}
+      {isMobile && <MobileHomeHeader />}
       {isMobile ? (
         <MobileContentBox>
           <Main />

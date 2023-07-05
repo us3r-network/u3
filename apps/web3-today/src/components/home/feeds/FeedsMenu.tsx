@@ -35,7 +35,7 @@ export default function FeedsMenu({ rightEl, bottomEl }: FeedsMenuProps) {
     <FeedsMenuWrapper>
       <TopBox>
         <LeftBox>
-          <ButtonBack onClick={() => navigate('/home')} />
+          <ButtonBack onClick={() => navigate('/')} />
           <TabSwitch
             options={FeedsSwitchOptions}
             value={firstRouteMeta.key}
