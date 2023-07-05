@@ -3,7 +3,10 @@ import { LoginButton, UserAvatar, UserName } from '@us3r-network/profile';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import CardBase from '../common/card/CardBase';
-import { ButtonPrimaryLine } from '../common/button/ButtonBase';
+import {
+  ButtonPrimaryLine,
+  ButtonPrimaryLineCss,
+} from '../common/button/ButtonBase';
 import { ReactComponent as BookmarkSvg } from '../common/icons/svgs/bookmark.svg';
 
 export default function Header() {
@@ -25,7 +28,7 @@ export default function Header() {
           </>
         )}
       </Title>
-      {!session && <LoginButton>Login</LoginButton>}
+      {!session && <LoginButtonStyled>Login</LoginButtonStyled>}
       <RightBox>
         <BookmarkButton
           onClick={() => {
@@ -84,4 +87,8 @@ const BookmarkButton = styled(ButtonPrimaryLine)`
 `;
 const BookmarkNumber = styled.span`
   font-size: 14px;
+`;
+
+const LoginButtonStyled = styled(LoginButton)`
+  ${ButtonPrimaryLineCss}
 `;
