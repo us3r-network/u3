@@ -41,3 +41,7 @@ export const Types: { [key: string]: string } = {
   '2': 'Model',
   '3': 'ModelInstanceDocument',
 };
+
+export const WALLET_CONNECT_PROJECT_ID =
+  process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID ||
+  'c652d0148879353d7e965d7f6f361e59';

@@ -19,7 +19,7 @@ import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './GlobalStyle';
 
-import { CERAMIC_HOST } from './constants';
+import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants';
 import { injectStore, injectU3Token } from './services/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 
@@ -30,7 +30,10 @@ injectStore(store);
 Modal.setAppElement('#root');
 function App() {
   return (
-    <Us3rAuthWithRainbowkitProvider>
+    <Us3rAuthWithRainbowkitProvider
+      projectId={WALLET_CONNECT_PROJECT_ID}
+      appName="U3"
+    >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
         <LinkStateProvider ceramicHost={CERAMIC_HOST}>
           <U3LoginProvider
