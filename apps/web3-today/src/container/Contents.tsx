@@ -7,7 +7,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 import { fetchContents } from '../services/api/contents';
 import { ContentLang, ContentListItem } from '../services/types/contents';

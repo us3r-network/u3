@@ -28,7 +28,12 @@ export default () => {
       lang: currentUrlQuery.lang.split(',').filter((item) => !!item),
       keywords: currentUrlQuery.keywords,
     }),
-    [currentUrlQuery]
+    [
+      currentUrlQuery.orderBy,
+      currentUrlQuery.tags,
+      currentUrlQuery.lang,
+      currentUrlQuery.keywords,
+    ]
   );
   const searchParamsChange = useCallback(
     (values: {
