@@ -5,11 +5,8 @@
   "targets": {
     "us3r-network": {
       "hosting": {
-        "u3": [
-          "us3r-u3"
-        ],
-        "u3-dev": [
-          "us3r-u3-dev"
+        "web3-today": [
+          "us3r-web3-today"
         ]
       }
     }
