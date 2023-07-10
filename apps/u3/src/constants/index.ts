@@ -6,7 +6,7 @@
  * @Description: 系统相关常量定义
  */
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-export const API_SCAN_URL = 'https://cscan.onrender.com';
+export const API_SCAN_URL = process.env.REACT_APP_S3_API_BASE_URL;
 export const MEDIA_BREAK_POINTS = {
   xs: 320,
   sm: 480,
