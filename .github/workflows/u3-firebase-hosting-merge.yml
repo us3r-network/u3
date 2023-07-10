@@ -2,7 +2,7 @@
 # https://github.com/firebase/firebase-tools
 
 name: Deploy u3 to Firebase Hosting on merge
-'on':
+"on":
   push:
     branches:
       - u3
@@ -11,60 +11,61 @@ jobs:
   prod_build_and_deploy:
     if: github.ref == 'refs/heads/u3'
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: production
       url: https://u3.xyz
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - run: |
           cd apps/u3
           yarn 
           yarn build
         env:
           CI: false
-          REACT_APP_NAME: 'U3'
-          REACT_APP_API_BASE_URL: '${{ vars.REACT_APP_API_BASE_URL }}'
-          REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: '${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}'
-          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_HOST }}'
-          REACT_APP_CHROME_EXTENSION_URL: '${{ vars.REACT_APP_CHROME_EXTENSION_URL }}'
+          REACT_APP_NAME: "U3"
+          REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
+          REACT_APP_S3_API_BASE_URL: "${{ vars.REACT_APP_S3_API_BASE_URL }}"
+          REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: "${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}"
+          REACT_APP_CERAMIC_HOST: "${{ vars.REACT_APP_CERAMIC_HOST }}"
+          REACT_APP_CHROME_EXTENSION_URL: "${{ vars.REACT_APP_CHROME_EXTENSION_URL }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
           channelId: live
           projectId: us3r-network
           target: u3
-          entryPoint: './apps/u3/' 
+          entryPoint: "./apps/u3/"
   dev_build_and_deploy:
     if: github.ref == 'refs/heads/u3-dev'
     runs-on: ubuntu-latest
-    environment: 
+    environment:
       name: development
       url: https://dev.u3.xyz
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: "18"
       - run: |
           cd apps/u3
           yarn 
           yarn build
         env:
           CI: false
-          REACT_APP_NAME: 'U3 DEV'
-          REACT_APP_API_BASE_URL: '${{ vars.REACT_APP_API_BASE_URL }}'
-          REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: '${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}'
-          REACT_APP_CERAMIC_HOST: '${{ vars.REACT_APP_CERAMIC_HOST }}'
-          REACT_APP_CHROME_EXTENSION_URL: '${{ vars.REACT_APP_CHROME_EXTENSION_URL }}'
+          REACT_APP_NAME: "U3 DEV"
+          REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
+          REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: "${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}"
+          REACT_APP_CERAMIC_HOST: "${{ vars.REACT_APP_CERAMIC_HOST }}"
+          REACT_APP_CHROME_EXTENSION_URL: "${{ vars.REACT_APP_CHROME_EXTENSION_URL }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}'
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
           channelId: live
           projectId: us3r-network
           target: u3-dev
-          entryPoint: './apps/u3/'
+          entryPoint: "./apps/u3/"
