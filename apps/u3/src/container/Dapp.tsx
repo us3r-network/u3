@@ -9,7 +9,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { isMobile } from 'react-device-detect';
-import { useLink } from '@us3r-network/link';
+import { getS3LinkModel } from '@us3r-network/link';
 import { DappExploreListItemResponse } from '../services/types/dapp';
 import { fetchListForDappExplore, fetchOneDapp } from '../services/api/dapp';
 import { ApiRespCode } from '../services/types';
@@ -32,7 +32,7 @@ export type DappPageProps = {
 const isLinkStreamId = (id: string | number) => Number.isNaN(Number(id));
 export default function Dapp() {
   const { id } = useParams();
-  const { isFetching, link } = useLink(isLinkStreamId(id) ? id : '');
+  const s3linkModel = getS3LinkModel();
   // Queries
   const [isPending, setIsPending] = useState(false);
   const [data, setData] = useState<DappExploreListItemResponse | null>(null);
@@ -64,8 +64,32 @@ export default function Dapp() {
       });
   }, []);
   useEffect(() => {
-    if (id && !isLinkStreamId(id)) {
-      setIsPending(true);
+    if (!id) {
+      setData(null);
+      return;
+    }
+    setIsPending(true);
+    if (isLinkStreamId(id)) {
+      s3linkModel
+        .queryLink(id)
+        .then((res) => {
+          const link = res.data?.node;
+          const linkData = getDappLinkDataWithJsonValue(link?.data);
+          setData({
+            ...linkData,
+            id,
+            url: link?.url,
+            linkStreamId: id,
+          } as unknown as DappExploreListItemResponse);
+        })
+        .catch((error) => {
+          setData(null);
+          toast.error(error.message || error.msg);
+        })
+        .finally(() => {
+          setIsPending(false);
+        });
+    } else {
       fetchOneDapp(id)
         .then((resp) => {
           if (resp.data.code === ApiRespCode.SUCCESS) {
@@ -86,18 +110,6 @@ export default function Dapp() {
   }, [id]);
 
   useEffect(() => {
-    if (id && isLinkStreamId(id)) {
-      const linkData = getDappLinkDataWithJsonValue(link?.data);
-      setData({
-        ...linkData,
-        id,
-        url: link?.url,
-        linkStreamId: id,
-      } as unknown as DappExploreListItemResponse);
-    }
-  }, [id, link]);
-
-  useEffect(() => {
     getRecommendDapps(data?.types || []);
   }, [data?.id]);
 
@@ -114,7 +126,7 @@ export default function Dapp() {
       id={id}
       data={data}
       recommendDapps={recommendDapps}
-      loading={isLinkStreamId(id) ? isFetching : isPending}
+      loading={isPending}
       recommendDappsLoading={isPendingRecommend}
       updateData={updateData}
     />
@@ -124,7 +136,7 @@ export default function Dapp() {
       isStreamId={isLinkStreamId(id)}
       data={data}
       recommendDapps={recommendDapps}
-      loading={isLinkStreamId(id) ? isFetching : isPending}
+      loading={isPending}
       recommendDappsLoading={isPendingRecommend}
       updateData={updateData}
     />
