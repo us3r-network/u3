@@ -17,7 +17,7 @@
     "@types/styled-components": "^5.1.25",
     "@types/three": "^0.146.0",
     "@us3r-network/auth-with-rainbowkit": "^0.1.8",
-    "@us3r-network/link": "0.2.1",
+    "@us3r-network/link": "0.2.3",
     "@us3r-network/profile": "^0.5.6",
     "antd": "^5.0.7",
     "assert": "^2.0.0",
@@ -84,6 +84,7 @@
     "format:check": "prettier --check \"**/*.{js,ts,tsx}\"  --parser typescript "
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.0.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "13.3.0",
@@ -97,7 +98,6 @@
     "@types/react-is": "17.0.3",
     "@types/react-lottie": "^1.2.6",
     "@types/react-router-dom": "5.3.3",
-    "@types/styled-components": "5.1.25",
     "@typescript-eslint/eslint-plugin": "~5.44.0",
     "@typescript-eslint/parser": "~5.44.0",
     "babel-jest": "27.5.1",
