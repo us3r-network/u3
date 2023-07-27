@@ -69,7 +69,8 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     //设置可以直接展开 props
     'react/jsx-props-no-spreading': 'off',
-
+    //检查 JSX 属性和子元素中是否缺少必要的花括号(0 = off, 1 = warn, 2 = error)
+    'react/jsx-curly-brace-presence': 0,
     // 组件的可选参数不强制要求设置默认值，函数组件直接忽略此规则
     'react/require-default-props': [
       1,
