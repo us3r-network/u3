@@ -11,6 +11,7 @@ import Modal from 'react-modal';
 import { Us3rAuthWithRainbowkitProvider } from '@us3r-network/auth-with-rainbowkit';
 import { ProfileStateProvider } from '@us3r-network/profile';
 import { LinkStateProvider } from '@us3r-network/link';
+import { init } from '@airstack/airstack-react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
@@ -19,10 +20,15 @@ import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './GlobalStyle';
 
-import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants';
+import {
+  AIRSTACK_API_KEY,
+  CERAMIC_HOST,
+  WALLET_CONNECT_PROJECT_ID,
+} from './constants';
 import { injectStore, injectU3Token } from './services/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 
+init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
 
 injectStore(store);
