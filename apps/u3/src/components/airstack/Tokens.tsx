@@ -81,8 +81,7 @@ function TokensComponent() {
   const [tokens, setTokens] = useState<(TokenType | Poap)[]>([]);
   const sessWallet = useMemo(() => sessId.split(':').pop() || '', [sessId]);
   useEffect(() => {
-    const owner = '0xEE3CA4dd4CeB3416915Eddc6cDaDB4A6060434d4';
-    // const owner = sessWallet;
+    const owner = sessWallet;
     if (owner) {
       fetchTokens({
         owner,
