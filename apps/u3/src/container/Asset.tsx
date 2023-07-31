@@ -60,8 +60,17 @@ export default function Asset() {
     fetchData(wallets);
   }, [fetchData, sessWallet, wallet, profile]);
 
+  useEffect(() => {
+    const mainWrapper: HTMLElement | null =
+      document.getElementById('top-wrapper');
+    if (!mainWrapper) return;
+    mainWrapper.addEventListener('scroll', () => {
+      console.log('scroll', Date.now());
+    });
+  }, []);
+
   return (
-    <Wrapper>
+    <Wrapper id="top-wrapper">
       {isMobile ? (
         <MobilePageHeader
           tabs={['Asset', 'Gallery']}
@@ -71,7 +80,7 @@ export default function Asset() {
       ) : (
         <PageTitle>Asset</PageTitle>
       )}
-      <ContentWrapper>
+      <ContentWrapper id="content-wrapper">
         {(loading && (
           <div className="loading">
             <Loading />
