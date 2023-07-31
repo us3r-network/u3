@@ -43,6 +43,7 @@ function Token({
             address={address}
             tokenId={tokenId}
             chain={blockchain}
+            name={name}
             preset="medium"
           />
         )}
@@ -80,11 +81,12 @@ function TokensComponent() {
   const [tokens, setTokens] = useState<(TokenType | Poap)[]>([]);
   const sessWallet = useMemo(() => sessId.split(':').pop() || '', [sessId]);
   useEffect(() => {
-    const owner = sessWallet;
+    const owner = '0xEE3CA4dd4CeB3416915Eddc6cDaDB4A6060434d4';
+    // const owner = sessWallet;
     if (owner) {
       fetchTokens({
         owner,
-        limit: 10,
+        limit: 100,
         tokenType: ['ERC721', 'ERC1155'],
       });
 

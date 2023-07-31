@@ -32,6 +32,7 @@ function Image(props: ComponentProps<'img'>) {
 
 type AssetProps = ComponentProps<typeof AirstackAsset> & {
   image?: string;
+  name: string;
 };
 
 export function Asset({ image, ...props }: AssetProps) {
@@ -41,7 +42,7 @@ export function Asset({ image, ...props }: AssetProps) {
   return (
     <AirstackAsset
       preset="medium"
-      // error={<img src="images/placeholder.svg" alt="error" />}
+      error={<div>{`${props.name} #${props.tokenId}`}</div>}
       // loading={<img src="images/placeholder.svg" alt="loadig" />}
       {...props}
     />
