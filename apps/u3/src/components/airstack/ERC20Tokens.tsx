@@ -80,7 +80,7 @@ export function ERC20Tokens() {
       });
       fetch({
         owner,
-        limit: 20,
+        limit: 100,
       });
     }
   }, [fetch, sessWallet]);

@@ -60,15 +60,6 @@ export default function Asset() {
     fetchData(wallets);
   }, [fetchData, sessWallet, wallet, profile]);
 
-  useEffect(() => {
-    const mainWrapper: HTMLElement | null =
-      document.getElementById('top-wrapper');
-    if (!mainWrapper) return;
-    mainWrapper.addEventListener('scroll', () => {
-      console.log('scroll', Date.now());
-    });
-  }, []);
-
   return (
     <Wrapper id="top-wrapper">
       {isMobile ? (

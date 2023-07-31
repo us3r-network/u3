@@ -43,6 +43,7 @@ function Token({
             address={address}
             tokenId={tokenId}
             chain={blockchain}
+            name={name}
             preset="medium"
           />
         )}
@@ -84,7 +85,7 @@ function TokensComponent() {
     if (owner) {
       fetchTokens({
         owner,
-        limit: 10,
+        limit: 100,
         tokenType: ['ERC721', 'ERC1155'],
       });
 
