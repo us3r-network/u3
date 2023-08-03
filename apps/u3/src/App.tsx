@@ -27,6 +27,8 @@ import {
 } from './constants';
 import { injectStore, injectU3Token } from './services/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
+import { XmtpClientContextProvider } from './contexts/XmtpClientContext';
+import { XmtpConversationsContextProvider } from './contexts/XmtpConversationsContext';
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -42,18 +44,22 @@ function App() {
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
         <LinkStateProvider ceramicHost={CERAMIC_HOST}>
-          <U3LoginProvider
-            u3LoginSuccess={(token) => {
-              injectU3Token(token);
-            }}
-          >
-            <ReduxProvider store={store}>
-              <GlobalStyle />
-              <BrowserRouter>
-                <Layout />
-              </BrowserRouter>
-            </ReduxProvider>
-          </U3LoginProvider>
+          <XmtpClientContextProvider>
+            <XmtpConversationsContextProvider>
+              <U3LoginProvider
+                u3LoginSuccess={(token) => {
+                  injectU3Token(token);
+                }}
+              >
+                <ReduxProvider store={store}>
+                  <GlobalStyle />
+                  <BrowserRouter>
+                    <Layout />
+                  </BrowserRouter>
+                </ReduxProvider>
+              </U3LoginProvider>
+            </XmtpConversationsContextProvider>
+          </XmtpClientContextProvider>
         </LinkStateProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
