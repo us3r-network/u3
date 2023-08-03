@@ -11,15 +11,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import {
-  Client,
-  useClient,
-  Conversation,
-  DecodedMessage,
-  Stream,
-} from '@xmtp/react-sdk';
-import { useConnect, useWalletClient } from 'wagmi';
-import { loadKeys, storeKeys } from '../utils/xmtp';
+import { Conversation, DecodedMessage, Stream } from '@xmtp/xmtp-js';
+import { useXmtpClient } from './XmtpClientContext';
 
 type SendMessageAction = (
   convoAddress: string,
@@ -38,7 +31,7 @@ type StartNewConvoAction = (
   }
 ) => Promise<void>;
 
-interface MessageContextValue {
+interface XmtpConversationsContextValue {
   conversations: Map<string, Conversation>;
   convoMessages: Map<string, DecodedMessage[]>;
   loadingConversations: boolean;
@@ -49,7 +42,7 @@ interface MessageContextValue {
   setSelectedConvoAddress: (convo: string) => void;
 }
 
-const defaultContextValue: MessageContextValue = {
+const defaultContextValue: XmtpConversationsContextValue = {
   conversations: new Map(),
   convoMessages: new Map(),
   loadingConversations: false,
@@ -60,63 +53,12 @@ const defaultContextValue: MessageContextValue = {
   setSelectedConvoAddress: () => {},
 };
 
-export const MessageContext = createContext(defaultContextValue);
+export const XmtpConversationsContext = createContext(defaultContextValue);
 
-export function MessageContextProvider({ children }: PropsWithChildren) {
-  const { data } = useWalletClient();
-
-  /**
-   * // TODO wagmi 的 wallet对象中getAddress, signMessage方法不符合xmtp-js的Signer定义要求，这里是临时方案
-   *
-   * xmtp-js issues: https://github.com/xmtp/xmtp-js/issues/416
-   */
-  const signer = useMemo(
-    () =>
-      data
-        ? {
-            // eslint-disable-next-line @typescript-eslint/require-await
-            getAddress: async (): Promise<string> => {
-              return data.account.address;
-            },
-            signMessage: async (message: string): Promise<string> => {
-              const signature = await data?.signMessage({
-                message,
-                account: data.account,
-              });
-              return signature ?? '';
-            },
-          }
-        : null,
-    [data]
-  );
-  const { client, initialize } = useClient();
-
-  useEffect(() => {
-    if (!signer) {
-      return;
-    }
-    (async () => {
-      try {
-        const address = await signer.getAddress();
-        let keys = loadKeys(address);
-        if (!keys) {
-          keys = await Client.getKeys(signer, {
-            env: 'dev',
-          });
-          storeKeys(address, keys);
-        }
-        await initialize({
-          keys,
-          signer,
-          options: {
-            env: 'dev',
-          },
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    })();
-  }, [signer]);
+export function XmtpConversationsContextProvider({
+  children,
+}: PropsWithChildren) {
+  const { xmtpClient } = useXmtpClient();
 
   const [conversations, setConversations] = useState(
     defaultContextValue.conversations
@@ -133,21 +75,21 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
   );
 
   const loadConversations = useCallback(async () => {
-    if (!client) {
+    if (!xmtpClient) {
       setConversations(defaultContextValue.conversations);
       return;
     }
     setLoadingConversations(true);
     try {
-      const convos = (await client.conversations.list()).filter(
+      const convos = (await xmtpClient.conversations.list()).filter(
         (conversation) => !conversation.context?.conversationId
       );
       const convoMessagesMap = new Map();
       await Promise.all(
         convos
-          .filter((convo) => convo.peerAddress !== client.address)
+          .filter((convo) => convo.peerAddress !== xmtpClient.address)
           .map(async (convo) => {
-            if (convo.peerAddress !== client.address) {
+            if (convo.peerAddress !== xmtpClient.address) {
               const messages = await convo.messages();
               convoMessagesMap.set(convo.peerAddress, messages);
             }
@@ -164,7 +106,7 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
       setConvoMessages(defaultContextValue.convoMessages);
     }
     setLoadingConversations(false);
-  }, [client]);
+  }, [xmtpClient]);
 
   useEffect(() => {
     loadConversations();
@@ -197,7 +139,7 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
       await convoStreamRef.current.return();
       convoStreamRef.current = null;
     };
-    if (!client) {
+    if (!xmtpClient) {
       closeStream();
       setConversations(defaultContextValue.conversations);
       setConvoMessages(defaultContextValue.convoMessages);
@@ -205,15 +147,15 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
     }
 
     (async () => {
-      convoStreamRef.current = await client.conversations.stream();
-      convoStreamSub(client.address, convoStreamRef.current);
+      convoStreamRef.current = await xmtpClient.conversations.stream();
+      convoStreamSub(xmtpClient.address, convoStreamRef.current);
     })();
 
     // eslint-disable-next-line consistent-return
     return () => {
       closeStream();
     };
-  }, [client]);
+  }, [xmtpClient]);
 
   const messageStreamsRef = useRef<Map<string, Stream<DecodedMessage>>>(
     new Map()
@@ -246,7 +188,7 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
       messageStreamsRef.current.clear();
     };
 
-    if (!client) {
+    if (!xmtpClient) {
       closeStream();
       return;
     }
@@ -265,62 +207,56 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
     return () => {
       closeStream();
     };
-  }, [conversations, client]);
+  }, [conversations, xmtpClient]);
 
   const startNewConvo: StartNewConvoAction = useCallback(
-    async (convoAddress, { onSuccess, onFail }) => {
+    async (convoAddress, opts) => {
       try {
-        if (!client) {
+        if (!xmtpClient) {
           throw new Error('Please connect to an XMTP account');
         }
-        const isOnNetwork = await client.canMessage(convoAddress);
+        const isOnNetwork = await xmtpClient.canMessage(convoAddress);
         if (!isOnNetwork) {
           throw new Error(
             "Recipient hasn't created an XMTP identity and can't receive messages"
           );
         }
-        const convo = await client.conversations.newConversation(convoAddress);
+        const convo = await xmtpClient.conversations.newConversation(
+          convoAddress
+        );
         await convo.send('hi');
-        if (onSuccess) {
-          onSuccess();
-        }
+        opts?.onSuccess?.();
         setSelectedConvoAddress(convoAddress);
       } catch (error) {
-        if (onFail) {
-          onFail(error);
-        }
+        opts?.onFail?.(error);
       }
     },
-    [client]
+    [xmtpClient]
   );
 
   const sendMessage: SendMessageAction = useCallback(
-    async (convoAddress: string, message: string, { onSuccess, onFail }) => {
+    async (convoAddress: string, message: string, opts) => {
       if (!convoAddress) {
         return;
       }
       try {
-        if (!client) {
+        if (!xmtpClient) {
           throw new Error('Please connect to an XMTP account');
         }
-        const conversation = await client.conversations.newConversation(
+        const conversation = await xmtpClient.conversations.newConversation(
           convoAddress
         );
         await conversation.send(message);
-        if (onSuccess) {
-          onSuccess();
-        }
+        opts?.onSuccess?.();
       } catch (error) {
-        if (onFail) {
-          onFail(error);
-        }
+        opts?.onFail?.(error);
       }
     },
-    [client]
+    [xmtpClient]
   );
 
   return (
-    <MessageContext.Provider
+    <XmtpConversationsContext.Provider
       value={useMemo(
         () => ({
           conversations,
@@ -345,14 +281,16 @@ export function MessageContextProvider({ children }: PropsWithChildren) {
       )}
     >
       {children}
-    </MessageContext.Provider>
+    </XmtpConversationsContext.Provider>
   );
 }
 
-export const useMessage = () => {
-  const ctx = useContext(MessageContext);
+export const useXmtpConversations = () => {
+  const ctx = useContext(XmtpConversationsContext);
   if (!ctx) {
-    throw new Error('useMessage must be used within MessageContextProvider');
+    throw new Error(
+      'useXmtpConversations must be used within XmtpConversationsContextProvider'
+    );
   }
   return ctx;
 };

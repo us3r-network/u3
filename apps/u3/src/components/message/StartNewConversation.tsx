@@ -10,14 +10,14 @@ export default function StartNewConversation() {
     <StartNewConversationWrap
       onSubmit={(e) => {
         e.preventDefault();
-        startNewConvo(convoAddress)
-          .then(() => {
+        startNewConvo(convoAddress, {
+          onSuccess: () => {
             setConvoAddress('');
-          })
-          .catch((error) => {
+          },
+          onFail: (error) => {
             setErrMsg(error.message);
-          });
-        setConvoAddress('');
+          },
+        });
       }}
     >
       <div>

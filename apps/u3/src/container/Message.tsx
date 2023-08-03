@@ -8,16 +8,37 @@ import { useXmtpClient } from '../contexts/XmtpClientContext';
 
 export default function Message() {
   const { xmtpClient, enableXmtp, enablingXmtp } = useXmtpClient();
-  const { selectedConvoAddress } = useXmtpConversations();
+  const { selectedConvoAddress, conversations } = useXmtpConversations();
   return (
     <MessageWrap>
       <MainWrap>
         <ConvosWrap>
-          <h1>Conversation List</h1>
-          <hr />
-          <StartNewConversation />
-          <hr />
-          <ConversationList />
+          {(() => {
+            if (enablingXmtp) {
+              return <p>Enabling...</p>;
+            }
+            if (!xmtpClient) {
+              return (
+                <button
+                  type="button"
+                  onClick={() => {
+                    enableXmtp(null);
+                  }}
+                >
+                  Enable Xmtp
+                </button>
+              );
+            }
+            return (
+              <>
+                <h1>Chat List({conversations.size})</h1>
+                <hr />
+                <StartNewConversation />
+                <hr />
+                <ConversationList />
+              </>
+            );
+          })()}
         </ConvosWrap>
         <MsgWrap>
           {selectedConvoAddress && (

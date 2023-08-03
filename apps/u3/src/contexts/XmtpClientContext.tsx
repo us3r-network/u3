@@ -10,6 +10,7 @@ import {
   useCallback,
 } from 'react';
 import { useWalletClient } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { loadKeys, storeKeys } from '../utils/xmtp';
 
 interface XmtpClientContextValue {
@@ -30,6 +31,7 @@ export function XmtpClientContextProvider({ children }: PropsWithChildren) {
   const [xmtpClient, setXmtpClient] = useState<Client | null>(null);
   const [enablingXmtp, setEnablingXmtp] = useState(false);
   const { data } = useWalletClient();
+  const { openConnectModal } = useConnectModal();
 
   /**
    * // TODO wagmi 的 wallet对象中getAddress, signMessage方法不符合xmtp-js的Signer定义要求，这里是临时方案
@@ -56,32 +58,36 @@ export function XmtpClientContextProvider({ children }: PropsWithChildren) {
     [data]
   );
 
-  const enableXmtp = useCallback(async (signer: Signer) => {
-    if (!signer) {
-      return;
-    }
-    try {
-      setEnablingXmtp(true);
-      const address = await signer.getAddress();
-      let keys = loadKeys(address);
-      if (!keys) {
-        keys = await Client.getKeys(signer, {
-          env: 'dev',
-        });
-        storeKeys(address, keys);
+  const enableXmtp = useCallback(
+    async (signer: Signer) => {
+      if (!signer) {
+        openConnectModal();
+        return;
       }
-      const client = await Client.create(null, {
-        env: 'dev',
-        privateKeyOverride: keys,
-      });
+      try {
+        setEnablingXmtp(true);
+        const address = await signer.getAddress();
+        let keys = loadKeys(address);
+        if (!keys) {
+          keys = await Client.getKeys(signer, {
+            env: 'dev',
+          });
+          storeKeys(address, keys);
+        }
+        const client = await Client.create(null, {
+          env: 'dev',
+          privateKeyOverride: keys,
+        });
 
-      setXmtpClient(client);
-    } catch (error) {
-      setXmtpClient(null);
-    } finally {
-      setEnablingXmtp(false);
-    }
-  }, []);
+        setXmtpClient(client);
+      } catch (error) {
+        setXmtpClient(null);
+      } finally {
+        setEnablingXmtp(false);
+      }
+    },
+    [openConnectModal]
+  );
 
   useEffect(() => {
     if (!signer) {
