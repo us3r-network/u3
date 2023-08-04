@@ -1,51 +1,53 @@
-import styled from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 import dayjs from 'dayjs';
-import { useXmtpConversations } from '../../contexts/XmtpConversationsContext';
-import { getLatestMessage, shortAddress, truncate } from '../../utils/xmtp';
+import { useXmtpStore } from '../../contexts/XmtpStoreContext';
+import {
+  getAttachmentUrl,
+  isAttachment,
+  shortAddress,
+  truncate,
+} from '../../utils/xmtp';
+import useConversationList from '../../hooks/xmtp/useConversationList';
+import Loading from '../common/loading/Loading';
 
-export default function ConversationList() {
-  const {
-    loadingConversations,
-    convoMessages,
-    selectedConvoAddress,
-    setSelectedConvoAddress,
-  } = useXmtpConversations();
+export default function ConversationList(
+  props: StyledComponentPropsWithRef<'div'>
+) {
+  const { currentConvoAddress, setCurrentConvoAddress } = useXmtpStore();
 
-  const sortedConvos = new Map(
-    [...convoMessages.entries()].sort((convoA, convoB) => {
-      return getLatestMessage(convoA[1])?.sent <
-        getLatestMessage(convoB[1])?.sent
-        ? 1
-        : -1;
-    })
-  );
+  const { isLoading, conversationList } = useConversationList();
 
   return (
-    <ConversationListWrap>
-      {loadingConversations ? (
-        <p>Loading...</p>
+    <ConversationListWrap {...props}>
+      {isLoading ? (
+        <Loading />
       ) : (
-        Array.from(sortedConvos.keys()).map((address) => {
-          const messages = sortedConvos.get(address);
-          return (
+        <CardListWrap>
+          {conversationList.map(({ conversation, latestMessage }) => (
             <ConversationCard
-              key={`Convo_${address}`}
-              isSelected={selectedConvoAddress === address}
-              setSelectedConvo={setSelectedConvoAddress}
-              address={address}
-              latestMessage={getLatestMessage(messages)}
+              key={`Convo_${conversation.peerAddress}`}
+              isSelected={currentConvoAddress === conversation.peerAddress}
+              setSelectedConvo={setCurrentConvoAddress}
+              address={conversation.peerAddress}
+              latestMessage={latestMessage}
             />
-          );
-        })
+          ))}
+        </CardListWrap>
       )}
     </ConversationListWrap>
   );
 }
 const ConversationListWrap = styled.div`
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
-
+const CardListWrap = styled.div`
+  width: 100%;
+  min-height: 100%;
+`;
 function ConversationCard({
   isSelected,
   setSelectedConvo,
@@ -64,7 +66,13 @@ function ConversationCard({
     >
       <UserName>{shortAddress(address)}</UserName>
       <LatestMessage>
-        {latestMessage && truncate(latestMessage.content, 75)}
+        {latestMessage &&
+          (() => {
+            if (isAttachment(latestMessage)) {
+              return getAttachmentUrl(latestMessage);
+            }
+            return truncate(latestMessage.content, 75);
+          })()}
         <LatestMessageTime>
           {latestMessage && dayjs(latestMessage.sent).fromNow()}
         </LatestMessageTime>
@@ -79,9 +87,12 @@ const ConversationCardWrap = styled.div<{ isSelected: boolean }>`
   gap: 5px;
   padding: 10px;
   cursor: pointer;
-  background-color: ${(props) => (props.isSelected ? '#ddd' : '#fff')};
+  border-bottom: 1px solid #666;
+  background-color: ${({ isSelected }) =>
+    isSelected ? 'rgba(0, 0, 0, 0.5)' : 'none'};
+  color: #fff;
   &:hover {
-    background-color: #ddd;
+    background-color: rgba(0, 0, 0, 0.5);
   }
 `;
 

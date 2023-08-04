@@ -2,82 +2,66 @@ import styled from 'styled-components';
 import ConversationList from '../components/message/ConversationList';
 import MessageList from '../components/message/MessageList';
 import SendMessageForm from '../components/message/SendMessageForm';
-import { useXmtpConversations } from '../contexts/XmtpConversationsContext';
+import { useXmtpStore } from '../contexts/XmtpStoreContext';
 import StartNewConversation from '../components/message/StartNewConversation';
 import { useXmtpClient } from '../contexts/XmtpClientContext';
+import NoEnableXmtp from '../components/message/NoEnableXmtp';
+import { MainWrapper } from '../components/layout/Index';
 
 export default function Message() {
-  const { xmtpClient, enableXmtp, enablingXmtp } = useXmtpClient();
-  const { selectedConvoAddress, conversations } = useXmtpConversations();
+  const { xmtpClient } = useXmtpClient();
+  const { currentConvoAddress, conversations } = useXmtpStore();
+  if (!xmtpClient) {
+    return <NoEnableXmtp />;
+  }
   return (
     <MessageWrap>
-      <MainWrap>
-        <ConvosWrap>
-          {(() => {
-            if (enablingXmtp) {
-              return <p>Enabling...</p>;
-            }
-            if (!xmtpClient) {
-              return (
-                <button
-                  type="button"
-                  onClick={() => {
-                    enableXmtp(null);
-                  }}
-                >
-                  Enable Xmtp
-                </button>
-              );
-            }
-            return (
-              <>
-                <h1>Chat List({conversations.size})</h1>
-                <hr />
-                <StartNewConversation />
-                <hr />
-                <ConversationList />
-              </>
-            );
-          })()}
-        </ConvosWrap>
-        <MsgWrap>
-          {selectedConvoAddress && (
-            <>
-              <MsgListWrap>
-                <MessageList />
-              </MsgListWrap>
-              <SendMessageForm />
-            </>
-          )}
-        </MsgWrap>
-      </MainWrap>
+      <ConvosWrap>
+        <Header>
+          <Title>Chat List ({conversations.size})</Title>
+          <StartNewConversation />
+        </Header>
+        <ConversationList className="convo-list" />
+      </ConvosWrap>
+      <MsgWrap>
+        {currentConvoAddress && (
+          <>
+            <MsgListWrap>
+              <MessageList />
+            </MsgListWrap>
+            <SendMessageForm />
+          </>
+        )}
+      </MsgWrap>
     </MessageWrap>
   );
 }
-const MessageWrap = styled.div`
-  width: 100%;
-  height: 100%;
+const MessageWrap = styled(MainWrapper)`
   display: flex;
-  flex-direction: column;
 `;
-const MainWrap = styled.div`
-  height: 0;
-  flex: 1;
-  display: flex;
+const Header = styled.div`
+  padding-bottom: 10px;
+  border-bottom: 1px solid #666;
+`;
+const Title = styled.h1`
+  color: #fff;
 `;
 const ConvosWrap = styled.div`
-  width: 300px;
+  width: 350px;
   height: 100%;
-  background-color: #f0f0f0;
-  overflow: auto;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #666;
+  display: flex;
+  flex-direction: column;
+  .convo-list {
+    height: 0;
+    flex: 1;
+    overflow-y: auto;
+  }
 `;
 const MsgWrap = styled.div`
   width: 0;
   flex: 1;
   height: 100%;
-  background-color: #fff;
-
   display: flex;
   flex-direction: column;
 `;
@@ -86,4 +70,5 @@ const MsgListWrap = styled.div`
   height: 0;
   flex: 1;
   overflow: auto;
+  padding: 10px;
 `;

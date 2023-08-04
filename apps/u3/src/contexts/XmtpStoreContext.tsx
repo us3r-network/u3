@@ -14,50 +14,27 @@ import {
 import { Conversation, DecodedMessage, Stream } from '@xmtp/xmtp-js';
 import { useXmtpClient } from './XmtpClientContext';
 
-type SendMessageAction = (
-  convoAddress: string,
-  message: string,
-  opts?: {
-    onSuccess?: () => void;
-    onFail?: (error: Error) => void;
-  }
-) => Promise<void>;
-
-type StartNewConvoAction = (
-  convoAddress: string,
-  opts?: {
-    onSuccess?: () => void;
-    onFail?: (error: Error) => void;
-  }
-) => Promise<void>;
-
-interface XmtpConversationsContextValue {
+interface XmtpStoreContextValue {
   conversations: Map<string, Conversation>;
   convoMessages: Map<string, DecodedMessage[]>;
   loadingConversations: boolean;
   loadConversations: () => void;
-  sendMessage: SendMessageAction;
-  startNewConvo: StartNewConvoAction;
-  selectedConvoAddress: string;
-  setSelectedConvoAddress: (convo: string) => void;
+  currentConvoAddress: string;
+  setCurrentConvoAddress: (convo: string) => void;
 }
 
-const defaultContextValue: XmtpConversationsContextValue = {
+const defaultContextValue: XmtpStoreContextValue = {
   conversations: new Map(),
   convoMessages: new Map(),
   loadingConversations: false,
   loadConversations: () => {},
-  sendMessage: () => Promise.resolve(),
-  startNewConvo: () => Promise.resolve(),
-  selectedConvoAddress: '',
-  setSelectedConvoAddress: () => {},
+  currentConvoAddress: '',
+  setCurrentConvoAddress: () => {},
 };
 
-export const XmtpConversationsContext = createContext(defaultContextValue);
+export const XmtpStoreContext = createContext(defaultContextValue);
 
-export function XmtpConversationsContextProvider({
-  children,
-}: PropsWithChildren) {
+export function XmtpStoreContextProvider({ children }: PropsWithChildren) {
   const { xmtpClient } = useXmtpClient();
 
   const [conversations, setConversations] = useState(
@@ -70,8 +47,8 @@ export function XmtpConversationsContextProvider({
 
   const [loadingConversations, setLoadingConversations] = useState(false);
 
-  const [selectedConvoAddress, setSelectedConvoAddress] = useState(
-    defaultContextValue.selectedConvoAddress
+  const [currentConvoAddress, setCurrentConvoAddress] = useState(
+    defaultContextValue.currentConvoAddress
   );
 
   const loadConversations = useCallback(async () => {
@@ -79,8 +56,8 @@ export function XmtpConversationsContextProvider({
       setConversations(defaultContextValue.conversations);
       return;
     }
-    setLoadingConversations(true);
     try {
+      setLoadingConversations(true);
       const convos = (await xmtpClient.conversations.list()).filter(
         (conversation) => !conversation.context?.conversationId
       );
@@ -89,10 +66,8 @@ export function XmtpConversationsContextProvider({
         convos
           .filter((convo) => convo.peerAddress !== xmtpClient.address)
           .map(async (convo) => {
-            if (convo.peerAddress !== xmtpClient.address) {
-              const messages = await convo.messages();
-              convoMessagesMap.set(convo.peerAddress, messages);
-            }
+            const messages = await convo.messages();
+            convoMessagesMap.set(convo.peerAddress, messages);
           })
       );
 
@@ -101,19 +76,19 @@ export function XmtpConversationsContextProvider({
       setConversations(convosMap);
       setConvoMessages(convoMessagesMap);
     } catch (error) {
-      console.error(error);
       setConversations(defaultContextValue.conversations);
       setConvoMessages(defaultContextValue.convoMessages);
+    } finally {
+      setLoadingConversations(false);
     }
-    setLoadingConversations(false);
   }, [xmtpClient]);
 
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
 
-  const convoStreamRef = useRef<Stream<Conversation> | null>(null);
-  const convoStreamSub = useCallback(
+  const streamConvoRef = useRef<Stream<Conversation> | null>(null);
+  const streamConvoSub = useCallback(
     async (clientAddress: string, stream: Stream<Conversation>) => {
       for await (const convo of stream) {
         if (convo.peerAddress !== clientAddress) {
@@ -134,33 +109,33 @@ export function XmtpConversationsContextProvider({
     []
   );
   useEffect(() => {
-    const closeStream = async () => {
-      if (!convoStreamRef.current) return;
-      await convoStreamRef.current.return();
-      convoStreamRef.current = null;
+    const closeStreamConvo = async () => {
+      if (!streamConvoRef.current) return;
+      await streamConvoRef.current.return();
+      streamConvoRef.current = null;
     };
     if (!xmtpClient) {
-      closeStream();
+      closeStreamConvo();
       setConversations(defaultContextValue.conversations);
       setConvoMessages(defaultContextValue.convoMessages);
       return;
     }
 
     (async () => {
-      convoStreamRef.current = await xmtpClient.conversations.stream();
-      convoStreamSub(xmtpClient.address, convoStreamRef.current);
+      streamConvoRef.current = await xmtpClient.conversations.stream();
+      streamConvoSub(xmtpClient.address, streamConvoRef.current);
     })();
 
     // eslint-disable-next-line consistent-return
     return () => {
-      closeStream();
+      closeStreamConvo();
     };
   }, [xmtpClient]);
 
-  const messageStreamsRef = useRef<Map<string, Stream<DecodedMessage>>>(
+  const streamMessagesRef = useRef<Map<string, Stream<DecodedMessage>>>(
     new Map()
   );
-  const messageStreamSub = useCallback(
+  const streamMessagesSub = useCallback(
     async (address: string, stream: Stream<DecodedMessage>) => {
       for await (const msg of stream) {
         setConvoMessages((prev) => {
@@ -180,116 +155,66 @@ export function XmtpConversationsContextProvider({
     []
   );
   useEffect(() => {
-    const closeStream = async () => {
-      if (!messageStreamsRef.current) return;
-      for (const stream of messageStreamsRef.current.values()) {
+    const closeStreamMessages = async () => {
+      if (!streamMessagesRef.current.size) return;
+      for (const stream of streamMessagesRef.current.values()) {
         await stream.return();
       }
-      messageStreamsRef.current.clear();
+      streamMessagesRef.current.clear();
     };
 
     if (!xmtpClient) {
-      closeStream();
+      closeStreamMessages();
       return;
     }
 
     (async () => {
       for (const convo of conversations.values()) {
-        if (messageStreamsRef.current.has(convo.peerAddress)) continue;
+        if (streamMessagesRef.current.has(convo.peerAddress)) continue;
         const stream = await convo.streamMessages();
-        messageStreamsRef.current.set(convo.peerAddress, stream);
+        streamMessagesRef.current.set(convo.peerAddress, stream);
       }
-      for (const [address, stream] of messageStreamsRef.current.entries()) {
-        messageStreamSub(address, stream);
+      for (const [address, stream] of streamMessagesRef.current.entries()) {
+        streamMessagesSub(address, stream);
       }
     })();
 
     return () => {
-      closeStream();
+      closeStreamMessages();
     };
   }, [conversations, xmtpClient]);
 
-  const startNewConvo: StartNewConvoAction = useCallback(
-    async (convoAddress, opts) => {
-      try {
-        if (!xmtpClient) {
-          throw new Error('Please connect to an XMTP account');
-        }
-        const isOnNetwork = await xmtpClient.canMessage(convoAddress);
-        if (!isOnNetwork) {
-          throw new Error(
-            "Recipient hasn't created an XMTP identity and can't receive messages"
-          );
-        }
-        const convo = await xmtpClient.conversations.newConversation(
-          convoAddress
-        );
-        await convo.send('hi');
-        opts?.onSuccess?.();
-        setSelectedConvoAddress(convoAddress);
-      } catch (error) {
-        opts?.onFail?.(error);
-      }
-    },
-    [xmtpClient]
-  );
-
-  const sendMessage: SendMessageAction = useCallback(
-    async (convoAddress: string, message: string, opts) => {
-      if (!convoAddress) {
-        return;
-      }
-      try {
-        if (!xmtpClient) {
-          throw new Error('Please connect to an XMTP account');
-        }
-        const conversation = await xmtpClient.conversations.newConversation(
-          convoAddress
-        );
-        await conversation.send(message);
-        opts?.onSuccess?.();
-      } catch (error) {
-        opts?.onFail?.(error);
-      }
-    },
-    [xmtpClient]
-  );
-
   return (
-    <XmtpConversationsContext.Provider
+    <XmtpStoreContext.Provider
       value={useMemo(
         () => ({
           conversations,
           convoMessages,
           loadingConversations,
           loadConversations,
-          sendMessage,
-          startNewConvo,
-          selectedConvoAddress,
-          setSelectedConvoAddress,
+          currentConvoAddress,
+          setCurrentConvoAddress,
         }),
         [
           conversations,
           convoMessages,
           loadingConversations,
           loadConversations,
-          sendMessage,
-          startNewConvo,
-          selectedConvoAddress,
-          setSelectedConvoAddress,
+          currentConvoAddress,
+          setCurrentConvoAddress,
         ]
       )}
     >
       {children}
-    </XmtpConversationsContext.Provider>
+    </XmtpStoreContext.Provider>
   );
 }
 
-export const useXmtpConversations = () => {
-  const ctx = useContext(XmtpConversationsContext);
+export const useXmtpStore = () => {
+  const ctx = useContext(XmtpStoreContext);
   if (!ctx) {
     throw new Error(
-      'useXmtpConversations must be used within XmtpConversationsContextProvider'
+      'useXmtpStore must be used within XmtpStoreContextProvider'
     );
   }
   return ctx;

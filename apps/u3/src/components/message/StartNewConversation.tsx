@@ -1,9 +1,13 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useXmtpConversations } from '../../contexts/XmtpConversationsContext';
+import { useXmtpStore } from '../../contexts/XmtpStoreContext';
+import useStartNewConvo from '../../hooks/xmtp/useStartNewConvo';
+import InputBase from '../common/input/InputBase';
+import { ButtonPrimary } from '../common/button/ButtonBase';
 
 export default function StartNewConversation() {
-  const { startNewConvo } = useXmtpConversations();
+  const { setCurrentConvoAddress } = useXmtpStore();
+  const { isStarting, startNewConvo } = useStartNewConvo();
   const [errMsg, setErrMsg] = useState('');
   const [convoAddress, setConvoAddress] = useState('');
   return (
@@ -13,6 +17,7 @@ export default function StartNewConversation() {
         startNewConvo(convoAddress, {
           onSuccess: () => {
             setConvoAddress('');
+            setCurrentConvoAddress(convoAddress);
           },
           onFail: (error) => {
             setErrMsg(error.message);
@@ -20,8 +25,9 @@ export default function StartNewConversation() {
         });
       }}
     >
-      <div>
+      <StartFormWrap>
         <ConvoAddress
+          disabled={isStarting}
           placeholder="Enter address of recipient"
           value={convoAddress}
           onChange={(e) => {
@@ -29,8 +35,10 @@ export default function StartNewConversation() {
             setErrMsg('');
           }}
         />
-        <SubmitButton type="submit">Start Convo</SubmitButton>
-      </div>
+        <SubmitButton type="submit" disabled={isStarting}>
+          Start Convo
+        </SubmitButton>
+      </StartFormWrap>
       {errMsg && <ErrMsg>{errMsg}</ErrMsg>}
     </StartNewConversationWrap>
   );
@@ -41,30 +49,17 @@ const StartNewConversationWrap = styled.form`
   flex-direction: column;
   gap: 10px;
 `;
-
-const ConvoAddress = styled.input`
-  flex: 1;
-  height: 40px;
-  resize: none;
-  padding: 10px;
-  box-sizing: border-box;
-  border: 1px solid #ddd;
-  outline: none;
-  &:focus {
-    border-color: #000;
-  }
+const StartFormWrap = styled.div`
+  display: flex;
+  gap: 10px;
+  padding-right: 10px;
 `;
-const SubmitButton = styled.button`
+const ConvoAddress = styled(InputBase)`
+  width: 0;
+  flex: 1;
+`;
+const SubmitButton = styled(ButtonPrimary)`
   height: 40px;
-  width: 100px;
-  background-color: #000;
-  color: #fff;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  &:hover {
-    background-color: #333;
-  }
 `;
 const ErrMsg = styled.p`
   color: red;

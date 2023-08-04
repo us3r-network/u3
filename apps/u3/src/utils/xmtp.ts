@@ -1,3 +1,4 @@
+import { ContentTypeAttachment } from '@xmtp/content-type-remote-attachment';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 
 export const shortAddress = (addr: string) =>
@@ -38,4 +39,19 @@ export const storeKeys = (walletAddress: string, keys: Uint8Array) => {
 export const wipeKeys = (walletAddress: string) => {
   // This will clear the conversation cache + the private keys
   localStorage.removeItem(buildLocalStorageKey(walletAddress));
+};
+
+/**
+ * Attachment
+ */
+export const isAttachment = (message: DecodedMessage) => {
+  return message.contentType.sameAs(ContentTypeAttachment);
+};
+
+export const getAttachmentUrl = (message: DecodedMessage) => {
+  const blobdecoded = new Blob([message.content.data], {
+    type: message.content.mimeType,
+  });
+  const url = URL.createObjectURL(blobdecoded);
+  return url;
 };
