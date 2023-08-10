@@ -1,115 +1,32 @@
-import { ethers } from 'ethers'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+
 import {
-  FARCASTER_ABI,
-  FARCASTER_ADDRESS,
-  FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../constants/farcaster-contract'
-import * as ed from '@noble/ed25519'
-import {
-  EthersEip712Signer,
-  NobleEd25519Signer,
-  makeCastAdd,
-  makeSignerAdd,
-} from '@farcaster/hub-web'
+  useFarcasterGetCastsByFid,
+  useFarcasterMakeCast,
+} from '../hooks/useFarcaster'
+import { getFid } from '../utils/farcaster'
+import { useEthers } from '../hooks/useEthers'
 
 export default function Home() {
-  const [address, setAddress] = useState<string | null>(null)
-  const [ethersProvider, setEthersProvider] =
-    useState<ethers.BrowserProvider | null>(null)
-  const [fid, setFid] = useState<number | null>(null)
+  const [address, setAddress] = useState<string>()
+  const [fid, setFid] = useState<number>()
+
+  const { ethersProvider, connectWallet } = useEthers()
+  const { makeCast } = useFarcasterMakeCast({ ethersProvider, fid })
+  const { getCastsByFid } = useFarcasterGetCastsByFid()
 
   useEffect(() => {
-    let provider: ethers.BrowserProvider
-    if (!(window as any).ethereum) {
-      console.log('No ethereum object on window')
-      return
-    }
-    provider = new ethers.BrowserProvider((window as any).ethereum)
-    setEthersProvider(provider)
-    provider
+    if (!ethersProvider) return
+    ethersProvider
       .send('eth_accounts', [])
       .then((accounts) => {
         setAddress(accounts[0])
-        return getFid(provider, accounts[0])
+        return getFid(ethersProvider, accounts[0])
       })
+      .then(setFid)
       .catch(console.error)
-  }, [])
-
-  const connectWallet = useCallback(async () => {
-    if (!ethersProvider) {
-      return
-    }
-    const accounts = await ethersProvider.send('eth_requestAccounts', [])
-    setAddress(accounts[0])
   }, [ethersProvider])
-
-  const makeCast = useCallback(async () => {
-    if (!ethersProvider) return
-    if (!fid) return
-
-    const dataOptions = {
-      fid: fid,
-      network: FARCASTER_NETWORK,
-    }
-    const provider = ethersProvider
-    const signer = await provider.getSigner()
-    const eip712Signer = new EthersEip712Signer(signer)
-
-    const signerPrivateKey = ed.utils.randomPrivateKey()
-    const ed25519Signer = new NobleEd25519Signer(signerPrivateKey)
-    const signerPublicKeyResult = await ed25519Signer.getSignerKey()
-
-    if (signerPublicKeyResult.isErr()) {
-      console.log(signerPublicKeyResult.error)
-      return
-    }
-    // const signerPublicKey =
-    const signerAddResult = await makeSignerAdd(
-      { signer: signerPublicKeyResult._unsafeUnwrap() },
-      dataOptions,
-      eip712Signer,
-    )
-    const signerAdd = signerAddResult._unsafeUnwrap()
-
-    const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
-
-    if (result.isErr()) {
-      console.log(result.error)
-      return
-    }
-
-    console.log('SignerAdd was published successfully!')
-
-    const cast = await makeCastAdd(
-      {
-        text: 'This is a cast with no mentions',
-        embeds: [],
-        embedsDeprecated: [],
-        mentions: [],
-        mentionsPositions: [],
-      },
-      dataOptions,
-      ed25519Signer,
-    )
-    if (cast.isErr()) {
-      console.log(cast.error)
-      return
-    }
-    cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
-  }, [ethersProvider, fid])
-
-  const getFid = async (provider: ethers.ContractRunner, address: string) => {
-    const farcasterContract = new ethers.Contract(
-      FARCASTER_ADDRESS,
-      FARCASTER_ABI,
-      provider,
-    )
-    const fid: BigInt = await farcasterContract['idOf'](address)
-    setFid(Number(fid))
-  }
 
   return (
     <HomeWrapper>
@@ -119,19 +36,43 @@ export default function Home() {
           <div>{address}</div>
 
           {(fid && <div>{fid}</div>) || (
-            <button onClick={() => getFid(ethersProvider!, address)}>
+            <button
+              onClick={async () => {
+                const fid = await getFid(ethersProvider!, address)
+                setFid(fid)
+              }}
+            >
               getFid
             </button>
           )}
         </div>
       )) || (
         <div>
-          <button onClick={connectWallet}>connectWallet</button>
+          <button
+            onClick={async () => {
+              const accounts = await connectWallet()
+              setAddress(accounts[0])
+            }}
+          >
+            connectWallet
+          </button>
         </div>
       )}
       {fid && (
         <div>
-          <button onClick={makeCast}>makeCast</button>
+          <button onClick={() => makeCast('this is u3 cast')}>makeCast</button>
+          <button
+            onClick={async () => {
+              if (!fid) return
+              const data = await getCastsByFid(fid)
+              if (!data) return
+              data.messages.forEach((cast) => {
+                console.log(cast)
+              })
+            }}
+          >
+            getCastsByFid
+          </button>
         </div>
       )}
     </HomeWrapper>
