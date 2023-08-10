@@ -7,12 +7,15 @@ import {
   NobleEd25519Signer,
   makeCastAdd,
   makeSignerAdd,
+  makeReactionAdd,
+  ReactionType,
+  CastId,
 } from '@farcaster/hub-web'
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../constants/farcaster-contract'
-import { useCallback } from 'react'
+import React, { useCallback } from 'react'
 
 export function useFarcasterMakeCast({
   fid,
@@ -52,8 +55,6 @@ export function useFarcasterMakeCast({
         return
       }
 
-      console.log('SignerAdd was published successfully!')
-
       const cast = await makeCastAdd(
         {
           text: castText,
@@ -75,6 +76,129 @@ export function useFarcasterMakeCast({
   )
 
   return { makeCast }
+}
+
+export function useFarcasterMakeCastWithParentCastId({
+  fid,
+  ethersProvider,
+}: {
+  ethersProvider?: ethers.BrowserProvider
+  fid?: number
+}) {
+  const makeCastWithParentCastId = useCallback(
+    async (castText: string, parentCastId: CastId) => {
+      if (!ethersProvider) return
+      if (!fid) return
+
+      const dataOptions = {
+        fid,
+        network: FARCASTER_NETWORK,
+      }
+
+      const { eip712Signer, ed25519Signer, signerPublicKeyResult } =
+        await getEip712Signer(ethersProvider)
+
+      if (signerPublicKeyResult.isErr()) {
+        console.log(signerPublicKeyResult.error)
+        return
+      }
+
+      const signerAddResult = await makeSignerAdd(
+        { signer: signerPublicKeyResult._unsafeUnwrap() },
+        dataOptions,
+        eip712Signer,
+      )
+      const signerAdd = signerAddResult._unsafeUnwrap()
+      const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
+
+      if (result.isErr()) {
+        console.log(result.error)
+        return
+      }
+
+      const cast = await makeCastAdd(
+        {
+          text: castText,
+          embeds: [],
+          embedsDeprecated: [],
+          mentions: [],
+          mentionsPositions: [],
+          parentCastId,
+        },
+        dataOptions,
+        ed25519Signer,
+      )
+      if (cast.isErr()) {
+        console.log(cast.error)
+        return
+      }
+      cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
+    },
+    [ethersProvider, fid],
+  )
+
+  return { makeCastWithParentCastId }
+}
+
+export function useFarcasterReactionCast({
+  fid,
+  ethersProvider,
+}: {
+  ethersProvider?: ethers.BrowserProvider
+  fid?: number
+}) {
+  const reactionCast = useCallback(
+    async (
+      targetCastId: CastId,
+      actionType: ReactionType.LIKE | ReactionType.RECAST,
+    ) => {
+      if (!ethersProvider) return
+      if (!fid) return
+
+      const dataOptions = {
+        fid: fid,
+        network: FARCASTER_NETWORK,
+      }
+
+      const { eip712Signer, ed25519Signer, signerPublicKeyResult } =
+        await getEip712Signer(ethersProvider)
+
+      if (signerPublicKeyResult.isErr()) {
+        console.log(signerPublicKeyResult.error)
+        return
+      }
+
+      const signerAddResult = await makeSignerAdd(
+        { signer: signerPublicKeyResult._unsafeUnwrap() },
+        dataOptions,
+        eip712Signer,
+      )
+      const signerAdd = signerAddResult._unsafeUnwrap()
+      const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
+
+      if (result.isErr()) {
+        console.log(result.error)
+        return
+      }
+
+      const cast = await makeReactionAdd(
+        {
+          type: actionType,
+          targetCastId: targetCastId,
+        },
+        dataOptions,
+        ed25519Signer,
+      )
+      if (cast.isErr()) {
+        console.log(cast.error)
+        return
+      }
+      cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
+    },
+    [ethersProvider, fid],
+  )
+
+  return { reactionCast }
 }
 
 export function useFarcasterGetCastsByFid() {

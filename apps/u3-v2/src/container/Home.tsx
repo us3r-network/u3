@@ -1,12 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import {
   useFarcasterGetCastsByFid,
   useFarcasterMakeCast,
+  useFarcasterMakeCastWithParentCastId,
+  useFarcasterReactionCast,
 } from '../hooks/useFarcaster'
 import { getFid } from '../utils/farcaster'
 import { useEthers } from '../hooks/useEthers'
+import { ReactionType } from '@farcaster/hub-web'
 
 export default function Home() {
   const [address, setAddress] = useState<string>()
@@ -14,7 +17,51 @@ export default function Home() {
 
   const { ethersProvider, connectWallet } = useEthers()
   const { makeCast } = useFarcasterMakeCast({ ethersProvider, fid })
+  const { makeCastWithParentCastId } = useFarcasterMakeCastWithParentCastId({
+    ethersProvider,
+    fid,
+  })
+  const { reactionCast } = useFarcasterReactionCast({ ethersProvider, fid })
   const { getCastsByFid } = useFarcasterGetCastsByFid()
+
+  const commentCast = useCallback(async () => {
+    if (!fid) return
+    await makeCastWithParentCastId('this is u3 comment', {
+      fid,
+      hash: Uint8Array.from([
+        234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
+        124, 115, 231, 151,
+      ]),
+    })
+  }, [fid, makeCastWithParentCastId])
+
+  const likeCast = useCallback(async () => {
+    if (!fid) return
+    await reactionCast(
+      {
+        fid: fid,
+        hash: Uint8Array.from([
+          234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
+          124, 115, 231, 151,
+        ]),
+      },
+      ReactionType.LIKE,
+    )
+  }, [fid, reactionCast])
+
+  const repostCast = useCallback(async () => {
+    if (!fid) return
+    await reactionCast(
+      {
+        fid: fid!,
+        hash: Uint8Array.from([
+          234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
+          124, 115, 231, 151,
+        ]),
+      },
+      ReactionType.RECAST,
+    )
+  }, [fid, reactionCast])
 
   useEffect(() => {
     if (!ethersProvider) return
@@ -73,6 +120,9 @@ export default function Home() {
           >
             getCastsByFid
           </button>
+          <button onClick={commentCast}>commentCast</button>
+          <button onClick={likeCast}>likeCast</button>
+          <button onClick={repostCast}>repostCast</button>
         </div>
       )}
     </HomeWrapper>
