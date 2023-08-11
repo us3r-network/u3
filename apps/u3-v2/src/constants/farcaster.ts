@@ -1,12 +1,16 @@
 import { FarcasterNetwork, getHubRpcClient } from '@farcaster/hub-web'
 
-export const FARCASTER_CHAIN_ID = 5
+export const FARCASTER_HUB_URL =
+  process.env.REACT_APP_FARCASTER_HUB_URL || 'https://farcaster-dev.u3.xyz'
+export const FARCASTER_NETWORK =
+  process.env.REACT_APP_FARCASTER_NETWORK === 'testnet'
+    ? FarcasterNetwork.TESTNET
+    : FarcasterNetwork.MAINNET
 
-export const FARCASTER_HUB_URL = 'https://farcaster-dev.u3.xyz'
-export const FARCASTER_NETWORK = FarcasterNetwork.TESTNET
-
+console.log('FARCASTER_HUB_URL', process.env.REACT_APP_FARCASTER_HUB_URL)
 export const FARCASTER_WEB_CLIENT = getHubRpcClient(FARCASTER_HUB_URL, {})
 
+export const FARCASTER_CHAIN_ID = 5
 export const FARCASTER_ADDRESS = '0xDA107A1CAf36d198B12c16c7B6a1d1C795978C42'
 export const FARCASTER_ABI = [
   {

@@ -11,10 +11,7 @@ import {
   ReactionType,
   CastId,
 } from '@farcaster/hub-web'
-import {
-  FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../constants/farcaster-contract'
+import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import React, { useCallback } from 'react'
 
 export function useFarcasterMakeCast({

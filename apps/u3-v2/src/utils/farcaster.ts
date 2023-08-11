@@ -1,8 +1,5 @@
 import { ethers } from 'ethers'
-import {
-  FARCASTER_ABI,
-  FARCASTER_ADDRESS,
-} from '../constants/farcaster-contract'
+import { FARCASTER_ABI, FARCASTER_ADDRESS } from '../constants/farcaster'
 
 export const getFid = async (
   provider: ethers.ContractRunner,
