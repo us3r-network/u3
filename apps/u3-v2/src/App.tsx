@@ -13,6 +13,7 @@ import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
+import FarcasterProvider from './context/farcaster'
 
 dayjs.extend(relativeTime)
 
@@ -35,7 +36,9 @@ export default function App() {
       appName="S3 Console"
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
-        <Routers />
+        <FarcasterProvider>
+          <Routers />
+        </FarcasterProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
   )

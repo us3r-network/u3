@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
 import {
@@ -7,123 +7,116 @@ import {
   useFarcasterMakeCastWithParentCastId,
   useFarcasterReactionCast,
 } from '../hooks/useFarcaster'
-import { getFid } from '../utils/farcaster'
-import { useEthers } from '../hooks/useEthers'
-import { ReactionType } from '@farcaster/hub-web'
+import { CastId, Message, ReactionType } from '@farcaster/hub-web'
+import { useAccount, useConnect } from 'wagmi'
+import { useFarcasterCtx } from '../context/farcaster'
 
 export default function Home() {
-  const [address, setAddress] = useState<string>()
-  const [fid, setFid] = useState<number>()
+  const { connector: activeConnector, isConnected, address } = useAccount()
+  const { connect, connectors, error } = useConnect()
+  const { farcasterSigner, fid } = useFarcasterCtx()
 
-  const { ethersProvider, connectWallet } = useEthers()
-  const { makeCast } = useFarcasterMakeCast({ ethersProvider, fid })
+  const { makeCast } = useFarcasterMakeCast({ signer: farcasterSigner, fid })
   const { makeCastWithParentCastId } = useFarcasterMakeCastWithParentCastId({
-    ethersProvider,
+    signer: farcasterSigner,
     fid,
   })
-  const { reactionCast } = useFarcasterReactionCast({ ethersProvider, fid })
+  const { reactionCast } = useFarcasterReactionCast({
+    signer: farcasterSigner,
+    fid,
+  })
   const { getCastsByFid } = useFarcasterGetCastsByFid()
 
-  const commentCast = useCallback(async () => {
-    if (!fid) return
-    await makeCastWithParentCastId('this is u3 comment', {
-      fid,
-      hash: Uint8Array.from([
-        234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
-        124, 115, 231, 151,
-      ]),
-    })
-  }, [fid, makeCastWithParentCastId])
+  const [castList, setCastList] = useState<Message[]>()
 
-  const likeCast = useCallback(async () => {
-    if (!fid) return
-    await reactionCast(
-      {
-        fid: fid,
-        hash: Uint8Array.from([
-          234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
-          124, 115, 231, 151,
-        ]),
-      },
-      ReactionType.LIKE,
-    )
-  }, [fid, reactionCast])
+  const commentCast = useCallback(
+    async (castId: CastId) => {
+      if (!fid) return
+      await makeCastWithParentCastId('this is u3 comment' + Date.now(), castId)
+    },
+    [fid, makeCastWithParentCastId],
+  )
 
-  const repostCast = useCallback(async () => {
-    if (!fid) return
-    await reactionCast(
-      {
-        fid: fid!,
-        hash: Uint8Array.from([
-          234, 106, 89, 24, 111, 173, 70, 78, 247, 39, 117, 34, 139, 53, 72, 2,
-          124, 115, 231, 151,
-        ]),
-      },
-      ReactionType.RECAST,
-    )
-  }, [fid, reactionCast])
+  const likeCast = useCallback(
+    async (castId: CastId) => {
+      if (!fid) return
+      await reactionCast(castId, ReactionType.LIKE)
+    },
+    [fid, reactionCast],
+  )
 
-  useEffect(() => {
-    if (!ethersProvider) return
-    ethersProvider
-      .send('eth_accounts', [])
-      .then((accounts) => {
-        setAddress(accounts[0])
-        return getFid(ethersProvider, accounts[0])
-      })
-      .then(setFid)
-      .catch(console.error)
-  }, [ethersProvider])
+  const repostCast = useCallback(
+    async (castId: CastId) => {
+      if (!fid) return
+      await reactionCast(castId, ReactionType.RECAST)
+    },
+    [fid, reactionCast],
+  )
 
   return (
     <HomeWrapper>
-      <h1>Home</h1>
-      {(address && (
-        <div>
-          <div>{address}</div>
-
-          {(fid && <div>{fid}</div>) || (
+      <div>
+        {isConnected && <div>Connected to {activeConnector?.name}</div>}
+        {!isConnected && (
+          <div>
             <button
-              onClick={async () => {
-                const fid = await getFid(ethersProvider!, address)
-                setFid(fid)
+              onClick={() => {
+                connect({
+                  connector: connectors.find((c) => c.name === 'MetaMask')!,
+                })
               }}
             >
-              getFid
+              connect
             </button>
-          )}
-        </div>
-      )) || (
+          </div>
+        )}
+
+        {error && <div>{error.message}</div>}
+      </div>
+      {address && <div>{address}</div>}
+      {(fid && (
         <div>
-          <button
-            onClick={async () => {
-              const accounts = await connectWallet()
-              setAddress(accounts[0])
-            }}
-          >
-            connectWallet
-          </button>
-        </div>
-      )}
-      {fid && (
-        <div>
+          <div>{fid}</div>
           <button onClick={() => makeCast('this is u3 cast')}>makeCast</button>
           <button
             onClick={async () => {
               if (!fid) return
               const data = await getCastsByFid(fid)
               if (!data) return
-              data.messages.forEach((cast) => {
-                console.log(cast)
-              })
+              setCastList(data.messages)
+              // data.messages.forEach((cast) => {
+              //   console.log(cast)
+              // })
             }}
           >
             getCastsByFid
           </button>
-          <button onClick={commentCast}>commentCast</button>
-          <button onClick={likeCast}>likeCast</button>
-          <button onClick={repostCast}>repostCast</button>
         </div>
+      )) || <div>register first</div>}
+
+      {castList && (
+        <ol>
+          {castList.map((cast) => {
+            console.log(cast)
+            if (!cast.data) return null
+            const castId = {
+              fid: cast.data.fid,
+              hash: cast.hash,
+            }
+            return (
+              <li key={Buffer.from(cast.hash).toString('hex')}>
+                {cast.data?.castAddBody?.text}
+                <div>
+                  <button onClick={() => commentCast(castId)}>
+                    commentCast
+                  </button>
+                  <button onClick={() => likeCast(castId)}>likeCast</button>
+                  <button onClick={() => repostCast(castId)}>repostCast</button>
+                </div>
+              </li>
+            )
+          })}
+        </ol>
       )}
     </HomeWrapper>
   )
