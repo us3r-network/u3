@@ -2,9 +2,11 @@ import { ethers } from 'ethers'
 import * as ed from '@noble/ed25519'
 import {
   EthersEip712Signer,
+  EthersV5Eip712Signer,
   FidRequest,
   HubResult,
   NobleEd25519Signer,
+  MinimalEthersSigner,
   makeCastAdd,
   makeSignerAdd,
   makeReactionAdd,
@@ -12,18 +14,21 @@ import {
   CastId,
 } from '@farcaster/hub-web'
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 
 export function useFarcasterMakeCast({
   fid,
-  ethersProvider,
+  signer,
 }: {
-  ethersProvider?: ethers.BrowserProvider
+  signer?: MinimalEthersSigner
   fid?: number
 }) {
   const makeCast = useCallback(
     async (castText: string) => {
-      if (!ethersProvider) return
+      if (!signer) {
+        console.log('no signer')
+        return
+      }
       if (!fid) return
 
       const dataOptions = {
@@ -32,7 +37,7 @@ export function useFarcasterMakeCast({
       }
 
       const { eip712Signer, ed25519Signer, signerPublicKeyResult } =
-        await getEip712Signer(ethersProvider)
+        await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
         console.log(signerPublicKeyResult.error)
@@ -69,7 +74,7 @@ export function useFarcasterMakeCast({
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },
-    [ethersProvider, fid],
+    [signer, fid],
   )
 
   return { makeCast }
@@ -77,14 +82,14 @@ export function useFarcasterMakeCast({
 
 export function useFarcasterMakeCastWithParentCastId({
   fid,
-  ethersProvider,
+  signer,
 }: {
-  ethersProvider?: ethers.BrowserProvider
+  signer?: MinimalEthersSigner
   fid?: number
 }) {
   const makeCastWithParentCastId = useCallback(
     async (castText: string, parentCastId: CastId) => {
-      if (!ethersProvider) return
+      if (!signer) return
       if (!fid) return
 
       const dataOptions = {
@@ -93,7 +98,7 @@ export function useFarcasterMakeCastWithParentCastId({
       }
 
       const { eip712Signer, ed25519Signer, signerPublicKeyResult } =
-        await getEip712Signer(ethersProvider)
+        await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
         console.log(signerPublicKeyResult.error)
@@ -131,7 +136,7 @@ export function useFarcasterMakeCastWithParentCastId({
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },
-    [ethersProvider, fid],
+    [signer, fid],
   )
 
   return { makeCastWithParentCastId }
@@ -139,9 +144,9 @@ export function useFarcasterMakeCastWithParentCastId({
 
 export function useFarcasterReactionCast({
   fid,
-  ethersProvider,
+  signer,
 }: {
-  ethersProvider?: ethers.BrowserProvider
+  signer?: MinimalEthersSigner
   fid?: number
 }) {
   const reactionCast = useCallback(
@@ -149,7 +154,7 @@ export function useFarcasterReactionCast({
       targetCastId: CastId,
       actionType: ReactionType.LIKE | ReactionType.RECAST,
     ) => {
-      if (!ethersProvider) return
+      if (!signer) return
       if (!fid) return
 
       const dataOptions = {
@@ -158,7 +163,7 @@ export function useFarcasterReactionCast({
       }
 
       const { eip712Signer, ed25519Signer, signerPublicKeyResult } =
-        await getEip712Signer(ethersProvider)
+        await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
         console.log(signerPublicKeyResult.error)
@@ -192,7 +197,7 @@ export function useFarcasterReactionCast({
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },
-    [ethersProvider, fid],
+    [signer, fid],
   )
 
   return { reactionCast }
@@ -218,15 +223,13 @@ export function useFarcasterGetCastsByFid() {
   return { getCastsByFid }
 }
 
-async function getEip712Signer(
-  ethersProvider: ethers.BrowserProvider,
-): Promise<{
+async function getEip712Signer(signer: MinimalEthersSigner): Promise<{
   eip712Signer: EthersEip712Signer
   signerPublicKeyResult: HubResult<Uint8Array>
   ed25519Signer: NobleEd25519Signer
 }> {
-  const provider = ethersProvider
-  const signer = await provider.getSigner()
+  // const provider = ethersProvider
+  // const signer = await provider.getSigner()
   const eip712Signer = new EthersEip712Signer(signer)
 
   const signerPrivateKey = ed.utils.randomPrivateKey()
