@@ -13,6 +13,8 @@ import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
+import { AppLensProvider } from './contexts/AppLensCtx'
+import SocialLens from './container/SocialLens'
 
 dayjs.extend(relativeTime)
 
@@ -22,6 +24,7 @@ function Routers() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="social-lens" element={<SocialLens />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
     </Routes>
@@ -35,7 +38,9 @@ export default function App() {
       appName="S3 Console"
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
-        <Routers />
+        <AppLensProvider>
+          <Routers />
+        </AppLensProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
   )

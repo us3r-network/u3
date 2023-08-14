@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
 import { debounce } from 'lodash'
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import SearchSvg from '../svgs/search.svg'
-import ClearSvg from '../svgs/close.svg'
+import SearchSvg from '../icons/svgs/search.svg'
+import ClearSvg from '../icons/svgs/close.svg'
 
 const Wrapper = styled.div`
   width: 100%;
