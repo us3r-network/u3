@@ -5,8 +5,12 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { Us3rAuthWithRainbowkitProvider } from '@us3r-network/auth-with-rainbowkit'
 import { ProfileStateProvider } from '@us3r-network/profile'
 
+import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
+import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
+
 import Home from './container/Home'
 import Profile from './container/Profile'
+import Message from './container/Message'
 import NoMatch from './container/NoMatch'
 import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
 
@@ -22,6 +26,7 @@ function Routers() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="message" element={<Message />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
     </Routes>
@@ -35,7 +40,11 @@ export default function App() {
       appName="S3 Console"
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
-        <Routers />
+        <XmtpClientProvider>
+          <XmtpStoreProvider>
+            <Routers />
+          </XmtpStoreProvider>
+        </XmtpClientProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
   )

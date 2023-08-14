@@ -27,13 +27,6 @@ code {
   display: none;
 }
 
-button {
-  background: none;
-  border: none;
-  outline: none;
-  cursor: pointer;
-}
-
 .react-aria-ModalOverlay {
   position: fixed;
   top: 0;
