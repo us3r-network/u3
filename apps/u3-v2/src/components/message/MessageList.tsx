@@ -4,6 +4,7 @@ import dayjs from 'dayjs'
 import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
 import { getAttachmentUrl, isAttachment, shortAddress } from '../../utils/xmtp'
+import { useEffect, useState } from 'react'
 
 export default function MessageList() {
   const { xmtpClient } = useXmtpClient()
@@ -30,13 +31,22 @@ const MessageListWrap = styled.div`
 `
 
 function MessageCard({ isMe, msg }: { isMe: boolean; msg: DecodedMessage }) {
+  const { xmtpClient } = useXmtpClient()
+  const [attachmentUrl, setAttachmentUrl] = useState<string>('')
+  useEffect(() => {
+    ;(async () => {
+      if (isAttachment(msg)) {
+        const url = await getAttachmentUrl(msg, xmtpClient)
+        setAttachmentUrl(url)
+      }
+    })()
+  }, [msg, xmtpClient])
   return (
     <MessageCardWrap isMe={isMe}>
       <UserName>{isMe ? 'Me' : shortAddress(msg.senderAddress)}</UserName>
       {(() => {
         if (isAttachment(msg)) {
-          const url = getAttachmentUrl(msg)
-          return <Image src={url} />
+          return <Image src={attachmentUrl} />
         }
         return <Message>{msg.content}</Message>
       })()}
@@ -64,7 +74,7 @@ const UserName = styled.span`
 
 const Message = styled.span`
   font-weight: bold;
-  color: #fff;
+  color: #000;
   font-size: 16px;
 `
 const MessageTime = styled.span`

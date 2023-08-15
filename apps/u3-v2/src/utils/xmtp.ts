@@ -1,5 +1,9 @@
-import { ContentTypeAttachment } from '@xmtp/content-type-remote-attachment'
-import { DecodedMessage } from '@xmtp/xmtp-js'
+import {
+  ContentTypeAttachment,
+  ContentTypeRemoteAttachment,
+  RemoteAttachmentCodec,
+} from '@xmtp/content-type-remote-attachment'
+import { Client, DecodedMessage } from '@xmtp/xmtp-js'
 import { XMTP_ENV } from '../constants/xmtp'
 
 export const shortAddress = (addr: string) =>
@@ -45,14 +49,50 @@ export const wipeKeys = (walletAddress: string) => {
 /**
  * Attachment
  */
-export const isAttachment = (message: DecodedMessage) => {
+export const isXmtpAttachment = (message: DecodedMessage) => {
   return message.contentType.sameAs(ContentTypeAttachment)
 }
 
-export const getAttachmentUrl = (message: DecodedMessage) => {
+export const isRemoteAttachment = (message: DecodedMessage) => {
+  return message.contentType.sameAs(ContentTypeRemoteAttachment)
+}
+
+export const isAttachment = (message: DecodedMessage) => {
+  return isXmtpAttachment(message) || isRemoteAttachment(message)
+}
+
+export const getXmtpAttachmentUrl = (message: DecodedMessage) => {
   const blobdecoded = new Blob([message.content.data], {
     type: message.content.mimeType,
   })
   const url = URL.createObjectURL(blobdecoded)
   return url
+}
+export const getRemoteAttachmentUrl = async (
+  message: DecodedMessage,
+  client: Client,
+) => {
+  const attachment: any = await RemoteAttachmentCodec.load(
+    message.content,
+    client,
+  )
+
+  const blobdecoded = new Blob([Buffer.from(attachment.data)], {
+    type: attachment.mimeType,
+  })
+  const url = URL.createObjectURL(blobdecoded)
+  return url
+}
+
+export const getAttachmentUrl = async (
+  message: DecodedMessage,
+  client?: Client | null,
+) => {
+  if (isXmtpAttachment(message)) {
+    return getXmtpAttachmentUrl(message)
+  }
+  if (isRemoteAttachment(message) && client) {
+    return getRemoteAttachmentUrl(message, client)
+  }
+  return ''
 }

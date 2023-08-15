@@ -10,7 +10,10 @@ import {
   useCallback,
 } from 'react'
 import { useWalletClient } from 'wagmi'
-import { AttachmentCodec } from '@xmtp/content-type-remote-attachment'
+import {
+  AttachmentCodec,
+  RemoteAttachmentCodec,
+} from '@xmtp/content-type-remote-attachment'
 import { loadKeys, storeKeys } from '../../utils/xmtp'
 import { XMTP_ENV } from '../../constants/xmtp'
 
@@ -77,6 +80,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
         privateKeyOverride: keys,
       })
       client.registerCodec(new AttachmentCodec())
+      client.registerCodec(new RemoteAttachmentCodec())
 
       setXmtpClient(client)
     } catch (error) {

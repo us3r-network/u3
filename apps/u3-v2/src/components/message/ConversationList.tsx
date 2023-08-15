@@ -9,6 +9,8 @@ import {
   truncate,
 } from '../../utils/xmtp'
 import useConversationList from '../../hooks/xmtp/useConversationList'
+import { useEffect, useState } from 'react'
+import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
 
 export default function ConversationList(
   props: StyledComponentPropsWithRef<'div'>,
@@ -58,6 +60,16 @@ function ConversationCard({
   address: string
   latestMessage: DecodedMessage | null
 }) {
+  const { xmtpClient } = useXmtpClient()
+  const [attachmentUrl, setAttachmentUrl] = useState<string>('')
+  useEffect(() => {
+    ;(async () => {
+      if (latestMessage && isAttachment(latestMessage)) {
+        const url = await getAttachmentUrl(latestMessage, xmtpClient)
+        setAttachmentUrl(url)
+      }
+    })()
+  }, [latestMessage, xmtpClient])
   return (
     <ConversationCardWrap
       isSelected={isSelected}
@@ -68,7 +80,7 @@ function ConversationCard({
         {latestMessage &&
           (() => {
             if (isAttachment(latestMessage)) {
-              return getAttachmentUrl(latestMessage)
+              return attachmentUrl
             }
             return truncate(latestMessage.content, 75)
           })()}
