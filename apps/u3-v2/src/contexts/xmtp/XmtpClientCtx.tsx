@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 import { Client, Signer } from '@xmtp/xmtp-js'
 import {
   PropsWithChildren,
@@ -96,7 +95,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
       return
     }
     enableXmtp(signer)
-  }, [signer])
+  }, [signer, enableXmtp])
 
   return (
     <XmtpClientCtx.Provider

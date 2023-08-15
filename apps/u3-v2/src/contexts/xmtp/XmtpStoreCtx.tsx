@@ -1,6 +1,3 @@
-/* eslint-disable no-continue */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable consistent-return */
 import {
   PropsWithChildren,
   createContext,
@@ -125,12 +122,10 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
       streamConvoRef.current = await xmtpClient.conversations.stream()
       streamConvoSub(xmtpClient.address, streamConvoRef.current)
     })()
-
-    // eslint-disable-next-line consistent-return
     return () => {
       closeStreamConvo()
     }
-  }, [xmtpClient])
+  }, [xmtpClient, streamConvoSub])
 
   const streamMessagesRef = useRef<Map<string, Stream<DecodedMessage>>>(
     new Map(),
@@ -182,7 +177,7 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
     return () => {
       closeStreamMessages()
     }
-  }, [conversations, xmtpClient])
+  }, [conversations, xmtpClient, streamMessagesSub])
 
   return (
     <XmtpStoreCtx.Provider
