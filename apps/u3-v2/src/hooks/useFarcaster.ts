@@ -24,10 +24,9 @@ export function useFarcasterMakeCast({
   const makeCast = useCallback(
     async (castText: string) => {
       if (!signer) {
-        console.log('no signer')
-        return
+        throw new Error('no signer')
       }
-      if (!fid) return
+      if (!fid) throw new Error('no fid')
 
       const dataOptions = {
         fid: fid,
@@ -38,8 +37,7 @@ export function useFarcasterMakeCast({
         await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
-        console.log(signerPublicKeyResult.error)
-        return
+        return signerPublicKeyResult.error
       }
 
       const signerAddResult = await makeSignerAdd(
@@ -51,8 +49,7 @@ export function useFarcasterMakeCast({
       const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
 
       if (result.isErr()) {
-        console.log(result.error)
-        return
+        return result.error
       }
 
       const cast = await makeCastAdd(
@@ -67,8 +64,7 @@ export function useFarcasterMakeCast({
         ed25519Signer,
       )
       if (cast.isErr()) {
-        console.log(cast.error)
-        return
+        return cast.error
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },
@@ -87,8 +83,8 @@ export function useFarcasterMakeCastWithParentCastId({
 }) {
   const makeCastWithParentCastId = useCallback(
     async (castText: string, parentCastId: CastId) => {
-      if (!signer) return
-      if (!fid) return
+      if (!signer) throw new Error('no signer')
+      if (!fid) throw new Error('no fid')
 
       const dataOptions = {
         fid,
@@ -99,8 +95,7 @@ export function useFarcasterMakeCastWithParentCastId({
         await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
-        console.log(signerPublicKeyResult.error)
-        return
+        return signerPublicKeyResult.error
       }
 
       const signerAddResult = await makeSignerAdd(
@@ -112,8 +107,7 @@ export function useFarcasterMakeCastWithParentCastId({
       const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
 
       if (result.isErr()) {
-        console.log(result.error)
-        return
+        return result.error
       }
 
       const cast = await makeCastAdd(
@@ -129,8 +123,7 @@ export function useFarcasterMakeCastWithParentCastId({
         ed25519Signer,
       )
       if (cast.isErr()) {
-        console.log(cast.error)
-        return
+        return cast.error
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },
@@ -152,8 +145,8 @@ export function useFarcasterReactionCast({
       targetCastId: CastId,
       actionType: ReactionType.LIKE | ReactionType.RECAST,
     ) => {
-      if (!signer) return
-      if (!fid) return
+      if (!signer) throw new Error('no signer')
+      if (!fid) throw new Error('no fid')
 
       const dataOptions = {
         fid: fid,
@@ -164,8 +157,7 @@ export function useFarcasterReactionCast({
         await getEip712Signer(signer)
 
       if (signerPublicKeyResult.isErr()) {
-        console.log(signerPublicKeyResult.error)
-        return
+        return signerPublicKeyResult.error
       }
 
       const signerAddResult = await makeSignerAdd(
@@ -177,8 +169,7 @@ export function useFarcasterReactionCast({
       const result = await FARCASTER_WEB_CLIENT.submitMessage(signerAdd)
 
       if (result.isErr()) {
-        console.log(result.error)
-        return
+        return result.error
       }
 
       const cast = await makeReactionAdd(
@@ -190,8 +181,7 @@ export function useFarcasterReactionCast({
         ed25519Signer,
       )
       if (cast.isErr()) {
-        console.log(cast.error)
-        return
+        return cast.error
       }
       cast.map((castAdd) => FARCASTER_WEB_CLIENT.submitMessage(castAdd))
     },

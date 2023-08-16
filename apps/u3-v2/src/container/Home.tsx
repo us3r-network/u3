@@ -1,68 +1,22 @@
-import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 
-import {
-  useFarcasterGetCastsByFid,
-  useFarcasterMakeCast,
-  useFarcasterMakeCastWithParentCastId,
-  useFarcasterReactionCast,
-} from '../hooks/useFarcaster'
-import { CastId, Message, ReactionType } from '@farcaster/hub-web'
-import { useAccount, useConnect } from 'wagmi'
-import { useFarcasterCtx } from '../context/farcaster'
+import { useAccount } from 'wagmi'
 import useLoadFarcasterFeeds from '../hooks/useLoadFarcasterFeeds'
 import FCast from '../components/FCast'
+import AddPost from '../components/AddPost'
 
 export default function Home() {
-  const { connector: activeConnector, isConnected, address } = useAccount()
-  const { connect, connectors, error } = useConnect()
-  const { farcasterSigner, fid } = useFarcasterCtx()
+  const { address } = useAccount()
 
   const { farcasterFeeds, loadMoreFarcasterFeeds } = useLoadFarcasterFeeds()
 
-  const { makeCastWithParentCastId } = useFarcasterMakeCastWithParentCastId({
-    signer: farcasterSigner,
-    fid,
-  })
-  const { reactionCast } = useFarcasterReactionCast({
-    signer: farcasterSigner,
-    fid,
-  })
-
-  const [castList, setCastList] = useState<Message[]>()
-
-  const commentCast = useCallback(
-    async (castId: CastId) => {
-      if (!fid) return
-      await makeCastWithParentCastId('this is u3 comment' + Date.now(), castId)
-    },
-    [fid, makeCastWithParentCastId],
-  )
-
-  const likeCast = useCallback(
-    async (castId: CastId) => {
-      if (!fid) return
-      await reactionCast(castId, ReactionType.LIKE)
-    },
-    [fid, reactionCast],
-  )
-
-  const repostCast = useCallback(
-    async (castId: CastId) => {
-      if (!fid) return
-      await reactionCast(castId, ReactionType.RECAST)
-    },
-    [fid, reactionCast],
-  )
-
   return (
     <HomeWrapper>
-      <div>{address}</div>
       <div>
-        <button>+ Post</button>
+        <AddPost />
       </div>
       {farcasterFeeds && (
-        <div>
+        <div className="feeds-list">
           {farcasterFeeds.map(({ data: cast, platform }) => {
             if (platform === 'farcaster') {
               return (
@@ -86,4 +40,9 @@ const HomeWrapper = styled.div`
   height: 100vh;
   padding: 24px;
   box-sizing: border-box;
+
+  .feeds-list {
+    display: flex;
+    flex-direction: column;
+  }
 `

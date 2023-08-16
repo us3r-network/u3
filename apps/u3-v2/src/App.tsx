@@ -5,6 +5,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { Us3rAuthWithRainbowkitProvider } from '@us3r-network/auth-with-rainbowkit'
 import { ProfileStateProvider } from '@us3r-network/profile'
 import { init } from '@airstack/airstack-react'
+import Modal from 'react-modal'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
@@ -14,14 +15,15 @@ import {
   WALLET_CONNECT_PROJECT_ID,
   AIRSTACK_API_KEY,
 } from './constants'
-
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import FarcasterProvider from './context/farcaster'
 
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.min.css'
+
 init(AIRSTACK_API_KEY)
 dayjs.extend(relativeTime)
+Modal.setAppElement('#root')
 
 function Routers() {
   return (

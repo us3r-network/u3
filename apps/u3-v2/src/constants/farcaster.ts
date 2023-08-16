@@ -7,7 +7,7 @@ export const FARCASTER_NETWORK =
     ? FarcasterNetwork.TESTNET
     : FarcasterNetwork.MAINNET
 
-console.log('FARCASTER_HUB_URL', process.env.REACT_APP_FARCASTER_HUB_URL)
+console.log('FARCASTER_HUB_URL', FARCASTER_NETWORK, FARCASTER_HUB_URL)
 export const FARCASTER_WEB_CLIENT = getHubRpcClient(FARCASTER_HUB_URL, {})
 
 export const FARCASTER_CHAIN_ID = 5
