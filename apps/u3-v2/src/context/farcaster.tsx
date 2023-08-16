@@ -1,18 +1,12 @@
 import { MinimalEthersSigner } from '@farcaster/hub-web'
 import { TypedDataDomain, createPublicClient, http } from 'viem'
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { ReactNode, createContext, useContext, useEffect, useMemo } from 'react'
 import { useAccount, useWalletClient } from 'wagmi'
 import { goerli } from 'viem/chains'
-import { getFidFromClient } from '../utils/farcaster'
 import { useEthers } from '../hooks/useEthers'
 import { TypedDataField } from 'ethers'
+import { useLazyQuery } from '@airstack/airstack-react'
+import { SocialQuery } from '../api/airstack'
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -34,7 +28,8 @@ export default function FarcasterProvider({
   const { address } = useAccount()
   const { data: walletClient } = useWalletClient()
   const { ethersProvider } = useEthers()
-  const [fid, setFid] = useState<number>()
+
+  const [fetch, { data, loading }] = useLazyQuery(SocialQuery)
 
   const farcasterSigner: MinimalEthersSigner | undefined = useMemo(() => {
     if (!walletClient || !ethersProvider) return undefined
@@ -59,10 +54,17 @@ export default function FarcasterProvider({
 
   useEffect(() => {
     if (!address) return
-    getFidFromClient(publicClient, address).then((fid) => {
-      setFid(fid)
+    fetch({
+      identity: address,
     })
-  }, [address])
+  }, [address, fetch])
+
+  const fid = useMemo(() => {
+    const farcasterData = data?.Wallet.socials.find(
+      (item: any) => item.dappName === 'farcaster',
+    )
+    return Number(farcasterData?.userId || 0)
+  }, [data])
 
   return (
     <FarcasterContext.Provider

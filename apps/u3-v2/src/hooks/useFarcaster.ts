@@ -1,8 +1,6 @@
-import { ethers } from 'ethers'
 import * as ed from '@noble/ed25519'
 import {
   EthersEip712Signer,
-  EthersV5Eip712Signer,
   FidRequest,
   HubResult,
   NobleEd25519Signer,
@@ -228,8 +226,6 @@ async function getEip712Signer(signer: MinimalEthersSigner): Promise<{
   signerPublicKeyResult: HubResult<Uint8Array>
   ed25519Signer: NobleEd25519Signer
 }> {
-  // const provider = ethersProvider
-  // const signer = await provider.getSigner()
   const eip712Signer = new EthersEip712Signer(signer)
 
   const signerPrivateKey = ed.utils.randomPrivateKey()

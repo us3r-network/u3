@@ -10,13 +10,16 @@ import {
 import { CastId, Message, ReactionType } from '@farcaster/hub-web'
 import { useAccount, useConnect } from 'wagmi'
 import { useFarcasterCtx } from '../context/farcaster'
+import useLoadFarcasterFeeds from '../hooks/useLoadFarcasterFeeds'
+import FCast from '../components/FCast'
 
 export default function Home() {
   const { connector: activeConnector, isConnected, address } = useAccount()
   const { connect, connectors, error } = useConnect()
   const { farcasterSigner, fid } = useFarcasterCtx()
 
-  const { makeCast } = useFarcasterMakeCast({ signer: farcasterSigner, fid })
+  const { farcasterFeeds, loadMoreFarcasterFeeds } = useLoadFarcasterFeeds()
+
   const { makeCastWithParentCastId } = useFarcasterMakeCastWithParentCastId({
     signer: farcasterSigner,
     fid,
@@ -25,7 +28,6 @@ export default function Home() {
     signer: farcasterSigner,
     fid,
   })
-  const { getCastsByFid } = useFarcasterGetCastsByFid()
 
   const [castList, setCastList] = useState<Message[]>()
 
@@ -55,65 +57,25 @@ export default function Home() {
 
   return (
     <HomeWrapper>
+      <div>{address}</div>
       <div>
-        {isConnected && <div>Connected to {activeConnector?.name}</div>}
-        {!isConnected && (
-          <div>
-            <button
-              onClick={() => {
-                connect({
-                  connector: connectors.find((c) => c.name === 'MetaMask')!,
-                })
-              }}
-            >
-              connect
-            </button>
-          </div>
-        )}
-
-        {error && <div>{error.message}</div>}
+        <button>+ Post</button>
       </div>
-      {address && <div>{address}</div>}
-      {(fid && (
+      {farcasterFeeds && (
         <div>
-          <div>{fid}</div>
-          <button onClick={() => makeCast('this is u3 cast')}>makeCast</button>
-          <button
-            onClick={async () => {
-              if (!fid) return
-              const data = await getCastsByFid(fid)
-              if (!data) return
-              setCastList(data.messages)
-            }}
-          >
-            getCastsByFid
-          </button>
-        </div>
-      )) || <div>register first</div>}
-
-      {castList && (
-        <ol>
-          {castList.map((cast) => {
-            console.log(cast)
-            if (!cast.data) return null
-            const castId = {
-              fid: cast.data.fid,
-              hash: cast.hash,
+          {farcasterFeeds.map(({ data: cast, platform }) => {
+            if (platform === 'farcaster') {
+              return (
+                <FCast
+                  key={Buffer.from(cast.hash.data).toString('hex')}
+                  cast={cast}
+                />
+              )
             }
-            return (
-              <li key={Buffer.from(cast.hash).toString('hex')}>
-                {cast.data?.castAddBody?.text}
-                <div>
-                  <button onClick={() => commentCast(castId)}>
-                    commentCast
-                  </button>
-                  <button onClick={() => likeCast(castId)}>likeCast</button>
-                  <button onClick={() => repostCast(castId)}>repostCast</button>
-                </div>
-              </li>
-            )
+            return null
           })}
-        </ol>
+          <button onClick={loadMoreFarcasterFeeds}>loadMore</button>
+        </div>
       )}
     </HomeWrapper>
   )

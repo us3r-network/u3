@@ -4,17 +4,23 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { Us3rAuthWithRainbowkitProvider } from '@us3r-network/auth-with-rainbowkit'
 import { ProfileStateProvider } from '@us3r-network/profile'
+import { init } from '@airstack/airstack-react'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
 import NoMatch from './container/NoMatch'
-import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
+import {
+  CERAMIC_HOST,
+  WALLET_CONNECT_PROJECT_ID,
+  AIRSTACK_API_KEY,
+} from './constants'
 
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import FarcasterProvider from './context/farcaster'
 
+init(AIRSTACK_API_KEY)
 dayjs.extend(relativeTime)
 
 function Routers() {
