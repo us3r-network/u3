@@ -7,8 +7,12 @@ import { ProfileStateProvider } from '@us3r-network/profile'
 import { init } from '@airstack/airstack-react'
 import Modal from 'react-modal'
 
+import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
+import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
+
 import Home from './container/Home'
 import Profile from './container/Profile'
+import Message from './container/Message'
 import NoMatch from './container/NoMatch'
 import {
   CERAMIC_HOST,
@@ -31,6 +35,7 @@ function Routers() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="message" element={<Message />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
     </Routes>
@@ -44,9 +49,13 @@ export default function App() {
       appName="S3 Console"
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
-        <FarcasterProvider>
-          <Routers />
-        </FarcasterProvider>
+        <XmtpClientProvider>
+          <XmtpStoreProvider>
+            <FarcasterProvider>
+              <Routers />
+            </FarcasterProvider>
+          </XmtpStoreProvider>
+        </XmtpClientProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
   )

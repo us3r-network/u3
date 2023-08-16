@@ -10,6 +10,7 @@ export default function Nav() {
       <NavLinks>
         <NavLinkItem to="/profile">Profile</NavLinkItem>
         <NavLinkItem to="/">Social</NavLinkItem>
+        <NavLinkItem to="/message">Message</NavLinkItem>
       </NavLinks>
       <NavFooter>
         {!!session ? (
