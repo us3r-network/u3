@@ -4,98 +4,76 @@ import { useCallback, useEffect, useState } from 'react'
 import InputBase from '../components/common/input/InputBase'
 import { ButtonPrimaryLine } from '../components/common/button/ButtonBase'
 import { useLensAuth } from '../contexts/AppLensCtx'
-import {
-  PublicationTypes,
-  useExplorePublications,
-} from '@lens-protocol/react-web'
-import axios from 'axios'
-import { API_BASE_URL } from '../constants'
-import { Profile, SignInWithLens } from '@lens-protocol/widgets-react'
+import LensPostCard from '../components/lens/LensPostCard'
+import { useLoadLensFeeds } from '../hooks/lens/useLoadLensFeeds'
 
-const getTrendingPosts = async () => {
-  return await axios.get(API_BASE_URL + '/posts')
-}
 export default function SocialLens() {
+  const { isLogin, isLoginPending, lensLogin, lensLogout } = useLensAuth()
   const [search, setSearch] = useState('')
-  const [posts, setPosts] = useState<any[]>([])
-  const [loading, setLoading] = useState(false)
 
-  const res = useExplorePublications({
-    publicationTypes: [PublicationTypes.Post],
-    limit: 25,
-  })
-  console.log({ res })
-
-  const loadTrendingPosts = useCallback(() => {
-    setLoading(true)
-    getTrendingPosts()
-      .then((res) => {
-        console.log({ res })
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-    setLoading(false)
-  }, [])
-
-  const loadFollowingPosts = useCallback(() => {
-    setLoading(true)
-    setPosts([])
-    setLoading(false)
-  }, [])
+  const {
+    firstLoading,
+    moreLoading,
+    feeds,
+    loadFirstLensFeeds,
+    loadMoreLensFeeds,
+    pageInfo,
+  } = useLoadLensFeeds()
 
   useEffect(() => {
-    loadTrendingPosts()
-  }, [loadTrendingPosts])
+    loadFirstLensFeeds()
+  }, [loadFirstLensFeeds])
 
-  const onSignIn = async (tokens: any, profile: any) => {
-    console.log('tokens: ', tokens)
-    console.log('profile: ', profile)
-  }
+  const lensLikeAction = useCallback(async (publicationId: string) => {}, [])
 
-  const { isLogin, lensLogout } = useLensAuth()
-  // if (!isLogin) {
-  //   return <NoLoginLens />
-  // }
   return (
     <SocialLensWrapper>
       <MainWrapper>
-        <MainHeader>
-          <SignInWithLens onSignIn={onSignIn} />
-          <Profile />
-          <button
-            onClick={() => {
-              loadTrendingPosts()
-            }}
-          >
-            Trending
-          </button>
-          <button
-            onClick={() => {
-              loadFollowingPosts()
-            }}
-          >
-            Following
-          </button>
-          <button
-            onClick={() => {
-              lensLogout()
-            }}
-          >
-            Logout Lens
-          </button>
-        </MainHeader>
-        {loading ? (
+        {firstLoading ? (
           <div>Loading...</div>
         ) : (
           <PostList>
-            {posts.map((post) => (
-              <div key={post?.id}>{post?.content}</div>
-            ))}
+            {feeds.map(({ platform, data }) => {
+              if (platform === 'lens') {
+                return <LensPostCard key={data.id} data={data} />
+              }
+              return null
+            })}
           </PostList>
         )}
+
+        {moreLoading && <div>Loading ...</div>}
+
+        <div>
+          {!firstLoading && !moreLoading && pageInfo.hasNextPage && (
+            <button
+              onClick={() => {
+                loadMoreLensFeeds()
+              }}
+            >
+              Load More
+            </button>
+          )}
+        </div>
       </MainWrapper>
       <SidebarWrapper>
+        <MainHeader>
+          <button
+            onClick={() => {
+              if (isLogin) {
+                lensLogout()
+              } else {
+                lensLogin()
+              }
+            }}
+          >
+            {(() => {
+              if (isLoginPending) return 'Loading...'
+              if (isLogin) return 'Logout Lens'
+              return 'Login Lens'
+            })()}
+          </button>
+        </MainHeader>
         <PostSearch onSearch={setSearch} defaultValue={search} />
         <PublishPost />
         <LensNotifications />
@@ -118,6 +96,7 @@ const MainWrapper = styled.div`
   border: 1px solid #ccc;
   padding: 10px;
   box-sizing: border-box;
+  overflow-y: auto;
 `
 const MainHeader = styled.div`
   display: flex;
@@ -135,35 +114,6 @@ const SidebarWrapper = styled.div`
   gap: 20px;
 `
 const PostSearch = styled(SearchInput)``
-
-function NoLoginLens() {
-  const { isLogin, isLoginPending, lensLogin } = useLensAuth()
-  return (
-    <NoLoginLensWrapper>
-      {(() => {
-        if (isLoginPending) return <div>Loading...</div>
-        if (!isLogin) {
-          return (
-            <button
-              onClick={() => {
-                lensLogin()
-              }}
-            >
-              Login Lens
-            </button>
-          )
-        }
-        return <div>Logined</div>
-      })()}
-    </NoLoginLensWrapper>
-  )
-}
-const NoLoginLensWrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  padding: 24px;
-  box-sizing: border-box;
-`
 
 function PublishPost() {
   const [post, setPost] = useState('')
