@@ -7,6 +7,7 @@ import { ProfileStateProvider } from '@us3r-network/profile'
 
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
+import FarcasterProvider from './contexts/farcaster'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
@@ -19,8 +20,11 @@ import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import { AppLensProvider } from './contexts/AppLensCtx'
 import SocialLens from './container/SocialLens'
+import Modal from 'react-modal'
 
 dayjs.extend(relativeTime)
+
+Modal.setAppElement('#root')
 
 function Routers() {
   return (
@@ -43,13 +47,15 @@ export default function App() {
       appName="S3 Console"
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
-        <AppLensProvider>
-          <XmtpClientProvider>
-            <XmtpStoreProvider>
-              <Routers />
-            </XmtpStoreProvider>
-          </XmtpClientProvider>
-        </AppLensProvider>
+        <XmtpClientProvider>
+          <XmtpStoreProvider>
+            <AppLensProvider>
+              <FarcasterProvider>
+                <Routers />
+              </FarcasterProvider>
+            </AppLensProvider>
+          </XmtpStoreProvider>
+        </XmtpClientProvider>
       </ProfileStateProvider>
     </Us3rAuthWithRainbowkitProvider>
   )
