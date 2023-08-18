@@ -7,6 +7,7 @@ import { ProfileStateProvider } from '@us3r-network/profile'
 
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
+import FarcasterProvider from './contexts/farcaster'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
@@ -17,8 +18,11 @@ import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
+import Modal from 'react-modal'
 
 dayjs.extend(relativeTime)
+
+Modal.setAppElement('#root')
 
 function Routers() {
   return (
@@ -42,7 +46,9 @@ export default function App() {
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
         <XmtpClientProvider>
           <XmtpStoreProvider>
-            <Routers />
+            <FarcasterProvider>
+              <Routers />
+            </FarcasterProvider>
           </XmtpStoreProvider>
         </XmtpClientProvider>
       </ProfileStateProvider>
