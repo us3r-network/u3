@@ -17,7 +17,7 @@ import {
 } from '../hooks/useFarsign'
 
 import { goerli } from 'viem/chains'
-import { FARCASTER_CLIENT_NAME } from '../constants'
+import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 
 export const publicClient = createPublicClient({
   chain: goerli,

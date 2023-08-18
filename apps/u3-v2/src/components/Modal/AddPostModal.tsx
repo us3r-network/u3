@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import ModalContainer from './ModalContainer'
 import { useFarcasterCtx } from '../../contexts/farcaster'
 
-import { FARCASTER_CLIENT_NAME } from '../../constants'
+import { FARCASTER_CLIENT_NAME } from '../../constants/farcaster'
 
 import {
   FARCASTER_NETWORK,

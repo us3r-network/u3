@@ -9,6 +9,9 @@ export const FARCASTER_NETWORK =
 
 console.log('FARCASTER_HUB_URL', FARCASTER_NETWORK, FARCASTER_HUB_URL)
 export const FARCASTER_WEB_CLIENT = getHubRpcClient(FARCASTER_HUB_URL, {})
+export const FARCASTER_CLIENT_NAME = 'US3R'
+
+export const WARPCAST_AUTH_URL = 'https://api.warpcast.com/v2/signer-requests'
 
 export const FARCASTER_CHAIN_ID = 5
 export const FARCASTER_ADDRESS = '0xDA107A1CAf36d198B12c16c7B6a1d1C795978C42'

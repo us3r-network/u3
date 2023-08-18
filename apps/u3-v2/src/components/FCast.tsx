@@ -6,7 +6,7 @@ import { CastId, ReactionType, makeReactionAdd } from '@farcaster/hub-web'
 import { useCallback, useMemo, useState } from 'react'
 import CommentPostModal from './Modal/CommentPostModal'
 import { toast } from 'react-toastify'
-import { FARCASTER_CLIENT_NAME } from '../constants'
+import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 
 export default function FCast({

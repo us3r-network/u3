@@ -1,5 +1,6 @@
 import * as ed from '@noble/ed25519'
 import { bytesToHexString, hexStringToBytes } from '@farcaster/hub-web'
+import { WARPCAST_AUTH_URL } from '../constants/farcaster'
 
 type keyGeneration = {
   publicKey: Uint8Array
@@ -27,11 +28,11 @@ const generateKeyPair = async (): Promise<keyGeneration> => {
 // extract key from keygen
 const sendPublicKey = async (
   publicKey: Uint8Array,
-  name: string
+  name: string,
 ): Promise<weirdResult> => {
   const convertedKey = bytesToHexString(publicKey)._unsafeUnwrap()
 
-  const response = await fetch('https://api.warpcast.com/v2/signer-requests', {
+  const response = await fetch(WARPCAST_AUTH_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ const sendPublicKey = async (
 
 const requestSignerAuthStatus = async (token: string) => {
   return await (
-    await fetch(`https://api.warpcast.com/v2/signer-request?token=${token}`, {
+    await fetch(`${WARPCAST_AUTH_URL}?token=${token}`, {
       headers: {
         'Content-Type': 'application/json',
       },
