@@ -12,10 +12,12 @@ import {
   useWalletLogin,
   useWalletLogout,
   useActiveProfile,
+  production,
 } from '@lens-protocol/react-web'
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
+import { LENS_ENV } from '../constants/lens'
 
 interface LensAuthContextValue {
   isLogin: boolean
@@ -32,7 +34,7 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
 
 const lensConfig: LensConfig = {
   bindings: wagmiBindings(),
-  environment: development,
+  environment: LENS_ENV === 'production' ? production : development,
 }
 
 export function AppLensProvider({ children }: PropsWithChildren) {
