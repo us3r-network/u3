@@ -2,7 +2,6 @@ import { useCallback } from 'react'
 import {
   CollectPolicyType,
   ContentFocus,
-  MetadataUploadHandler,
   ProfileOwnedByMe,
   ReferencePolicyType,
   useActiveProfile,
