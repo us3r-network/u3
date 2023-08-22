@@ -9,7 +9,8 @@ import { useFarcasterCtx } from '../contexts/farcaster'
 
 export default function Home() {
   const [openQR, setOpenQR] = useState(false)
-  const { farcasterFeeds, loadMoreFarcasterFeeds } = useLoadFarcasterFeeds()
+  const { farcasterFeeds, farcasterUserData, loadMoreFarcasterFeeds } =
+    useLoadFarcasterFeeds()
   const { isConnected, token } = useFarcasterCtx()
 
   const openFarcasterQR = () => setOpenQR(true)
@@ -31,11 +32,13 @@ export default function Home() {
         <div className="feeds-list">
           {farcasterFeeds.map(({ data: cast, platform }) => {
             if (platform === 'farcaster') {
+              const key = Buffer.from(cast.hash.data).toString('hex')
               return (
                 <FCast
-                  key={Buffer.from(cast.hash.data).toString('hex')}
+                  key={key}
                   cast={cast}
                   openFarcasterQR={openFarcasterQR}
+                  farcasterUserData={farcasterUserData}
                 />
               )
             }

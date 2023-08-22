@@ -13,6 +13,7 @@ export function getFarcasterFeeds({
 }): AxiosPromise<
   ApiResp<{
     data: { data: FarCast; platform: 'farcaster' }[]
+    farcasterUserData: { fid: string; type: number; value: string }[]
     pageInfo: {
       endFarcasterCursor: string
       hasNextPage: boolean
