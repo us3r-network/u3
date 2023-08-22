@@ -1,29 +1,26 @@
 import styled from 'styled-components'
-import { LensFeedPost } from '../../api/lens'
+import { LensPostFields } from '../../api/lens'
 import dayjs from 'dayjs'
 import {
   Post,
   ProfileOwnedByMe,
-  ReactionType,
+  ReactionTypes,
   useActiveProfile,
   useCreateMirror,
   useReaction,
 } from '@lens-protocol/react-web'
 import { useLensAuth } from '../../contexts/AppLensCtx'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import LensCommentPostModal from './LensCommentPostModal'
 import { useGlobalModal } from '../../contexts/GlobalModalCtx'
 import { toast } from 'react-toastify'
 
-export default function LensPostCard({ data }: { data: LensFeedPost }) {
+export default function LensPostCard({ data }: { data: LensPostFields }) {
   const { isLogin } = useLensAuth()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
 
-  const publication = useMemo(
-    () => ({ __typename: 'Post', ...data }) as unknown as Post,
-    [data],
-  )
+  const publication = data as unknown as Post
 
   const { execute: createMirror, isPending: isPendingMirror } = useCreateMirror(
     { publisher },
@@ -32,38 +29,29 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
   const {
     addReaction,
     removeReaction,
-    hasReaction,
     isPending: isPendingReaction,
   } = useReaction({
     profileId: publisher?.id,
   })
 
-  const [hasReactionTypeUpvote, setHasReactionTypeUpvote] = useState(false)
-
-  // TODO: hasReaction could not update its status, pending resolution
-  useEffect(() => {
-    setHasReactionTypeUpvote(
-      hasReaction({
-        reactionType: ReactionType.UPVOTE,
-        publication,
-      }),
-    )
-  }, [hasReaction, publication])
+  const hasReactionTypeUpvote = useMemo(
+    () => publication?.reaction === ReactionTypes.Upvote,
+    [publication.reaction],
+  )
 
   const toggleReactionUpvote = useCallback(async () => {
     try {
       if (hasReactionTypeUpvote) {
         await removeReaction({
-          reactionType: ReactionType.UPVOTE,
+          reactionType: ReactionTypes.Upvote,
           publication,
         })
       } else {
         await addReaction({
-          reactionType: ReactionType.UPVOTE,
+          reactionType: ReactionTypes.Upvote,
           publication,
         })
       }
-      setHasReactionTypeUpvote(!hasReactionTypeUpvote)
       toast.success('Like successfully')
     } catch (error: any) {
       console.error(error?.message)
@@ -102,6 +90,7 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
                 setOpenLensLoginModal(true)
                 return
               }
+              if (!data?.canComment?.result) return
               setOpenCommentModal(true)
             }}
           >
@@ -129,6 +118,7 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
                 setOpenLensLoginModal(true)
                 return
               }
+              if (!data?.canMirror?.result) return
               createMirrorAction()
             }}
           >

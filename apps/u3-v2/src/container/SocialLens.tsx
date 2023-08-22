@@ -1,13 +1,15 @@
 import styled from 'styled-components'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLensAuth } from '../contexts/AppLensCtx'
 import LensPostCard from '../components/lens/LensPostCard'
 import { useLoadLensFeeds } from '../hooks/lens/useLoadLensFeeds'
-import LensNotifications from '../components/lens/LensNotifications'
 import { useGlobalModal } from '../contexts/GlobalModalCtx'
+import { useActiveProfile } from '@lens-protocol/react-web'
 
 export default function SocialLens() {
   const { isLogin } = useLensAuth()
+  const { data: activeLensProfile, loading: activeLensProfileLoading } =
+    useActiveProfile()
 
   const {
     firstLoading,
@@ -19,11 +21,13 @@ export default function SocialLens() {
   } = useLoadLensFeeds()
 
   useEffect(() => {
-    loadFirstLensFeeds()
-  }, [loadFirstLensFeeds])
+    if (activeLensProfileLoading) return
+    loadFirstLensFeeds({ activeLensProfileId: activeLensProfile?.id })
+  }, [loadFirstLensFeeds, activeLensProfileLoading, activeLensProfile])
 
   const { setOpenLensLoginModal, setOpenLensCreatePostModal } = useGlobalModal()
 
+  const [keyword, setKeyword] = useState('')
   return (
     <SocialLensWrapper>
       <MainWrapper>
@@ -46,7 +50,9 @@ export default function SocialLens() {
           {!firstLoading && !moreLoading && pageInfo.hasNextPage && (
             <button
               onClick={() => {
-                loadMoreLensFeeds()
+                loadMoreLensFeeds({
+                  activeLensProfileId: activeLensProfile?.id,
+                })
               }}
             >
               Load More
@@ -55,9 +61,29 @@ export default function SocialLens() {
         </p>
       </MainWrapper>
       <SidebarWrapper>
+        <div>
+          <input
+            type="text"
+            disabled={firstLoading || moreLoading}
+            onChange={(e) => {
+              setKeyword(e.target.value)
+            }}
+          />
+          <button
+            disabled={firstLoading || moreLoading}
+            onClick={() => {
+              loadFirstLensFeeds({
+                keyword,
+                activeLensProfileId: activeLensProfile?.id,
+              })
+            }}
+          >
+            Search
+          </button>
+        </div>
         <button
           onClick={() => {
-            loadFirstLensFeeds()
+            loadFirstLensFeeds({ activeLensProfileId: activeLensProfile?.id })
           }}
         >
           Refresh the list
@@ -73,7 +99,6 @@ export default function SocialLens() {
         >
           + Create Post
         </button>
-        <LensNotifications />
       </SidebarWrapper>
     </SocialLensWrapper>
   )

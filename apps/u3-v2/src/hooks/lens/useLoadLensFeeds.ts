@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
-import { LensFeedPost, getFeeds } from '../../api/lens'
+import { LensPostFields, getFeeds } from '../../api/lens'
 
 export function useLoadLensFeeds() {
   const [feeds, setFeeds] = useState<
     Array<{
       platform: 'lens'
-      data: LensFeedPost
+      data: LensPostFields
     }>
   >([])
   const [pageInfo, setPageInfo] = useState<{
@@ -18,33 +18,44 @@ export function useLoadLensFeeds() {
   const [firstLoading, setFirstLoading] = useState(false)
   const [moreLoading, setMoreLoading] = useState(false)
 
-  const loadFirstLensFeeds = useCallback(async () => {
-    setFirstLoading(true)
-    try {
-      const res = await getFeeds()
-      setFeeds(res.data.data.data)
-      setPageInfo(res.data.data.pageInfo)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setFirstLoading(false)
-    }
-  }, [])
+  const loadFirstLensFeeds = useCallback(
+    async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
+      setFirstLoading(true)
+      try {
+        const res = await getFeeds({
+          activeLensProfileId: opts?.activeLensProfileId,
+          keyword: opts?.keyword,
+        })
+        setFeeds(res.data.data.data)
+        setPageInfo(res.data.data.pageInfo)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setFirstLoading(false)
+      }
+    },
+    [],
+  )
 
-  const loadMoreLensFeeds = useCallback(async () => {
-    setMoreLoading(true)
-    try {
-      const res = await getFeeds({
-        endLensCursor: pageInfo.endLensCursor,
-      })
-      setFeeds((prev) => [...prev, ...res.data.data.data])
-      setPageInfo(res.data.data.pageInfo)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setMoreLoading(false)
-    }
-  }, [pageInfo.endLensCursor])
+  const loadMoreLensFeeds = useCallback(
+    async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
+      setMoreLoading(true)
+      try {
+        const res = await getFeeds({
+          endLensCursor: pageInfo.endLensCursor,
+          activeLensProfileId: opts?.activeLensProfileId,
+          keyword: opts?.keyword,
+        })
+        setFeeds((prev) => [...prev, ...res.data.data.data])
+        setPageInfo(res.data.data.pageInfo)
+      } catch (error) {
+        console.error(error)
+      } finally {
+        setMoreLoading(false)
+      }
+    },
+    [pageInfo.endLensCursor],
+  )
 
   return {
     firstLoading,

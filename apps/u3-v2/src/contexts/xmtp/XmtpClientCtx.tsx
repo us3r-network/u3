@@ -42,14 +42,13 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
    */
   const signer = useMemo(
     () =>
-      data
+      data && !!data.account && !!(data as any)?.signMessage
         ? {
-            // eslint-disable-next-line @typescript-eslint/require-await
             getAddress: async (): Promise<string> => {
               return data.account.address
             },
             signMessage: async (message: string): Promise<string> => {
-              const signature = await data?.signMessage({
+              const signature = await (data as any)?.signMessage({
                 message,
                 account: data.account,
               })
