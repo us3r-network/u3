@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+// TODO: Do we need to create a service for uploading metadata to decentralized storage?
 export const METADATA_WORKER_URL = 'https://metadata.lenster.xyz'
 
 export const lensUploadToArweave = async (data: any): Promise<string> => {
