@@ -48,17 +48,7 @@ export function AppLensProvider({ children }: PropsWithChildren) {
 export function LensAuthProvider({ children }: PropsWithChildren) {
   const { execute: login, isPending: isLoginPending } = useWalletLogin()
   const { execute: lensLogout } = useWalletLogout()
-  const {
-    data: wallet,
-    error: walletError,
-    loading: walletLoading,
-  } = useActiveProfile()
-
-  console.log({
-    wallet,
-    walletError,
-    walletLoading,
-  })
+  const { data: wallet, loading: walletLoading } = useActiveProfile()
 
   const { isConnected } = useAccount()
   const { disconnectAsync } = useDisconnect()
@@ -76,15 +66,16 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     if (connector instanceof InjectedConnector) {
       const walletClient = await connector.getWalletClient()
 
-      await login({
+      const res = await login({
         address: walletClient.account.address,
       })
+      console.log({ loginRes: res })
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
 
   const isLogin = useMemo(
-    () => !isLoginPending && !!wallet && !walletLoading,
-    [isLoginPending, wallet, walletLoading],
+    () => !isLoginPending && !!wallet && !walletLoading && isConnected,
+    [isLoginPending, wallet, walletLoading, isConnected],
   )
 
   return (

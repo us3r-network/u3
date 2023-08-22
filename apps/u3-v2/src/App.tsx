@@ -8,6 +8,7 @@ import { ProfileStateProvider } from '@us3r-network/profile'
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
 import FarcasterProvider from './contexts/farcaster'
+import { GlobalModalProvider } from './contexts/GlobalModalCtx'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
@@ -51,7 +52,9 @@ export default function App() {
           <XmtpStoreProvider>
             <AppLensProvider>
               <FarcasterProvider>
-                <Routers />
+                <GlobalModalProvider>
+                  <Routers />
+                </GlobalModalProvider>
               </FarcasterProvider>
             </AppLensProvider>
           </XmtpStoreProvider>

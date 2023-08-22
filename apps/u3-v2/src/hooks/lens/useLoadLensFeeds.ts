@@ -23,8 +23,6 @@ export function useLoadLensFeeds() {
     try {
       const res = await getFeeds()
       setFeeds(res.data.data.data)
-      console.log({ res })
-
       setPageInfo(res.data.data.pageInfo)
     } catch (error) {
       console.error(error)

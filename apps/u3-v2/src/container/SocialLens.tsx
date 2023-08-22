@@ -3,11 +3,11 @@ import { useEffect } from 'react'
 import { useLensAuth } from '../contexts/AppLensCtx'
 import LensPostCard from '../components/lens/LensPostCard'
 import { useLoadLensFeeds } from '../hooks/lens/useLoadLensFeeds'
-import LensPostCreate from '../components/lens/LensPostCreate'
 import LensNotifications from '../components/lens/LensNotifications'
+import { useGlobalModal } from '../contexts/GlobalModalCtx'
 
 export default function SocialLens() {
-  const { isLogin, isLoginPending, lensLogin, lensLogout } = useLensAuth()
+  const { isLogin } = useLensAuth()
 
   const {
     firstLoading,
@@ -21,6 +21,8 @@ export default function SocialLens() {
   useEffect(() => {
     loadFirstLensFeeds()
   }, [loadFirstLensFeeds])
+
+  const { setOpenLensLoginModal, setOpenLensCreatePostModal } = useGlobalModal()
 
   return (
     <SocialLensWrapper>
@@ -55,27 +57,22 @@ export default function SocialLens() {
       <SidebarWrapper>
         <button
           onClick={() => {
-            if (isLogin) {
-              lensLogout()
-            } else {
-              lensLogin()
-            }
-          }}
-        >
-          {(() => {
-            if (isLoginPending) return 'Loading...'
-            if (isLogin) return 'Logout Lens'
-            return 'Login Lens'
-          })()}
-        </button>
-        <button
-          onClick={() => {
             loadFirstLensFeeds()
           }}
         >
           Refresh the list
         </button>
-        <LensPostCreate />
+        <button
+          onClick={() => {
+            if (!isLogin) {
+              setOpenLensLoginModal(true)
+              return
+            }
+            setOpenLensCreatePostModal(true)
+          }}
+        >
+          + Create Post
+        </button>
         <LensNotifications />
       </SidebarWrapper>
     </SocialLensWrapper>

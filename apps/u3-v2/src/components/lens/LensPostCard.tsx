@@ -10,10 +10,13 @@ import {
   useReaction,
 } from '@lens-protocol/react-web'
 import { useLensAuth } from '../../contexts/AppLensCtx'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import LensCommentPostModal from './LensCommentPostModal'
+import { useGlobalModal } from '../../contexts/GlobalModalCtx'
+import { toast } from 'react-toastify'
 
 export default function LensPostCard({ data }: { data: LensFeedPost }) {
-  const { isLogin, lensLogin } = useLensAuth()
+  const { isLogin } = useLensAuth()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
 
@@ -35,23 +38,54 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
     profileId: publisher?.id,
   })
 
+  const [hasReactionTypeUpvote, setHasReactionTypeUpvote] = useState(false)
+
+  // TODO: hasReaction could not update its status, pending resolution
+  useEffect(() => {
+    setHasReactionTypeUpvote(
+      hasReaction({
+        reactionType: ReactionType.UPVOTE,
+        publication,
+      }),
+    )
+  }, [hasReaction, publication])
+
   const toggleReactionUpvote = useCallback(async () => {
-    const hasReactionTypeUpvote = hasReaction({
-      reactionType: ReactionType.UPVOTE,
-      publication,
-    })
-    if (hasReactionTypeUpvote) {
-      await removeReaction({
-        reactionType: ReactionType.UPVOTE,
-        publication,
-      })
-    } else {
-      await addReaction({
-        reactionType: ReactionType.UPVOTE,
-        publication,
-      })
+    try {
+      if (hasReactionTypeUpvote) {
+        await removeReaction({
+          reactionType: ReactionType.UPVOTE,
+          publication,
+        })
+      } else {
+        await addReaction({
+          reactionType: ReactionType.UPVOTE,
+          publication,
+        })
+      }
+      setHasReactionTypeUpvote(!hasReactionTypeUpvote)
+      toast.success('Like successfully')
+    } catch (error: any) {
+      console.error(error?.message)
+      toast.error('Like failed')
     }
-  }, [publication, hasReaction, removeReaction, addReaction])
+  }, [publication, hasReactionTypeUpvote, removeReaction, addReaction])
+
+  const createMirrorAction = useCallback(async () => {
+    try {
+      await createMirror({
+        publication,
+      })
+      toast.success('Mirror successfully')
+    } catch (error: any) {
+      console.error(error?.message)
+      toast.error('Mirror failed')
+    }
+  }, [createMirror, publication])
+
+  const [openCommentModal, setOpenCommentModal] = useState(false)
+
+  const { setOpenLensLoginModal } = useGlobalModal()
 
   return (
     <CastBox>
@@ -62,11 +96,21 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
         </div>
         <small>{dayjs(data.timestamp).format()}</small>
         <div>
-          {/* <button>comment</button> */}
           <button
             onClick={() => {
               if (!isLogin) {
-                lensLogin()
+                setOpenLensLoginModal(true)
+                return
+              }
+              setOpenCommentModal(true)
+            }}
+          >
+            comment ({data.stats.totalAmountOfComments})
+          </button>
+          <button
+            onClick={() => {
+              if (!isLogin) {
+                setOpenLensLoginModal(true)
                 return
               }
               toggleReactionUpvote()
@@ -74,28 +118,30 @@ export default function LensPostCard({ data }: { data: LensFeedPost }) {
           >
             {isPendingReaction
               ? 'liking...'
-              : hasReaction({
-                  reactionType: ReactionType.UPVOTE,
-                  publication,
-                })
+              : hasReactionTypeUpvote
               ? 'unlike'
               : 'like'}
+            ({data.stats.totalUpvotes})
           </button>
           <button
             onClick={() => {
               if (!isLogin) {
-                lensLogin()
+                setOpenLensLoginModal(true)
                 return
               }
-              createMirror({
-                publication,
-              })
+              createMirrorAction()
             }}
           >
-            {isPendingMirror ? 'mirroring...' : 'mirror'}
+            {isPendingMirror ? 'mirroring...' : 'mirror'}(
+            {data.stats.totalAmountOfMirrors})
           </button>
         </div>
       </div>
+      <LensCommentPostModal
+        open={openCommentModal}
+        closeModal={() => setOpenCommentModal(false)}
+        publicationId={publication.id}
+      />
     </CastBox>
   )
 }

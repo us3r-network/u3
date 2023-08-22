@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@farcaster/hub-web": "^0.6.1",
     "@lens-protocol/react-web": "^1.2.2",
     "@lens-protocol/wagmi": "^2.0.2",
-    "@lens-protocol/widgets-react": "^0.0.31",
-    "@farcaster/hub-web": "^0.6.1",
     "@noble/ed25519": "^2.0.0",
     "@rainbow-me/rainbowkit": "^1.0.8",
     "@types/react-modal": "^3.16.0",
