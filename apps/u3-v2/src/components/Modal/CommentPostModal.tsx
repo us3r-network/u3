@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import ModalContainer from './ModalContainer'
-import { useFarcasterCtx } from '../../contexts/farcaster'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 import { CastId, makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
 import { FARCASTER_CLIENT_NAME } from '../../constants/farcaster'

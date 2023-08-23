@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
 // import { useFarcasterReactionCast } from '../hooks/useFarcaster'
-import { useFarcasterCtx } from '../contexts/farcaster'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
-import { useFarcasterCtx } from '../contexts/farcaster'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,
@@ -9,7 +9,6 @@ import {
 } from '@farcaster/hub-web'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
-import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterUserData from '../hooks/useFarcasterUserData'
 import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
@@ -67,6 +66,7 @@ export default function FCastLike({
 
         toast.success('like post created')
       } catch (error) {
+        console.error(error)
         toast.error('error like')
       }
     },

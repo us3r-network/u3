@@ -3,24 +3,18 @@ import styled from 'styled-components'
 import useLoadFarcasterFeeds from '../hooks/useLoadFarcasterFeeds'
 import FCast from '../components/FCast'
 import AddPost from '../components/AddPost'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import FarcasterQRModal from '../components/Modal/FarcasterQRModal'
-import { useFarcasterCtx } from '../contexts/farcaster'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 
 export default function Home() {
-  const [openQR, setOpenQR] = useState(false)
   const { farcasterFeeds, farcasterUserData, loadMoreFarcasterFeeds } =
     useLoadFarcasterFeeds()
-  const { isConnected, token } = useFarcasterCtx()
+  const { isConnected, token, openFarcasterQR } = useFarcasterCtx()
 
-  const openFarcasterQR = () => setOpenQR(true)
-
-  const openQRModal = useMemo(() => {
-    if (isConnected) {
-      return false
-    }
-    return openQR
-  }, [isConnected, openQR])
+  useEffect(() => {
+    console.log('home...')
+  }, [])
 
   return (
     <HomeWrapper>
@@ -50,12 +44,6 @@ export default function Home() {
           <button onClick={loadMoreFarcasterFeeds}>loadMore</button>
         </div>
       )}
-      <FarcasterQRModal
-        open={openQRModal}
-        closeModal={() => {
-          setOpenQR(false)
-        }}
-      />
     </HomeWrapper>
   )
 }

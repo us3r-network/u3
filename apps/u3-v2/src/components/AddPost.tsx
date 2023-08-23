@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import AddPostModal from './Modal/AddPostModal'
-import { useFarcasterCtx } from '../contexts/farcaster'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 
 export default function AddPost({
   openFarcasterQR,
