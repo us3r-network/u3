@@ -10,20 +10,31 @@ export default function useLoadFarcasterFeeds() {
       platform: 'farcaster'
     }[]
   >([])
+  const [farcasterUserData, setFarcasterUserData] = useState<{
+    [key: string]: { type: number; value: string }[]
+  }>({})
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(false)
   const [cursor, setCursor] = useState('')
 
   const loadMoreFarcasterFeeds = useCallback(async () => {
-    console.log({ loading, hasMore })
     if (loading || !hasMore) {
       return
     }
     setLoading(true)
     try {
       const resp = await getFarcasterFeeds({ endFarcasterCursor: cursor })
-      const { data, pageInfo } = resp.data.data
+      const { data, pageInfo, farcasterUserData: userData } = resp.data.data
+      const temp: { [key: string]: { type: number; value: string }[] } = {}
+      userData.forEach((item) => {
+        if (temp[item.fid]) {
+          temp[item.fid].push(item)
+        } else {
+          temp[item.fid] = [item]
+        }
+      })
       setFarcasterFeeds([...farcasterFeeds, ...data])
+      setFarcasterUserData({ ...farcasterUserData, ...temp })
       setHasMore(pageInfo.hasNextPage)
       setCursor(pageInfo.endFarcasterCursor)
     } catch (error) {
@@ -31,14 +42,23 @@ export default function useLoadFarcasterFeeds() {
     } finally {
       setLoading(false)
     }
-  }, [cursor, farcasterFeeds, hasMore, loading])
+  }, [loading, hasMore, cursor, farcasterFeeds, farcasterUserData])
 
   const loadFarcasterFeeds = async () => {
     setLoading(true)
     try {
       const resp = await getFarcasterFeeds({})
-      const { data, pageInfo } = resp.data.data
+      const { data, pageInfo, farcasterUserData: userData } = resp.data.data
+      const temp: { [key: string]: { type: number; value: string }[] } = {}
+      userData.forEach((item) => {
+        if (temp[item.fid]) {
+          temp[item.fid].push(item)
+        } else {
+          temp[item.fid] = [item]
+        }
+      })
       setFarcasterFeeds(data)
+      setFarcasterUserData({ ...farcasterUserData, ...temp })
       setHasMore(pageInfo.hasNextPage)
       setCursor(pageInfo.endFarcasterCursor)
     } catch (error) {
@@ -50,11 +70,13 @@ export default function useLoadFarcasterFeeds() {
 
   useEffect(() => {
     debounce(loadFarcasterFeeds, 500)()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return {
     loading,
     farcasterFeeds,
+    farcasterUserData,
     loadMoreFarcasterFeeds,
   }
 }

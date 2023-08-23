@@ -76,7 +76,7 @@ export default function CommentPostModal({
             commentCast(castId)
           }}
         >
-          Commit
+          Comment
         </button>
       </div>
     </ModalContainer>

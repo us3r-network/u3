@@ -1,6 +1,9 @@
 import * as ed from '@noble/ed25519'
 import { bytesToHexString, hexStringToBytes } from '@farcaster/hub-web'
-import { WARPCAST_AUTH_URL } from '../constants/farcaster'
+import {
+  FARCASTER_CLIENT_NAME,
+  WARPCAST_AUTH_URL,
+} from '../constants/farcaster'
 
 type keyGeneration = {
   publicKey: Uint8Array
@@ -55,6 +58,13 @@ const requestSignerAuthStatus = async (token: string) => {
   ).json()
 }
 
+const getCurrFid = () => {
+  const request = JSON.parse(
+    localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
+  ).signerRequest
+  return Number(request.fid)
+}
+
 export {
   generateKeyPair,
   sendPublicKey,
@@ -62,4 +72,5 @@ export {
   getPublicKeyAsync,
   bytesToHexString,
   hexStringToBytes,
+  getCurrFid,
 }

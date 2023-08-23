@@ -24,4 +24,9 @@ export type FarCast = {
   text: string
   timestamp: string
   updated_at: string
+  likes: string[]
+  like_count: string | null
+  recasts: string[]
+  recast_count: string | null
+  comment_count: string | null
 }
