@@ -13,9 +13,5 @@
   "bugs": {
     "url": "https://github.com/us3r-network/u3/issues"
   },
-  "homepage": "https://github.com/us3r-network/u3#readme",
-  "dependencies": {
-    "@lens-protocol/react-web": "^1.2.2",
-    "@lens-protocol/wagmi": "^2.0.2"
-  }
+  "homepage": "https://github.com/us3r-network/u3#readme"
 }
