@@ -1,5 +1,6 @@
 import { UserDataType } from '@farcaster/hub-web'
 import { useMemo } from 'react'
+import { useFarcasterCtx } from '../contexts/farcaster'
 
 export default function useFarcasterUserData({
   farcasterUserData,
@@ -8,8 +9,17 @@ export default function useFarcasterUserData({
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
   fid: string
 }) {
+  const { currUserInfo } = useFarcasterCtx()
   const userData = useMemo(() => {
-    const data = farcasterUserData[fid] || []
+    const userData = currUserInfo
+      ? {
+          ...farcasterUserData,
+          ...currUserInfo,
+        }
+      : {
+          ...farcasterUserData,
+        }
+    const data = userData[fid] || []
     const pfp = data.find((item) => item.type === UserDataType.PFP)?.value || ''
     const display =
       data.find((item) => item.type === UserDataType.DISPLAY)?.value || ''
@@ -25,7 +35,7 @@ export default function useFarcasterUserData({
       display,
       url,
     }
-  }, [fid, farcasterUserData])
+  }, [currUserInfo, farcasterUserData, fid])
 
   return userData
 }

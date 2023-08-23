@@ -29,3 +29,15 @@ export function getFarcasterFeeds({
     },
   })
 }
+
+export function getFarcasterUserInfo(
+  fids: number[],
+): AxiosPromise<ApiResp<{ type: number; value: string }[]>> {
+  return axios({
+    url: API_BASE_URL + `/3r/farcaster/userinfo`,
+    method: 'get',
+    params: {
+      fids,
+    },
+  })
+}

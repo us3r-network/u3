@@ -7,6 +7,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useState,
 } from 'react'
 import {
   useCheckSigner,
@@ -18,6 +19,8 @@ import {
 
 import { goerli } from 'viem/chains'
 import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
+import { getCurrFid } from '../utils/farsign-utils'
+import { getFarcasterUserInfo } from '../api/farcaster'
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -25,6 +28,11 @@ export const publicClient = createPublicClient({
 })
 
 export interface FarcasterContextData {
+  currUserInfo:
+    | {
+        [key: string]: { type: number; value: string }[]
+      }
+    | undefined
   isConnected: boolean
   token: Token
   encryptedSigner: NobleEd25519Signer | undefined
@@ -43,6 +51,21 @@ export default function FarcasterProvider({
   const [token] = useToken(FARCASTER_CLIENT_NAME)
   const [signer] = useSigner(FARCASTER_CLIENT_NAME, token)
   const [encryptedSigner] = useEncryptedSigner(FARCASTER_CLIENT_NAME, token)
+  const [currUserInfo, serCurrUserInfo] = useState<{
+    [key: string]: { type: number; value: string }[]
+  }>()
+
+  const getCurrUserInfo = async () => {
+    const currFid = getCurrFid()
+    const resp = await getFarcasterUserInfo([currFid])
+    if (resp.data.code === 0) {
+      const data: {
+        [key: string]: { type: number; value: string }[]
+      } = {}
+      data[currFid] = resp.data.data
+      serCurrUserInfo(data)
+    }
+  }
 
   useEffect(() => {
     if (signer.isConnected === true) {
@@ -50,9 +73,16 @@ export default function FarcasterProvider({
     }
   }, [setIsConnected, signer])
 
+  useEffect(() => {
+    if (isConnected) {
+      getCurrUserInfo()
+    }
+  }, [isConnected])
+
   return (
     <FarcasterContext.Provider
       value={{
+        currUserInfo,
         isConnected,
         token,
         encryptedSigner,

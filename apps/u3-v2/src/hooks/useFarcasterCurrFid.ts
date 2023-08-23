@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { FarCast } from '../api'
 import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 
 export default function useFarcasterCurrFid() {

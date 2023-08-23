@@ -17,6 +17,7 @@ import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterUserData from '../hooks/useFarcasterUserData'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
 import FCastLike from './FCastLike'
+import FCastRecast from './FCastRecast'
 
 export default function FCast({
   cast,
@@ -27,47 +28,9 @@ export default function FCast({
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
   openFarcasterQR: () => void
 }) {
-  const { encryptedSigner, isConnected } = useFarcasterCtx()
+  const { isConnected } = useFarcasterCtx()
 
   const [openComment, setOpenComment] = useState(false)
-
-  const repostCast = useCallback(
-    async (castId: CastId) => {
-      if (!isConnected) {
-        openFarcasterQR()
-        return
-      }
-      if (!encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
-      try {
-        const cast = await makeReactionAdd(
-          {
-            type: ReactionType.RECAST,
-            targetCastId: castId,
-          },
-          {
-            fid: request.fid,
-            network: FARCASTER_NETWORK,
-          },
-          encryptedSigner,
-        )
-        if (cast.isErr()) {
-          throw new Error(cast.error.message)
-        }
-
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast.value)
-        if (result.isErr()) {
-          throw new Error(result.error.message)
-        }
-        toast.success('like post created')
-      } catch (error) {
-        toast.error('error like')
-      }
-    },
-    [encryptedSigner, isConnected, openFarcasterQR],
-  )
 
   const castId: CastId = useFarcasterCastId({ cast })
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
@@ -89,9 +52,11 @@ export default function FCast({
           cast={cast}
           farcasterUserData={farcasterUserData}
         />
-        <button onClick={() => repostCast(castId)}>
-          repostCast({cast.repost_count || 0})
-        </button>
+        <FCastRecast
+          openFarcasterQR={openFarcasterQR}
+          cast={cast}
+          farcasterUserData={farcasterUserData}
+        />
         <button
           onClick={() => {
             if (!isConnected) {
@@ -101,7 +66,7 @@ export default function FCast({
             setOpenComment(true)
           }}
         >
-          commentCast({cast.comment_count})
+          commentCast({cast.comment_count || 0})
         </button>
       </CastTools>
       <CommentPostModal

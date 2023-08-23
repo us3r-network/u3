@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
+// import { useFarcasterReactionCast } from '../hooks/useFarcaster'
 import { useFarcasterCtx } from '../contexts/farcaster'
 import {
   CastId,
@@ -11,11 +12,10 @@ import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
-import useFarcasterUserData from '../hooks/useFarcasterUserData'
-import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
+import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
 
-export default function FCastLike({
+export default function FCastRecast({
   cast,
   farcasterUserData,
   openFarcasterQR,
@@ -25,12 +25,14 @@ export default function FCastLike({
   openFarcasterQR: () => void
 }) {
   const { encryptedSigner, isConnected } = useFarcasterCtx()
-  const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)))
-  const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || 0),
+  const [recasts, setRecasts] = useState<string[]>(
+    Array.from(new Set(cast.recasts)),
+  )
+  const [recastCount, setRecastCount] = useState<number>(
+    Number(cast.recast_count || 0),
   )
 
-  const likeCast = useCallback(
+  const recast = useCallback(
     async (castId: CastId) => {
       if (!isConnected) {
         openFarcasterQR()
@@ -43,7 +45,7 @@ export default function FCastLike({
       try {
         const cast = await makeReactionAdd(
           {
-            type: ReactionType.LIKE,
+            type: ReactionType.RECAST,
             targetCastId: castId,
           },
           {
@@ -61,20 +63,20 @@ export default function FCastLike({
           throw new Error(result.error.message)
         }
 
-        const tmpSet = new Set(likes)
+        const tmpSet = new Set(recasts)
         tmpSet.add(request.fid + '')
-        setLikes(Array.from(tmpSet))
-        setLikeCount(likeCount + 1)
+        setRecasts(Array.from(tmpSet))
+        setRecastCount(recastCount + 1)
 
-        toast.success('like post created')
+        toast.success('recast created')
       } catch (error) {
-        toast.error('error like')
+        toast.error('error recast')
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR],
+    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts],
   )
 
-  const removeLikeCast = useCallback(
+  const removeRecast = useCallback(
     async (castId: CastId) => {
       if (!isConnected) {
         openFarcasterQR()
@@ -87,7 +89,7 @@ export default function FCastLike({
       try {
         const cast = await makeReactionRemove(
           {
-            type: ReactionType.LIKE,
+            type: ReactionType.RECAST,
             targetCastId: castId,
           },
           {
@@ -105,94 +107,35 @@ export default function FCastLike({
           throw new Error(result.error.message)
         }
 
-        const tmpSet = new Set(likes)
+        const tmpSet = new Set(recasts)
         tmpSet.delete(request.fid + '')
-        setLikes(Array.from(tmpSet))
-        setLikeCount(likeCount - 1)
+        setRecasts(Array.from(tmpSet))
+        setRecastCount(recastCount - 1)
 
-        toast.success('like post removed')
+        toast.success('removed recast')
       } catch (error) {
-        toast.error('error like')
+        toast.error('error recast')
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR],
+    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts],
   )
 
   const currFid: string = useFarcasterCurrFid()
   const castId: CastId = useFarcasterCastId({ cast })
 
   return (
-    <LikesBox>
-      <AvatarContainerBox len={likes.length}>
-        {likes.map((item, idx) => {
-          return (
-            <LikeAvatar
-              key={item}
-              fid={item}
-              idx={idx}
-              farcasterUserData={farcasterUserData}
-            />
-          )
-        })}
-      </AvatarContainerBox>
+    <div>
       <button
         onClick={() => {
-          if (likes.includes(currFid)) {
-            removeLikeCast(castId)
+          if (recasts.includes(currFid)) {
+            removeRecast(castId)
           } else {
-            likeCast(castId)
+            recast(castId)
           }
         }}
       >
-        likeCast({likeCount})
+        recasts({recastCount})
       </button>
-    </LikesBox>
+    </div>
   )
 }
-
-function LikeAvatar({
-  farcasterUserData,
-  fid,
-  idx,
-}: {
-  fid: string
-  idx: number
-  farcasterUserData: { [key: string]: { type: number; value: string }[] }
-}) {
-  const userData = useFarcasterUserData({ fid: fid, farcasterUserData })
-  if (userData.pfp) {
-    return (
-      <LikeAvatarBox idx={idx}>
-        <img src={userData.pfp} alt="" />
-      </LikeAvatarBox>
-    )
-  }
-  if (userData.display) {
-    return <LikeAvatarBox idx={idx}>{userData.display}</LikeAvatarBox>
-  }
-  return <LikeAvatarBox idx={idx}>{userData.fid}</LikeAvatarBox>
-}
-
-const LikesBox = styled.div`
-  display: flex;
-`
-
-const AvatarContainerBox = styled.div<{ len: number }>`
-  display: flex;
-  position: relative;
-  width: ${(props) => (props.len ? props.len * 16 + 10 + 'px' : '0px')};
-`
-
-const LikeAvatarBox = styled.div<{ idx: number }>`
-  position: absolute;
-  left: ${(props) => props.idx * 16 + 'px'};
-  border: 1px solid white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  > img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-  }
-`
