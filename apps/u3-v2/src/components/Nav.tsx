@@ -10,6 +10,7 @@ export default function Nav() {
       <NavLinks>
         <NavLinkItem to="/profile">Profile</NavLinkItem>
         <NavLinkItem to="/">Social</NavLinkItem>
+        <NavLinkItem to="/social-lens">Social Lens</NavLinkItem>
         <NavLinkItem to="/message">Message</NavLinkItem>
       </NavLinks>
       <NavFooter>
@@ -27,7 +28,7 @@ export default function Nav() {
 }
 
 const NavContainer = styled.nav`
-  width: 70px;
+  width: 200px;
   height: 100vh;
   border-right: 1px solid #e5e5e5;
   box-sizing: border-box;
