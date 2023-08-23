@@ -14,6 +14,7 @@ import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterUserData from '../hooks/useFarcasterUserData'
 import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
+import { getCurrFid } from '../utils/farsign-utils'
 
 export default function FCastLike({
   cast,
@@ -37,9 +38,7 @@ export default function FCastLike({
         return
       }
       if (!encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
+      const currFid = getCurrFid()
       try {
         const cast = await makeReactionAdd(
           {
@@ -47,7 +46,7 @@ export default function FCastLike({
             targetCastId: castId,
           },
           {
-            fid: request.fid,
+            fid: currFid,
             network: FARCASTER_NETWORK,
           },
           encryptedSigner,
@@ -62,7 +61,7 @@ export default function FCastLike({
         }
 
         const tmpSet = new Set(likes)
-        tmpSet.add(request.fid + '')
+        tmpSet.add(currFid + '')
         setLikes(Array.from(tmpSet))
         setLikeCount(likeCount + 1)
 
@@ -81,9 +80,7 @@ export default function FCastLike({
         return
       }
       if (!encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
+      const currFid = getCurrFid()
       try {
         const cast = await makeReactionRemove(
           {
@@ -91,7 +88,7 @@ export default function FCastLike({
             targetCastId: castId,
           },
           {
-            fid: request.fid,
+            fid: currFid,
             network: FARCASTER_NETWORK,
           },
           encryptedSigner,
@@ -106,7 +103,7 @@ export default function FCastLike({
         }
 
         const tmpSet = new Set(likes)
-        tmpSet.delete(request.fid + '')
+        tmpSet.delete(currFid + '')
         setLikes(Array.from(tmpSet))
         setLikeCount(likeCount - 1)
 

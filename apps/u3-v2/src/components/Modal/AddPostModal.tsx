@@ -11,22 +11,25 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster'
+import { getCurrFid } from '../../utils/farsign-utils'
+import useFarcasterUserData from '../../hooks/useFarcasterUserData'
+import styled from 'styled-components'
 
 export default function AddPostModal({
   open,
   closeModal,
+  farcasterUserData,
 }: {
   open: boolean
   closeModal: () => void
+  farcasterUserData: { [key: string]: { type: number; value: string }[] }
 }) {
-  const { encryptedSigner } = useFarcasterCtx()
+  const { encryptedSigner, currFid } = useFarcasterCtx()
   const [text, setText] = useState('')
 
   const handleSubmit = useCallback(async () => {
     if (!text || !encryptedSigner) return
-    const request = JSON.parse(
-      localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-    ).signerRequest
+    const currFid = getCurrFid()
     try {
       const cast = (
         await makeCastAdd(
@@ -37,7 +40,7 @@ export default function AddPostModal({
             mentions: [],
             mentionsPositions: [],
           },
-          { fid: request.fid, network: FARCASTER_NETWORK },
+          { fid: currFid, network: FARCASTER_NETWORK },
           encryptedSigner,
         )
       )._unsafeUnwrap()
@@ -53,13 +56,19 @@ export default function AddPostModal({
     }
   }, [text, encryptedSigner, closeModal])
 
+  const currUserData = useFarcasterUserData({
+    fid: currFid + '',
+    farcasterUserData,
+  })
+
   return (
     <ModalContainer
       open={open}
       closeModal={closeModal}
       afterCloseAction={() => setText('')}
     >
-      <div>
+      <PostBox>
+        <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
         <input
           type="text"
           value={text}
@@ -72,7 +81,17 @@ export default function AddPostModal({
         >
           post
         </button>
-      </div>
+      </PostBox>
     </ModalContainer>
   )
 }
+
+const PostBox = styled.div`
+  display: flex;
+  gap: 10px;
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+`

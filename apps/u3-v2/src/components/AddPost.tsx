@@ -4,8 +4,10 @@ import { useFarcasterCtx } from '../contexts/farcaster'
 
 export default function AddPost({
   openFarcasterQR,
+  farcasterUserData,
 }: {
   openFarcasterQR: () => void
+  farcasterUserData: { [key: string]: { type: number; value: string }[] }
 }) {
   const [open, setOpen] = useState(false)
   const { isConnected } = useFarcasterCtx()
@@ -22,7 +24,11 @@ export default function AddPost({
       >
         + Post
       </button>
-      <AddPostModal open={open} closeModal={() => setOpen(false)} />
+      <AddPostModal
+        open={open}
+        closeModal={() => setOpen(false)}
+        farcasterUserData={farcasterUserData}
+      />
     </div>
   )
 }

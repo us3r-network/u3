@@ -14,6 +14,7 @@ import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
 import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
+import { getCurrFid } from '../utils/farsign-utils'
 
 export default function FCastRecast({
   cast,
@@ -39,9 +40,7 @@ export default function FCastRecast({
         return
       }
       if (!encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
+      const currFid = getCurrFid()
       try {
         const cast = await makeReactionAdd(
           {
@@ -49,7 +48,7 @@ export default function FCastRecast({
             targetCastId: castId,
           },
           {
-            fid: request.fid,
+            fid: currFid,
             network: FARCASTER_NETWORK,
           },
           encryptedSigner,
@@ -64,7 +63,7 @@ export default function FCastRecast({
         }
 
         const tmpSet = new Set(recasts)
-        tmpSet.add(request.fid + '')
+        tmpSet.add(currFid + '')
         setRecasts(Array.from(tmpSet))
         setRecastCount(recastCount + 1)
 
@@ -83,9 +82,7 @@ export default function FCastRecast({
         return
       }
       if (!encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
+      const currFid = getCurrFid()
       try {
         const cast = await makeReactionRemove(
           {
@@ -93,7 +90,7 @@ export default function FCastRecast({
             targetCastId: castId,
           },
           {
-            fid: request.fid,
+            fid: currFid,
             network: FARCASTER_NETWORK,
           },
           encryptedSigner,
@@ -108,7 +105,7 @@ export default function FCastRecast({
         }
 
         const tmpSet = new Set(recasts)
-        tmpSet.delete(request.fid + '')
+        tmpSet.delete(currFid + '')
         setRecasts(Array.from(tmpSet))
         setRecastCount(recastCount - 1)
 

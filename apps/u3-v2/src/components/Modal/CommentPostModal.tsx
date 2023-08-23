@@ -8,26 +8,32 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster'
+import { FarCast } from '../../api'
+import useFarcasterUserData from '../../hooks/useFarcasterUserData'
+import styled from 'styled-components'
+import { getCurrFid } from '../../utils/farsign-utils'
 
 export default function CommentPostModal({
+  cast,
   open,
   closeModal,
   castId,
+  farcasterUserData,
 }: {
+  cast: FarCast
+  farcasterUserData: { [key: string]: { type: number; value: string }[] }
   open: boolean
   closeModal: () => void
   castId: CastId
 }) {
-  const { encryptedSigner } = useFarcasterCtx()
+  const { encryptedSigner, currFid } = useFarcasterCtx()
 
   const [text, setText] = useState('')
 
   const commentCast = useCallback(
     async (castId: CastId) => {
       if (!text || !encryptedSigner) return
-      const request = JSON.parse(
-        localStorage.getItem('farsign-signer-' + FARCASTER_CLIENT_NAME)!,
-      ).signerRequest
+      const currFid = getCurrFid()
       try {
         const cast = (
           await makeCastAdd(
@@ -39,7 +45,7 @@ export default function CommentPostModal({
               mentionsPositions: [],
               parentCastId: castId,
             },
-            { fid: request.fid, network: FARCASTER_NETWORK },
+            { fid: currFid, network: FARCASTER_NETWORK },
             encryptedSigner,
           )
         )._unsafeUnwrap()
@@ -57,6 +63,12 @@ export default function CommentPostModal({
     [text, encryptedSigner, closeModal],
   )
 
+  const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
+  const currUserData = useFarcasterUserData({
+    fid: currFid + '',
+    farcasterUserData,
+  })
+
   return (
     <ModalContainer
       open={open}
@@ -64,6 +76,18 @@ export default function CommentPostModal({
       afterCloseAction={() => setText('')}
     >
       <div>
+        <UserDataBox>
+          <div>{userData.pfp && <img src={userData.pfp} alt="" />}</div>
+          <div>
+            <div>{userData.display} </div>
+            <div>{userData.fid} </div>
+          </div>
+        </UserDataBox>
+        <div>{cast.text}</div>
+      </div>
+      <br />
+      <CommentBox>
+        <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
         <input
           type="text"
           value={text}
@@ -78,7 +102,27 @@ export default function CommentPostModal({
         >
           Comment
         </button>
-      </div>
+      </CommentBox>
     </ModalContainer>
   )
 }
+
+const CommentBox = styled.div`
+  display: flex;
+  gap: 10px;
+  img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+`
+
+const UserDataBox = styled.div`
+  display: flex;
+  gap: 10px;
+  img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+`
