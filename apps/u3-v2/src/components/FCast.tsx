@@ -1,23 +1,14 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
-// import { useFarcasterReactionCast } from '../hooks/useFarcaster'
 import { useFarcasterCtx } from '../contexts/farcaster'
-import {
-  CastId,
-  ReactionType,
-  UserDataType,
-  makeReactionAdd,
-  makeReactionRemove,
-} from '@farcaster/hub-web'
-import { useCallback, useMemo, useState } from 'react'
+import { CastId } from '@farcaster/hub-web'
+import { useMemo, useState } from 'react'
 import CommentPostModal from './Modal/CommentPostModal'
-import { toast } from 'react-toastify'
-import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
-import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterUserData from '../hooks/useFarcasterUserData'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
 import FCastLike from './FCastLike'
 import FCastRecast from './FCastRecast'
+import { getCurrFid } from '../utils/farsign-utils'
 
 export default function FCast({
   cast,
@@ -70,6 +61,8 @@ export default function FCast({
         </button>
       </CastTools>
       <CommentPostModal
+        cast={cast}
+        farcasterUserData={farcasterUserData}
         castId={castId}
         open={openComment}
         closeModal={() => setOpenComment(false)}
@@ -88,7 +81,7 @@ const CastBox = styled.div`
 
 const UserDataBox = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 10px;
   img {
     width: 50px;
     height: 50px;

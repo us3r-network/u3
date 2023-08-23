@@ -7,6 +7,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 import {
@@ -28,6 +29,7 @@ export const publicClient = createPublicClient({
 })
 
 export interface FarcasterContextData {
+  currFid: number | undefined
   currUserInfo:
     | {
         [key: string]: { type: number; value: string }[]
@@ -51,9 +53,10 @@ export default function FarcasterProvider({
   const [token] = useToken(FARCASTER_CLIENT_NAME)
   const [signer] = useSigner(FARCASTER_CLIENT_NAME, token)
   const [encryptedSigner] = useEncryptedSigner(FARCASTER_CLIENT_NAME, token)
-  const [currUserInfo, serCurrUserInfo] = useState<{
+  const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[]
   }>()
+  const [currFid, setCurrFid] = useState<number>()
 
   const getCurrUserInfo = async () => {
     const currFid = getCurrFid()
@@ -63,7 +66,8 @@ export default function FarcasterProvider({
         [key: string]: { type: number; value: string }[]
       } = {}
       data[currFid] = resp.data.data
-      serCurrUserInfo(data)
+      setCurrUserInfo(data)
+      setCurrFid(currFid)
     }
   }
 
@@ -82,6 +86,7 @@ export default function FarcasterProvider({
   return (
     <FarcasterContext.Provider
       value={{
+        currFid,
         currUserInfo,
         isConnected,
         token,

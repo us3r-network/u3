@@ -25,7 +25,10 @@ export default function Home() {
   return (
     <HomeWrapper>
       <div>
-        <AddPost openFarcasterQR={openFarcasterQR} />
+        <AddPost
+          openFarcasterQR={openFarcasterQR}
+          farcasterUserData={farcasterUserData}
+        />
       </div>
 
       {farcasterFeeds && (
