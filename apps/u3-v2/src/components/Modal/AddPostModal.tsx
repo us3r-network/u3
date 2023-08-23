@@ -3,7 +3,7 @@ import { makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
 
 import ModalContainer from './ModalContainer'
-import { useFarcasterCtx } from '../../contexts/farcaster'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 
 import { FARCASTER_CLIENT_NAME } from '../../constants/farcaster'
 

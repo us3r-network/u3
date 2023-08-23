@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
-import { useFarcasterCtx } from '../contexts/farcaster'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { CastId } from '@farcaster/hub-web'
 import { useMemo, useState } from 'react'
 import CommentPostModal from './Modal/CommentPostModal'
