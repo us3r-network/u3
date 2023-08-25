@@ -20,6 +20,12 @@ import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { LENS_ENV } from '../constants/lens'
 import LensLoginModal from '../components/lens/LensLoginModal'
+import {
+  LensClient,
+  development as dev,
+  isRelayerResult,
+  production as prod,
+} from '@lens-protocol/client'
 
 interface LensAuthContextValue {
   isLogin: boolean
@@ -28,6 +34,7 @@ interface LensAuthContextValue {
   lensLogout: () => void
   openLensLoginModal: boolean
   setOpenLensLoginModal: (open: boolean) => void
+  lensClient: LensClient
 }
 export const LensAuthContext = createContext<LensAuthContextValue>({
   isLogin: false,
@@ -36,6 +43,9 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
   lensLogout: () => {},
   openLensLoginModal: false,
   setOpenLensLoginModal: () => {},
+  lensClient: new LensClient({
+    environment: LENS_ENV === 'production' ? prod : dev,
+  }),
 })
 
 const lensConfig: LensConfig = {
@@ -50,6 +60,10 @@ export function AppLensProvider({ children }: PropsWithChildren) {
     </LensProvider>
   )
 }
+
+const lensClient = new LensClient({
+  environment: dev,
+})
 
 export function LensAuthProvider({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false)
@@ -73,11 +87,60 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
     if (connector instanceof InjectedConnector) {
       const walletClient = await connector.getWalletClient()
+      const address = walletClient.account.address
 
       const res = await login({
-        address: walletClient.account.address,
+        address,
       })
-      console.log({ loginRes: res })
+      const activeProfile = (res as any)?.value
+
+      console.log({ activeProfile })
+
+      if (!activeProfile?.dispatcher) {
+        const challenge =
+          await lensClient.authentication.generateChallenge(address)
+        const signature = await (walletClient as any).signMessage({
+          message: challenge,
+        })
+        const authRes = await lensClient.authentication.authenticate(
+          address,
+          signature,
+        )
+        console.log({ authRes })
+
+        const typedDataResult =
+          await lensClient.profile.createSetDispatcherTypedData({
+            profileId: activeProfile.id,
+          })
+
+        // typedDataResult is a Result object
+        const data = typedDataResult.unwrap()
+
+        // sign with the wallet
+        const signedTypedData = await (walletClient as any).signTypedData({
+          account: address,
+          domain: data.typedData.domain,
+          primaryType: 'SetDispatcherWithSig',
+          types: data.typedData.types,
+          message: data.typedData.value,
+        })
+        // broadcast
+        const broadcastResult = await lensClient.transaction.broadcast({
+          id: data.id,
+          signature: signedTypedData,
+        })
+
+        // broadcastResult is a Result object
+        const broadcastResultValue = broadcastResult.unwrap()
+        if (!isRelayerResult(broadcastResultValue)) {
+          console.log(`Something went wrong`, broadcastResultValue)
+          return
+        }
+
+        console.log(
+          `Transaction was successfuly broadcasted with txId ${broadcastResultValue.txId}`,
+        )
+      }
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
 
@@ -95,6 +158,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
         lensLogout,
         openLensLoginModal,
         setOpenLensLoginModal,
+        lensClient,
       }}
     >
       {children}
