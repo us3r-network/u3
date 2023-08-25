@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useState,
 } from 'react'
 import {
   LensProvider,
@@ -18,18 +19,23 @@ import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { LENS_ENV } from '../constants/lens'
+import LensLoginModal from '../components/lens/LensLoginModal'
 
 interface LensAuthContextValue {
   isLogin: boolean
   isLoginPending: boolean
   lensLogin: () => void
   lensLogout: () => void
+  openLensLoginModal: boolean
+  setOpenLensLoginModal: (open: boolean) => void
 }
 export const LensAuthContext = createContext<LensAuthContextValue>({
   isLogin: false,
   isLoginPending: false,
   lensLogin: () => {},
   lensLogout: () => {},
+  openLensLoginModal: false,
+  setOpenLensLoginModal: () => {},
 })
 
 const lensConfig: LensConfig = {
@@ -46,6 +52,8 @@ export function AppLensProvider({ children }: PropsWithChildren) {
 }
 
 export function LensAuthProvider({ children }: PropsWithChildren) {
+  const [openLensLoginModal, setOpenLensLoginModal] = useState(false)
+
   const { execute: login, isPending: isLoginPending } = useWalletLogin()
   const { execute: lensLogout } = useWalletLogout()
   const { data: wallet, loading: walletLoading } = useActiveProfile()
@@ -80,9 +88,20 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
   return (
     <LensAuthContext.Provider
-      value={{ isLogin, isLoginPending, lensLogin, lensLogout }}
+      value={{
+        isLogin,
+        isLoginPending,
+        lensLogin,
+        lensLogout,
+        openLensLoginModal,
+        setOpenLensLoginModal,
+      }}
     >
       {children}
+      <LensLoginModal
+        open={openLensLoginModal}
+        closeModal={() => setOpenLensLoginModal(false)}
+      />
     </LensAuthContext.Provider>
   )
 }

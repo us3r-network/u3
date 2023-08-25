@@ -30,3 +30,8 @@ export type FarCast = {
   recast_count: string | null
   comment_count: string | null
 }
+
+export enum SocailPlatform {
+  Farcaster = 'farcaster',
+  Lens = 'lens',
+}

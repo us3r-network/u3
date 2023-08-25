@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { LensPostFields } from '../../api/lens'
+import { LensPublication } from '../../api/lens'
 import dayjs from 'dayjs'
 import {
   Post,
@@ -12,11 +12,10 @@ import {
 import { useLensAuth } from '../../contexts/AppLensCtx'
 import { useCallback, useMemo, useState } from 'react'
 import LensCommentPostModal from './LensCommentPostModal'
-import { useGlobalModal } from '../../contexts/GlobalModalCtx'
 import { toast } from 'react-toastify'
 
-export default function LensPostCard({ data }: { data: LensPostFields }) {
-  const { isLogin } = useLensAuth()
+export default function LensPostCard({ data }: { data: LensPublication }) {
+  const { isLogin, setOpenLensLoginModal } = useLensAuth()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
 
@@ -72,8 +71,6 @@ export default function LensPostCard({ data }: { data: LensPostFields }) {
   }, [createMirror, publication])
 
   const [openCommentModal, setOpenCommentModal] = useState(false)
-
-  const { setOpenLensLoginModal } = useGlobalModal()
 
   return (
     <CastBox>

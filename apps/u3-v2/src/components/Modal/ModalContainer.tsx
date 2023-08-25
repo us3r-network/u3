@@ -17,11 +17,13 @@ export default function ModalContainer({
   open,
   closeModal,
   afterCloseAction,
+  zIndex,
 }: {
   children: React.ReactNode
   open: boolean
   closeModal: () => void
   afterCloseAction?: () => void
+  zIndex?: number
 }) {
   return (
     <Modal
@@ -29,7 +31,12 @@ export default function ModalContainer({
       onRequestClose={closeModal}
       onAfterClose={afterCloseAction}
       contentLabel="Modal Container"
-      style={modalStyles}
+      style={{
+        ...modalStyles,
+        overlay: {
+          zIndex: zIndex || 1000,
+        },
+      }}
     >
       {children}
     </Modal>

@@ -18,7 +18,7 @@ export enum DecryptFailReason {
   UnauthorizedBalance = 'UNAUTHORIZED_BALANCE',
 }
 
-export type LensPostFields = {
+export type LensPublication = {
   timestamp: number
 
   __typename?: 'Post'
@@ -108,14 +108,14 @@ export type LensPostFields = {
   }
 }
 
-export const getFeeds = async (opts?: {
+export const getLensFeeds = async (opts?: {
   pageSize?: number
   endLensCursor?: string
   activeLensProfileId?: string
   keyword?: string
 }): AxiosPromise<
   ApiResp<{
-    data: { data: LensPostFields; platform: 'lens' }[]
+    data: { data: LensPublication; platform: 'lens' }[]
     pageInfo: {
       endLensCursor: string
       hasNextPage: boolean

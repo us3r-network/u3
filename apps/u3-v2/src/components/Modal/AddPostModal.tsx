@@ -14,6 +14,9 @@ import {
 import { getCurrFid } from '../../utils/farsign-utils'
 import useFarcasterUserData from '../../hooks/useFarcasterUserData'
 import styled from 'styled-components'
+import { SocailPlatform } from '../../api'
+import { useLensAuth } from '../../contexts/AppLensCtx'
+import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
 
 export default function AddPostModal({
   open,
@@ -24,10 +27,16 @@ export default function AddPostModal({
   closeModal: () => void
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
 }) {
-  const { encryptedSigner, currFid } = useFarcasterCtx()
-  const [text, setText] = useState('')
+  const { encryptedSigner, currFid, isConnected, openFarcasterQR } =
+    useFarcasterCtx()
+  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensAuth()
+  const { createText: createTextToLens } = useCreateLensPost()
 
-  const handleSubmit = useCallback(async () => {
+  const [text, setText] = useState('')
+  const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set())
+  const [isPending, setIsPending] = useState(false)
+
+  const handleSubmitToFarcaster = useCallback(async () => {
     if (!text || !encryptedSigner) return
     const currFid = getCurrFid()
     try {
@@ -48,43 +57,123 @@ export default function AddPostModal({
       if (result.isErr()) {
         throw new Error(result.error.message)
       }
-      toast.success('post created')
-      closeModal()
-    } catch (error) {
+      toast.success('successfully posted to farcaster')
+    } catch (error: any) {
       console.error(error)
-      toast.error('error creating post')
+      toast.error('failed to post to farcaster')
     }
-  }, [text, encryptedSigner, closeModal])
+  }, [text, encryptedSigner])
+
+  const handleSubmitToLens = useCallback(async () => {
+    try {
+      await createTextToLens(text)
+      toast.success('successfully posted to lens')
+    } catch (error: any) {
+      console.error(error)
+      toast.error('failed to post to lens')
+    }
+  }, [text, createTextToLens])
+
+  const handleSubmit = useCallback(async () => {
+    if (!platforms.size) {
+      toast.error('Please select a platform to publish.')
+      return
+    }
+    setIsPending(true)
+    if (platforms.has(SocailPlatform.Farcaster)) {
+      await handleSubmitToFarcaster()
+    }
+    if (platforms.has(SocailPlatform.Lens)) {
+      await handleSubmitToLens()
+    }
+    setIsPending(false)
+    closeModal()
+  }, [platforms, handleSubmitToFarcaster, handleSubmitToLens, closeModal])
 
   const currUserData = useFarcasterUserData({
     fid: currFid + '',
     farcasterUserData,
   })
 
+  const onSelectPlatform = useCallback(
+    (platform: SocailPlatform) => {
+      switch (platform) {
+        case SocailPlatform.Farcaster:
+          if (!isConnected) {
+            openFarcasterQR()
+            return
+          }
+          if (platforms.has(SocailPlatform.Farcaster)) {
+            platforms.delete(SocailPlatform.Farcaster)
+          } else {
+            platforms.add(SocailPlatform.Farcaster)
+          }
+          setPlatforms(new Set(platforms))
+          break
+        case SocailPlatform.Lens:
+          if (!isLoginLens) {
+            setOpenLensLoginModal(true)
+            return
+          }
+          if (platforms.has(SocailPlatform.Lens)) {
+            platforms.delete(SocailPlatform.Lens)
+          } else {
+            platforms.add(SocailPlatform.Lens)
+          }
+          setPlatforms(new Set(platforms))
+          break
+      }
+    },
+    [
+      platforms,
+      isConnected,
+      openFarcasterQR,
+      isLoginLens,
+      setOpenLensLoginModal,
+    ],
+  )
   return (
     <ModalContainer
       open={open}
       closeModal={closeModal}
       afterCloseAction={() => setText('')}
+      zIndex={100}
     >
-      <PostBox>
-        <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
-        <button
-          onClick={() => {
-            handleSubmit()
-          }}
-        >
-          post
-        </button>
-      </PostBox>
+      <ModalBody>
+        <PlatformOptions>
+          <button onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}>
+            Farcast {platforms.has(SocailPlatform.Farcaster) && '(✓)'}
+          </button>
+          <button onClick={() => onSelectPlatform(SocailPlatform.Lens)}>
+            Lens {platforms.has(SocailPlatform.Lens) && '(✓)'}
+          </button>
+        </PlatformOptions>
+        <PostBox>
+          <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
+          <input
+            type="text"
+            disabled={isPending}
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+          />
+          <button
+            onClick={() => {
+              handleSubmit()
+            }}
+          >
+            {isPending ? 'posting...' : 'post'}
+          </button>
+        </PostBox>
+      </ModalBody>
     </ModalContainer>
   )
 }
+
+const ModalBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`
 
 const PostBox = styled.div`
   display: flex;
@@ -94,4 +183,8 @@ const PostBox = styled.div`
     height: 30px;
     border-radius: 50%;
   }
+`
+const PlatformOptions = styled.div`
+  display: flex;
+  gap: 10px;
 `
