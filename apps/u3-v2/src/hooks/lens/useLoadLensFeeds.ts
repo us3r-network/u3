@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
-import { LensPostFields, getFeeds } from '../../api/lens'
+import { LensPublication, getLensFeeds } from '../../api/lens'
 
 export function useLoadLensFeeds() {
   const [feeds, setFeeds] = useState<
     Array<{
       platform: 'lens'
-      data: LensPostFields
+      data: LensPublication
     }>
   >([])
   const [pageInfo, setPageInfo] = useState<{
@@ -22,7 +22,7 @@ export function useLoadLensFeeds() {
     async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
       setFirstLoading(true)
       try {
-        const res = await getFeeds({
+        const res = await getLensFeeds({
           activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
         })
@@ -41,7 +41,7 @@ export function useLoadLensFeeds() {
     async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
       setMoreLoading(true)
       try {
-        const res = await getFeeds({
+        const res = await getLensFeeds({
           endLensCursor: pageInfo.endLensCursor,
           activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,

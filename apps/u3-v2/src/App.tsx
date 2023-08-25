@@ -8,7 +8,6 @@ import { ProfileStateProvider } from '@us3r-network/profile'
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx'
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx'
 import FarcasterProvider from './contexts/FarcasterCtx'
-import { GlobalModalProvider } from './contexts/GlobalModalCtx'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
@@ -20,7 +19,6 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import { AppLensProvider } from './contexts/AppLensCtx'
-import SocialLens from './container/SocialLens'
 import Modal from 'react-modal'
 
 dayjs.extend(relativeTime)
@@ -33,7 +31,6 @@ function Routers() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="social-lens" element={<SocialLens />} />
         <Route path="message" element={<Message />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
@@ -52,9 +49,7 @@ export default function App() {
           <XmtpStoreProvider>
             <AppLensProvider>
               <FarcasterProvider>
-                <GlobalModalProvider>
-                  <Routers />
-                </GlobalModalProvider>
+                <Routers />
               </FarcasterProvider>
             </AppLensProvider>
           </XmtpStoreProvider>
