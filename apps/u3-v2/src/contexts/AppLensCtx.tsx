@@ -3,7 +3,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react'
 import {
@@ -14,6 +16,8 @@ import {
   useWalletLogout,
   useActiveProfile,
   production,
+  useUpdateDispatcherConfig,
+  ProfileOwnedByMe,
 } from '@lens-protocol/react-web'
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
@@ -29,6 +33,7 @@ interface LensAuthContextValue {
   openLensLoginModal: boolean
   setOpenLensLoginModal: (open: boolean) => void
 }
+
 export const LensAuthContext = createContext<LensAuthContextValue>({
   isLogin: false,
   isLoginPending: false,
@@ -57,13 +62,27 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const { execute: login, isPending: isLoginPending } = useWalletLogin()
   const { execute: lensLogout } = useWalletLogout()
   const { data: wallet, loading: walletLoading } = useActiveProfile()
-
   const { isConnected } = useAccount()
   const { disconnectAsync } = useDisconnect()
 
   const { connectAsync } = useConnect({
     connector: new InjectedConnector(),
   })
+
+  const { execute: updateDispatcher } = useUpdateDispatcherConfig({
+    profile: wallet as ProfileOwnedByMe,
+  })
+
+  const updatedDispatcherFirst = useRef(false)
+  useEffect(() => {
+    if (updatedDispatcherFirst.current) return
+    if (!wallet) return
+    if (!wallet?.dispatcher) {
+      updateDispatcher({ enabled: true }).finally(() => {
+        updatedDispatcherFirst.current = true
+      })
+    }
+  }, [wallet, updateDispatcher])
 
   const lensLogin = useCallback(async () => {
     if (isConnected) {
@@ -73,11 +92,11 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
     if (connector instanceof InjectedConnector) {
       const walletClient = await connector.getWalletClient()
+      const address = walletClient.account.address
 
-      const res = await login({
-        address: walletClient.account.address,
+      await login({
+        address,
       })
-      console.log({ loginRes: res })
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
 
