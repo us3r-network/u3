@@ -34,8 +34,12 @@ interface LensAuthContextValue {
   lensLogout: () => void
   openLensLoginModal: boolean
   setOpenLensLoginModal: (open: boolean) => void
-  lensClient: LensClient
 }
+
+const lensClient = new LensClient({
+  environment: LENS_ENV === 'production' ? prod : dev,
+})
+
 export const LensAuthContext = createContext<LensAuthContextValue>({
   isLogin: false,
   isLoginPending: false,
@@ -43,9 +47,6 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
   lensLogout: () => {},
   openLensLoginModal: false,
   setOpenLensLoginModal: () => {},
-  lensClient: new LensClient({
-    environment: LENS_ENV === 'production' ? prod : dev,
-  }),
 })
 
 const lensConfig: LensConfig = {
@@ -60,10 +61,6 @@ export function AppLensProvider({ children }: PropsWithChildren) {
     </LensProvider>
   )
 }
-
-const lensClient = new LensClient({
-  environment: dev,
-})
 
 export function LensAuthProvider({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false)
@@ -94,19 +91,13 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
       })
       const activeProfile = (res as any)?.value
 
-      console.log({ activeProfile })
-
       if (!activeProfile?.dispatcher) {
         const challenge =
           await lensClient.authentication.generateChallenge(address)
         const signature = await (walletClient as any).signMessage({
           message: challenge,
         })
-        const authRes = await lensClient.authentication.authenticate(
-          address,
-          signature,
-        )
-        console.log({ authRes })
+        await lensClient.authentication.authenticate(address, signature)
 
         const typedDataResult =
           await lensClient.profile.createSetDispatcherTypedData({
@@ -158,7 +149,6 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
         lensLogout,
         openLensLoginModal,
         setOpenLensLoginModal,
-        lensClient,
       }}
     >
       {children}
