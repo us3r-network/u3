@@ -29,6 +29,7 @@ export type FarCast = {
   recasts: string[]
   recast_count: string | null
   comment_count: string | null
+  comments: FarCast[]
 }
 
 export enum SocailPlatform {

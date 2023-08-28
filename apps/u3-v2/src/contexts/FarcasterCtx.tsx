@@ -1,6 +1,6 @@
 import { NobleEd25519Signer, bytesToHexString } from '@farcaster/hub-web'
 import { createPublicClient, http } from 'viem'
-import * as ed from '@noble/ed25519'
+
 import {
   ReactNode,
   createContext,

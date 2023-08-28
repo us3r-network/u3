@@ -26,6 +26,18 @@ export default function FCast({
   const castId: CastId = useFarcasterCastId({ cast })
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
 
+  const newestComment = useMemo(() => {
+    if (cast.comments.length === 0) {
+      return null
+    }
+    return cast.comments[cast.comments.length - 1]
+  }, [cast])
+
+  const newestCommentUserData = useFarcasterUserData({
+    fid: newestComment?.fid + '',
+    farcasterUserData,
+  })
+
   return (
     <CastBox>
       <UserDataBox>
@@ -57,9 +69,26 @@ export default function FCast({
             setOpenComment(true)
           }}
         >
-          commentCast({cast.comment_count || 0})
+          commentCast({cast.comment_count})
         </button>
       </CastTools>
+      {newestComment && (
+        <NewestComment>
+          <UserDataBox>
+            <div>
+              {newestCommentUserData.pfp && (
+                <img src={newestCommentUserData.pfp} alt="" />
+              )}
+            </div>
+            <div>
+              <div>{newestCommentUserData.display} </div>
+              <div>{newestCommentUserData.fid} </div>
+            </div>
+          </UserDataBox>
+          <div>{newestComment.text}</div>
+          <small>{newestComment.created_at}</small>
+        </NewestComment>
+      )}
       <CommentPostModal
         cast={cast}
         farcasterUserData={farcasterUserData}
@@ -92,4 +121,10 @@ const UserDataBox = styled.div`
 const CastTools = styled.div`
   display: flex;
   gap: 10px;
+`
+
+const NewestComment = styled.div`
+  border-left: 1px solid gray;
+  margin-left: 10px;
+  padding-left: 10px;
 `
