@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 import { FeedsDataItem, FeedsPageInfo, getFeeds } from '../api/feeds'
+import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 
 export function useLoadFeeds() {
+  const { setFarcasterUserData } = useFarcasterCtx()
+
   const [feeds, setFeeds] = useState<Array<FeedsDataItem>>([])
-  const [farcasterUserData, setFarcasterUserData] = useState<{
-    [key: string]: { type: number; value: string }[]
-  }>({})
 
   const [pageInfo, setPageInfo] = useState<FeedsPageInfo>({
     hasNextPage: false,
@@ -41,6 +41,7 @@ export function useLoadFeeds() {
         setFirstLoading(false)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   )
 
@@ -73,6 +74,7 @@ export function useLoadFeeds() {
         setMoreLoading(false)
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [pageInfo, firstLoading, moreLoading],
   )
 
@@ -80,7 +82,6 @@ export function useLoadFeeds() {
     firstLoading,
     moreLoading,
     feeds,
-    farcasterUserData,
     pageInfo,
     loadFirstFeeds,
     loadMoreFeeds,

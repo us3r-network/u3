@@ -82,11 +82,15 @@ function Layout() {
   )
 }
 const LayoutWrapper = styled.div`
-  display: flex;
+  width: 100vw;
+  height: 100vh;
+  background: #191a1f;
+  overflow-y: auto;
 `
 
 const AppContainer = styled.div`
-  width: 0;
-  height: 100vh;
-  flex: 1;
+  width: 1200px;
+  margin: 0 auto;
+  margin-top: calc(80px + 40px);
+  margin-bottom: 40px;
 `

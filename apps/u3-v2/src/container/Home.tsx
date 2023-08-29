@@ -1,11 +1,11 @@
 import styled from 'styled-components'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import LensPostCard from '../components/lens/LensPostCard'
 import { useActiveProfile } from '@lens-protocol/react-web'
 import FCast from '../components/FCast'
 import { useLoadFeeds } from '../hooks/useLoadFeeds'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
-import AddPost from '../components/AddPost'
+import { useSearchParams } from 'react-router-dom'
 
 export default function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
@@ -15,20 +15,33 @@ export default function Home() {
     firstLoading,
     moreLoading,
     feeds,
-    farcasterUserData,
     pageInfo,
     loadFirstFeeds,
     loadMoreFeeds,
   } = useLoadFeeds()
 
-  const { openFarcasterQR } = useFarcasterCtx()
+  const { openFarcasterQR, farcasterUserData } = useFarcasterCtx()
 
-  const [keyword, setKeyword] = useState('')
+  const [searchParams] = useSearchParams()
+  const currentSearchParams = useMemo(
+    () => ({
+      keyword: searchParams.get('keyword') || '',
+    }),
+    [searchParams],
+  )
 
   useEffect(() => {
     if (activeLensProfileLoading) return
-    loadFirstFeeds({ activeLensProfileId: activeLensProfile?.id })
-  }, [loadFirstFeeds, activeLensProfileLoading, activeLensProfile?.id])
+    loadFirstFeeds({
+      activeLensProfileId: activeLensProfile?.id,
+      keyword: currentSearchParams.keyword,
+    })
+  }, [
+    loadFirstFeeds,
+    activeLensProfileLoading,
+    activeLensProfile?.id,
+    currentSearchParams.keyword,
+  ])
 
   return (
     <HomeWrapper>
@@ -64,7 +77,7 @@ export default function Home() {
             <button
               onClick={() => {
                 loadMoreFeeds({
-                  keyword,
+                  keyword: currentSearchParams.keyword,
                   activeLensProfileId: activeLensProfile?.id,
                 })
               }}
@@ -74,59 +87,19 @@ export default function Home() {
           )}
         </p>
       </MainWrapper>
-      <SidebarWrapper>
-        <div>
-          <input
-            type="text"
-            disabled={firstLoading || moreLoading}
-            onChange={(e) => {
-              setKeyword(e.target.value)
-            }}
-          />
-          <button
-            disabled={firstLoading || moreLoading}
-            onClick={() => {
-              loadFirstFeeds({
-                keyword,
-                activeLensProfileId: activeLensProfile?.id,
-              })
-            }}
-          >
-            Search
-          </button>
-        </div>
-        <button
-          onClick={() => {
-            loadFirstFeeds({
-              keyword,
-              activeLensProfileId: activeLensProfile?.id,
-            })
-          }}
-        >
-          Refresh the list
-        </button>
-        <AddPost farcasterUserData={farcasterUserData} />
-      </SidebarWrapper>
+      <SidebarWrapper>Comming soon</SidebarWrapper>
     </HomeWrapper>
   )
 }
 
 const HomeWrapper = styled.div`
   width: 100%;
-  height: 100vh;
-  padding: 24px;
   box-sizing: border-box;
   display: flex;
-  gap: 20px;
+  gap: 40px;
 `
 const MainWrapper = styled.div`
-  height: 100%;
-  width: 0;
-  flex: 1;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-sizing: border-box;
-  overflow-y: auto;
+  width: 750px;
 `
 const PostList = styled.div`
   display: flex;
@@ -134,8 +107,14 @@ const PostList = styled.div`
   gap: 20px;
 `
 const SidebarWrapper = styled.div`
-  width: 300px;
+  width: 0;
+  flex: 1;
+  height: 344px;
+  flex-shrink: 0;
+  border-radius: 20px;
+  background: #212228;
+
   display: flex;
-  flex-direction: column;
-  gap: 20px;
+  justify-content: center;
+  align-items: center;
 `

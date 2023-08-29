@@ -18,6 +18,8 @@ interface XmtpStoreCtxValue {
   loadConversations: () => void
   currentConvoAddress: string
   setCurrentConvoAddress: (convo: string) => void
+  openMessageModal: boolean
+  setOpenMessageModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const defaultContextValue: XmtpStoreCtxValue = {
@@ -27,11 +29,15 @@ const defaultContextValue: XmtpStoreCtxValue = {
   loadConversations: () => {},
   currentConvoAddress: '',
   setCurrentConvoAddress: () => {},
+  openMessageModal: false,
+  setOpenMessageModal: () => {},
 }
 
 export const XmtpStoreCtx = createContext(defaultContextValue)
 
 export function XmtpStoreProvider({ children }: PropsWithChildren) {
+  const [openMessageModal, setOpenMessageModal] = useState(false)
+
   const { xmtpClient } = useXmtpClient()
 
   const [conversations, setConversations] = useState(
@@ -189,6 +195,8 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           loadConversations,
           currentConvoAddress,
           setCurrentConvoAddress,
+          openMessageModal,
+          setOpenMessageModal,
         }),
         [
           conversations,
@@ -197,6 +205,8 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           loadConversations,
           currentConvoAddress,
           setCurrentConvoAddress,
+          openMessageModal,
+          setOpenMessageModal,
         ],
       )}
     >

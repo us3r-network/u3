@@ -1,69 +1,100 @@
 import { useSession } from '@us3r-network/auth-with-rainbowkit'
 import { LoginButton, LogoutButton, UserAvatar } from '@us3r-network/profile'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useSearchParams } from 'react-router-dom'
 import styled from 'styled-components'
+import SearchInput from './common/input/SearchInput'
+import HomeIcon from './common/icons/HomeIcon'
+import HomeActiveIcon from './common/icons/HomeActiveIcon'
+import MessageMenu from './message/MessageMenu'
+import MessageModal from './message/MessageModal'
+import AddPost from './AddPost'
+import { useCallback } from 'react'
+import UserMenu from './UserMenu'
 
 export default function Nav() {
-  const session = useSession()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const onSearch = useCallback(
+    (value: string) => {
+      setSearchParams(new URLSearchParams({ ...searchParams, keyword: value }))
+    },
+    [searchParams, setSearchParams],
+  )
   return (
     <NavContainer>
-      <NavLinks>
-        <NavLinkItem to="/profile">Profile</NavLinkItem>
-        <NavLinkItem to="/">Social</NavLinkItem>
-        <NavLinkItem to="/message">Message</NavLinkItem>
-      </NavLinks>
-      <NavFooter>
-        {!!session ? (
-          <>
-            <UserAvatar />
-            <LogoutButton />
-          </>
-        ) : (
-          <LoginButton />
-        )}
-      </NavFooter>
+      <Main>
+        <Left>
+          <NavLinkItem to="/">
+            {({ isActive }) =>
+              isActive ? (
+                <HomeActiveIcon className="nav-icon" />
+              ) : (
+                <HomeIcon className="nav-icon" />
+              )
+            }
+          </NavLinkItem>
+        </Left>
+        <Center>
+          <Search placeholder="Search" onSearch={onSearch} />
+          <AddPost />
+        </Center>
+        <Right>
+          <MessageMenu />
+          <UserMenu />
+        </Right>
+        <MessageModal />
+      </Main>
     </NavContainer>
   )
 }
 
 const NavContainer = styled.nav`
-  width: 200px;
-  height: 100vh;
-  border-right: 1px solid #e5e5e5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 80px;
+  background: #212228;
   box-sizing: border-box;
   display: flex;
-  flex-direction: column;
+`
+const Main = styled.div`
+  width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  position: relative;
 `
 
-const NavLinks = styled.div`
-  height: 0;
-  flex: 1;
-  overflow-y: auto;
+const Left = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 40px;
+`
+const Center = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`
+
+const Right = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
 `
 
 const NavLinkItem = styled(NavLink)`
-  display: block;
-  width: 100%;
-  height: 70px;
-  line-height: 70px;
-  text-align: center;
-  text-decoration: none;
-  color: #000000;
-  font-size: 14px;
-  font-weight: 700;
-  &:hover {
-    background: #f5f5f5;
-  }
-  &.active {
-    background: #f5f5f5;
+  > .nav-icon {
+    width: 30px;
+    height: 30px;
   }
 `
 
-const NavFooter = styled.div`
-  padding: 20px 0px;
-  box-sizing: border-box;
-  border-top: 1px solid #e5e5e5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+const Search = styled(SearchInput)`
+  width: 375px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #2b2c31;
 `
