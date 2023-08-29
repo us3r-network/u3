@@ -1,14 +1,12 @@
 import styled from 'styled-components'
 import { FarCast } from '../api'
-import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { CastId } from '@farcaster/hub-web'
-import { useMemo, useState } from 'react'
-import CommentPostModal from './Modal/CommentPostModal'
 import useFarcasterUserData from '../hooks/useFarcasterUserData'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
 import FCastLike from './FCastLike'
 import FCastRecast from './FCastRecast'
-import { getCurrFid } from '../utils/farsign-utils'
+import { useNavigate } from 'react-router-dom'
+import FCastComment from './FCastComment'
 
 export default function FCast({
   cast,
@@ -19,25 +17,32 @@ export default function FCast({
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
   openFarcasterQR: () => void
 }) {
-  const { isConnected } = useFarcasterCtx()
-
-  const [openComment, setOpenComment] = useState(false)
+  const navigate = useNavigate()
 
   const castId: CastId = useFarcasterCastId({ cast })
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
 
   return (
-    <CastBox>
+    <CastBox
+      onClick={() => {
+        const id = Buffer.from(castId.hash).toString('hex')
+        navigate(`/post-detail/${id}`)
+      }}
+    >
       <UserDataBox>
         <div>{userData.pfp && <img src={userData.pfp} alt="" />}</div>
         <div>
           <div>{userData.display} </div>
-          <div>{userData.fid} </div>
+          <div>@{userData.userName} </div>
         </div>
       </UserDataBox>
       <div>{cast.text}</div>
       <small>{cast.created_at}</small>
-      <CastTools>
+      <CastTools
+        onClick={(e) => {
+          e.stopPropagation()
+        }}
+      >
         <FCastLike
           openFarcasterQR={openFarcasterQR}
           cast={cast}
@@ -48,25 +53,12 @@ export default function FCast({
           cast={cast}
           farcasterUserData={farcasterUserData}
         />
-        <button
-          onClick={() => {
-            if (!isConnected) {
-              openFarcasterQR()
-              return
-            }
-            setOpenComment(true)
-          }}
-        >
-          commentCast({cast.comment_count || 0})
-        </button>
+        <FCastComment
+          openFarcasterQR={openFarcasterQR}
+          cast={cast}
+          farcasterUserData={farcasterUserData}
+        />
       </CastTools>
-      <CommentPostModal
-        cast={cast}
-        farcasterUserData={farcasterUserData}
-        castId={castId}
-        open={openComment}
-        closeModal={() => setOpenComment(false)}
-      />
     </CastBox>
   )
 }

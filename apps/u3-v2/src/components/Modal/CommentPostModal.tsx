@@ -3,7 +3,6 @@ import ModalContainer from './ModalContainer'
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 import { CastId, makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
-import { FARCASTER_CLIENT_NAME } from '../../constants/farcaster'
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
@@ -23,7 +22,7 @@ export default function CommentPostModal({
   cast: FarCast
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
   open: boolean
-  closeModal: () => void
+  closeModal: (withInc?: boolean) => void
   castId: CastId
 }) {
   const { encryptedSigner, currFid } = useFarcasterCtx()
@@ -54,7 +53,7 @@ export default function CommentPostModal({
           throw new Error(result.error.message)
         }
         toast.success('post created')
-        closeModal()
+        closeModal(true)
       } catch (error) {
         console.error(error)
         toast.error('error creating post')

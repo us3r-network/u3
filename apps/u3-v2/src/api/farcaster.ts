@@ -41,3 +41,33 @@ export function getFarcasterUserInfo(
     },
   })
 }
+
+export function getFarcasterCastInfo(
+  hash: string,
+  {
+    endFarcasterCursor,
+    pageSize,
+  }: {
+    endFarcasterCursor?: string
+    pageSize?: number
+  },
+): AxiosPromise<
+  ApiResp<{
+    cast: FarCast
+    comments: { data: FarCast; platform: 'farcaster' }[]
+    farcasterUserData: { fid: string; type: number; value: string }[]
+    pageInfo: {
+      endFarcasterCursor: string
+      hasNextPage: boolean
+    }
+  }>
+> {
+  return axios({
+    url: API_BASE_URL + `/3r/farcaster/cast/${hash}`,
+    method: 'get',
+    params: {
+      endFarcasterCursor,
+      pageSize,
+    },
+  })
+}

@@ -20,6 +20,7 @@ import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import { AppLensProvider } from './contexts/AppLensCtx'
 import Modal from 'react-modal'
+import PostDetail from './container/PostDetail'
 
 dayjs.extend(relativeTime)
 
@@ -30,6 +31,7 @@ function Routers() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="post-detail/:castId" element={<PostDetail />} />
         <Route path="profile" element={<Profile />} />
         <Route path="message" element={<Message />} />
       </Route>
