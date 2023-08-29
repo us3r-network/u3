@@ -51,6 +51,9 @@ export type Signer = {
   isConnected: boolean
 }
 
+export type FarcasterUserData = {
+  [key: string]: { type: number; value: string }[]
+}
 export interface FarcasterContextData {
   currFid: number | undefined
   currUserInfo:
@@ -62,6 +65,8 @@ export interface FarcasterContextData {
   token: Token
   encryptedSigner: NobleEd25519Signer | undefined
   openFarcasterQR: () => void
+  farcasterUserData: FarcasterUserData
+  setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null)
@@ -75,6 +80,10 @@ export default function FarcasterProvider({
 }: {
   children: ReactNode
 }) {
+  const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
+    {},
+  )
+
   const [signer, setSigner] = useState<Signer>({
     signerRequest: {
       token: '',
@@ -224,6 +233,8 @@ export default function FarcasterProvider({
         token,
         encryptedSigner,
         openFarcasterQR,
+        farcasterUserData,
+        setFarcasterUserData,
       }}
     >
       {children}

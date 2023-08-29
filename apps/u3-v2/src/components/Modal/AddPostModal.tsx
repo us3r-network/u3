@@ -21,14 +21,17 @@ import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
 export default function AddPostModal({
   open,
   closeModal,
-  farcasterUserData,
 }: {
   open: boolean
   closeModal: () => void
-  farcasterUserData: { [key: string]: { type: number; value: string }[] }
 }) {
-  const { encryptedSigner, currFid, isConnected, openFarcasterQR } =
-    useFarcasterCtx()
+  const {
+    encryptedSigner,
+    currFid,
+    isConnected,
+    openFarcasterQR,
+    farcasterUserData,
+  } = useFarcasterCtx()
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensAuth()
   const { createText: createTextToLens } = useCreateLensPost()
 
