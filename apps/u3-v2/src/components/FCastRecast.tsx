@@ -1,4 +1,3 @@
-import styled from 'styled-components'
 import { FarCast } from '../api'
 // import { useFarcasterReactionCast } from '../hooks/useFarcaster'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
@@ -10,7 +9,7 @@ import {
 } from '@farcaster/hub-web'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
-import { FARCASTER_CLIENT_NAME } from '../constants/farcaster'
+
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
 import useFarcasterCastId from '../hooks/useFarcasterCastId'
 import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
