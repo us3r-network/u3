@@ -13,7 +13,7 @@ import { getCurrFid } from '../../utils/farsign-utils'
 import useFarcasterUserData from '../../hooks/useFarcasterUserData'
 import styled from 'styled-components'
 import { SocailPlatform } from '../../api'
-import { useLensAuth } from '../../contexts/AppLensCtx'
+import { useLensCtx } from '../../contexts/AppLensCtx'
 import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
 
 export default function AddPostModal({
@@ -30,7 +30,7 @@ export default function AddPostModal({
     openFarcasterQR,
     farcasterUserData,
   } = useFarcasterCtx()
-  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensAuth()
+  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx()
   const { createText: createTextToLens } = useCreateLensPost()
 
   const [text, setText] = useState('')

@@ -1,6 +1,4 @@
-import styled from 'styled-components'
 import { LensPublication } from '../../api/lens'
-import dayjs from 'dayjs'
 import {
   Post,
   ProfileOwnedByMe,
@@ -9,13 +7,19 @@ import {
   useCreateMirror,
   useReaction,
 } from '@lens-protocol/react-web'
-import { useLensAuth } from '../../contexts/AppLensCtx'
-import { useCallback, useMemo, useState } from 'react'
-import LensCommentPostModal from './LensCommentPostModal'
+import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useCallback, useMemo } from 'react'
 import { toast } from 'react-toastify'
+import PostCard, { PostCardData } from '../PostCard'
+import { SocailPlatform } from '../../api'
 
 export default function LensPostCard({ data }: { data: LensPublication }) {
-  const { isLogin, setOpenLensLoginModal } = useLensAuth()
+  const {
+    isLogin,
+    setOpenLensLoginModal,
+    setCommentModalData,
+    setOpenCommentModal,
+  } = useLensCtx()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
 
@@ -70,73 +74,59 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
     }
   }, [createMirror, publication])
 
-  const [openCommentModal, setOpenCommentModal] = useState(false)
+  const cardData = useMemo<PostCardData>(
+    () => ({
+      platform: SocailPlatform.Lens,
+      avatar: (data.profile?.picture as any)?.original?.url,
+      name: data.profile?.name || '',
+      handle: data.profile?.handle,
+      timestamp: data.timestamp,
+      content: data.metadata?.content,
+      totalLikes: data.stats?.totalUpvotes,
+      totalReplies: data.stats?.totalAmountOfComments,
+      totalReposts: data.stats?.totalAmountOfMirrors,
+      likesAvatar: [],
+    }),
+    [data],
+  )
 
   return (
-    <CastBox>
-      <div key={data.id}>
-        <div>
-          <p>{data.profile.handle}: </p>
-          {data.metadata.content}
-        </div>
-        <small>{dayjs(data.timestamp).format()}</small>
-        <div>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              if (!data?.canComment?.result) return
-              setOpenCommentModal(true)
-            }}
-          >
-            comment ({data.stats.totalAmountOfComments})
-          </button>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              toggleReactionUpvote()
-            }}
-          >
-            {isPendingReaction
-              ? 'liking...'
-              : hasReactionTypeUpvote
-              ? 'unlike'
-              : 'like'}
-            ({data.stats.totalUpvotes})
-          </button>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              if (!data?.canMirror?.result) return
-              createMirrorAction()
-            }}
-          >
-            {isPendingMirror ? 'mirroring...' : 'mirror'}(
-            {data.stats.totalAmountOfMirrors})
-          </button>
-        </div>
-      </div>
-      <LensCommentPostModal
-        open={openCommentModal}
-        closeModal={() => setOpenCommentModal(false)}
-        publicationId={publication.id}
-      />
-    </CastBox>
+    <PostCard
+      data={cardData}
+      liked={hasReactionTypeUpvote}
+      liking={isPendingReaction}
+      likeAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        toggleReactionUpvote()
+      }}
+      replying={false}
+      replyAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        if (!data?.canComment?.result) {
+          toast.error('No comment permission')
+          return
+        }
+        setCommentModalData(data)
+        setOpenCommentModal(true)
+      }}
+      reposting={isPendingMirror}
+      repostAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        if (!data?.canMirror?.result) {
+          toast.error('No mirror permission')
+          return
+        }
+        createMirrorAction()
+      }}
+    />
   )
 }
-
-const CastBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  gap: 10px;
-`

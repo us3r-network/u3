@@ -4,7 +4,6 @@ import {
   CollectPolicyType,
   ContentFocus,
   ProfileOwnedByMe,
-  PublicationId,
   ReferencePolicyType,
   useActiveProfile,
   useCreateComment,
@@ -14,16 +13,16 @@ import InputBase from '../common/input/InputBase'
 import { ButtonPrimaryLine } from '../common/button/ButtonBase'
 import { lensUploadToArweave } from '../../utils/lens'
 import { toast } from 'react-toastify'
+import { useLensCtx } from '../../contexts/AppLensCtx'
 
 export default function LensCommentPostModal({
   open,
   closeModal,
-  publicationId,
 }: {
   open: boolean
   closeModal: () => void
-  publicationId: PublicationId
 }) {
+  const { commentModalData } = useLensCtx()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
   const [content, setContent] = useState('')
@@ -35,7 +34,7 @@ export default function LensCommentPostModal({
   const onSubmit = useCallback(async () => {
     try {
       await createComment({
-        publicationId,
+        publicationId: commentModalData?.id,
         content,
         contentFocus: ContentFocus.TEXT_ONLY,
         locale: 'en',
@@ -52,7 +51,7 @@ export default function LensCommentPostModal({
     } catch (error) {
       toast.error('Failed to create comment.')
     }
-  }, [publicationId, content, createComment, closeModal])
+  }, [commentModalData?.id, content, createComment, closeModal])
 
   return (
     <ModalContainer

@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import ModalContainer from '../Modal/ModalContainer'
-import { useLensAuth } from '../../contexts/AppLensCtx'
+import { useLensCtx } from '../../contexts/AppLensCtx'
 
 export default function LensLoginModal({
   open,
@@ -9,7 +9,7 @@ export default function LensLoginModal({
   open: boolean
   closeModal: () => void
 }) {
-  const { isLogin, isLoginPending, lensLogin, lensLogout } = useLensAuth()
+  const { isLogin, isLoginPending, lensLogin, lensLogout } = useLensCtx()
 
   return (
     <ModalContainer open={open} closeModal={closeModal}>
