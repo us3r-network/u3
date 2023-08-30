@@ -75,7 +75,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
   const { execute: login, isPending: isLoginPending } = useWalletLogin()
   const { execute: lensLogout } = useWalletLogout()
-  const { data: wallet, loading: walletLoading } = useActiveProfile()
+  const { data: wallet } = useActiveProfile()
   const { isConnected } = useAccount()
   const { disconnectAsync } = useDisconnect()
 
@@ -114,10 +114,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
 
-  const isLogin = useMemo(
-    () => !isLoginPending && !!wallet && !walletLoading && isConnected,
-    [isLoginPending, wallet, walletLoading, isConnected],
-  )
+  const isLogin = useMemo(() => !!wallet, [wallet])
 
   return (
     <LensAuthContext.Provider

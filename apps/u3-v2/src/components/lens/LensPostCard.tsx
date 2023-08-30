@@ -10,10 +10,12 @@ import {
 import { useLensCtx } from '../../contexts/AppLensCtx'
 import { useCallback, useMemo } from 'react'
 import { toast } from 'react-toastify'
-import PostCard, { PostCardData } from '../PostCard'
-import { SocailPlatform } from '../../api'
+import PostCard, { PostCardData } from '../common/PostCard'
+import { useNavigate } from 'react-router-dom'
+import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
 
 export default function LensPostCard({ data }: { data: LensPublication }) {
+  const navigate = useNavigate()
   const {
     isLogin,
     setOpenLensLoginModal,
@@ -75,23 +77,15 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
   }, [createMirror, publication])
 
   const cardData = useMemo<PostCardData>(
-    () => ({
-      platform: SocailPlatform.Lens,
-      avatar: (data.profile?.picture as any)?.original?.url,
-      name: data.profile?.name || '',
-      handle: data.profile?.handle,
-      timestamp: data.timestamp,
-      content: data.metadata?.content,
-      totalLikes: data.stats?.totalUpvotes,
-      totalReplies: data.stats?.totalAmountOfComments,
-      totalReposts: data.stats?.totalAmountOfMirrors,
-      likesAvatar: [],
-    }),
+    () => lensPublicationToPostCardData(data),
     [data],
   )
 
   return (
     <PostCard
+      onClick={() => {
+        navigate(`/post-detail/lens/${data.id}`)
+      }}
       data={cardData}
       liked={hasReactionTypeUpvote}
       liking={isPendingReaction}

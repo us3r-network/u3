@@ -6,21 +6,21 @@ import {
   ReferencePolicyType,
   useActiveProfile,
   useCreateComment,
+  publicationId,
 } from '@lens-protocol/react-web'
 import { lensUploadToArweave } from '../../utils/lens'
 import { toast } from 'react-toastify'
+import ReplyForm from '../common/ReplyForm'
 import { useLensCtx } from '../../contexts/AppLensCtx'
-import ReplyModal from '../common/ReplyModal'
-import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
 
-export default function LensCommentPostModal({
-  open,
-  closeModal,
+export default function LensCommentPostForm({
+  publicationId: pid,
+  canComment,
 }: {
-  open: boolean
-  closeModal: () => void
+  publicationId: string
+  canComment?: boolean
 }) {
-  const { commentModalData } = useLensCtx()
+  const { isLogin, setOpenLensLoginModal } = useLensCtx()
   const { data: activeProfile } = useActiveProfile()
   const publisher = activeProfile as ProfileOwnedByMe
   const [content, setContent] = useState('')
@@ -30,9 +30,17 @@ export default function LensCommentPostModal({
   })
 
   const onSubmit = useCallback(async () => {
+    if (!isLogin) {
+      setOpenLensLoginModal(true)
+      return
+    }
+    if (!canComment) {
+      toast.error('No comment permission')
+      return
+    }
     try {
       await createComment({
-        publicationId: commentModalData?.id,
+        publicationId: publicationId(pid),
         content,
         contentFocus: ContentFocus.TEXT_ONLY,
         locale: 'en',
@@ -43,24 +51,22 @@ export default function LensCommentPostModal({
           type: ReferencePolicyType.ANYONE,
         },
       })
-      closeModal()
       setContent('')
       toast.success('Comment created successfully.')
     } catch (error) {
       toast.error('Failed to create comment.')
     }
-  }, [commentModalData?.id, content, createComment, closeModal])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pid, content, createComment, isLogin, canComment])
 
   return (
-    <ReplyModal
-      open={open}
-      closeModal={closeModal}
-      postData={lensPublicationToPostCardData(commentModalData)}
+    <ReplyForm
+      onClick={() => {}}
       avatar={(activeProfile?.picture as any)?.original?.url}
       content={content}
       setContent={setContent}
-      onSubmit={onSubmit}
       submitting={isPending}
+      onSubmit={onSubmit}
     />
   )
 }

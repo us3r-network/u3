@@ -10,11 +10,12 @@ import {
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster'
 import { getCurrFid } from '../../utils/farsign-utils'
-import useFarcasterUserData from '../../hooks/useFarcasterUserData'
 import styled from 'styled-components'
 import { SocailPlatform } from '../../api'
 import { useLensCtx } from '../../contexts/AppLensCtx'
 import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
+import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase'
+import TextareaBase from '../common/input/TextareaBase'
 
 export default function AddPostModal({
   open,
@@ -23,13 +24,7 @@ export default function AddPostModal({
   open: boolean
   closeModal: () => void
 }) {
-  const {
-    encryptedSigner,
-    currFid,
-    isConnected,
-    openFarcasterQR,
-    farcasterUserData,
-  } = useFarcasterCtx()
+  const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx()
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx()
   const { createText: createTextToLens } = useCreateLensPost()
 
@@ -77,7 +72,7 @@ export default function AddPostModal({
 
   const handleSubmit = useCallback(async () => {
     if (!platforms.size) {
-      toast.error('Please select a platform to publish.')
+      toast.warn('Please select a platform to publish.')
       return
     }
     setIsPending(true)
@@ -90,11 +85,6 @@ export default function AddPostModal({
     setIsPending(false)
     closeModal()
   }, [platforms, handleSubmitToFarcaster, handleSubmitToLens, closeModal])
-
-  const currUserData = useFarcasterUserData({
-    fid: currFid + '',
-    farcasterUserData,
-  })
 
   const onSelectPlatform = useCallback(
     (platform: SocailPlatform) => {
@@ -142,28 +132,32 @@ export default function AddPostModal({
     >
       <ModalBody>
         <PlatformOptions>
-          <button onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}>
+          <PlatformOption
+            selected={platforms.has(SocailPlatform.Farcaster)}
+            onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}
+          >
             Farcast {platforms.has(SocailPlatform.Farcaster) && '(✓)'}
-          </button>
-          <button onClick={() => onSelectPlatform(SocailPlatform.Lens)}>
+          </PlatformOption>
+          <PlatformOption
+            selected={platforms.has(SocailPlatform.Lens)}
+            onClick={() => onSelectPlatform(SocailPlatform.Lens)}
+          >
             Lens {platforms.has(SocailPlatform.Lens) && '(✓)'}
-          </button>
+          </PlatformOption>
         </PlatformOptions>
         <PostBox>
-          <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
-          <input
-            type="text"
+          <ContentInput
             disabled={isPending}
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <button
+          <SubmitBtn
             onClick={() => {
               handleSubmit()
             }}
           >
-            {isPending ? 'posting...' : 'post'}
-          </button>
+            {isPending ? 'Sharing...' : 'Share'}
+          </SubmitBtn>
         </PostBox>
       </ModalBody>
     </ModalContainer>
@@ -171,21 +165,41 @@ export default function AddPostModal({
 }
 
 const ModalBody = styled.div`
+  width: 730px;
+  flex-shrink: 0;
+
+  padding: 20px;
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
+  gap: 20px;
 `
 
 const PostBox = styled.div`
   display: flex;
-  gap: 10px;
-  img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-  }
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
 `
 const PlatformOptions = styled.div`
   display: flex;
   gap: 10px;
 `
+const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
+  width: 114px;
+  height: 28px;
+
+  border-style: ${({ selected }) => (selected ? 'solid' : 'dashed')};
+
+  ${({ selected }) =>
+    selected &&
+    `
+    background: #d6f16c;
+    color: #000;
+  `}
+`
+const ContentInput = styled(TextareaBase)``
+
+const SubmitBtn = styled(ButtonPrimary)``

@@ -1,19 +1,19 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import { SocailPlatform } from '../api'
-import HeartIcon from './common/icons/HeartIcon'
-import MessageIcon from './common/icons/MessageIcon'
-import ForwardIcon from './common/icons/ForwardIcon'
+import { SocailPlatform } from '../../api'
 import { useMemo } from 'react'
-import LensIcon from './common/icons/LensIcon'
-import FarcasterIcon from './common/icons/FarcasterIcon'
+import LensIcon from './icons/LensIcon'
+import FarcasterIcon from './icons/FarcasterIcon'
 import dayjs from 'dayjs'
+import PostLike from './PostLike'
+import PostReply from './PostReply'
+import PostReport from './PostReport'
 
 export type PostCardData = {
   platform: SocailPlatform
   avatar: string
   name: string
   handle: string
-  timestamp: string | number
+  createdAt: string | number
   content?: string
   totalLikes: number
   totalReplies: number
@@ -32,6 +32,7 @@ interface PostCardProps {
   likeAction?: () => void
   replyAction?: () => void
   repostAction?: () => void
+  showActions?: boolean
 }
 export default function PostCard({
   data,
@@ -45,6 +46,7 @@ export default function PostCard({
   likeAction,
   replyAction,
   repostAction,
+  showActions = true,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   const PlatFormIcon = useMemo(() => {
@@ -66,40 +68,34 @@ export default function PostCard({
             {data.name} {PlatFormIcon}
           </Name>
           <Handle>
-            {data.handle} . {dayjs(data.timestamp).fromNow()}
+            {data.handle} . {dayjs(data.createdAt).fromNow()}
           </Handle>
         </HeaderCenter>
       </Header>
       <Content>{contentRender ? contentRender() : data?.content}</Content>
-      <Footer>
-        <Action
-          onClick={() => {
-            if (!liking && likeAction) likeAction()
-          }}
-        >
-          <HeartIcon
-            fill={liked ? '#E63734' : 'none'}
-            stroke={liked ? '#E63734' : 'white'}
+      {showActions && (
+        <Footer>
+          <PostLike
+            totalLikes={data.totalLikes}
+            likesAvatar={[]}
+            liking={liking}
+            liked={liked}
+            likeAction={likeAction}
           />
-          {data.totalLikes} {liking ? 'Liking' : 'Likes'}
-        </Action>
-        <Action
-          onClick={() => {
-            if (!replying && replyAction) replyAction()
-          }}
-        >
-          <MessageIcon stroke={replied ? '#9C9C9C' : 'white'} />
-          {data.totalReplies} {replying ? 'Replying' : 'Replies'}
-        </Action>
-        <Action
-          onClick={() => {
-            if (!reposting && repostAction) repostAction()
-          }}
-        >
-          <ForwardIcon stroke={reposted ? '#9C9C9C' : 'white'} />
-          {data.totalReposts} {reposting ? 'Reposting' : 'Reposts'}
-        </Action>
-      </Footer>
+          <PostReply
+            totalReplies={data.totalReplies}
+            replying={replying}
+            replied={replied}
+            replyAction={replyAction}
+          />
+          <PostReport
+            totalReposts={data.totalReposts}
+            reposting={reposting}
+            reposted={reposted}
+            repostAction={repostAction}
+          />
+        </Footer>
+      )}
     </PostCardWrapper>
   )
 }
@@ -168,17 +164,4 @@ const Footer = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
-`
-const Action = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-
-  color: #9c9c9c;
-  font-family: Baloo Bhai 2;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 30px; /* 250% */
 `
