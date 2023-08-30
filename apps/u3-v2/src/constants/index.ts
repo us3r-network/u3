@@ -11,3 +11,13 @@ export const WALLET_CONNECT_PROJECT_ID =
 
 export const AIRSTACK_API_KEY =
   process.env.REACT_APP_AIRSTACK_API_KEY || '135391e4df1d47fa898d43c9f4b27329'
+
+export const MEDIA_BREAK_POINTS = {
+  xs: 320,
+  sm: 480,
+  md: 768,
+  lg: 992,
+  xl: 1024,
+  xxl: 1280,
+  xxxl: 1440,
+}

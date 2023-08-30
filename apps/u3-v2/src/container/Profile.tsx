@@ -1,28 +1,75 @@
-import { useSession } from '@us3r-network/auth-with-rainbowkit'
 import NoLogin from '../components/NoLogin'
 import styled from 'styled-components'
 import UserInfo from '../components/profile/UserInfo'
-import UserWallets from '../components/profile/UserWallets'
-import UserTags from '../components/profile/UserTags'
+import { useAccount } from 'wagmi'
+import { useParams } from 'react-router-dom'
+import { fetchQuery } from '@airstack/airstack-react'
+import { useEffect, useState } from 'react'
+import { DomainQuery } from '../api/airstack'
+import UserAssets from '../components/profile/UserAssets'
 
 export default function Profile() {
-  const session = useSession()
-  if (!session) {
+  const { address } = useAccount()
+  const { addr } = useParams()
+  const [ensAddr, setEnsAddr] = useState('')
+  const [resolving, setResolving] = useState(true)
+
+  const resolveENS = async (addr: string) => {
+    try {
+      const { data, error } = await fetchQuery(
+        DomainQuery,
+        {
+          name: addr,
+        },
+        { cache: true },
+      )
+      if (error) {
+        throw error
+      }
+      setEnsAddr(data?.Domain?.owner || '')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    if (addr?.endsWith('.eth')) {
+      resolveENS(addr).finally(() => {
+        setResolving(false)
+      })
+      return
+    }
+    if (addr) {
+      setEnsAddr(addr)
+    }
+    setResolving(false)
+  }, [addr])
+
+  const walletAddr = ensAddr || address
+
+  console.log(walletAddr)
+
+  if (resolving) {
+    return <div>Resolving...</div>
+  }
+
+  if (!walletAddr) {
     return <NoLogin />
   }
   return (
     <ProfileWrapper>
-      <ProfileInfo />
+      <ProfileInfo addr={walletAddr} />
     </ProfileWrapper>
   )
 }
 
-function ProfileInfo() {
+function ProfileInfo({ addr }: { addr: string }) {
   return (
     <ProfileInfoWrapper>
       <UserInfo />
-      <UserWallets />
-      <UserTags />
+      <UserAssets addrs={[addr]} />
+      {/* <UserWallets /> */}
+      {/* <UserTags /> */}
     </ProfileInfoWrapper>
   )
 }

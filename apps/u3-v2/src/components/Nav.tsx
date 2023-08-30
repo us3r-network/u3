@@ -56,6 +56,7 @@ const NavContainer = styled.nav`
   background: #212228;
   box-sizing: border-box;
   display: flex;
+  z-index: 50;
 `
 const Main = styled.div`
   width: 1200px;

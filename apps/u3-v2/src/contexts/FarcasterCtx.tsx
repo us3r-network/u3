@@ -221,8 +221,6 @@ export default function FarcasterProvider({
     }
   }, [])
 
-  console.log('farcaster', signer.isConnected)
-
   return (
     <FarcasterContext.Provider
       value={{
