@@ -40,7 +40,7 @@ export default function FCastComment({
         castId={castId}
         open={openComment}
         closeModal={(withInc) => {
-          if (withInc) {
+          if (withInc === true) {
             setCommentCount((pre) => pre + 1)
           }
           setOpenComment(false)
