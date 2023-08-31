@@ -61,6 +61,7 @@ export default function AddPostModal({
   }, [text, encryptedSigner])
 
   const handleSubmitToLens = useCallback(async () => {
+    if (!text) return
     try {
       await createTextToLens(text)
       toast.success('successfully posted to lens')
@@ -71,6 +72,10 @@ export default function AddPostModal({
   }, [text, createTextToLens])
 
   const handleSubmit = useCallback(async () => {
+    if (!text) {
+      toast.warn('Please input text to publish.')
+      return
+    }
     if (!platforms.size) {
       toast.warn('Please select a platform to publish.')
       return
@@ -84,7 +89,7 @@ export default function AddPostModal({
     }
     setIsPending(false)
     closeModal()
-  }, [platforms, handleSubmitToFarcaster, handleSubmitToLens, closeModal])
+  }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, closeModal])
 
   const onSelectPlatform = useCallback(
     (platform: SocailPlatform) => {

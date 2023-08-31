@@ -4,27 +4,31 @@ import {
   publicationId,
   useComments,
   useActiveProfile,
+  CreateCommentArgs,
 } from '@lens-protocol/react-web'
 import { LensPublication } from '../api/lens'
-import LensPostCard from '../components/lens/LensPostCard'
 import styled from 'styled-components'
 import LensCommentPostForm from '../components/lens/LensCommentPostForm'
-import ReplyCard from '../components/common/ReplyCard'
-import { SocailPlatform } from '../api'
 import ButtonBase from '../components/common/button/ButtonBase'
+import BackIcon from '../components/common/icons/BackIcon'
+import { useState } from 'react'
+import { useCreateLensComment } from '../hooks/lens/useCreateLensComment'
+import LensReplyCard from '../components/lens/LensReplyCard'
+import LensPostDetailCard from '../components/lens/LensPostDetailCard'
+import ReplyCard from '../components/common/ReplyCard'
 
 export default function LensPostDetail() {
   const navigate = useNavigate()
   const { publicationId: pid } = useParams()
 
-  const { data: activeLensProfile } = useActiveProfile()
+  const { data: activeProfile } = useActiveProfile()
 
   const { data, loading } = usePublication({
     publicationId: publicationId(pid as string),
-    observerId: activeLensProfile?.id,
+    observerId: activeProfile?.id,
   })
 
-  const publication = data as unknown as LensPublication
+  const publication = { ...data } as unknown as LensPublication
 
   const {
     data: comments,
@@ -36,62 +40,81 @@ export default function LensPostDetail() {
     limit: 50,
   })
 
+  const [createdComments, setCreatedComments] = useState<CreateCommentArgs[]>(
+    [],
+  )
+  useCreateLensComment({
+    onCommentSuccess: (commentArgs) => {
+      if (commentArgs.publicationId !== data?.id) return
+      setCreatedComments((prev) => [commentArgs, ...prev])
+    },
+  })
+
   if (loading) {
     return <div>Loading ...</div>
   }
 
   if (publication) {
     return (
-      <PostDetailWrapper>
-        <LensPostCard data={publication} />
-        <LensCommentPostForm
-          publicationId={publication.id}
-          canComment={!!publication?.canComment?.result}
-        />
-        {comments && comments?.length > 0 && (
-          <CommentsWrapper>
-            {comments.map((comment) => {
-              const cardData = {
-                platform: SocailPlatform.Lens,
-                avatar: (comment.profile?.picture as any)?.original?.url,
-                name: comment.profile?.name || '',
-                handle: comment.profile?.handle,
-                createdAt: comment.createdAt,
-                content: comment.metadata?.content || '',
-                totalLikes: comment.stats?.totalUpvotes,
-                totalReplies: comment.stats?.totalAmountOfComments,
-                totalReposts: comment.stats?.totalAmountOfMirrors,
-                likesAvatar: [],
-              }
-              return (
-                <ReplyCard
-                  data={cardData}
-                  key={comment.id}
-                  onClick={() => navigate('/post-detail/lens/' + comment.id)}
-                />
-              )
-            })}
-          </CommentsWrapper>
-        )}
+      <>
+        <BackBtn onClick={() => navigate(-1)} />
+        <PostDetailWrapper>
+          <LensPostDetailCard data={publication} />
+          <LensCommentPostForm
+            publicationId={publication.id}
+            canComment={!!publication?.canComment?.result}
+          />
+          {createdComments && createdComments?.length > 0 && (
+            <CommentsWrapper>
+              {createdComments.map((comment, i) => {
+                return (
+                  <ReplyCard
+                    data={{
+                      avatar: (activeProfile?.picture as any)?.original?.url,
+                      name: activeProfile?.name || '',
+                      handle: activeProfile?.handle || '',
+                      createdAt: new Date() as any,
+                      content: comment.content,
+                    }}
+                    key={i}
+                    showActions={false}
+                  />
+                )
+              })}
+            </CommentsWrapper>
+          )}
+          {comments && comments?.length > 0 && (
+            <CommentsWrapper>
+              {comments.map((comment) => {
+                return <LensReplyCard data={comment} key={comment.id} />
+              })}
+            </CommentsWrapper>
+          )}
 
-        {!loading && hasMoreComments && (
-          <p>
-            <LoadMoreBtn
-              onClick={() => {
-                if (commentsLoading) return
-                loadMoreComments()
-              }}
-            >
-              {commentsLoading ? 'Loading ...' : 'Load more'}
-            </LoadMoreBtn>
-          </p>
-        )}
-      </PostDetailWrapper>
+          {!loading && hasMoreComments && (
+            <p>
+              <LoadMoreBtn
+                onClick={() => {
+                  if (commentsLoading) return
+                  loadMoreComments()
+                }}
+              >
+                {commentsLoading ? 'Loading ...' : 'Load more'}
+              </LoadMoreBtn>
+            </p>
+          )}
+        </PostDetailWrapper>
+      </>
     )
   }
   return null
 }
-
+const BackBtn = styled(BackIcon)`
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-bottom: 22px;
+`
 const PostDetailWrapper = styled.div`
   border-radius: 20px;
   background: #212228;

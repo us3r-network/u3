@@ -18,6 +18,8 @@ import {
   production,
   useUpdateDispatcherConfig,
   ProfileOwnedByMe,
+  Post,
+  Comment,
 } from '@lens-protocol/react-web'
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
@@ -27,7 +29,7 @@ import LensLoginModal from '../components/lens/LensLoginModal'
 import LensCommentPostModal from '../components/lens/LensCommentPostModal'
 import { LensPublication } from '../api/lens'
 
-type CommentModalData = LensPublication | null
+type CommentModalData = LensPublication | Post | Comment | null
 interface LensAuthContextValue {
   isLogin: boolean
   isLoginPending: boolean

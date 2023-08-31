@@ -38,10 +38,7 @@ export default function LensLoginModal({
           </Button>
           <Button
             onClick={() => {
-              window.open(
-                'https://lens-protocol.gitbook.io/lens-protocol/',
-                '_blank',
-              )
+              window.open('https://waitlist.lens.xyz/', '_blank')
             }}
           >
             Join waitlist

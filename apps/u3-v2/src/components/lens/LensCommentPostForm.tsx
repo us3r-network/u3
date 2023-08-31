@@ -1,32 +1,26 @@
 import { useCallback, useState } from 'react'
-import {
-  CollectPolicyType,
-  ContentFocus,
-  ProfileOwnedByMe,
-  ReferencePolicyType,
-  useActiveProfile,
-  useCreateComment,
-  publicationId,
-} from '@lens-protocol/react-web'
-import { lensUploadToArweave } from '../../utils/lens'
+import { useActiveProfile } from '@lens-protocol/react-web'
 import { toast } from 'react-toastify'
 import ReplyForm from '../common/ReplyForm'
 import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
 
 export default function LensCommentPostForm({
-  publicationId: pid,
+  publicationId,
   canComment,
 }: {
   publicationId: string
   canComment?: boolean
 }) {
+  const [content, setContent] = useState('')
+
   const { isLogin, setOpenLensLoginModal } = useLensCtx()
   const { data: activeProfile } = useActiveProfile()
-  const publisher = activeProfile as ProfileOwnedByMe
-  const [content, setContent] = useState('')
-  const { execute: createComment, isPending } = useCreateComment({
-    publisher,
-    upload: lensUploadToArweave,
+
+  const { createComment, isPending } = useCreateLensComment({
+    onCommentSuccess: () => {
+      setContent('')
+    },
   })
 
   const onSubmit = useCallback(async () => {
@@ -34,30 +28,26 @@ export default function LensCommentPostForm({
       setOpenLensLoginModal(true)
       return
     }
+    if (!content) {
+      toast.warn('Please input comment content.')
+      return
+    }
     if (!canComment) {
       toast.error('No comment permission')
       return
     }
-    try {
-      await createComment({
-        publicationId: publicationId(pid),
-        content,
-        contentFocus: ContentFocus.TEXT_ONLY,
-        locale: 'en',
-        collect: {
-          type: CollectPolicyType.NO_COLLECT,
-        },
-        reference: {
-          type: ReferencePolicyType.ANYONE,
-        },
-      })
-      setContent('')
-      toast.success('Comment created successfully.')
-    } catch (error) {
-      toast.error('Failed to create comment.')
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pid, content, createComment, isLogin, canComment])
+    await createComment({
+      publicationId,
+      content,
+    })
+  }, [
+    isLogin,
+    canComment,
+    publicationId,
+    content,
+    createComment,
+    setOpenLensLoginModal,
+  ])
 
   return (
     <ReplyForm

@@ -4,14 +4,16 @@ import { useLensCtx } from '../../contexts/AppLensCtx'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import PostCard, { PostCardData } from '../common/PostCard'
-import { useNavigate } from 'react-router-dom'
 import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
 import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
 import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
 import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
 
-export default function LensPostCard({ data }: { data: LensPublication }) {
-  const navigate = useNavigate()
+export default function LensPostDetailCard({
+  data,
+}: {
+  data: LensPublication
+}) {
   const {
     isLogin,
     setOpenLensLoginModal,
@@ -21,60 +23,35 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
 
   const publication = data as unknown as Post
 
-  const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
-    null,
-  )
-
-  useEffect(() => {
-    setUpdatedPublication(publication)
-  }, [publication])
-
   const {
     toggleReactionUpvote,
     hasUpvote,
     isPending: isPendingReactionUpvote,
   } = useReactionLensUpvote({
     publication,
-    onReactionSuccess: ({ originPublication, hasUpvote }) => {
-      if (originPublication?.id !== data.id) return
-      setUpdatedPublication((prev) => {
-        if (!prev) return prev
-        const stats = prev.stats
-        return {
-          ...prev,
-          stats: {
-            ...stats,
-            totalUpvotes: stats.totalUpvotes + 1,
-          },
-        }
-      })
-    },
   })
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
     publication,
-    onMirrorSuccess: (originPublication) => {
-      if (originPublication?.id !== data.id) return
-      setUpdatedPublication((prev) => {
-        if (!prev) return prev
-        const stats = prev.stats
-        return {
-          ...prev,
-          stats: {
-            ...stats,
-            totalAmountOfMirrors: stats.totalAmountOfMirrors + 1,
-          },
-        }
-      })
-    },
   })
+
+  const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
+    null,
+  )
+
+  useEffect(() => {
+    setUpdatedPublication(publication)
+    console.log({ publication })
+  }, [publication])
 
   useCreateLensComment({
     onCommentSuccess: (commentArgs) => {
-      if (commentArgs.publicationId !== data.id) return
+      if (commentArgs.publicationId !== publication.id) return
+
       setUpdatedPublication((prev) => {
         if (!prev) return prev
         const stats = prev.stats
+        console.log({ stats })
         return {
           ...prev,
           stats: {
@@ -93,9 +70,6 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
 
   return (
     <PostCard
-      onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`)
-      }}
       data={cardData}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}

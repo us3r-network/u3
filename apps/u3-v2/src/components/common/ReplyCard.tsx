@@ -10,10 +10,10 @@ export type ReplyCardData = {
   handle: string
   createdAt: string | number
   content?: string
-  totalLikes: number
-  totalReplies: number
-  totalReposts: number
-  likesAvatar: string[]
+  totalLikes?: number
+  totalReplies?: number
+  totalReposts?: number
+  likesAvatar?: string[]
 }
 interface ReplyCardProps {
   data: ReplyCardData
@@ -27,6 +27,7 @@ interface ReplyCardProps {
   likeAction?: () => void
   replyAction?: () => void
   repostAction?: () => void
+  showActions?: boolean
 }
 export default function ReplyCard({
   data,
@@ -40,6 +41,7 @@ export default function ReplyCard({
   likeAction,
   replyAction,
   repostAction,
+  showActions = true,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & ReplyCardProps) {
   return (
@@ -54,27 +56,29 @@ export default function ReplyCard({
             </Handle>
           </Name>
         </HeaderCenter>
-        <Actions>
-          <PostLike
-            totalLikes={data.totalLikes}
-            likesAvatar={[]}
-            liking={liking}
-            liked={liked}
-            likeAction={likeAction}
-          />
-          <PostReply
-            totalReplies={data.totalReplies}
-            replying={replying}
-            replied={replied}
-            replyAction={replyAction}
-          />
-          <PostReport
-            totalReposts={data.totalReposts}
-            reposting={reposting}
-            reposted={reposted}
-            repostAction={repostAction}
-          />
-        </Actions>
+        {showActions && (
+          <Actions>
+            <PostLike
+              totalLikes={data?.totalLikes || 0}
+              likesAvatar={[]}
+              liking={liking}
+              liked={liked}
+              likeAction={likeAction}
+            />
+            <PostReply
+              totalReplies={data?.totalReplies || 0}
+              replying={replying}
+              replied={replied}
+              replyAction={replyAction}
+            />
+            <PostReport
+              totalReposts={data?.totalReposts || 0}
+              reposting={reposting}
+              reposted={reposted}
+              repostAction={repostAction}
+            />
+          </Actions>
+        )}
       </Header>
       <Content>{contentRender ? contentRender() : data?.content}</Content>
     </ReplyCardWrapper>
