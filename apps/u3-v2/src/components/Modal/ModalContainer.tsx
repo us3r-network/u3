@@ -9,6 +9,10 @@ const modalStyles = {
     marginRight: '-50%',
     backdropFilter: 'blur(10px)',
     transform: 'translate(-50%, -50%)',
+    borderRadius: '20px',
+    background: '#212228',
+    padding: '0px',
+    border: 'none',
   },
 }
 
@@ -34,6 +38,7 @@ export default function ModalContainer({
       style={{
         ...modalStyles,
         overlay: {
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           zIndex: zIndex || 1000,
         },
       }}

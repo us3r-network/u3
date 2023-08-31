@@ -1,85 +1,45 @@
 import { useCallback, useState } from 'react'
-import styled from 'styled-components'
-import {
-  CollectPolicyType,
-  ContentFocus,
-  ProfileOwnedByMe,
-  PublicationId,
-  ReferencePolicyType,
-  useActiveProfile,
-  useCreateComment,
-} from '@lens-protocol/react-web'
-import ModalContainer from '../Modal/ModalContainer'
-import InputBase from '../common/input/InputBase'
-import { ButtonPrimaryLine } from '../common/button/ButtonBase'
-import { lensUploadToArweave } from '../../utils/lens'
-import { toast } from 'react-toastify'
+import { Post, useActiveProfile } from '@lens-protocol/react-web'
+import { useLensCtx } from '../../contexts/AppLensCtx'
+import ReplyModal from '../common/ReplyModal'
+import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
 
 export default function LensCommentPostModal({
   open,
   closeModal,
-  publicationId,
 }: {
   open: boolean
   closeModal: () => void
-  publicationId: PublicationId
 }) {
+  const { commentModalData } = useLensCtx()
   const { data: activeProfile } = useActiveProfile()
-  const publisher = activeProfile as ProfileOwnedByMe
   const [content, setContent] = useState('')
-  const { execute: createComment, isPending } = useCreateComment({
-    publisher,
-    upload: lensUploadToArweave,
+
+  const { createComment, isPending } = useCreateLensComment({
+    onCommentSuccess: () => {
+      closeModal()
+      setContent('')
+    },
   })
 
   const onSubmit = useCallback(async () => {
-    try {
-      await createComment({
-        publicationId,
-        content,
-        contentFocus: ContentFocus.TEXT_ONLY,
-        locale: 'en',
-        collect: {
-          type: CollectPolicyType.NO_COLLECT,
-        },
-        reference: {
-          type: ReferencePolicyType.ANYONE,
-        },
-      })
-      closeModal()
-      setContent('')
-      toast.success('Comment created successfully.')
-    } catch (error) {
-      toast.error('Failed to create comment.')
-    }
-  }, [publicationId, content, createComment, closeModal])
+    await createComment({
+      publicationId: commentModalData?.id,
+      content,
+    })
+  }, [commentModalData?.id, content, createComment])
 
   return (
-    <ModalContainer
+    <ReplyModal
       open={open}
       closeModal={closeModal}
-      afterCloseAction={() => setContent('')}
-    >
-      <ModalBody>
-        <ContentInput
-          disabled={isPending}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <SubmitButton disabled={isPending} onClick={onSubmit}>
-          {isPending ? 'Loading...' : '+ Comment'}
-        </SubmitButton>
-      </ModalBody>
-    </ModalContainer>
+      postData={lensPublicationToPostCardData(commentModalData as Post)}
+      avatar={(activeProfile?.picture as any)?.original?.url}
+      content={content}
+      setContent={setContent}
+      onSubmit={onSubmit}
+      submitting={isPending}
+    />
   )
 }
-const ModalBody = styled.div`
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`
-const ContentInput = styled(InputBase)``
-const SubmitButton = styled(ButtonPrimaryLine)`
-  width: 100%;
-`
