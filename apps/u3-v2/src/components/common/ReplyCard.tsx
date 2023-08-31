@@ -13,7 +13,7 @@ export type ReplyCardData = {
   totalLikes?: number
   totalReplies?: number
   totalReposts?: number
-  likesAvatar?: string[]
+  likeAvatars?: string[]
 }
 interface ReplyCardProps {
   data: ReplyCardData
@@ -46,21 +46,13 @@ export default function ReplyCard({
 }: StyledComponentPropsWithRef<'div'> & ReplyCardProps) {
   return (
     <ReplyCardWrapper {...wrapperProps}>
-      <Header>
-        <Avatar src={data.avatar} />
-        <HeaderCenter>
-          <Name>
-            {data.name}{' '}
-            <Handle>
-              {data.handle} . {dayjs(data.createdAt).fromNow()}
-            </Handle>
-          </Name>
-        </HeaderCenter>
+      <ReplyCardHeader>
+        <ReplyCardUserInfo data={data} />
         {showActions && (
-          <Actions>
+          <ReplyCardActionsWrapper>
             <PostLike
               totalLikes={data?.totalLikes || 0}
-              likesAvatar={[]}
+              likeAvatars={[]}
               liking={liking}
               liked={liked}
               likeAction={likeAction}
@@ -77,15 +69,17 @@ export default function ReplyCard({
               reposted={reposted}
               repostAction={repostAction}
             />
-          </Actions>
+          </ReplyCardActionsWrapper>
         )}
-      </Header>
-      <Content>{contentRender ? contentRender() : data?.content}</Content>
+      </ReplyCardHeader>
+      <ReplyCardContentWrapper>
+        {contentRender ? contentRender() : data?.content}
+      </ReplyCardContentWrapper>
     </ReplyCardWrapper>
   )
 }
 
-const ReplyCardWrapper = styled.div`
+export const ReplyCardWrapper = styled.div`
   background: #212228;
   padding: 20px;
   box-sizing: border-box;
@@ -93,22 +87,46 @@ const ReplyCardWrapper = styled.div`
   flex-direction: column;
   gap: 20px;
 `
-const Header = styled.div`
+export const ReplyCardHeader = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 10px;
 `
-const HeaderCenter = styled.div`
+
+export type ReplyCardUserInfoData = {
+  avatar: string
+  name: string
+  handle: string
+  createdAt: string | number
+}
+export function ReplyCardUserInfo({
+  data,
+  ...wrapperProps
+}: StyledComponentPropsWithRef<'div'> & { data: ReplyCardUserInfoData }) {
+  return (
+    <ReplyCardUserInfoWrapper {...wrapperProps}>
+      <Avatar src={data.avatar} />
+      <ReplyCardUserInfoCenter>
+        <Name>{data.name}</Name>
+        <Handle>
+          @{data.handle} . {dayjs(data.createdAt).fromNow()}
+        </Handle>
+      </ReplyCardUserInfoCenter>
+    </ReplyCardUserInfoWrapper>
+  )
+}
+
+const ReplyCardUserInfoWrapper = styled.div`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+`
+const ReplyCardUserInfoCenter = styled.div`
   width: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
-`
-const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
 `
 const Avatar = styled.img`
   width: 40px;
@@ -141,8 +159,12 @@ const Handle = styled.div`
   font-weight: 400;
   line-height: normal;
 `
-
-const Content = styled.div`
+export const ReplyCardActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 15px;
+`
+export const ReplyCardContentWrapper = styled.div`
   color: #fff;
   font-family: Baloo Bhai 2;
   font-size: 16px;

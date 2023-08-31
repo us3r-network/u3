@@ -15,10 +15,10 @@ export type PostCardData = {
   handle: string
   createdAt: string | number
   content?: string
-  totalLikes: number
-  totalReplies: number
-  totalReposts: number
-  likesAvatar: string[]
+  totalLikes?: number
+  totalReplies?: number
+  totalReposts?: number
+  likeAvatars?: string[]
 }
 interface PostCardProps {
   data: PostCardData
@@ -49,6 +49,59 @@ export default function PostCard({
   showActions = true,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
+  return (
+    <PostCardWrapper {...wrapperProps}>
+      <PostCardUserInfo data={data} />
+      <PostCardContentWrapper>
+        {contentRender ? contentRender() : data?.content}
+      </PostCardContentWrapper>
+      {showActions && (
+        <PostCardActionsWrapper>
+          <PostLike
+            totalLikes={data?.totalLikes || 0}
+            likeAvatars={[]}
+            liking={liking}
+            liked={liked}
+            likeAction={likeAction}
+          />
+          <PostReply
+            totalReplies={data?.totalReplies || 0}
+            replying={replying}
+            replied={replied}
+            replyAction={replyAction}
+          />
+          <PostReport
+            totalReposts={data?.totalReposts || 0}
+            reposting={reposting}
+            reposted={reposted}
+            repostAction={repostAction}
+          />
+        </PostCardActionsWrapper>
+      )}
+    </PostCardWrapper>
+  )
+}
+
+export const PostCardWrapper = styled.div`
+  background: #212228;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`
+
+export type PostCardUserInfoData = {
+  platform: SocailPlatform
+  avatar: string
+  name: string
+  handle: string
+  createdAt: string | number
+}
+export function PostCardUserInfo({
+  data,
+  ...wrapperProps
+}: StyledComponentPropsWithRef<'div'> & { data: PostCardUserInfoData }) {
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
       case SocailPlatform.Lens:
@@ -60,60 +113,26 @@ export default function PostCard({
     }
   }, [data.platform])
   return (
-    <PostCardWrapper {...wrapperProps}>
-      <Header>
-        <Avatar src={data.avatar} />
-        <HeaderCenter>
-          <Name>
-            {data.name} {PlatFormIcon}
-          </Name>
-          <Handle>
-            {data.handle} . {dayjs(data.createdAt).fromNow()}
-          </Handle>
-        </HeaderCenter>
-      </Header>
-      <Content>{contentRender ? contentRender() : data?.content}</Content>
-      {showActions && (
-        <Footer>
-          <PostLike
-            totalLikes={data.totalLikes}
-            likesAvatar={[]}
-            liking={liking}
-            liked={liked}
-            likeAction={likeAction}
-          />
-          <PostReply
-            totalReplies={data.totalReplies}
-            replying={replying}
-            replied={replied}
-            replyAction={replyAction}
-          />
-          <PostReport
-            totalReposts={data.totalReposts}
-            reposting={reposting}
-            reposted={reposted}
-            repostAction={repostAction}
-          />
-        </Footer>
-      )}
-    </PostCardWrapper>
+    <PostCardUserInfoWrapper {...wrapperProps}>
+      <Avatar src={data.avatar} />
+      <PostCardUserInfoCenter>
+        <Name>
+          {data.name} {PlatFormIcon}
+        </Name>
+        <Handle>
+          @{data.handle} . {dayjs(data.createdAt).fromNow()}
+        </Handle>
+      </PostCardUserInfoCenter>
+    </PostCardUserInfoWrapper>
   )
 }
 
-const PostCardWrapper = styled.div`
-  background: #212228;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`
-const Header = styled.div`
+const PostCardUserInfoWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 10px;
 `
-const HeaderCenter = styled.div`
+const PostCardUserInfoCenter = styled.div`
   width: 0;
   flex: 1;
   display: flex;
@@ -152,7 +171,7 @@ const Handle = styled.div`
   line-height: normal;
 `
 
-const Content = styled.div`
+export const PostCardContentWrapper = styled.div`
   color: #fff;
   font-family: Baloo Bhai 2;
   font-size: 16px;
@@ -160,7 +179,7 @@ const Content = styled.div`
   font-weight: 400;
   line-height: 25px; /* 156.25% */
 `
-const Footer = styled.div`
+export const PostCardActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;

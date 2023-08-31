@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import {
   usePublication,
   publicationId,
@@ -10,15 +10,20 @@ import { LensPublication } from '../api/lens'
 import styled from 'styled-components'
 import LensCommentPostForm from '../components/lens/LensCommentPostForm'
 import ButtonBase from '../components/common/button/ButtonBase'
-import BackIcon from '../components/common/icons/BackIcon'
 import { useEffect, useState } from 'react'
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment'
 import LensReplyCard from '../components/lens/LensReplyCard'
 import LensPostDetailCard from '../components/lens/LensPostDetailCard'
 import ReplyCard from '../components/common/ReplyCard'
+import GoBack from '../components/GoBack'
+import {
+  LoadMoreBtn,
+  PostDetailCommentsWrapper,
+  PostDetailWrapper,
+} from '../components/common/PostDetail'
+import Loading from '../components/common/loading/Loading'
 
 export default function LensPostDetail() {
-  const navigate = useNavigate()
   const { publicationId: pid } = useParams()
 
   const { data: activeProfile } = useActiveProfile()
@@ -56,13 +61,17 @@ export default function LensPostDetail() {
   }, [pid])
 
   if (loading) {
-    return <div>Loading ...</div>
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    )
   }
 
   if (publication) {
     return (
       <>
-        <BackBtn onClick={() => navigate(-1)} />
+        <GoBack />
         <PostDetailWrapper>
           <LensPostDetailCard data={publication} />
           <LensCommentPostForm
@@ -70,7 +79,7 @@ export default function LensPostDetail() {
             canComment={!!publication?.canComment?.result}
           />
           {createdComments && createdComments?.length > 0 && (
-            <CommentsWrapper>
+            <PostDetailCommentsWrapper>
               {createdComments.map((comment, i) => {
                 return (
                   <ReplyCard
@@ -86,14 +95,14 @@ export default function LensPostDetail() {
                   />
                 )
               })}
-            </CommentsWrapper>
+            </PostDetailCommentsWrapper>
           )}
           {comments && comments?.length > 0 && (
-            <CommentsWrapper>
+            <PostDetailCommentsWrapper>
               {comments.map((comment) => {
                 return <LensReplyCard data={comment} key={comment.id} />
               })}
-            </CommentsWrapper>
+            </PostDetailCommentsWrapper>
           )}
 
           {!loading && hasMoreComments && (
@@ -114,32 +123,11 @@ export default function LensPostDetail() {
   }
   return null
 }
-const BackBtn = styled(BackIcon)`
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  margin-bottom: 22px;
-`
-const PostDetailWrapper = styled.div`
-  border-radius: 20px;
-  background: #212228;
-  overflow: hidden;
-`
-const CommentsWrapper = styled.div`
-  & > *:not(:first-child) {
-    border-top: 1px solid #191a1f;
-  }
-`
 
-const LoadMoreBtn = styled(ButtonBase)`
+const LoadingWrapper = styled.div`
   width: 100%;
-  height: 40px;
-  border-radius: 20px;
-  background: #212228;
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `

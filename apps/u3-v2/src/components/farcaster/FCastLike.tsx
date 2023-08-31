@@ -1,6 +1,5 @@
-import styled from 'styled-components'
-import { FarCast } from '../api'
-import { useFarcasterCtx } from '../contexts/FarcasterCtx'
+import { FarCast } from '../../api'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,
@@ -9,11 +8,20 @@ import {
 } from '@farcaster/hub-web'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
-import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
-import useFarcasterUserData from '../hooks/useFarcasterUserData'
-import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
-import useFarcasterCastId from '../hooks/useFarcasterCastId'
-import { getCurrFid } from '../utils/farsign-utils'
+import {
+  FARCASTER_NETWORK,
+  FARCASTER_WEB_CLIENT,
+} from '../../constants/farcaster'
+import useFarcasterUserData from '../../hooks/useFarcasterUserData'
+import useFarcasterCurrFid from '../../hooks/useFarcasterCurrFid'
+import useFarcasterCastId from '../../hooks/useFarcasterCastId'
+import { getCurrFid } from '../../utils/farsign-utils'
+import PostLike, {
+  PostLikeAvatar,
+  PostLikeAvatarWrapper,
+  PostLikeAvatarsWrapper,
+  PostLikeWrapper,
+} from '../common/PostLike'
 
 export default function FCastLike({
   cast,
@@ -119,77 +127,53 @@ export default function FCastLike({
   const castId: CastId = useFarcasterCastId({ cast })
 
   return (
-    <LikesBox>
-      <AvatarContainerBox len={likes.length}>
-        {likes.map((item, idx) => {
+    <PostLikeWrapper>
+      <PostLikeAvatarsWrapper>
+        {likes.slice(0, 3).map((item) => {
           return (
             <LikeAvatar
               key={item}
               fid={item}
-              idx={idx}
               farcasterUserData={farcasterUserData}
             />
           )
         })}
-      </AvatarContainerBox>
-      <button
-        onClick={() => {
+        {likes.length > 3 && (
+          <PostLikeAvatarWrapper>+{likes.length - 3}</PostLikeAvatarWrapper>
+        )}
+      </PostLikeAvatarsWrapper>
+      <PostLike
+        totalLikes={likeCount}
+        liked={likes.includes(currFid)}
+        likeAction={() => {
           if (likes.includes(currFid)) {
             removeLikeCast(castId)
           } else {
             likeCast(castId)
           }
         }}
-      >
-        likeCast({likeCount})
-      </button>
-    </LikesBox>
+      />
+    </PostLikeWrapper>
   )
 }
 
 function LikeAvatar({
   farcasterUserData,
   fid,
-  idx,
 }: {
   fid: string
-  idx: number
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
 }) {
   const userData = useFarcasterUserData({ fid: fid, farcasterUserData })
   if (userData.pfp) {
     return (
-      <LikeAvatarBox idx={idx}>
-        <img src={userData.pfp} alt="" />
-      </LikeAvatarBox>
+      <PostLikeAvatarWrapper>
+        <PostLikeAvatar src={userData.pfp} alt="" />
+      </PostLikeAvatarWrapper>
     )
   }
   if (userData.display) {
-    return <LikeAvatarBox idx={idx}>{userData.display}</LikeAvatarBox>
+    return <PostLikeAvatarWrapper>{userData.display}</PostLikeAvatarWrapper>
   }
-  return <LikeAvatarBox idx={idx}>{userData.fid}</LikeAvatarBox>
+  return <PostLikeAvatarWrapper>{userData.fid}</PostLikeAvatarWrapper>
 }
-
-const LikesBox = styled.div`
-  display: flex;
-`
-
-const AvatarContainerBox = styled.div<{ len: number }>`
-  display: flex;
-  position: relative;
-  width: ${(props) => (props.len ? props.len * 16 + 10 + 'px' : '0px')};
-`
-
-const LikeAvatarBox = styled.div<{ idx: number }>`
-  position: absolute;
-  left: ${(props) => props.idx * 16 + 'px'};
-  border: 1px solid white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  > img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-  }
-`

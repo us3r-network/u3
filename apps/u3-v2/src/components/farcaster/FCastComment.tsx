@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { FarCast } from '../api'
-import { useFarcasterCtx } from '../contexts/FarcasterCtx'
-import CommentPostModal from './Modal/CommentPostModal'
+import { FarCast } from '../../api'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
+import FCastCommentPostModal from './FCastCommentPostModal'
 import { CastId } from '@farcaster/hub-web'
-import useFarcasterCastId from '../hooks/useFarcasterCastId'
+import useFarcasterCastId from '../../hooks/useFarcasterCastId'
+import PostReply from '../common/PostReply'
 
 export default function FCastComment({
   cast,
@@ -21,20 +22,19 @@ export default function FCastComment({
   const { isConnected } = useFarcasterCtx()
   const castId: CastId = useFarcasterCastId({ cast })
   return (
-    <div>
-      <button
-        onClick={() => {
+    <>
+      <PostReply
+        totalReplies={commentCount}
+        replyAction={() => {
           if (!isConnected) {
             openFarcasterQR()
             return
           }
           setOpenComment(true)
         }}
-      >
-        commentCast({commentCount})
-      </button>
+      />
 
-      <CommentPostModal
+      <FCastCommentPostModal
         cast={cast}
         farcasterUserData={farcasterUserData}
         castId={castId}
@@ -46,6 +46,6 @@ export default function FCastComment({
           setOpenComment(false)
         }}
       />
-    </div>
+    </>
   )
 }
