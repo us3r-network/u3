@@ -100,6 +100,7 @@ export default function FarcasterProvider({
     token: '',
     deepLink: '',
   })
+  const [warpcastErr, setWarpcastErr] = useState<string>('')
 
   const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[]
@@ -167,7 +168,15 @@ export default function FarcasterProvider({
         name: FARCASTER_CLIENT_NAME,
       }),
     })
+
     const json = await res.json()
+
+    if (res.status !== 200) {
+      console.error(res.status, json.errors)
+      setWarpcastErr(json.errors[0].message)
+      return
+    }
+
     const { token, deepLinkUrl } = json.result
 
     localStorage.setItem(
@@ -238,9 +247,11 @@ export default function FarcasterProvider({
     >
       {children}
       <FarcasterQRModal
+        warpcastErr={warpcastErr}
         showQR={showQR}
         open={openQRModal}
         closeModal={() => {
+          setWarpcastErr('')
           setOpenQR(false)
         }}
         token={token}

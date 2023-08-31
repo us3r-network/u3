@@ -1,6 +1,7 @@
 import QRCode from 'react-qr-code'
 import { Token } from '../../contexts/FarcasterCtx'
 import ModalContainer from './ModalContainer'
+import styled from 'styled-components'
 
 export default function FarcasterQRModal({
   open,
@@ -8,7 +9,9 @@ export default function FarcasterQRModal({
   closeModal,
   afterCloseAction,
   showQR,
+  warpcastErr,
 }: {
+  warpcastErr: string
   token: Token
   open: boolean
   showQR: boolean
@@ -21,10 +24,22 @@ export default function FarcasterQRModal({
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
     >
-      <div>
-        {(showQR && <QRCode value={token.deepLink} />) || <div>Loading</div>}
-        <p>Sign-in with Farcaster</p>
-      </div>
+      {(warpcastErr && (
+        <ErrBox>
+          {warpcastErr}
+          <p>please try again in a few minutes</p>
+          <button onClick={closeModal}>close</button>
+        </ErrBox>
+      )) || (
+        <div>
+          {(showQR && <QRCode value={token.deepLink} />) || <div>Loading</div>}
+          <p>Sign-in with Farcaster</p>
+        </div>
+      )}
     </ModalContainer>
   )
 }
+
+const ErrBox = styled.div`
+  color: #000;
+`
