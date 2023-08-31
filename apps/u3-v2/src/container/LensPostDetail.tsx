@@ -11,7 +11,7 @@ import styled from 'styled-components'
 import LensCommentPostForm from '../components/lens/LensCommentPostForm'
 import ButtonBase from '../components/common/button/ButtonBase'
 import BackIcon from '../components/common/icons/BackIcon'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment'
 import LensReplyCard from '../components/lens/LensReplyCard'
 import LensPostDetailCard from '../components/lens/LensPostDetailCard'
@@ -43,12 +43,17 @@ export default function LensPostDetail() {
   const [createdComments, setCreatedComments] = useState<CreateCommentArgs[]>(
     [],
   )
+
   useCreateLensComment({
     onCommentSuccess: (commentArgs) => {
       if (commentArgs.publicationId !== data?.id) return
       setCreatedComments((prev) => [commentArgs, ...prev])
     },
   })
+
+  useEffect(() => {
+    setCreatedComments([])
+  }, [pid])
 
   if (loading) {
     return <div>Loading ...</div>
