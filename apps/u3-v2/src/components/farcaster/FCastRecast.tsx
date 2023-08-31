@@ -1,6 +1,6 @@
-import { FarCast } from '../api'
+import { FarCast } from '../../api'
 // import { useFarcasterReactionCast } from '../hooks/useFarcaster'
-import { useFarcasterCtx } from '../contexts/FarcasterCtx'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,
@@ -10,10 +10,14 @@ import {
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 
-import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '../constants/farcaster'
-import useFarcasterCastId from '../hooks/useFarcasterCastId'
-import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
-import { getCurrFid } from '../utils/farsign-utils'
+import {
+  FARCASTER_NETWORK,
+  FARCASTER_WEB_CLIENT,
+} from '../../constants/farcaster'
+import useFarcasterCastId from '../../hooks/useFarcasterCastId'
+import useFarcasterCurrFid from '../../hooks/useFarcasterCurrFid'
+import { getCurrFid } from '../../utils/farsign-utils'
+import PostReport from '../common/PostReport'
 
 export default function FCastRecast({
   cast,
@@ -120,18 +124,15 @@ export default function FCastRecast({
   const castId: CastId = useFarcasterCastId({ cast })
 
   return (
-    <div>
-      <button
-        onClick={() => {
-          if (recasts.includes(currFid)) {
-            removeRecast(castId)
-          } else {
-            recast(castId)
-          }
-        }}
-      >
-        recasts({recastCount})
-      </button>
-    </div>
+    <PostReport
+      totalReposts={recastCount}
+      repostAction={() => {
+        if (recasts.includes(currFid)) {
+          removeRecast(castId)
+        } else {
+          recast(castId)
+        }
+      }}
+    />
   )
 }

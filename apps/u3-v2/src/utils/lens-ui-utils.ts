@@ -15,7 +15,7 @@ export const lensPublicationToPostCardData = (
     totalLikes: publication?.stats?.totalUpvotes || 0,
     totalReplies: publication?.stats?.totalAmountOfComments || 0,
     totalReposts: publication?.stats?.totalAmountOfMirrors || 0,
-    likesAvatar: [],
+    likeAvatars: [],
   }
 }
 
@@ -32,6 +32,6 @@ export const lensPublicationToReplyCardData = (
     totalLikes: publication?.stats?.totalUpvotes || 0,
     totalReplies: publication?.stats?.totalAmountOfComments || 0,
     totalReposts: publication?.stats?.totalAmountOfMirrors || 0,
-    likesAvatar: [],
+    likeAvatars: [],
   }
 }

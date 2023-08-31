@@ -3,14 +3,14 @@ import HeartIcon from './icons/HeartIcon'
 
 interface PostLikeProps {
   totalLikes: number
-  likesAvatar: string[]
+  likeAvatars?: string[]
   liked?: boolean
   liking?: boolean
   likeAction?: () => void
 }
 export default function PostLike({
   totalLikes,
-  likesAvatar,
+  likeAvatars,
   liked,
   liking,
   likeAction,
@@ -24,12 +24,8 @@ export default function PostLike({
       }}
       {...wrapperProps}
     >
-      {likesAvatar.length > 0 && (
-        <AvatarList onClick={(e) => e.stopPropagation()}>
-          {likesAvatar.slice(0, 3).map((avatar, i) => (
-            <Avatar key={i} src={avatar} />
-          ))}
-        </AvatarList>
+      {likeAvatars && likeAvatars.length > 0 && (
+        <PostLikeAvatars likeAvatars={likeAvatars} />
       )}
       <HeartIcon
         fill={liked ? '#E63734' : 'none'}
@@ -40,7 +36,7 @@ export default function PostLike({
   )
 }
 
-const PostLikeWrapper = styled.div`
+export const PostLikeWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 5px;
@@ -53,15 +49,45 @@ const PostLikeWrapper = styled.div`
   font-weight: 400;
   line-height: 30px; /* 250% */
 `
-const AvatarList = styled.div`
-  margin-left: -10px;
+
+export function PostLikeAvatars({
+  likeAvatars,
+  ...wrapperProps
+}: StyledComponentPropsWithRef<'div'> & { likeAvatars: string[] }) {
+  return (
+    <PostLikeAvatarsWrapper {...wrapperProps}>
+      {likeAvatars.slice(0, 3).map((avatar, index) => (
+        <PostLikeAvatarWrapper key={index}>
+          <PostLikeAvatar src={avatar} />
+        </PostLikeAvatarWrapper>
+      ))}
+      {likeAvatars.length > 3 && (
+        <PostLikeAvatarWrapper>+{likeAvatars.length - 3}</PostLikeAvatarWrapper>
+      )}
+    </PostLikeAvatarsWrapper>
+  )
+}
+export const PostLikeAvatarsWrapper = styled.div`
+  display: flex;
+  align-items: center;
   & > * {
-    margin-left: 10px;
+    margin-left: -5px;
   }
 `
-const Avatar = styled.img`
+export const PostLikeAvatarWrapper = styled.div`
   width: 20px;
   height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+`
+export const PostLikeAvatar = styled.img`
+  width: 100%;
+  height: 100%;
   flex-shrink: 0;
   border-radius: 50%;
 `
