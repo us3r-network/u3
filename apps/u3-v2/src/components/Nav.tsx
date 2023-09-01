@@ -1,5 +1,3 @@
-import { useSession } from '@us3r-network/auth-with-rainbowkit'
-import { LoginButton, LogoutButton, UserAvatar } from '@us3r-network/profile'
 import { NavLink, useSearchParams } from 'react-router-dom'
 import styled from 'styled-components'
 import SearchInput from './common/input/SearchInput'

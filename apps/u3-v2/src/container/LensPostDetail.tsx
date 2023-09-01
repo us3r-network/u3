@@ -9,7 +9,6 @@ import {
 import { LensPublication } from '../api/lens'
 import styled from 'styled-components'
 import LensCommentPostForm from '../components/lens/LensCommentPostForm'
-import ButtonBase from '../components/common/button/ButtonBase'
 import { useEffect, useState } from 'react'
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment'
 import LensReplyCard from '../components/lens/LensReplyCard'
