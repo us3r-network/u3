@@ -1,33 +1,38 @@
 import styled from 'styled-components'
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
-import { useEffect, useRef } from 'react'
+import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
+import { useRef } from 'react'
+import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
+import NoEnableXmtp from './NoEnableXmtp'
+import ConversationsPage from './ConversationsPage'
+import ConvoMessagesPage from './ConvoMessagesPage'
 
 export default function MessageModal() {
-  const { openMessageModal, setOpenMessageModal } = useXmtpStore()
+  const { xmtpClient } = useXmtpClient()
+  const { openMessageModal, messageRouteParams } = useXmtpStore()
   const modalRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
-        setOpenMessageModal(false)
-      }
-    }
-    document.addEventListener('click', handleClick)
-    return () => {
-      document.removeEventListener('click', handleClick)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
 
   return (
     <Wrapper open={openMessageModal} ref={modalRef}>
-      Comming soon
+      {(() => {
+        if (!xmtpClient) {
+          return <NoEnableXmtp />
+        }
+        if (messageRouteParams.route === MessageRoute.SEARCH) {
+          return <ConversationsPage />
+        }
+        if (messageRouteParams.route === MessageRoute.DETAIL) {
+          return <ConvoMessagesPage />
+        }
+        return null
+      })()}
     </Wrapper>
   )
 }
 
 const Wrapper = styled.div<{ open: boolean }>`
   width: 400px;
-  height: 500px;
+  height: 920px;
+  max-height: 80vh;
   padding: 20px;
   box-sizing: border-box;
   flex-shrink: 0;

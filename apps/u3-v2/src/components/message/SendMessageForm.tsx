@@ -3,17 +3,16 @@ import { useMemo, useRef, useState } from 'react'
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
 import useSendMessage from '../../hooks/xmtp/useSendMessage'
 import useSendAttachment from '../../hooks/xmtp/useSendAttachment'
-import {
-  ButtonPrimaryLine,
-  ButtonPrimaryLineCss,
-} from '../common/button/ButtonBase'
+import { ButtonPrimary } from '../common/button/ButtonBase'
 import TextareaBase from '../common/input/TextareaBase'
+import ImgIcon from '../common/icons/ImgIcon'
 
 export default function SendMessageForm() {
-  const { currentConvoAddress } = useXmtpStore()
-  const { isSending, sendMessage } = useSendMessage(currentConvoAddress)
+  const { messageRouteParams } = useXmtpStore()
+  const peerAddress = messageRouteParams?.peerAddress || ''
+  const { isSending, sendMessage } = useSendMessage(peerAddress)
   const { isSending: isSendingAttachment, sendAttachment } =
-    useSendAttachment(currentConvoAddress)
+    useSendAttachment(peerAddress)
   const [message, setMessage] = useState('')
   const [file, setFile] = useState<File | null>(null)
   const previewImage = useMemo(() => {
@@ -21,9 +20,14 @@ export default function SendMessageForm() {
     return URL.createObjectURL(file)
   }, [file])
 
-  const isDisabled = useMemo(
+  const inputDisabled = useMemo(
     () => isSending || isSendingAttachment,
     [isSending, isSendingAttachment],
+  )
+
+  const sendDisabled = useMemo(
+    () => isSending || isSendingAttachment || (!message && !file),
+    [isSending, isSendingAttachment, message, file],
   )
 
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -31,7 +35,7 @@ export default function SendMessageForm() {
     <SendMessageFormWrap
       onSubmit={(e) => {
         e.preventDefault()
-        if (!currentConvoAddress) return
+        if (!peerAddress) return
         if (file) {
           sendAttachment(file, {
             onSuccess: () => {
@@ -53,68 +57,91 @@ export default function SendMessageForm() {
         })
       }}
     >
-      <FileInputLabel>
-        {previewImage ? (
-          <>
-            <FilePreview src={previewImage} />
-            <DelFileIcon
-              onClick={(e) => {
-                e.preventDefault()
-                setFile(null)
-                if (fileInputRef.current) {
-                  fileInputRef.current.value = ''
-                }
-              }}
-            >
-              x
-            </DelFileIcon>
-          </>
-        ) : (
-          'select image'
-        )}
-
-        <FileInput
-          ref={fileInputRef}
-          type="file"
-          disabled={isDisabled}
+      {!!previewImage && (
+        <PreviewImgWrapper>
+          <FilePreview src={previewImage} />
+          <DelFileIcon
+            onClick={(e) => {
+              e.preventDefault()
+              setFile(null)
+              if (fileInputRef.current) {
+                fileInputRef.current.value = ''
+              }
+            }}
+          >
+            x
+          </DelFileIcon>
+        </PreviewImgWrapper>
+      )}
+      <FormWrapper>
+        <TextArea
+          placeholder="Write a message"
+          aria-disabled={inputDisabled}
+          value={message}
           onChange={(e) => {
-            setFile(e.target.files?.[0] || null)
+            setMessage(e.target.value)
           }}
+          disabled={!!file}
         />
-      </FileInputLabel>
 
-      <TextArea
-        aria-disabled={isDisabled}
-        value={message}
-        onChange={(e) => {
-          setMessage(e.target.value)
-        }}
-        disabled={!!file}
-      />
+        <ImgLabel>
+          <ImgIcon stroke="black" />
+          <FileInput
+            ref={fileInputRef}
+            type="file"
+            disabled={isSending}
+            onChange={(e) => {
+              setFile(e.target.files?.[0] || null)
+            }}
+          />
+        </ImgLabel>
 
-      <SubmitButton type="submit" disabled={isDisabled}>
-        Send
-      </SubmitButton>
+        <SubmitButton type="submit" disabled={sendDisabled}>
+          {isSending ? 'Sending' : 'Send'}
+        </SubmitButton>
+      </FormWrapper>
     </SendMessageFormWrap>
   )
 }
 const SendMessageFormWrap = styled.form`
   width: 100%;
+  min-height: 40px;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px;
+  box-sizing: border-box;
+`
+const FormWrapper = styled.div`
+  width: 100%;
+  border-radius: 10px;
+  background: #fff;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
+`
+const PreviewImgWrapper = styled.div`
+  width: 60px;
+  height: 60px;
+  margin-bottom: 10px;
+  position: relative;
 `
 
 const TextArea = styled(TextareaBase)`
+  resize: none;
   flex: 1;
-  height: 60px;
+  height: 100%;
+  background: none;
+  border: none;
+  &:focus-within {
+    color: black;
+    border-color: none;
+    background: none;
+  }
 `
 
-const FileInputLabel = styled.label`
-  ${ButtonPrimaryLineCss}
-  height: 60px;
-  width: 60px;
-  position: relative;
+const ImgLabel = styled.label`
+  height: 20px;
+  width: 20px;
 `
 const FileInput = styled.input`
   display: none;
@@ -137,7 +164,7 @@ const DelFileIcon = styled.div`
   border-radius: 50%;
   cursor: pointer;
 `
-const SubmitButton = styled(ButtonPrimaryLine)`
-  height: 60px;
-  width: 100px;
+const SubmitButton = styled(ButtonPrimary)`
+  width: 16px;
+  height: 16px;
 `

@@ -11,7 +11,6 @@ import FarcasterProvider from './contexts/FarcasterCtx'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
-import Message from './container/Message'
 import NoMatch from './container/NoMatch'
 import { CERAMIC_HOST, WALLET_CONNECT_PROJECT_ID } from './constants'
 
@@ -38,7 +37,6 @@ function Routers() {
         />
         <Route path="post-detail/:castId" element={<PostDetail />} />
         <Route path="profile" element={<Profile />} />
-        <Route path="message" element={<Message />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
     </Routes>
