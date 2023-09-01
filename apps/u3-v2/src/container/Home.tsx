@@ -3,15 +3,29 @@ import { useEffect, useMemo } from 'react'
 import LensPostCard from '../components/lens/LensPostCard'
 import { useActiveProfile } from '@lens-protocol/react-web'
 import FCast from '../components/farcaster/FCast'
-import { useLoadFeeds } from '../hooks/useLoadFeeds'
+// import { useLoadFeeds } from '../hooks/useLoadFeeds'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { useSearchParams } from 'react-router-dom'
 import ButtonBase from '../components/common/button/ButtonBase'
 import Loading from '../components/common/loading/Loading'
+import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds'
+import { useAccount } from 'wagmi'
+import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
 
 export default function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile()
+  const fid = useFarcasterCurrFid()
+
+  const { address } = useAccount()
+  // const {
+  //   firstLoading,
+  //   moreLoading,
+  //   feeds,
+  //   pageInfo,
+  //   loadFirstFeeds,
+  //   loadMoreFeeds,
+  // } = useLoadFeeds()
 
   const {
     firstLoading,
@@ -20,7 +34,7 @@ export default function Home() {
     pageInfo,
     loadFirstFeeds,
     loadMoreFeeds,
-  } = useLoadFeeds()
+  } = useLoadFollowingFeeds()
 
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx()
 
@@ -37,12 +51,16 @@ export default function Home() {
     loadFirstFeeds({
       activeLensProfileId: activeLensProfile?.id,
       keyword: currentSearchParams.keyword,
+      address,
+      fid,
     })
   }, [
     loadFirstFeeds,
     activeLensProfileLoading,
     activeLensProfile?.id,
     currentSearchParams.keyword,
+    address,
+    fid,
   ])
 
   return (
@@ -82,6 +100,8 @@ export default function Home() {
                 loadMoreFeeds({
                   keyword: currentSearchParams.keyword,
                   activeLensProfileId: activeLensProfile?.id,
+                  address,
+                  fid,
                 })
               }}
             >
