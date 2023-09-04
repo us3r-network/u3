@@ -47,7 +47,7 @@ export default function FarcasterQRModal({
 
 const ModalBody = styled.div`
   width: 730px;
-  height: 220px;
+  /* height: 220px; */
   flex-shrink: 0;
 
   padding: 20px;
