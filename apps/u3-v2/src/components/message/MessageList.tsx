@@ -1,36 +1,40 @@
 import styled from 'styled-components'
 import { DecodedMessage } from '@xmtp/xmtp-js'
-import dayjs from 'dayjs'
 import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
-import { getAttachmentUrl, isAttachment, shortAddress } from '../../utils/xmtp'
+import { getAttachmentUrl, isAttachment } from '../../utils/xmtp'
 import { useEffect, useState } from 'react'
+import Avatar from './Avatar'
 
 export default function MessageList() {
   const { xmtpClient } = useXmtpClient()
-  const { loadingConversations, convoMessages, currentConvoAddress } =
+  const { loadingConversations, convoMessages, messageRouteParams } =
     useXmtpStore()
 
-  const messages = convoMessages.get(currentConvoAddress) || []
+  const messages =
+    convoMessages.get(messageRouteParams?.peerAddress || '') || []
 
   return (
     <MessageListWrap>
-      {loadingConversations ? (
-        <p>-</p>
-      ) : (
+      {!loadingConversations &&
         messages.map((msg) => {
           const isMe = xmtpClient?.address === msg.senderAddress
-          return <MessageCard key={msg.id} msg={msg} isMe={isMe} />
-        })
-      )}
+          if (isMe) {
+            return <MyMessageRow key={msg.id} msg={msg} />
+          }
+          return <MessageRow key={msg.id} msg={msg} />
+        })}
     </MessageListWrap>
   )
 }
 const MessageListWrap = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `
 
-function MessageCard({ isMe, msg }: { isMe: boolean; msg: DecodedMessage }) {
+function MessageRow({ msg }: { msg: DecodedMessage }) {
   const { xmtpClient } = useXmtpClient()
   const [attachmentUrl, setAttachmentUrl] = useState<string>('')
   useEffect(() => {
@@ -42,47 +46,85 @@ function MessageCard({ isMe, msg }: { isMe: boolean; msg: DecodedMessage }) {
     })()
   }, [msg, xmtpClient])
   return (
-    <MessageCardWrap isMe={isMe}>
-      <UserName>{isMe ? 'Me' : shortAddress(msg.senderAddress)}</UserName>
-      {(() => {
-        if (isAttachment(msg)) {
-          return <Image src={attachmentUrl} />
-        }
-        return <Message>{msg.content}</Message>
-      })()}
-
-      <MessageTime>{dayjs(msg.sent).format()}</MessageTime>
-    </MessageCardWrap>
+    <MessageRowWrapper>
+      <AvatarStyled address={msg.senderAddress} />
+      <MessageWrapper>
+        {(() => {
+          if (isAttachment(msg)) {
+            return <Image src={attachmentUrl} />
+          }
+          return <Text>{msg.content}</Text>
+        })()}
+      </MessageWrapper>
+    </MessageRowWrapper>
   )
 }
 
-const MessageCardWrap = styled.div<{ isMe: boolean }>`
-  width: auto;
+function MyMessageRow({ msg }: { msg: DecodedMessage }) {
+  const { xmtpClient } = useXmtpClient()
+  const [attachmentUrl, setAttachmentUrl] = useState<string>('')
+  useEffect(() => {
+    ;(async () => {
+      if (isAttachment(msg)) {
+        const url = await getAttachmentUrl(msg, xmtpClient)
+        setAttachmentUrl(url)
+      }
+    })()
+  }, [msg, xmtpClient])
+  return (
+    <MyMessageRowWrapper>
+      <MyMessageWrapper>
+        {(() => {
+          if (isAttachment(msg)) {
+            return <Image src={attachmentUrl} />
+          }
+          return <MyText>{msg.content}</MyText>
+        })()}
+      </MyMessageWrapper>
+      <AvatarStyled address={msg.senderAddress} />
+    </MyMessageRowWrapper>
+  )
+}
+
+const MessageRowWrapper = styled.div`
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  align-items: ${(props) => (props.isMe ? 'flex-end' : 'flex-start')};
-  padding: 10px;
-  border-bottom: 1px solid #666;
+  gap: 15px;
 `
 
-const UserName = styled.span`
+const AvatarStyled = styled(Avatar)`
+  width: 20px;
+  height: 20px;
+`
+const MessageWrapper = styled.div`
+  max-width: calc(100% - (15px + 20px) * 2);
+  flex-shrink: 0;
+  border-radius: 10px 10px 10px 0px;
+  background: #000;
+`
+const Text = styled.span`
+  color: #fff;
+  font-family: Baloo Bhai 2;
   font-size: 16px;
-  color: #666;
-  line-height: 1.5;
-`
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 
-const Message = styled.span`
-  font-weight: bold;
-  color: #000;
-  font-size: 16px;
+  margin: 20px;
 `
-const MessageTime = styled.span`
-  font-size: 12px;
-  color: #666;
-  line-height: 1.5;
-`
-
 const Image = styled.img`
-  max-width: 50%;
+  max-width: 120px;
+  object-fit: cover;
+  margin: 20px;
+`
+
+const MyMessageRowWrapper = styled(MessageRowWrapper)`
+  justify-content: flex-end;
+`
+const MyMessageWrapper = styled(MessageWrapper)`
+  border-radius: 10px 10px 0px 10px;
+  background: #d6f16c;
+`
+const MyText = styled(Text)`
+  color: #000;
 `

@@ -44,3 +44,73 @@ export function getFeeds({
     },
   })
 }
+
+export function getFollowingFeeds({
+  pageSize,
+  keyword,
+  endFarcasterCursor,
+  endLensCursor,
+  activeLensProfileId,
+  address,
+  fid,
+}: {
+  pageSize?: number
+  keyword?: string
+  endFarcasterCursor?: string
+  endLensCursor?: string
+  activeLensProfileId?: string
+  address?: string
+  fid?: string
+}): AxiosPromise<
+  ApiResp<{
+    data: FeedsDataItem[]
+    farcasterUserData: { fid: string; type: number; value: string }[]
+    pageInfo: FeedsPageInfo
+  }>
+> {
+  return axios({
+    url: API_BASE_URL + `/3r/followingFeeds`,
+    method: 'get',
+    params: {
+      pageSize,
+      keyword,
+      endFarcasterCursor,
+      endLensCursor,
+      activeLensProfileId,
+      address,
+      fid,
+    },
+  })
+}
+
+export function getTrendingFeeds({
+  pageSize,
+  keyword,
+  endFarcasterCursor,
+  endLensCursor,
+  activeLensProfileId,
+}: {
+  pageSize?: number
+  keyword?: string
+  endFarcasterCursor?: string
+  endLensCursor?: string
+  activeLensProfileId?: string
+}): AxiosPromise<
+  ApiResp<{
+    data: FeedsDataItem[]
+    farcasterUserData: { fid: string; type: number; value: string }[]
+    pageInfo: FeedsPageInfo
+  }>
+> {
+  return axios({
+    url: API_BASE_URL + `/3r/trendingFeeds`,
+    method: 'get',
+    params: {
+      pageSize,
+      keyword,
+      endFarcasterCursor,
+      endLensCursor,
+      activeLensProfileId,
+    },
+  })
+}

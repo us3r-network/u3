@@ -1,4 +1,4 @@
-import { NobleEd25519Signer, bytesToHexString } from '@farcaster/hub-web'
+import { NobleEd25519Signer } from '@farcaster/hub-web'
 import { createPublicClient, http } from 'viem'
 import {
   ReactNode,
@@ -11,14 +11,18 @@ import {
 } from 'react'
 
 import { goerli } from 'viem/chains'
+import { WARPCAST_API } from '../constants/farcaster'
 import {
-  FARCASTER_CLIENT_NAME,
-  WARPCAST_REQUESTS_URL,
-  WARPCAST_REQUEST_URL,
-} from '../constants/farcaster'
-import { generateKeyPair, getCurrFid } from '../utils/farsign-utils'
-import { getFarcasterUserInfo } from '../api/farcaster'
+  generateKeyPair,
+  getCurrFid,
+  getPrivateKey,
+  getSignedKeyRequest,
+  setPrivateKey,
+  setSignedKeyRequest,
+} from '../utils/farsign-utils'
+import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster'
 import FarcasterQRModal from '../components/Modal/FarcasterQRModal'
+import axios from 'axios'
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -35,18 +39,17 @@ export type Keypair = {
   publicKey: Uint8Array
 }
 
-export type SignerData = {
+export type SignedKeyRequestData = {
+  deeplinkUrl: string
+  key: string
+  requestFid: number
+  state: 'completed' | 'pending' | 'approved'
   token: string
-  publicKey: string
-  timestamp: number
-  name: string
-  fid: number
-  messageHash: string
-  base64SignedMessage: string
+  userFid: number
 }
 
 export type Signer = {
-  signerRequest: SignerData
+  SignedKeyRequest: SignedKeyRequestData
   isConnected: boolean
 }
 
@@ -84,14 +87,13 @@ export default function FarcasterProvider({
   )
 
   const [signer, setSigner] = useState<Signer>({
-    signerRequest: {
+    SignedKeyRequest: {
+      deeplinkUrl: '',
+      key: '',
+      requestFid: 0,
+      state: 'pending',
       token: '',
-      publicKey: '',
-      timestamp: 0,
-      name: '',
-      fid: 0,
-      messageHash: '',
-      base64SignedMessage: '',
+      userFid: 0,
     },
     isConnected: false,
   })
@@ -100,6 +102,7 @@ export default function FarcasterProvider({
     token: '',
     deepLink: '',
   })
+  const [warpcastErr, setWarpcastErr] = useState<string>('')
 
   const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[]
@@ -136,15 +139,20 @@ export default function FarcasterProvider({
       }
       tries += 1
       await new Promise((resolve) => setTimeout(resolve, 3000))
-      const res = await fetch(`${WARPCAST_REQUEST_URL}?token=${token}`)
-      const data = await res.json()
-      if (data.result && data.result.signerRequest.base64SignedMessage) {
-        localStorage.setItem(
-          'farsign-signer-' + FARCASTER_CLIENT_NAME,
-          JSON.stringify(data.result),
-        )
+
+      const { signedKeyRequest } = await axios
+        .get(`${WARPCAST_API}/v2/signed-key-request`, {
+          params: {
+            token,
+          },
+        })
+        .then((response) => response.data.result)
+
+      if (signedKeyRequest.state === 'completed') {
+        setSignedKeyRequest(signedKeyRequest)
+
         setSigner({
-          signerRequest: data.result.signerRequest,
+          SignedKeyRequest: signedKeyRequest,
           isConnected: true,
         })
         break
@@ -158,26 +166,29 @@ export default function FarcasterProvider({
 
   const initWarpcastAuth = useCallback(async () => {
     const keyPair = await generateKeyPair()
-    const convertedKey = bytesToHexString(keyPair.publicKey)._unsafeUnwrap()
-    const res = await fetch(WARPCAST_REQUESTS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        publicKey: convertedKey,
-        name: FARCASTER_CLIENT_NAME,
-      }),
-    })
-    const json = await res.json()
-    const { token, deepLinkUrl } = json.result
+    const convertedKey = '0x' + keyPair.publicKey
 
-    localStorage.setItem(
-      'farsign-privateKey-' + FARCASTER_CLIENT_NAME,
-      keyPair.privateKey.toString(),
-    )
+    const resp = await getFarcasterSignature(convertedKey)
+    if (resp.status !== 200) {
+      console.error(resp.status)
+      setWarpcastErr('Internal server error')
+      return
+    }
+    const { signature, appFid, deadline } = resp.data.data
 
+    const { token, deeplinkUrl } = await axios
+      .post(`${WARPCAST_API}/v2/signed-key-requests`, {
+        key: convertedKey,
+        requestFid: appFid,
+        signature,
+        deadline,
+      })
+      .then((response) => response.data.result.signedKeyRequest)
+
+    setPrivateKey(keyPair.privateKey)
     pollForSigner(token)
     setShowQR(true)
-    setToken({ token: token, deepLink: deepLinkUrl })
+    setToken({ token: token, deepLink: deeplinkUrl })
   }, [pollForSigner])
 
   const openFarcasterQR = () => {
@@ -188,14 +199,9 @@ export default function FarcasterProvider({
 
   const encryptedSigner = useMemo(() => {
     if (!signer.isConnected) return undefined
-    const privateKey = localStorage.getItem(
-      'farsign-privateKey-' + FARCASTER_CLIENT_NAME,
-    )!
+    const privateKey = getPrivateKey()
 
-    const privateKey_encoded = Uint8Array.from(
-      privateKey.split(',').map((split) => Number(split)),
-    )
-    return new NobleEd25519Signer(privateKey_encoded)
+    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'))
   }, [signer.isConnected])
 
   useEffect(() => {
@@ -205,9 +211,7 @@ export default function FarcasterProvider({
   }, [signer.isConnected])
 
   useEffect(() => {
-    const signer = localStorage.getItem(
-      'farsign-signer-' + FARCASTER_CLIENT_NAME,
-    )
+    const signer = getSignedKeyRequest()
 
     if (signer != null) {
       setToken({
@@ -215,7 +219,7 @@ export default function FarcasterProvider({
         deepLink: 'already connected',
       })
       setSigner({
-        signerRequest: JSON.parse(signer).signerRequest,
+        SignedKeyRequest: JSON.parse(signer),
         isConnected: true,
       })
     }
@@ -236,9 +240,11 @@ export default function FarcasterProvider({
     >
       {children}
       <FarcasterQRModal
+        warpcastErr={warpcastErr}
         showQR={showQR}
         open={openQRModal}
         closeModal={() => {
+          setWarpcastErr('')
           setOpenQR(false)
         }}
         token={token}

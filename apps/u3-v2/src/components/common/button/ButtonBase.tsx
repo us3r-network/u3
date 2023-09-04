@@ -8,7 +8,7 @@ function ButtonBase({ children, ...otherProps }: ButtonProps) {
 export default ButtonBase
 
 export const ButtonBaseCss = css`
-  height: 48px;
+  height: 40px;
   padding: 12px 24px;
   box-sizing: border-box;
   border-radius: 12px;
@@ -33,27 +33,35 @@ const ButtonBaseWrapper = styled.button`
 `
 export const ButtonPrimaryCss = css`
   ${ButtonBaseCss}
-  background-color: #ffffff;
-  color: #14171a;
+  background-color: #D6F16C;
+  color: #000;
+  font-family: Baloo Bhai 2;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 `
 export const ButtonPrimary = styled.button`
   ${ButtonPrimaryCss}
 `
 
 export const ButtonPrimaryLineCss = css`
-  ${ButtonBaseCss}
-  border: 1px solid #39424c;
-  background-color: #1a1e23;
-  color: #718096;
+  ${ButtonPrimaryCss}
+  background: none;
+  color: #fff;
+
+  border: 1px solid #d6f16c;
+  color: #d6f16c;
   &:disabled {
     cursor: not-allowed;
     pointer-events: auto;
     opacity: 0.5;
-    background-color: #14171a;
+    background-color: none;
   }
   &:not(:disabled):hover {
-    border: 1px solid #aaa;
-    background-color: #14171a;
+    background-color: #d6f16c;
+    color: #14171a;
+    border: 1px solid #d6f16c;
   }
 `
 export const ButtonPrimaryLine = styled.button`

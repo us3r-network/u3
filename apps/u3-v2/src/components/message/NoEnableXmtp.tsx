@@ -3,64 +3,50 @@ import { ButtonPrimary } from '../common/button/ButtonBase'
 import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
 
-function NoEnableXmtp() {
+export default function NoEnableXmtp() {
   const { openConnectModal } = useConnectModal()
   const { xmtpClient, enablingXmtp } = useXmtpClient()
   return (
-    <NoEnableXmtpWrapper>
-      <NoEnableXmtpContainer>
-        {(() => {
-          if (enablingXmtp) {
-            return (
-              <>
-                <MainText>Enabling Xmtp ...</MainText>
-              </>
-            )
-          }
-
-          if (!xmtpClient) {
-            return (
-              <>
-                <MainText>No Enable Xmtp</MainText>
-                <LoginButton
-                  onClick={() => openConnectModal && openConnectModal()}
-                >
-                  Enable Xmtp
-                </LoginButton>
-              </>
-            )
-          }
-          return <MainText>Enabled Xmtp</MainText>
-        })()}
-      </NoEnableXmtpContainer>
-    </NoEnableXmtpWrapper>
+    <Wrapper>
+      {(() => {
+        if (!xmtpClient) {
+          return (
+            <>
+              <Description>You do not have message enabled yet.</Description>
+              <LoginButton
+                disabled={enablingXmtp}
+                onClick={() => openConnectModal && openConnectModal()}
+              >
+                {enablingXmtp ? 'Applying ...' : 'Apply'}
+              </LoginButton>
+            </>
+          )
+        }
+        return <Description>Enabled Xmtp</Description>
+      })()}
+    </Wrapper>
   )
 }
-export default NoEnableXmtp
-export const NoEnableXmtpWrapper = styled.div`
+
+const Wrapper = styled.div`
+  padding-top: 42px;
   width: 100%;
-  height: 100%;
-  padding: 24px;
-  box-sizing: border-box;
-`
-const NoEnableXmtpContainer = styled.div`
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   gap: 20px;
-  background: #1b1e23;
-  border-radius: 20px;
+  align-items: center;
 `
-const MainText = styled.span`
-  font-weight: 700;
-  font-size: 36px;
-  line-height: 40px;
+
+const Description = styled.span`
+  color: #9c9c9c;
   text-align: center;
-  color: #ffffff;
+  font-family: Baloo Bhai 2;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `
+
 const LoginButton = styled(ButtonPrimary)`
-  width: 228px;
+  width: 240px;
 `

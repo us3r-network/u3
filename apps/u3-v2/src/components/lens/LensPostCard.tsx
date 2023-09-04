@@ -1,142 +1,136 @@
-import styled from 'styled-components'
 import { LensPublication } from '../../api/lens'
-import dayjs from 'dayjs'
-import {
-  Post,
-  ProfileOwnedByMe,
-  ReactionTypes,
-  useActiveProfile,
-  useCreateMirror,
-  useReaction,
-} from '@lens-protocol/react-web'
-import { useLensAuth } from '../../contexts/AppLensCtx'
-import { useCallback, useMemo, useState } from 'react'
-import LensCommentPostModal from './LensCommentPostModal'
+import { Post } from '@lens-protocol/react-web'
+import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
+import PostCard, { PostCardData } from '../common/PostCard'
+import { useNavigate } from 'react-router-dom'
+import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
+import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
+import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
 
 export default function LensPostCard({ data }: { data: LensPublication }) {
-  const { isLogin, setOpenLensLoginModal } = useLensAuth()
-  const { data: activeProfile } = useActiveProfile()
-  const publisher = activeProfile as ProfileOwnedByMe
+  const navigate = useNavigate()
+  const {
+    isLogin,
+    setOpenLensLoginModal,
+    setCommentModalData,
+    setOpenCommentModal,
+  } = useLensCtx()
 
   const publication = data as unknown as Post
 
-  const { execute: createMirror, isPending: isPendingMirror } = useCreateMirror(
-    { publisher },
+  const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
+    null,
   )
+
+  useEffect(() => {
+    setUpdatedPublication(publication)
+  }, [publication])
 
   const {
-    addReaction,
-    removeReaction,
-    isPending: isPendingReaction,
-  } = useReaction({
-    profileId: publisher?.id,
+    toggleReactionUpvote,
+    hasUpvote,
+    isPending: isPendingReactionUpvote,
+  } = useReactionLensUpvote({
+    publication,
+    onReactionSuccess: ({ originPublication, hasUpvote }) => {
+      if (originPublication?.id !== data.id) return
+      setUpdatedPublication((prev) => {
+        if (!prev) return prev
+        const stats = prev.stats
+        return {
+          ...prev,
+          stats: {
+            ...stats,
+            totalUpvotes: stats.totalUpvotes + 1,
+          },
+        }
+      })
+    },
   })
 
-  const hasReactionTypeUpvote = useMemo(
-    () => publication?.reaction === ReactionTypes.Upvote,
-    [publication.reaction],
-  )
-
-  const toggleReactionUpvote = useCallback(async () => {
-    try {
-      if (hasReactionTypeUpvote) {
-        await removeReaction({
-          reactionType: ReactionTypes.Upvote,
-          publication,
-        })
-      } else {
-        await addReaction({
-          reactionType: ReactionTypes.Upvote,
-          publication,
-        })
-      }
-      toast.success('Like successfully')
-    } catch (error: any) {
-      console.error(error?.message)
-      toast.error('Like failed')
-    }
-  }, [publication, hasReactionTypeUpvote, removeReaction, addReaction])
-
-  const createMirrorAction = useCallback(async () => {
-    try {
-      await createMirror({
-        publication,
+  const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
+    publication,
+    onMirrorSuccess: (originPublication) => {
+      if (originPublication?.id !== data.id) return
+      setUpdatedPublication((prev) => {
+        if (!prev) return prev
+        const stats = prev.stats
+        return {
+          ...prev,
+          stats: {
+            ...stats,
+            totalAmountOfMirrors: stats.totalAmountOfMirrors + 1,
+          },
+        }
       })
-      toast.success('Mirror successfully')
-    } catch (error: any) {
-      console.error(error?.message)
-      toast.error('Mirror failed')
-    }
-  }, [createMirror, publication])
+    },
+  })
 
-  const [openCommentModal, setOpenCommentModal] = useState(false)
+  useCreateLensComment({
+    onCommentSuccess: (commentArgs) => {
+      if (commentArgs.publicationId !== data.id) return
+      setUpdatedPublication((prev) => {
+        if (!prev) return prev
+        const stats = prev.stats
+        return {
+          ...prev,
+          stats: {
+            ...stats,
+            totalAmountOfComments: stats.totalAmountOfComments + 1,
+          },
+        }
+      })
+    },
+  })
+
+  const cardData = useMemo<PostCardData>(
+    () => lensPublicationToPostCardData(updatedPublication),
+    [updatedPublication],
+  )
 
   return (
-    <CastBox>
-      <div key={data.id}>
-        <div>
-          <p>{data.profile.handle}: </p>
-          {data.metadata.content}
-        </div>
-        <small>{dayjs(data.timestamp).format()}</small>
-        <div>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              if (!data?.canComment?.result) return
-              setOpenCommentModal(true)
-            }}
-          >
-            comment ({data.stats.totalAmountOfComments})
-          </button>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              toggleReactionUpvote()
-            }}
-          >
-            {isPendingReaction
-              ? 'liking...'
-              : hasReactionTypeUpvote
-              ? 'unlike'
-              : 'like'}
-            ({data.stats.totalUpvotes})
-          </button>
-          <button
-            onClick={() => {
-              if (!isLogin) {
-                setOpenLensLoginModal(true)
-                return
-              }
-              if (!data?.canMirror?.result) return
-              createMirrorAction()
-            }}
-          >
-            {isPendingMirror ? 'mirroring...' : 'mirror'}(
-            {data.stats.totalAmountOfMirrors})
-          </button>
-        </div>
-      </div>
-      <LensCommentPostModal
-        open={openCommentModal}
-        closeModal={() => setOpenCommentModal(false)}
-        publicationId={publication.id}
-      />
-    </CastBox>
+    <PostCard
+      onClick={() => {
+        navigate(`/post-detail/lens/${data.id}`)
+      }}
+      data={cardData}
+      liked={hasUpvote}
+      liking={isPendingReactionUpvote}
+      likeAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        toggleReactionUpvote()
+      }}
+      replying={false}
+      replyAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        if (!data?.canComment?.result) {
+          toast.error('No comment permission')
+          return
+        }
+        setCommentModalData(data)
+        setOpenCommentModal(true)
+      }}
+      reposting={isPendingMirror}
+      repostAction={() => {
+        if (!isLogin) {
+          setOpenLensLoginModal(true)
+          return
+        }
+        if (!data?.canMirror?.result) {
+          toast.error('No mirror permission')
+          return
+        }
+        createMirror()
+      }}
+    />
   )
 }
-
-const CastBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  gap: 10px;
-`

@@ -11,15 +11,27 @@ import {
 import { Conversation, DecodedMessage, Stream } from '@xmtp/xmtp-js'
 import { useXmtpClient } from './XmtpClientCtx'
 
+export enum MessageRoute {
+  SEARCH = 'search',
+  DETAIL = 'detail',
+}
+
+type MessageRouteParams = {
+  route: MessageRoute
+  peerAddress?: string
+}
+
 interface XmtpStoreCtxValue {
   conversations: Map<string, Conversation>
   convoMessages: Map<string, DecodedMessage[]>
   loadingConversations: boolean
   loadConversations: () => void
-  currentConvoAddress: string
-  setCurrentConvoAddress: (convo: string) => void
   openMessageModal: boolean
   setOpenMessageModal: React.Dispatch<React.SetStateAction<boolean>>
+  messageRouteParams: MessageRouteParams
+  setMessageRouteParams: React.Dispatch<
+    React.SetStateAction<MessageRouteParams>
+  >
 }
 
 const defaultContextValue: XmtpStoreCtxValue = {
@@ -27,16 +39,18 @@ const defaultContextValue: XmtpStoreCtxValue = {
   convoMessages: new Map(),
   loadingConversations: false,
   loadConversations: () => {},
-  currentConvoAddress: '',
-  setCurrentConvoAddress: () => {},
   openMessageModal: false,
   setOpenMessageModal: () => {},
+  messageRouteParams: { route: MessageRoute.SEARCH },
+  setMessageRouteParams: () => {},
 }
 
 export const XmtpStoreCtx = createContext(defaultContextValue)
 
 export function XmtpStoreProvider({ children }: PropsWithChildren) {
   const [openMessageModal, setOpenMessageModal] = useState(false)
+  const [messageRouteParams, setMessageRouteParams] =
+    useState<MessageRouteParams>({ route: MessageRoute.SEARCH })
 
   const { xmtpClient } = useXmtpClient()
 
@@ -49,10 +63,6 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
   )
 
   const [loadingConversations, setLoadingConversations] = useState(false)
-
-  const [currentConvoAddress, setCurrentConvoAddress] = useState(
-    defaultContextValue.currentConvoAddress,
-  )
 
   const loadConversations = useCallback(async () => {
     if (!xmtpClient) {
@@ -193,20 +203,20 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           convoMessages,
           loadingConversations,
           loadConversations,
-          currentConvoAddress,
-          setCurrentConvoAddress,
           openMessageModal,
           setOpenMessageModal,
+          messageRouteParams,
+          setMessageRouteParams,
         }),
         [
           conversations,
           convoMessages,
           loadingConversations,
           loadConversations,
-          currentConvoAddress,
-          setCurrentConvoAddress,
           openMessageModal,
           setOpenMessageModal,
+          messageRouteParams,
+          setMessageRouteParams,
         ],
       )}
     >

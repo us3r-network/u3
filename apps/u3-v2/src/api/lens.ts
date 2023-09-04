@@ -19,7 +19,7 @@ export enum DecryptFailReason {
 }
 
 export type LensPublication = {
-  timestamp: number
+  timestamp?: number
 
   __typename?: 'Post'
   id: any

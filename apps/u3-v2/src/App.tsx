@@ -11,7 +11,6 @@ import FarcasterProvider from './contexts/FarcasterCtx'
 
 import Home from './container/Home'
 import Profile from './container/Profile'
-import Message from './container/Message'
 import NoMatch from './container/NoMatch'
 import {
   AIRSTACK_API_KEY,
@@ -25,6 +24,7 @@ import Nav from './components/Nav'
 import { AppLensProvider } from './contexts/AppLensCtx'
 import Modal from 'react-modal'
 import PostDetail from './container/PostDetail'
+import LensPostDetail from './container/LensPostDetail'
 
 init(AIRSTACK_API_KEY)
 dayjs.extend(relativeTime)
@@ -36,10 +36,13 @@ function Routers() {
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
+        <Route
+          path="post-detail/lens/:publicationId"
+          element={<LensPostDetail />}
+        />
         <Route path="post-detail/:castId" element={<PostDetail />} />
         <Route path="profile" element={<Profile />} />
         <Route path="profile/:addr" element={<Profile />} />
-        <Route path="message" element={<Message />} />
       </Route>
       <Route path="*" element={<NoMatch />} />
     </Routes>

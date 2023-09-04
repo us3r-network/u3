@@ -1,35 +1,39 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
 import { DecodedMessage } from '@xmtp/xmtp-js'
 import dayjs from 'dayjs'
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
-import {
-  getAttachmentUrl,
-  isAttachment,
-  shortAddress,
-  truncate,
-} from '../../utils/xmtp'
+import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
+import { getAttachmentUrl, isAttachment, truncate } from '../../utils/xmtp'
 import useConversationList from '../../hooks/xmtp/useConversationList'
 import { useEffect, useState } from 'react'
 import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx'
+import Name from './Name'
+import Avatar from './Avatar'
+import Loading from '../common/loading/Loading'
 
 export default function ConversationList(
   props: StyledComponentPropsWithRef<'div'>,
 ) {
-  const { currentConvoAddress, setCurrentConvoAddress } = useXmtpStore()
+  const { setMessageRouteParams } = useXmtpStore()
 
   const { isLoading, conversationList } = useConversationList()
 
   return (
     <ConversationListWrap {...props}>
       {isLoading ? (
-        'loading ...'
+        <LoadingWrapper>
+          <Loading />
+        </LoadingWrapper>
       ) : (
         <CardListWrap>
           {conversationList.map(({ conversation, latestMessage }) => (
             <ConversationCard
               key={`Convo_${conversation.peerAddress}`}
-              isSelected={currentConvoAddress === conversation.peerAddress}
-              setSelectedConvo={setCurrentConvoAddress}
+              selectConvoAction={(address) => {
+                setMessageRouteParams({
+                  route: MessageRoute.DETAIL,
+                  peerAddress: address,
+                })
+              }}
               address={conversation.peerAddress}
               latestMessage={latestMessage}
             />
@@ -41,22 +45,23 @@ export default function ConversationList(
 }
 const ConversationListWrap = styled.div`
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-const CardListWrap = styled.div`
-  width: 100%;
   min-height: 100%;
 `
+const LoadingWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+const CardListWrap = styled.div`
+  display: flex;
+  flex-direction: column;
+`
 function ConversationCard({
-  isSelected,
-  setSelectedConvo,
+  selectConvoAction,
   address,
   latestMessage,
 }: {
-  isSelected: boolean
-  setSelectedConvo: (address: string) => void
+  selectConvoAction: (address: string) => void
   address: string
   latestMessage: DecodedMessage | null
 }) {
@@ -71,55 +76,61 @@ function ConversationCard({
     })()
   }, [latestMessage, xmtpClient])
   return (
-    <ConversationCardWrap
-      isSelected={isSelected}
-      onClick={() => setSelectedConvo(address)}
-    >
-      <UserName>{shortAddress(address)}</UserName>
-      <LatestMessage>
-        {latestMessage &&
-          (() => {
-            if (isAttachment(latestMessage)) {
-              return attachmentUrl
-            }
-            return truncate(latestMessage.content, 75)
-          })()}
-        <LatestMessageTime>
-          {latestMessage && dayjs(latestMessage.sent).fromNow()}
-        </LatestMessageTime>
-      </LatestMessage>
+    <ConversationCardWrap onClick={() => selectConvoAction(address)}>
+      <Avatar address={address} />
+      <Center>
+        <Name address={address} />
+        <LatestMessage>
+          {latestMessage &&
+            (() => {
+              if (isAttachment(latestMessage)) {
+                return attachmentUrl
+              }
+              return truncate(latestMessage.content, 75)
+            })()}
+        </LatestMessage>
+      </Center>
+      <LatestMessageTime>
+        {latestMessage && dayjs(latestMessage.sent).fromNow()}
+      </LatestMessageTime>
     </ConversationCardWrap>
   )
 }
 
-const ConversationCardWrap = styled.div<{ isSelected: boolean }>`
+const ConversationCardWrap = styled.div`
+  padding: 12px 0px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  cursor: pointer;
+  color: #fff;
+`
+const Center = styled.div`
+  width: 0;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 10px;
-  cursor: pointer;
-  border-bottom: 1px solid #666;
-  background-color: ${({ isSelected }) =>
-    isSelected ? 'rgba(0, 0, 0, 0.3)' : 'none'};
-  color: #fff;
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-  }
 `
 
-const UserName = styled.p`
-  font-weight: bold;
-  font-size: 16px;
-  color: #000;
-`
-
-const LatestMessage = styled.p`
+const LatestMessage = styled.div`
+  color: #9c9c9c;
+  font-family: Baloo Bhai 2;
   font-size: 12px;
-  color: #666;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `
 
 const LatestMessageTime = styled.span`
+  color: #9c9c9c;
+  font-family: Baloo Bhai 2;
   font-size: 12px;
-  color: #666;
-  margin-left: 10px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 `

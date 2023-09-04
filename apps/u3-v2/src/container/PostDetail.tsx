@@ -2,8 +2,15 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getFarcasterCastInfo } from '../api/farcaster'
 import { FarCast } from '../api'
-import FCast from '../components/FCast'
+import FCast from '../components/farcaster/FCast'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
+import GoBack from '../components/GoBack'
+import {
+  PostDetailCommentsWrapper,
+  PostDetailWrapper,
+} from '../components/common/PostDetail'
+import Loading from '../components/common/loading/Loading'
+import styled from 'styled-components'
 
 export default function PostDetail() {
   const { castId } = useParams()
@@ -21,7 +28,6 @@ export default function PostDetail() {
     try {
       setLoading(true)
       const resp = await getFarcasterCastInfo(castId, {})
-      console.log(resp.data.data)
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg)
       }
@@ -50,32 +56,46 @@ export default function PostDetail() {
   }, [loadCastInfo])
 
   if (loading) {
-    return <div>Loading</div>
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    )
   }
-
   if (cast) {
     return (
       <div>
-        <FCast
-          cast={cast}
-          openFarcasterQR={openFarcasterQR}
-          farcasterUserData={farcasterUserData}
-        />
-        {(comments || []).map((item) => {
-          const key = Buffer.from(item.data.hash.data).toString('hex')
-          return (
-            <div key={key}>
-              <FCast
-                key={key}
-                cast={item.data}
-                openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterUserData}
-              />
-            </div>
-          )
-        })}
+        <GoBack />
+        <PostDetailWrapper>
+          <FCast
+            cast={cast}
+            openFarcasterQR={openFarcasterQR}
+            farcasterUserData={farcasterUserData}
+          />
+          <PostDetailCommentsWrapper>
+            {(comments || []).map((item) => {
+              const key = Buffer.from(item.data.hash.data).toString('hex')
+              return (
+                <FCast
+                  key={key}
+                  cast={item.data}
+                  openFarcasterQR={openFarcasterQR}
+                  farcasterUserData={farcasterUserData}
+                />
+              )
+            })}
+          </PostDetailCommentsWrapper>
+        </PostDetailWrapper>
       </div>
     )
   }
   return null
 }
+
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
