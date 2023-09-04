@@ -11,7 +11,7 @@ import {
 } from '@lens-protocol/react-web'
 import { toast } from 'react-toastify'
 import PubSub from 'pubsub-js'
-import { lensUploadToArweave } from '../../utils/lens'
+import { lensUploadToArweave } from '../../utils/lens/upload'
 
 export enum LensCommentPubSubTopic {
   SUCCESS = 'lens-comment-success',

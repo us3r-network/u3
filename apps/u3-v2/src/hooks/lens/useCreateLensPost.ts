@@ -7,7 +7,7 @@ import {
   useActiveProfile,
   useCreatePost,
 } from '@lens-protocol/react-web'
-import { lensUploadToArweave } from '../../utils/lens'
+import { lensUploadToArweave } from '../../utils/lens/upload'
 
 export function useCreateLensPost() {
   const { data: publisher } = useActiveProfile()
