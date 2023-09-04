@@ -71,3 +71,16 @@ export function getFarcasterCastInfo(
     },
   })
 }
+
+export function getFarcasterSignature(key: string): AxiosPromise<
+  ApiResp<{
+    signature: `0x${string}`
+    appFid: number
+    deadline: number
+  }>
+> {
+  return axios({
+    url: API_BASE_URL + `/3r/farcaster/signature/${key}`,
+    method: 'get',
+  })
+}
