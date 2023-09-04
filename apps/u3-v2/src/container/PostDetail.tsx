@@ -28,7 +28,6 @@ export default function PostDetail() {
     try {
       setLoading(true)
       const resp = await getFarcasterCastInfo(castId, {})
-      console.log(resp.data.data)
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg)
       }

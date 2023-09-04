@@ -9,7 +9,9 @@ export default function FarcasterQRModal({
   closeModal,
   afterCloseAction,
   showQR,
+  warpcastErr,
 }: {
+  warpcastErr: string
   token: Token
   open: boolean
   showQR: boolean
@@ -22,15 +24,23 @@ export default function FarcasterQRModal({
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
     >
-      <ModalBody>
-        <Title>Farcaster handle verify</Title>
-        <Description>
-          Login with Warpcast or apply for farcaster handle.
-        </Description>
-        {(showQR && <QRCode value={token.deepLink} />) || (
-          <div>Loading QR code...</div>
-        )}
-      </ModalBody>
+      {(warpcastErr && (
+        <div>
+          {warpcastErr}
+          <p>please try again in a few minutes</p>
+          <button onClick={closeModal}>close</button>
+        </div>
+      )) || (
+        <ModalBody>
+          <Title>Farcaster handle verify</Title>
+          <Description>
+            Login with Warpcast or apply for farcaster handle.
+          </Description>
+          {(showQR && <QRCode value={token.deepLink} />) || (
+            <div>Loading QR code...</div>
+          )}
+        </ModalBody>
+      )}
     </ModalContainer>
   )
 }
