@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@airstack/airstack-react": "^0.5.1",
     "@farcaster/hub-web": "^0.6.1",
     "@lens-protocol/react-web": "^1.2.2",
     "@lens-protocol/wagmi": "^2.0.2",
