@@ -20,8 +20,8 @@ export default function LensPostCardContent({ publication }: Props) {
   }, [publication])
   return (
     <ContentWrapper>
-      {!!img && <Image src={img} />}
       <ReactMarkdown>{markdownContent}</ReactMarkdown>
+      {!!img && <Image src={img} />}
     </ContentWrapper>
   )
 }
@@ -38,6 +38,7 @@ const ContentWrapper = styled.div`
   }
 `
 const Image = styled.img`
-  max-width: 100%;
+  width: 200px;
+  height: 200px;
   object-fit: cover;
 `
