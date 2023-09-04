@@ -90,6 +90,7 @@ export const ReplyCardWrapper = styled.div`
 export const ReplyCardHeader = styled.div`
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 10px;
 `
 
@@ -122,7 +123,6 @@ const ReplyCardUserInfoWrapper = styled.div`
   gap: 10px;
 `
 const ReplyCardUserInfoCenter = styled.div`
-  width: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
