@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import ReplyForm from '../common/ReplyForm'
 import { useLensCtx } from '../../contexts/AppLensCtx'
 import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
+import getAvatar from '../../utils/lens/getAvatar'
 
 export default function LensCommentPostForm({
   publicationId,
@@ -52,7 +53,7 @@ export default function LensCommentPostForm({
   return (
     <ReplyForm
       onClick={() => {}}
-      avatar={(activeProfile?.picture as any)?.original?.url}
+      avatar={getAvatar(activeProfile)}
       content={content}
       setContent={setContent}
       submitting={isPending}

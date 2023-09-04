@@ -21,6 +21,7 @@ import {
   PostDetailWrapper,
 } from '../components/common/PostDetail'
 import Loading from '../components/common/loading/Loading'
+import getAvatar from '../utils/lens/getAvatar'
 
 export default function LensPostDetail() {
   const { publicationId: pid } = useParams()
@@ -83,7 +84,7 @@ export default function LensPostDetail() {
                 return (
                   <ReplyCard
                     data={{
-                      avatar: (activeProfile?.picture as any)?.original?.url,
+                      avatar: getAvatar(activeProfile),
                       name: activeProfile?.name || '',
                       handle: activeProfile?.handle || '',
                       createdAt: new Date() as any,

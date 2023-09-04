@@ -9,9 +9,11 @@ import FCastComment from './FCastComment'
 import {
   PostCardActionsWrapper,
   PostCardContentWrapper,
+  PostCardImgWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../common/PostCard'
+import { useMemo } from 'react'
 
 export default function FCast({
   cast,
@@ -27,11 +29,29 @@ export default function FCast({
   const castId: CastId = useFarcasterCastId({ cast })
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
 
+  const embedsImg: { url: string }[] = useMemo(() => {
+    const result = []
+    for (const embed of cast.embeds) {
+      if (!embed?.url) continue
+      if (
+        embed.url.endsWith('.png') ||
+        embed.url.endsWith('.jpg') ||
+        embed.url.endsWith('.jpeg') ||
+        embed.url.endsWith('.gif')
+      ) {
+        result.push({
+          url: embed.url,
+        })
+      }
+    }
+    return result
+  }, [cast])
+
   return (
     <PostCardWrapper
       onClick={() => {
         const id = Buffer.from(castId.hash).toString('hex')
-        navigate(`/post-detail/${id}`)
+        navigate(`/post-detail/fcast/${id}`)
       }}
     >
       <PostCardUserInfo
@@ -44,6 +64,14 @@ export default function FCast({
         }}
       />
       <PostCardContentWrapper>{cast.text}</PostCardContentWrapper>
+      {embedsImg && (
+        <PostCardImgWrapper>
+          {embedsImg.map((img) => (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <img src={img.url} />
+          ))}
+        </PostCardImgWrapper>
+      )}
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation()
