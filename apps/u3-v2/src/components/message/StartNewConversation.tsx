@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 import { useState } from 'react'
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
+import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
 import useStartNewConvo from '../../hooks/xmtp/useStartNewConvo'
 import InputBase from '../common/input/InputBase'
 import { ButtonPrimaryLine } from '../common/button/ButtonBase'
 
 export default function StartNewConversation() {
-  const { setCurrentConvoAddress } = useXmtpStore()
+  const { setMessageRouteParams } = useXmtpStore()
   const { isStarting, startNewConvo } = useStartNewConvo()
   const [errMsg, setErrMsg] = useState('')
   const [convoAddress, setConvoAddress] = useState('')
@@ -17,7 +17,10 @@ export default function StartNewConversation() {
         startNewConvo(convoAddress, {
           onSuccess: () => {
             setConvoAddress('')
-            setCurrentConvoAddress(convoAddress)
+            setMessageRouteParams({
+              route: MessageRoute.DETAIL,
+              peerAddress: convoAddress,
+            })
           },
           onFail: (error) => {
             setErrMsg(error.message)
@@ -52,7 +55,6 @@ const StartNewConversationWrap = styled.form`
 const StartFormWrap = styled.div`
   display: flex;
   gap: 10px;
-  padding-right: 10px;
 `
 const ConvoAddress = styled(InputBase)`
   width: 0;

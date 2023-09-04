@@ -18,20 +18,29 @@ import {
   production,
   useUpdateDispatcherConfig,
   ProfileOwnedByMe,
+  Post,
+  Comment,
 } from '@lens-protocol/react-web'
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { LENS_ENV } from '../constants/lens'
 import LensLoginModal from '../components/lens/LensLoginModal'
+import LensCommentPostModal from '../components/lens/LensCommentPostModal'
+import { LensPublication } from '../api/lens'
 
+type CommentModalData = LensPublication | Post | Comment | null
 interface LensAuthContextValue {
   isLogin: boolean
   isLoginPending: boolean
   lensLogin: () => void
   lensLogout: () => void
   openLensLoginModal: boolean
-  setOpenLensLoginModal: (open: boolean) => void
+  setOpenLensLoginModal: React.Dispatch<React.SetStateAction<boolean>>
+  openCommentModal: boolean
+  setOpenCommentModal: React.Dispatch<React.SetStateAction<boolean>>
+  commentModalData: CommentModalData
+  setCommentModalData: React.Dispatch<React.SetStateAction<CommentModalData>>
 }
 
 export const LensAuthContext = createContext<LensAuthContextValue>({
@@ -41,6 +50,10 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
   lensLogout: () => {},
   openLensLoginModal: false,
   setOpenLensLoginModal: () => {},
+  openCommentModal: false,
+  setOpenCommentModal: () => {},
+  commentModalData: null,
+  setCommentModalData: () => {},
 })
 
 const lensConfig: LensConfig = {
@@ -58,10 +71,13 @@ export function AppLensProvider({ children }: PropsWithChildren) {
 
 export function LensAuthProvider({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false)
+  const [openCommentModal, setOpenCommentModal] = useState(false)
+  const [commentModalData, setCommentModalData] =
+    useState<CommentModalData>(null)
 
   const { execute: login, isPending: isLoginPending } = useWalletLogin()
   const { execute: lensLogout } = useWalletLogout()
-  const { data: wallet, loading: walletLoading } = useActiveProfile()
+  const { data: wallet } = useActiveProfile()
   const { isConnected } = useAccount()
   const { disconnectAsync } = useDisconnect()
 
@@ -100,10 +116,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
 
-  const isLogin = useMemo(
-    () => !isLoginPending && !!wallet && !walletLoading && isConnected,
-    [isLoginPending, wallet, walletLoading, isConnected],
-  )
+  const isLogin = useMemo(() => !!wallet, [wallet])
 
   return (
     <LensAuthContext.Provider
@@ -114,6 +127,10 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
         lensLogout,
         openLensLoginModal,
         setOpenLensLoginModal,
+        openCommentModal,
+        setOpenCommentModal,
+        commentModalData,
+        setCommentModalData,
       }}
     >
       {children}
@@ -121,15 +138,19 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
         open={openLensLoginModal}
         closeModal={() => setOpenLensLoginModal(false)}
       />
+      <LensCommentPostModal
+        open={openCommentModal}
+        closeModal={() => setOpenCommentModal(false)}
+      />
     </LensAuthContext.Provider>
   )
 }
 
-export function useLensAuth() {
+export function useLensCtx() {
   const context = useContext(LensAuthContext)
   if (!context) {
     throw Error(
-      'useLensAuth can only be used within the LensAuthProvider component',
+      'useLensCtx can only be used within the LensAuthProvider component',
     )
   }
   return context

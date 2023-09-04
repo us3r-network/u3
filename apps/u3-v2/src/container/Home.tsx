@@ -2,10 +2,12 @@ import styled from 'styled-components'
 import { useEffect, useMemo } from 'react'
 import LensPostCard from '../components/lens/LensPostCard'
 import { useActiveProfile } from '@lens-protocol/react-web'
-import FCast from '../components/FCast'
+import FCast from '../components/farcaster/FCast'
 import { useLoadFeeds } from '../hooks/useLoadFeeds'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { useSearchParams } from 'react-router-dom'
+import ButtonBase from '../components/common/button/ButtonBase'
+import Loading from '../components/common/loading/Loading'
 
 export default function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
@@ -47,7 +49,9 @@ export default function Home() {
     <HomeWrapper>
       <MainWrapper>
         {firstLoading ? (
-          <div>Loading...</div>
+          <LoadingWrapper>
+            <Loading />
+          </LoadingWrapper>
         ) : (
           <PostList>
             {feeds.map(({ platform, data }) => {
@@ -70,20 +74,19 @@ export default function Home() {
           </PostList>
         )}
 
-        {moreLoading && <div>Loading ...</div>}
-
         <p>
-          {!firstLoading && !moreLoading && pageInfo.hasNextPage && (
-            <button
+          {!firstLoading && pageInfo.hasNextPage && (
+            <LoadMoreBtn
               onClick={() => {
+                if (moreLoading) return
                 loadMoreFeeds({
                   keyword: currentSearchParams.keyword,
                   activeLensProfileId: activeLensProfile?.id,
                 })
               }}
             >
-              Load More
-            </button>
+              {moreLoading ? 'Loading ...' : 'Load more'}
+            </LoadMoreBtn>
           )}
         </p>
       </MainWrapper>
@@ -101,10 +104,24 @@ const HomeWrapper = styled.div`
 const MainWrapper = styled.div`
   width: 750px;
 `
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 const PostList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1px;
+
+  border-radius: 20px;
+  background: #212228;
+  overflow: hidden;
+  & > *:not(:first-child) {
+    border-top: 1px solid #191a1f;
+  }
 `
 const SidebarWrapper = styled.div`
   width: 0;
@@ -117,4 +134,16 @@ const SidebarWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`
+const LoadMoreBtn = styled(ButtonBase)`
+  width: 100%;
+  height: 40px;
+  border-radius: 20px;
+  background: #212228;
+  color: #fff;
+  font-family: Baloo Bhai 2;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
 `

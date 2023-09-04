@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import ModalContainer from './ModalContainer'
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 import { CastId, makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
@@ -7,12 +6,12 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster'
-import { FarCast } from '../../api'
+import { FarCast, SocailPlatform } from '../../api'
 import useFarcasterUserData from '../../hooks/useFarcasterUserData'
-import styled from 'styled-components'
 import { getCurrFid } from '../../utils/farsign-utils'
+import ReplyModal from '../common/ReplyModal'
 
-export default function CommentPostModal({
+export default function FCastCommentPostModal({
   cast,
   open,
   closeModal,
@@ -29,10 +28,12 @@ export default function CommentPostModal({
 
   const [text, setText] = useState('')
 
+  const [isPending, setIsPending] = useState(false)
   const commentCast = useCallback(
     async (castId: CastId) => {
       if (!text || !encryptedSigner) return
       const currFid = getCurrFid()
+      setIsPending(true)
       try {
         const cast = (
           await makeCastAdd(
@@ -57,6 +58,8 @@ export default function CommentPostModal({
       } catch (error) {
         console.error(error)
         toast.error('error creating post')
+      } finally {
+        setIsPending(false)
       }
     },
     [text, encryptedSigner, closeModal],
@@ -69,59 +72,24 @@ export default function CommentPostModal({
   })
 
   return (
-    <ModalContainer
+    <ReplyModal
       open={open}
       closeModal={closeModal}
-      afterCloseAction={() => setText('')}
-    >
-      <div>
-        <UserDataBox>
-          <div>{userData.pfp && <img src={userData.pfp} alt="" />}</div>
-          <div>
-            <div>{userData.display} </div>
-            <div>{userData.fid} </div>
-          </div>
-        </UserDataBox>
-        <div>{cast.text}</div>
-      </div>
-      <br />
-      <CommentBox>
-        <div>{currUserData.pfp && <img src={currUserData.pfp} alt="" />}</div>
-        <input
-          type="text"
-          value={text}
-          onChange={(e) => {
-            setText(e.target.value)
-          }}
-        />
-        <button
-          onClick={() => {
-            commentCast(castId)
-          }}
-        >
-          Comment
-        </button>
-      </CommentBox>
-    </ModalContainer>
+      postData={{
+        platform: SocailPlatform.Farcaster,
+        avatar: userData.pfp,
+        name: userData.display,
+        handle: userData.fid,
+        createdAt: cast.created_at,
+        content: cast.text,
+      }}
+      avatar={currUserData.pfp}
+      content={text}
+      setContent={setText}
+      onSubmit={() => {
+        commentCast(castId)
+      }}
+      submitting={isPending}
+    />
   )
 }
-
-const CommentBox = styled.div`
-  display: flex;
-  gap: 10px;
-  img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-  }
-`
-
-const UserDataBox = styled.div`
-  display: flex;
-  gap: 10px;
-  img {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-  }
-`
