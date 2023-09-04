@@ -12,7 +12,7 @@ import {
 import Loading from '../components/common/loading/Loading'
 import styled from 'styled-components'
 
-export default function PostDetail() {
+export default function FarcasterPostDetail() {
   const { castId } = useParams()
   const [loading, setLoading] = useState(false)
   const [cast, setCast] = useState<FarCast>()

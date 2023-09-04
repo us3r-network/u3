@@ -23,7 +23,7 @@ import 'react-toastify/dist/ReactToastify.min.css'
 import Nav from './components/Nav'
 import { AppLensProvider } from './contexts/AppLensCtx'
 import Modal from 'react-modal'
-import PostDetail from './container/PostDetail'
+import FarcasterPostDetail from './container/FarcasterPostDetail'
 import LensPostDetail from './container/LensPostDetail'
 
 init(AIRSTACK_API_KEY)
@@ -40,7 +40,10 @@ function Routers() {
           path="post-detail/lens/:publicationId"
           element={<LensPostDetail />}
         />
-        <Route path="post-detail/:castId" element={<PostDetail />} />
+        <Route
+          path="post-detail/fcast/:castId"
+          element={<FarcasterPostDetail />}
+        />
         <Route path="profile" element={<Profile />} />
         <Route path="profile/:addr" element={<Profile />} />
       </Route>
