@@ -94,9 +94,6 @@ function Layout() {
 }
 const LayoutWrapper = styled.div`
   width: 100vw;
-  height: 100vh;
-  background: #191a1f;
-  overflow-y: auto;
 `
 
 const AppContainer = styled.div`
