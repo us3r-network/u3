@@ -11,6 +11,7 @@ import Loading from '../components/common/loading/Loading'
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds'
 import { useAccount } from 'wagmi'
 import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 enum FeedsType {
   FOLLOWING = 'following',
@@ -173,39 +174,42 @@ export default function Home() {
             <Loading />
           </LoadingWrapper>
         ) : (
-          <PostList>
-            {feeds.map(({ platform, data }) => {
-              if (platform === 'lens') {
-                return <LensPostCard key={data.id} data={data} />
-              }
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex')
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                  />
-                )
-              }
-              return null
-            })}
-          </PostList>
+          <InfiniteScroll
+            dataLength={feeds.length}
+            next={() => {
+              if (moreLoading) return
+              loadMoreFeeds()
+            }}
+            hasMore={!firstLoading && pageInfo.hasNextPage}
+            loader={
+              moreLoading ? (
+                <LoadingMoreWrapper>
+                  <Loading />
+                </LoadingMoreWrapper>
+              ) : null
+            }
+          >
+            <PostList>
+              {feeds.map(({ platform, data }) => {
+                if (platform === 'lens') {
+                  return <LensPostCard key={data.id} data={data} />
+                }
+                if (platform === 'farcaster') {
+                  const key = Buffer.from(data.hash.data).toString('hex')
+                  return (
+                    <FCast
+                      key={key}
+                      cast={data}
+                      openFarcasterQR={openFarcasterQR}
+                      farcasterUserData={farcasterUserData}
+                    />
+                  )
+                }
+                return null
+              })}
+            </PostList>
+          </InfiniteScroll>
         )}
-
-        <p>
-          {!firstLoading && pageInfo.hasNextPage && (
-            <LoadMoreBtn
-              onClick={() => {
-                if (moreLoading) return
-                loadMoreFeeds()
-              }}
-            >
-              {moreLoading ? 'Loading ...' : 'Load more'}
-            </LoadMoreBtn>
-          )}
-        </p>
       </MainWrapper>
       <SidebarWrapper>Comming soon</SidebarWrapper>
     </HomeWrapper>
@@ -227,6 +231,13 @@ const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `
 const PostList = styled.div`
   display: flex;

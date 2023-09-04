@@ -31,7 +31,7 @@ export default function FCast({
     <PostCardWrapper
       onClick={() => {
         const id = Buffer.from(castId.hash).toString('hex')
-        navigate(`/post-detail/${id}`)
+        navigate(`/post-detail/fcast/${id}`)
       }}
     >
       <PostCardUserInfo
