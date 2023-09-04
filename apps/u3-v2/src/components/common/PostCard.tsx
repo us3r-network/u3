@@ -184,3 +184,12 @@ export const PostCardActionsWrapper = styled.div`
   align-items: center;
   gap: 15px;
 `
+
+export const PostCardImgWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+
+  > img {
+    max-width: 30%;
+  }
+`

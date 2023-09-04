@@ -12,7 +12,7 @@ export type ApiResp<T> = {
 export type FarCast = {
   created_at: string
   deleted_at: string | null
-  embeds: string[]
+  embeds: any[]
   fid: string
   hash: { type: 'Buffer'; data: Uint8Array }
   id: string
