@@ -7,7 +7,6 @@ export const FARCASTER_NETWORK =
     ? FarcasterNetwork.TESTNET
     : FarcasterNetwork.MAINNET
 
-console.log('FARCASTER_HUB_URL', FARCASTER_NETWORK, FARCASTER_HUB_URL)
 export const FARCASTER_WEB_CLIENT = getHubRpcClient(FARCASTER_HUB_URL, {})
 export const FARCASTER_CLIENT_NAME = 'US3R'
 

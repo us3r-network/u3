@@ -7,8 +7,17 @@ import { Asset } from './Asset'
 import { getBadges } from '../../api/badges'
 import { GalxeData, NooxData, PoapData } from '../../api'
 import { GalxeCard, NooxCard, PoapCard } from './Card'
+import { Tabs, TabList, Tab, TabPanel } from 'react-aria-components'
 
-export default function UserAssets({ addrs }: { addrs: string[] }) {
+export default function UserAssets({
+  addrs,
+  zoomIn,
+  zoomOut,
+}: {
+  addrs: string[]
+  zoomIn: boolean
+  zoomOut: () => void
+}) {
   const [nfts, setNfts] = useState<TokenType[]>([])
   const [tokens, setTokens] = useState<{
     ethereum: TokenType[]
@@ -135,81 +144,200 @@ export default function UserAssets({ addrs }: { addrs: string[] }) {
     getBadgesData(addrs)
   }, [addrs])
 
+  let [tabs, setTabs] = useState([
+    { id: 1, title: 'Tab 1', content: 'Tab body 1' },
+    { id: 2, title: 'Tab 2', content: 'Tab body 2' },
+    { id: 3, title: 'Tab 3', content: 'Tab body 3' },
+  ])
+
   const tokenItems = useMemo((): TokenType[] => {
     return [...tokens.ethereum, ...tokens.polygon]
   }, [tokens.ethereum, tokens.polygon])
 
-  console.log(poapData)
+  const overviewTokens = useMemo(() => {
+    return tokenItems.slice(0, 3)
+  }, [tokenItems])
+
+  const overviewNFTs = useMemo(() => {
+    return nfts.slice(0, 3)
+  }, [nfts])
+
+  const overviewPoap = useMemo(() => {
+    return poapData.slice(0, 3)
+  }, [poapData])
+
+  const overviewGalxe = useMemo(() => {
+    return {
+      addressInfo: {
+        nfts: {
+          totalCount: galxeData?.addressInfo?.nfts?.totalCount || 0,
+          list: [...(galxeData?.addressInfo?.nfts?.list || [])].slice(0, 3),
+        },
+      },
+    }
+  }, [galxeData])
+
+  const overviewNoox = useMemo(() => {
+    return {
+      result: nooxData.result.slice(0, 3),
+    }
+  }, [nooxData])
+
+  // const selectKey = useMemo(() => {
+  //   return 'overview'
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [zoomIn])
+
   return (
-    <div>
-      <div>
-        <div>badges</div>
-        <div>
-          {poapData.map((item) => {
-            return <PoapCard key={item.event.id} data={item} />
-          })}
-          {galxeData.addressInfo?.nfts.list.map((item) => {
-            return <GalxeCard key={item.id} data={item} />
-          })}
-          {nooxData.result.map((item) => {
-            return <NooxCard key={item.transaction_hash} data={item} />
-          })}
-        </div>
-      </div>
-      <div>
-        <div>Tokens</div>
-        <div>
-          {tokenItems.map((token, index) => (
-            <Token
-              // eslint-disable-next-line react/no-array-index-key
-              key={index}
-              amount={token?.formattedAmount}
-              symbol={token?.token?.symbol}
-              type={token?.token?.name}
-              logo={
-                token?.token?.logo?.small ||
-                token?.token?.projectDetails?.imageUrl
-              }
-            />
-          ))}
-        </div>
-      </div>
-      <div>
-        <div>nfts</div>
-        <div>
-          {nfts.map((_token, index) => {
-            const token = _token as TokenType
-
-            const address = token.tokenAddress
-            const id =
-              token.tokenNfts?.tokenId && `#${token.tokenNfts?.tokenId}`
-
-            const symbol = token?.token?.symbol || ''
-            const type = token.tokenType || ''
-            const blockchain = token.blockchain || 'ethereum'
-            const name = token?.token?.name || ''
-            const tokenId = token.tokenNfts?.tokenId
-            const image = token.tokenNfts?.contentValue?.image?.medium || ''
-
-            return (
-              <NFT
+    <AssetBox zoomIn={!!zoomIn}>
+      <Tabs>
+        <TabNavBox>
+          {zoomIn && <button onClick={zoomOut}>zoomOut</button>}
+          <TabList aria-label="History of Ancient Rome">
+            <Tab id="overview">Overview</Tab>
+            {!zoomIn && (
+              <>
+                <Tab id="tokens">Tokens</Tab>
+                <Tab id="nfts">NFTs</Tab>
+                <Tab id="badges">Badges</Tab>
+              </>
+            )}
+          </TabList>
+        </TabNavBox>
+        <TabPanel id="overview">
+          <h4>Tokens</h4>
+          <div>
+            {overviewTokens.map((token, index) => (
+              <Token
+                // eslint-disable-next-line react/no-array-index-key
                 key={index}
-                type={type}
-                name={name}
-                id={id}
-                address={address}
-                symbol={symbol}
-                blockchain={blockchain}
-                tokenId={tokenId}
-                image={image}
+                amount={token?.formattedAmount}
+                symbol={token?.token?.symbol}
+                type={token?.token?.name}
+                logo={
+                  token?.token?.logo?.small ||
+                  token?.token?.projectDetails?.imageUrl
+                }
               />
-            )
-          })}
-        </div>
-      </div>
-    </div>
+            ))}
+          </div>
+          <h4>NFTs</h4>
+          <NFTBox>
+            {overviewNFTs.map((_token, index) => {
+              const token = _token as TokenType
+
+              const address = token.tokenAddress
+              const id =
+                token.tokenNfts?.tokenId && `#${token.tokenNfts?.tokenId}`
+
+              const symbol = token?.token?.symbol || ''
+              const type = token.tokenType || ''
+              const blockchain = token.blockchain || 'ethereum'
+              const name = token?.token?.name || ''
+              const tokenId = token.tokenNfts?.tokenId
+              const image = token.tokenNfts?.contentValue?.image?.medium || ''
+
+              return (
+                <NFT
+                  key={index}
+                  type={type}
+                  name={name}
+                  id={id}
+                  address={address}
+                  symbol={symbol}
+                  blockchain={blockchain}
+                  tokenId={tokenId}
+                  image={image}
+                />
+              )
+            })}
+          </NFTBox>
+          <h4>Badges</h4>
+          <NFTBox>
+            {overviewPoap.map((item) => {
+              return <PoapCard key={item.event.id} data={item} />
+            })}
+            {overviewGalxe.addressInfo?.nfts.list.map((item) => {
+              return <GalxeCard key={item.id} data={item} />
+            })}
+            {/* {overviewNoox.result.map((item) => {
+              return <NooxCard key={item.transaction_hash} data={item} />
+            })} */}
+          </NFTBox>
+        </TabPanel>
+        <TabPanel id="tokens">
+          <div>
+            {tokenItems.map((token, index) => (
+              <Token
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                amount={token?.formattedAmount}
+                symbol={token?.token?.symbol}
+                type={token?.token?.name}
+                logo={
+                  token?.token?.logo?.small ||
+                  token?.token?.projectDetails?.imageUrl
+                }
+              />
+            ))}
+          </div>
+        </TabPanel>
+        <TabPanel id="nfts">
+          <NFTBox>
+            {nfts.map((_token, index) => {
+              const token = _token as TokenType
+
+              const address = token.tokenAddress
+              const id =
+                token.tokenNfts?.tokenId && `#${token.tokenNfts?.tokenId}`
+
+              const symbol = token?.token?.symbol || ''
+              const type = token.tokenType || ''
+              const blockchain = token.blockchain || 'ethereum'
+              const name = token?.token?.name || ''
+              const tokenId = token.tokenNfts?.tokenId
+              const image = token.tokenNfts?.contentValue?.image?.medium || ''
+
+              return (
+                <NFT
+                  key={index}
+                  type={type}
+                  name={name}
+                  id={id}
+                  address={address}
+                  symbol={symbol}
+                  blockchain={blockchain}
+                  tokenId={tokenId}
+                  image={image}
+                />
+              )
+            })}
+          </NFTBox>
+        </TabPanel>
+
+        <TabPanel id="badges">
+          <NFTBox>
+            {poapData.map((item) => {
+              return <PoapCard key={item.event.id} data={item} />
+            })}
+            {galxeData.addressInfo?.nfts.list.map((item) => {
+              return <GalxeCard key={item.id} data={item} />
+            })}
+            {/* {nooxData.result.map((item) => {
+              return <NooxCard key={item.transaction_hash} data={item} />
+            })} */}
+          </NFTBox>
+        </TabPanel>
+      </Tabs>
+    </AssetBox>
   )
 }
+
+const AssetBox = styled.div<{ zoomIn: boolean }>`
+  background: #1b1e23;
+  width: ${(props) =>
+    props.zoomIn ? 'calc(100% - 700px)' : 'calc(100% - 400px)'};
+`
 
 type NFTProps = {
   type: string
@@ -248,9 +376,6 @@ function NFT({
           />
         )}
       </Box>
-      <div className="name">
-        <p>{name}</p>
-      </div>
     </CardBox>
   )
 }
@@ -334,7 +459,7 @@ const TokenInfoBox = styled.div`
 const CardBox = styled.div`
   min-width: 162px;
   /* height: 225px; */
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   box-sizing: border-box;
   border: 1px solid #39424c;
@@ -393,9 +518,20 @@ const Box = styled.div<{ calcHeight: boolean }>`
   background: #333;
   color: #fff;
   line-height: 100%;
-  height: ${(props) => (props.calcHeight ? 'calc(100% - 60px)' : '100%')};
+  /* height: ${(props) => (props.calcHeight ? 'calc(100% - 60px)' : '100%')}; */
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+`
+
+const TabNavBox = styled.div`
+  display: flex;
+  gap: 20px;
+`
+
+const NFTBox = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
 `

@@ -47,7 +47,7 @@ export default function Profile() {
 
   const walletAddr = ensAddr || address
 
-  console.log(walletAddr)
+  console.log({ walletAddr })
 
   if (resolving) {
     return <div>Resolving...</div>
@@ -64,12 +64,31 @@ export default function Profile() {
 }
 
 function ProfileInfo({ addr }: { addr: string }) {
+  const [zoomIn, setZoomIn] = useState(false)
   return (
     <ProfileInfoWrapper>
       <UserInfo />
-      <UserAssets addrs={[addr]} />
-      {/* <UserWallets /> */}
-      {/* <UserTags /> */}
+      <UserDataBox>
+        <div className="posts">
+          coming soon
+          {!zoomIn && (
+            <button
+              onClick={() => {
+                setZoomIn(true)
+              }}
+            >
+              zoomOut
+            </button>
+          )}
+        </div>
+        <UserAssets
+          addrs={[addr]}
+          zoomIn={zoomIn}
+          zoomOut={() => {
+            setZoomIn(false)
+          }}
+        />
+      </UserDataBox>
     </ProfileInfoWrapper>
   )
 }
@@ -85,4 +104,13 @@ const ProfileInfoWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+`
+
+const UserDataBox = styled.div`
+  display: flex;
+  gap: 20px;
+
+  > .posts {
+    flex-grow: 1;
+  }
 `

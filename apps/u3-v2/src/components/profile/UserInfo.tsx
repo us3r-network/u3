@@ -12,12 +12,14 @@ export default function UserInfoStyled() {
   const [isOpenEdit, setIsOpenEdit] = useState(false)
   return (
     <UserInfoWrapper>
-      <UserInfo.Avatar
-        onClick={() => {
-          setIsOpenEdit(true)
-        }}
-      />
-      <UserInfo.Name />
+      <div className="avatar-container">
+        <UserInfo.Avatar
+          onClick={() => {
+            setIsOpenEdit(true)
+          }}
+        />
+        <UserInfo.Name />
+      </div>
       <UserInfo.Bio data-state-element="Bio" />
       <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
         <Dialog>
@@ -47,19 +49,25 @@ const UserInfoWrapper = styled(UserInfo)`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: center;
   padding: 20px;
-  width: 360px;
   box-sizing: border-box;
   background: #1b1e23;
   border-radius: 20px;
 
+  > div.avatar-container {
+    display: flex;
+    gap: 20px;
+  }
+
   [data-us3r-component='UserAvatar'] {
     display: inline-block;
-    margin: 0 auto;
     position: relative;
     width: 120px !important;
     height: 120px !important;
+    & img {
+      width: 100%;
+      height: 100%;
+    }
     overflow: hidden;
     cursor: pointer;
     &:hover {
