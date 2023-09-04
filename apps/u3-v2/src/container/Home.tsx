@@ -6,7 +6,6 @@ import FCast from '../components/farcaster/FCast'
 import { useLoadTrendingFeeds } from '../hooks/useLoadTrendingFeeds'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { useSearchParams } from 'react-router-dom'
-import ButtonBase from '../components/common/button/ButtonBase'
 import Loading from '../components/common/loading/Loading'
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds'
 import { useAccount } from 'wagmi'
@@ -262,18 +261,6 @@ const SidebarWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
-const LoadMoreBtn = styled(ButtonBase)`
-  width: 100%;
-  height: 40px;
-  border-radius: 20px;
-  background: #212228;
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
 `
 const FeedsTypeTabsWrapper = styled.div`
   display: flex;

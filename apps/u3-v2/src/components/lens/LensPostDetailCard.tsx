@@ -8,6 +8,7 @@ import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
 import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
 import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
 import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
+import LensPostCardContent from './LensPostCardContent'
 
 export default function LensPostDetailCard({
   data,
@@ -70,6 +71,9 @@ export default function LensPostDetailCard({
 
   return (
     <PostCard
+      contentRender={() => (
+        <LensPostCardContent publication={updatedPublication as Post} />
+      )}
       data={cardData}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
