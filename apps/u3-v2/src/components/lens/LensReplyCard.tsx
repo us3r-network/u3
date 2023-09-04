@@ -8,6 +8,7 @@ import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
 import ReplyCard, { ReplyCardData } from '../common/ReplyCard'
 import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
 import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
+import LensPostCardContent from './LensPostCardContent'
 
 export default function LensReplyCard({ data }: { data: Comment }) {
   const navigate = useNavigate()
@@ -62,6 +63,9 @@ export default function LensReplyCard({ data }: { data: Comment }) {
 
   return (
     <ReplyCard
+      contentRender={() => (
+        <LensPostCardContent publication={updatedPublication as Comment} />
+      )}
       onClick={() => {
         navigate(`/post-detail/lens/${data.id}`)
       }}
