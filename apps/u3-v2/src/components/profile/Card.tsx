@@ -25,7 +25,7 @@ const Box = styled.div`
     padding-top: 110%;
   }
 
-  @media (min-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
+  /* @media (min-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: calc((100% - 20px * 5) / 6);
   }
 
@@ -39,7 +39,7 @@ const Box = styled.div`
 
   @media (min-width: ${MEDIA_BREAK_POINTS.lg}px) and (max-width: ${MEDIA_BREAK_POINTS.xl}px) {
     width: calc((100% - 20px * 2) / 3);
-  }
+  } */
 
   img {
     width: 100%;
@@ -157,7 +157,7 @@ const CircleCardBox = styled.div`
     display: block;
     padding-top: 100%;
   }
-
+  /* 
   @media (min-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: calc((100% - 20px * 5) / 6);
   }
@@ -172,7 +172,7 @@ const CircleCardBox = styled.div`
 
   @media (min-width: ${MEDIA_BREAK_POINTS.md}px) and (max-width: ${MEDIA_BREAK_POINTS.xl}px) {
     width: calc((100% - 20px * 2) / 3);
-  }
+  } */
 
   img {
     width: 100%;
