@@ -84,3 +84,23 @@ export function getFarcasterSignature(key: string): AxiosPromise<
     method: 'get',
   })
 }
+
+export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
+  ApiResp<{
+    metadata: (null | {
+      description: string
+      icon: string
+      image: string
+      title: string
+      url: string
+    })[]
+  }>
+> {
+  return axios({
+    url: API_BASE_URL + `/3r/embed`,
+    method: 'get',
+    params: {
+      urls,
+    },
+  })
+}
