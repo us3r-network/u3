@@ -9,11 +9,13 @@ import FCastComment from './FCastComment'
 import {
   PostCardActionsWrapper,
   PostCardContentWrapper,
+  PostCardEmbedWrapper,
   PostCardImgWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../common/PostCard'
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { getFarcasterEmbedMetadata } from '../../api/farcaster'
 
 export default function FCast({
   cast,
@@ -29,8 +31,16 @@ export default function FCast({
   const castId: CastId = useFarcasterCastId({ cast })
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
 
-  const embedsImg: { url: string }[] = useMemo(() => {
-    const result = []
+  const embeds: {
+    imgs: {
+      url: string
+    }[]
+    webpages: {
+      url: string
+    }[]
+  } = useMemo(() => {
+    const imgs = []
+    const webpages = []
     for (const embed of cast.embeds) {
       if (!embed?.url) continue
       if (
@@ -39,12 +49,16 @@ export default function FCast({
         embed.url.endsWith('.jpeg') ||
         embed.url.endsWith('.gif')
       ) {
-        result.push({
+        imgs.push({
+          url: embed.url,
+        })
+      } else {
+        webpages.push({
           url: embed.url,
         })
       }
     }
-    return result
+    return { imgs, webpages }
   }, [cast])
 
   return (
@@ -64,14 +78,7 @@ export default function FCast({
         }}
       />
       <PostCardContentWrapper>{cast.text}</PostCardContentWrapper>
-      {embedsImg && (
-        <PostCardImgWrapper>
-          {embedsImg.map((img) => (
-            // eslint-disable-next-line jsx-a11y/alt-text
-            <img src={img.url} />
-          ))}
-        </PostCardImgWrapper>
-      )}
+      <Embed embedImgs={embeds.imgs} embedWebpages={embeds.webpages} />
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation()
@@ -94,5 +101,78 @@ export default function FCast({
         />
       </PostCardActionsWrapper>
     </PostCardWrapper>
+  )
+}
+
+function Embed({
+  embedImgs,
+  embedWebpages,
+}: {
+  embedImgs: { url: string }[]
+  embedWebpages: { url: string }[]
+}) {
+  const viewRef = useRef<HTMLDivElement>(null)
+  const [metadata, setMetadata] = useState<
+    {
+      description: string
+      icon: string
+      image: string
+      title: string
+      url: string
+    }[]
+  >([])
+
+  const getEmbedWebpagesMetadata = async () => {
+    const urls = embedWebpages.map((embed) => embed.url)
+    if (urls.length === 0) return
+    const res = await getFarcasterEmbedMetadata(urls)
+    const { metadata } = res.data.data
+    const data = metadata.flatMap((m) => (m ? [m] : []))
+    setMetadata(data)
+  }
+
+  useEffect(() => {
+    if (!viewRef.current) return
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        getEmbedWebpagesMetadata()
+        observer.disconnect()
+      }
+    })
+
+    observer.observe(viewRef.current)
+    return () => {
+      observer.disconnect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewRef])
+
+  return (
+    <div ref={viewRef}>
+      {embedImgs && (
+        <PostCardImgWrapper>
+          {embedImgs.map((img) => (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <img src={img.url} />
+          ))}
+        </PostCardImgWrapper>
+      )}
+      {metadata.map((item) => {
+        return (
+          <PostCardEmbedWrapper key={item.url} href={item.url} target="_blank">
+            <div>
+              <h4>{item.title}</h4>
+              <p>{item.description}</p>
+            </div>
+            <div
+              className="img"
+              style={{
+                backgroundImage: `url(${item.image})`,
+              }}
+            />
+          </PostCardEmbedWrapper>
+        )
+      })}
+    </div>
   )
 }

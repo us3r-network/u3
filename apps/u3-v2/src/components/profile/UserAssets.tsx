@@ -6,7 +6,7 @@ import { MEDIA_BREAK_POINTS } from '../../constants'
 import { Asset } from './Asset'
 import { getBadges } from '../../api/badges'
 import { GalxeData, NooxData, PoapData } from '../../api'
-import { GalxeCard, NooxCard, PoapCard } from './Card'
+import { GalxeCard, PoapCard } from './Card'
 import { Tabs, TabList, Tab, TabPanel } from 'react-aria-components'
 
 export default function UserAssets({
@@ -28,7 +28,7 @@ export default function UserAssets({
   })
   const [poapData, setPoapData] = useState<Array<PoapData>>([])
   const [galxeData, setGalxeData] = useState<GalxeData>({})
-  const [nooxData, setNooxData] = useState<NooxData>({ total: 0, result: [] })
+  const [, setNooxData] = useState<NooxData>({ total: 0, result: [] })
 
   const getERC20Tokens = async (owners: string[]) => {
     try {
@@ -144,12 +144,6 @@ export default function UserAssets({
     getBadgesData(addrs)
   }, [addrs])
 
-  let [tabs, setTabs] = useState([
-    { id: 1, title: 'Tab 1', content: 'Tab body 1' },
-    { id: 2, title: 'Tab 2', content: 'Tab body 2' },
-    { id: 3, title: 'Tab 3', content: 'Tab body 3' },
-  ])
-
   const tokenItems = useMemo((): TokenType[] => {
     return [...tokens.ethereum, ...tokens.polygon]
   }, [tokens.ethereum, tokens.polygon])
@@ -176,17 +170,6 @@ export default function UserAssets({
       },
     }
   }, [galxeData])
-
-  const overviewNoox = useMemo(() => {
-    return {
-      result: nooxData.result.slice(0, 3),
-    }
-  }, [nooxData])
-
-  // const selectKey = useMemo(() => {
-  //   return 'overview'
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [zoomIn])
 
   return (
     <AssetBox zoomIn={!!zoomIn}>

@@ -193,3 +193,31 @@ export const PostCardImgWrapper = styled.div`
     max-width: 30%;
   }
 `
+
+export const PostCardEmbedWrapper = styled.a`
+  color: #fff;
+  border: 1px solid #9c9c9c;
+  padding: 10px;
+  display: flex;
+  border-radius: 10px;
+  gap: 20px;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  > .img {
+    flex-shrink: 0;
+    width: 110px;
+    height: 110px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+  }
+
+  p {
+    word-break: break-all;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; /* 这里是超出几行省略 */
+    overflow: hidden;
+  }
+`
