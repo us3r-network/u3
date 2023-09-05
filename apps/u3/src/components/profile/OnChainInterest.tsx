@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from 'ethers';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { MEDIA_BREAK_POINTS } from '../../constants';
 import {
@@ -13,6 +13,8 @@ import { NoItem } from '../icons/no-item';
 import CrownImg from '../imgs/crown.svg';
 import ethImage from '../imgs/eth.png';
 import NFTShower from './Credential/NFTShower';
+import { ERC20Tokens } from '../airstack/ERC20Tokens';
+import { Tokens } from '../airstack/Tokens';
 
 export default function OnChainInterest({
   data,
@@ -24,67 +26,19 @@ export default function OnChainInterest({
   wallet: ERC20Balances;
   ethBalance: string;
 }) {
-  const collections = new Set(
-    data.result.map((item) => item.name).filter((item) => !!item)
-  );
-  const [collection, setCollection] = useState('');
-
   return (
-    <ContentBox {...props}>
+    <ContentBox {...props} id="content-scroll">
       <div className="nft">
         <div className="title">
-          <span>{`NFT(${data.result.length})`}</span>
-          <div>
-            <Select
-              placeholder="Filter By Collections"
-              options={[...collections].map((item) => {
-                return {
-                  value: item,
-                  label: item,
-                };
-              })}
-              onChange={(value) => {
-                setCollection(value);
-              }}
-              value={collection}
-            />
-          </div>
+          <span>{`NFT`}</span>
         </div>
-        {data.result.length > 0 ? (
-          <div className="data">
-            {data.result
-              .filter((item) => {
-                if (collection) {
-                  return item.name === collection;
-                }
-                return true;
-              })
-              .map((item) => {
-                return (
-                  <NFTCard key={item.normalized_metadata.name} data={item} />
-                );
-              })}
-          </div>
-        ) : (
-          <OnChainNoItem />
-        )}
+        <Tokens />
       </div>
       <div className="wallet">
         <h2>Wallet</h2>
         <div className="wallet-content-box">
-          <EthTokenInfo balance={ethBalance} />
-          {wallet.map((item) => {
-            return (
-              <TokenInfo
-                key={item.name}
-                img={item.logo}
-                name={item.name}
-                symbol={item.symbol}
-                balance={item.balance}
-                decimals={item.decimals}
-              />
-            );
-          })}
+          {/* <EthTokenInfo balance={ethBalance} /> */}
+          <ERC20Tokens />
         </div>
       </div>
     </ContentBox>
@@ -327,6 +281,7 @@ const ContentBox = styled.div`
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
+      position: relative;
     }
   }
 

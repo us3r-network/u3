@@ -61,7 +61,7 @@ export default function Asset() {
   }, [fetchData, sessWallet, wallet, profile]);
 
   return (
-    <Wrapper>
+    <Wrapper id="top-wrapper">
       {isMobile ? (
         <MobilePageHeader
           tabs={['Asset', 'Gallery']}
@@ -71,7 +71,7 @@ export default function Asset() {
       ) : (
         <PageTitle>Asset</PageTitle>
       )}
-      <ContentWrapper>
+      <ContentWrapper id="content-wrapper">
         {(loading && (
           <div className="loading">
             <Loading />

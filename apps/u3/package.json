@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@airstack/airstack-react": "^0.4.7",
     "@loadable/component": "^5.15.2",
     "@multiavatar/multiavatar": "^1.0.7",
     "@react-spring/web": "^9.6.1",
@@ -16,13 +17,14 @@
     "@types/react-slick": "^0.23.10",
     "@types/styled-components": "^5.1.25",
     "@types/three": "^0.146.0",
-    "@us3r-network/auth-with-rainbowkit": "^0.1.8",
-    "@us3r-network/link": "0.2.3",
+    "@us3r-network/auth-with-rainbowkit": "^0.1.10",
+    "@us3r-network/link": "0.2.4",
     "@us3r-network/profile": "^0.5.6",
     "antd": "^5.0.7",
     "assert": "^2.0.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "classnames": "^2.3.2",
     "crypto-browserify": "^3.12.0",
     "dayjs": "^1.11.6",
     "dompurify": "^2.3.10",
@@ -69,7 +71,10 @@
     "three": "^0.147.0",
     "tslib": "^2.3.0",
     "web-vitals": "^2.1.4",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "wagmi": "^1.0.7",
+    "viem": "^0.3.37",
+    "@rainbow-me/rainbowkit": "1.0.2"
   },
   "scripts": {
     "start": "craco start",
