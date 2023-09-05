@@ -1,9 +1,9 @@
 import styled from 'styled-components'
 import { useAuthentication } from '@us3r-network/auth-with-rainbowkit'
 import { ButtonPrimary } from './common/button/ButtonBase'
-import WalletIcon from './common/icons/WalletIcon'
+import WalletIcon from './icons/WalletIcon'
 
-function NoLogin() {
+function NoLogin () {
   const { ready, status, signIn } = useAuthentication()
   return (
     <NoLoginWrapper>

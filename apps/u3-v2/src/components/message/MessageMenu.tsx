@@ -1,17 +1,17 @@
 import styled from 'styled-components'
-import ChatRoomIcon from '../common/icons/ChatRoomIcon'
+import ChatRoomIcon from '../icons/ChatRoomIcon'
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
 
-export default function MessageMenu() {
+export default function MessageMenu () {
   const { setOpenMessageModal } = useXmtpStore()
   return (
     <Wrapper
-      onClick={(e) => {
+      onClick={e => {
         e.stopPropagation()
-        setOpenMessageModal((open) => !open)
+        setOpenMessageModal(open => !open)
       }}
     >
-      <ChatRoomIcon className="nav-icon" />
+      <ChatRoomIcon className='nav-icon' />
     </Wrapper>
   )
 }

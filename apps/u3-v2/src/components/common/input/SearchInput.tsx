@@ -1,8 +1,8 @@
 import React, { useCallback, useState } from 'react'
 import { debounce } from 'lodash'
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import SearchSvg from '../icons/svgs/search.svg'
-import ClearSvg from '../icons/svgs/close.svg'
+import SearchSvg from '../../icons/svgs/search.svg'
+import ClearSvg from '../../icons/svgs/close.svg'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -58,7 +58,7 @@ interface Props extends StyledComponentPropsWithRef<'div'> {
   disabled?: boolean
 }
 
-export default function SearchInput({
+export default function SearchInput ({
   onSearch,
   placeholder = 'Search',
   debounce: needDebounce = true,
@@ -73,7 +73,7 @@ export default function SearchInput({
       debounce(() => {
         onSearch(query)
       }, debounceMs)(),
-    [onSearch, debounceMs],
+    [onSearch, debounceMs]
   )
 
   const handleInputChange = useCallback(
@@ -85,15 +85,15 @@ export default function SearchInput({
         onSearch(e.target.value)
       }
     },
-    [needDebounce, handleDebounceSearch, onSearch],
+    [needDebounce, handleDebounceSearch, onSearch]
   )
 
   return (
     <Wrapper {...otherProps}>
-      <Icon src={SearchSvg} className="search-input-icon" />
+      <Icon src={SearchSvg} className='search-input-icon' />
       <Input
-        className="search-input-input"
-        type="search"
+        className='search-input-input'
+        type='search'
         placeholder={placeholder}
         value={value}
         onChange={handleInputChange}

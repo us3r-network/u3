@@ -1,22 +1,22 @@
 import { useCallback, useState } from 'react'
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx'
 import { CastId, makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
 import {
   FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../../constants/farcaster'
-import { FarCast, SocailPlatform } from '../../api'
-import useFarcasterUserData from '../../hooks/useFarcasterUserData'
-import { getCurrFid } from '../../utils/farsign-utils'
-import ReplyModal from '../common/ReplyModal'
+  FARCASTER_WEB_CLIENT
+} from '../../../constants/farcaster'
+import { FarCast, SocailPlatform } from '../../../api'
+import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData'
+import { getCurrFid } from '../../../utils/farsign-utils'
+import ReplyModal from '../ReplyModal'
 
-export default function FCastCommentPostModal({
+export default function FCastCommentPostModal ({
   cast,
   open,
   closeModal,
   castId,
-  farcasterUserData,
+  farcasterUserData
 }: {
   cast: FarCast
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
@@ -43,10 +43,10 @@ export default function FCastCommentPostModal({
               embedsDeprecated: [],
               mentions: [],
               mentionsPositions: [],
-              parentCastId: castId,
+              parentCastId: castId
             },
             { fid: currFid, network: FARCASTER_NETWORK },
-            encryptedSigner,
+            encryptedSigner
           )
         )._unsafeUnwrap()
         const result = await FARCASTER_WEB_CLIENT.submitMessage(cast)
@@ -62,13 +62,13 @@ export default function FCastCommentPostModal({
         setIsPending(false)
       }
     },
-    [text, encryptedSigner, closeModal],
+    [text, encryptedSigner, closeModal]
   )
 
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData })
   const currUserData = useFarcasterUserData({
     fid: currFid + '',
-    farcasterUserData,
+    farcasterUserData
   })
 
   return (
@@ -81,7 +81,7 @@ export default function FCastCommentPostModal({
         name: userData.display,
         handle: userData.fid,
         createdAt: cast.created_at,
-        content: cast.text,
+        content: cast.text
       }}
       avatar={currUserData.pfp}
       content={text}

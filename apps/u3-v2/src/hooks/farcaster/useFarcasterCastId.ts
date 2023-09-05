@@ -1,6 +1,6 @@
 import { CastId } from '@farcaster/hub-web'
 import { useMemo } from 'react'
-import { FarCast } from '../api'
+import { FarCast } from '../../api'
 
 export default function useFarcasterCastId({ cast }: { cast: FarCast }) {
   const castId: CastId = useMemo(() => {

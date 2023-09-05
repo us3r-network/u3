@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import HeartIcon from './icons/HeartIcon'
+import HeartIcon from '../icons/HeartIcon'
 
 interface PostLikeProps {
   totalLikes: number
@@ -8,7 +8,7 @@ interface PostLikeProps {
   liking?: boolean
   likeAction?: () => void
 }
-export default function PostLike({
+export default function PostLike ({
   totalLikes,
   likeAvatars,
   liked,
@@ -18,7 +18,7 @@ export default function PostLike({
 }: StyledComponentPropsWithRef<'div'> & PostLikeProps) {
   return (
     <PostLikeWrapper
-      onClick={(e) => {
+      onClick={e => {
         if (likeAction) e.stopPropagation()
         if (!liking && likeAction) likeAction()
       }}
@@ -50,7 +50,7 @@ export const PostLikeWrapper = styled.div`
   line-height: 30px; /* 250% */
 `
 
-export function PostLikeAvatars({
+export function PostLikeAvatars ({
   likeAvatars,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & { likeAvatars: string[] }) {

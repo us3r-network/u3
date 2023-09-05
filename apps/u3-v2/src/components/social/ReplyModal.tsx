@@ -1,9 +1,9 @@
 import styled from 'styled-components'
-import ModalContainer from '../Modal/ModalContainer'
+import ModalContainer from '../common/modal/ModalContainer'
 import PostCard, { PostCardData } from './PostCard'
 import ReplyForm, { ReplyFormProps } from './ReplyForm'
 
-export default function ReplyModal({
+export default function ReplyModal ({
   open,
   closeModal,
   postData,
@@ -12,7 +12,7 @@ export default function ReplyModal({
   setContent,
   disabled,
   submitting,
-  onSubmit,
+  onSubmit
 }: {
   postData: PostCardData
   open: boolean

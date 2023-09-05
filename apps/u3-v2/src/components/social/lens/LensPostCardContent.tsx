@@ -2,19 +2,19 @@ import ReactMarkdown from 'react-markdown'
 import styled from 'styled-components'
 import { useMemo } from 'react'
 import { Post, Comment } from '@lens-protocol/react-web'
-import getMetadataImg from '../../utils/lens/getMetadataImg'
+import getMetadataImg from '../../../utils/lens/getMetadataImg'
 
 type Props = {
   publication: Post | Comment
 }
-export default function LensPostCardContent({ publication }: Props) {
+export default function LensPostCardContent ({ publication }: Props) {
   const img = useMemo(() => getMetadataImg(publication), [publication])
   const markdownContent = useMemo(() => {
     let content = publication?.metadata?.content
     if (!content) return ''
     content = content.replace(
       /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\\/%?=~_|!:,.;]*[-A-Z0-9+&@#\\/%=~_|])/gi,
-      '[$1]($1)',
+      '[$1]($1)'
     )
     return content
   }, [publication])

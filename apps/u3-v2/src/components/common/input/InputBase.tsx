@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react'
 import { debounce } from 'lodash'
 import styled, { StyledComponentPropsWithRef, css } from 'styled-components'
-import ClearSvg from '../icons/svgs/close.svg'
+import ClearSvg from '../../icons/svgs/close.svg'
 
 export const InputBaseCss = css`
   width: 100%;
@@ -49,7 +49,7 @@ export interface Props extends StyledComponentPropsWithRef<'input'> {
   debounceMs?: number // 防抖间隔毫秒数 default: 300
 }
 
-export default function InputBase({
+export default function InputBase ({
   value,
   onChange,
   placeholder = 'Placeholder',
@@ -63,7 +63,7 @@ export default function InputBase({
         if (onChange) onChange(e)
       }, debounceMs)()
     },
-    [onChange, debounceMs],
+    [onChange, debounceMs]
   )
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,12 +71,12 @@ export default function InputBase({
         handleDebounceSearch(e)
       } else if (onChange) onChange(e)
     },
-    [needDebounce, handleDebounceSearch, onChange],
+    [needDebounce, handleDebounceSearch, onChange]
   )
 
   return (
     <Input
-      type="search"
+      type='search'
       placeholder={placeholder}
       value={value}
       onChange={handleInputChange}

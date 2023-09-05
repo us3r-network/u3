@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import AddPostModal from './Modal/AddPostModal'
-import ButtonBase from './common/button/ButtonBase'
+import AddPostModal from './AddPostModal'
+import ButtonBase from '../common/button/ButtonBase'
 import styled from 'styled-components'
 
-export default function AddPost() {
+export default function AddPost () {
   const [open, setOpen] = useState(false)
   return (
     <div>

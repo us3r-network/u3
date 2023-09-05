@@ -1,15 +1,15 @@
 import QRCode from 'react-qr-code'
-import { Token } from '../../contexts/FarcasterCtx'
-import ModalContainer from './ModalContainer'
+import { Token } from '../../../contexts/FarcasterCtx'
+import ModalContainer from '../../common/modal/ModalContainer'
 import styled from 'styled-components'
 
-export default function FarcasterQRModal({
+export default function FarcasterQRModal ({
   open,
   token,
   closeModal,
   afterCloseAction,
   showQR,
-  warpcastErr,
+  warpcastErr
 }: {
   warpcastErr: string
   token: Token

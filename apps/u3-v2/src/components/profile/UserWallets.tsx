@@ -5,15 +5,15 @@ import { Dialog, Heading, Modal } from 'react-aria-components'
 import { toast } from 'react-toastify'
 import { InputBaseCss } from '../common/input/InputBase'
 import { ButtonPrimaryLineCss } from '../common/button/ButtonBase'
-import AddIcon from '../common/icons/AddIcon'
-import CopyIcon from '../common/icons/CopyIcon'
-import TrashIcon from '../common/icons/TrashIcon'
+import AddIcon from '../icons/AddIcon'
+import CopyIcon from '../icons/CopyIcon'
+import TrashIcon from '../icons/TrashIcon'
 
-export default function UserWalletsStyled() {
+export default function UserWalletsStyled () {
   const [isOpenEdit, setIsOpenEdit] = useState(false)
   return (
     <UserWalletsWrapper>
-      <div className="header">
+      <div className='header'>
         <h3>
           Wallets (<UserWallets.Count />)
         </h3>
@@ -26,13 +26,13 @@ export default function UserWalletsStyled() {
         </span>
       </div>
       <UserWallets.List>
-        {(item) => (
+        {item => (
           <UserWallets.Item value={item} key={item.address}>
-            <div className="text">
+            <div className='text'>
               <UserWallets.Address />
               <UserWallets.Network />
             </div>
-            <div className="btns">
+            <div className='btns'>
               <UserWallets.Delete>
                 <TrashIcon />
               </UserWallets.Delete>

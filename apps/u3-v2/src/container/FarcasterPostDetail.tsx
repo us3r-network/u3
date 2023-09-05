@@ -2,17 +2,17 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getFarcasterCastInfo } from '../api/farcaster'
 import { FarCast } from '../api'
-import FCast from '../components/farcaster/FCast'
+import FCast from '../components/social/farcaster/FCast'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import GoBack from '../components/GoBack'
 import {
   PostDetailCommentsWrapper,
-  PostDetailWrapper,
-} from '../components/common/PostDetail'
+  PostDetailWrapper
+} from '../components/social/PostDetail'
 import Loading from '../components/common/loading/Loading'
 import styled from 'styled-components'
 
-export default function FarcasterPostDetail() {
+export default function FarcasterPostDetail () {
   const { castId } = useParams()
   const [loading, setLoading] = useState(false)
   const [cast, setCast] = useState<FarCast>()
@@ -33,7 +33,7 @@ export default function FarcasterPostDetail() {
       }
       const { farcasterUserData, cast, comments } = resp.data.data
       const temp: { [key: string]: { type: number; value: string }[] } = {}
-      farcasterUserData.forEach((item) => {
+      farcasterUserData.forEach(item => {
         if (temp[item.fid]) {
           temp[item.fid].push(item)
         } else {
@@ -41,7 +41,7 @@ export default function FarcasterPostDetail() {
         }
       })
       setCast(cast)
-      setFarcasterUserData((pre) => ({ ...pre, ...temp }))
+      setFarcasterUserData(pre => ({ ...pre, ...temp }))
       setComments(comments)
     } catch (error) {
       console.error(error)
@@ -73,7 +73,7 @@ export default function FarcasterPostDetail() {
             farcasterUserData={farcasterUserData}
           />
           <PostDetailCommentsWrapper>
-            {(comments || []).map((item) => {
+            {(comments || []).map(item => {
               const key = Buffer.from(item.data.hash.data).toString('hex')
               return (
                 <FCast

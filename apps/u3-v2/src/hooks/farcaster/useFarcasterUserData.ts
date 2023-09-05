@@ -1,6 +1,6 @@
 import { UserDataType } from '@farcaster/hub-web'
 import { useMemo } from 'react'
-import { useFarcasterCtx } from '../contexts/FarcasterCtx'
+import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 
 export default function useFarcasterUserData({
   farcasterUserData,

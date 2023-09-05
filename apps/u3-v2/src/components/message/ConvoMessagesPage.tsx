@@ -1,12 +1,12 @@
 import styled from 'styled-components'
 import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx'
-import BackIcon from '../common/icons/BackIcon'
+import BackIcon from '../icons/BackIcon'
 import Avatar from './Avatar'
 import Name from './Name'
 import SendMessageForm from './SendMessageForm'
 import MessageList from './MessageList'
 
-export default function ConvoMessagesPage() {
+export default function ConvoMessagesPage () {
   const { messageRouteParams, setMessageRouteParams } = useXmtpStore()
   return (
     <Wrapper>
@@ -14,7 +14,7 @@ export default function ConvoMessagesPage() {
         <BackBtn
           onClick={() => {
             setMessageRouteParams({
-              route: MessageRoute.SEARCH,
+              route: MessageRoute.SEARCH
             })
           }}
         />

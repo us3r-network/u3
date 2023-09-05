@@ -3,12 +3,12 @@ import { NavLink } from 'react-router-dom'
 import styled, { css } from 'styled-components'
 import { ButtonBaseCss } from './common/button/ButtonBase'
 import { useEffect, useRef, useState } from 'react'
-import ExpandArrowIcon from './common/icons/ExpandArrowIcon'
-import LogoutIcon from './common/icons/LogoutIcon'
-import ProfileIcon from './common/icons/ProfileIcon'
+import ExpandArrowIcon from './icons/ExpandArrowIcon'
+import LogoutIcon from './icons/LogoutIcon'
+import ProfileIcon from './icons/ProfileIcon'
 import { useSession } from '@us3r-network/auth-with-rainbowkit'
 
-export default function UserMenu() {
+export default function UserMenu () {
   const session = useSession()
   if (session) {
     return <UserMenuBtn />
@@ -16,7 +16,7 @@ export default function UserMenu() {
   return <LoginBtn />
 }
 
-function UserMenuBtn() {
+function UserMenuBtn () {
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -37,23 +37,23 @@ function UserMenuBtn() {
 
   return (
     <UserMenuBtnWrapper
-      onClick={(e) => {
+      onClick={e => {
         e.stopPropagation()
         setOpen(!open)
       }}
     >
-      <UserAvatar className="user-avatar" />
+      <UserAvatar className='user-avatar' />
       <ExpandArrowIconStyled open={open} />
       {open && (
         <UserMenuDropdownWrapper ref={dropdownRef}>
-          <DropdownLinkOption to="/profile">
-            <ProfileIcon className="icon" />
-            <span className="text">Portfolio</span>
+          <DropdownLinkOption to='/profile'>
+            <ProfileIcon className='icon' />
+            <span className='text'>Portfolio</span>
           </DropdownLinkOption>
 
           <DropdownLogoutOption>
-            <LogoutIcon className="icon" />
-            <span className="text">Logout</span>
+            <LogoutIcon className='icon' />
+            <span className='text'>Logout</span>
           </DropdownLogoutOption>
         </UserMenuDropdownWrapper>
       )}
@@ -143,5 +143,5 @@ const DropdownLogoutOption = styled(LogoutButton)`
 const ExpandArrowIconStyled = styled(ExpandArrowIcon)<{ open: boolean }>`
   width: 20px;
   height: 20px;
-  transform: rotate(${(props) => (props.open ? '180deg' : '0deg')});
+  transform: rotate(${props => (props.open ? '180deg' : '0deg')});
 `

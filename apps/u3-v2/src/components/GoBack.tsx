@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import BackIcon from './common/icons/BackIcon'
+import BackIcon from './icons/BackIcon'
 import { useNavigate } from 'react-router-dom'
 
-export default function GoBack() {
+export default function GoBack () {
   const navigate = useNavigate()
   return <BackBtn onClick={() => navigate(-1)} />
 }

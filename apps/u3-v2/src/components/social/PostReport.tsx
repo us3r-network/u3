@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import ForwardIcon from './icons/ForwardIcon'
+import ForwardIcon from '../icons/ForwardIcon'
 
 interface PostReportProps {
   totalReposts: number
@@ -7,7 +7,7 @@ interface PostReportProps {
   reposting?: boolean
   repostAction?: () => void
 }
-export default function PostReport({
+export default function PostReport ({
   totalReposts,
   reposted,
   reposting,
@@ -16,7 +16,7 @@ export default function PostReport({
 }: StyledComponentPropsWithRef<'div'> & PostReportProps) {
   return (
     <PostReportWrapper
-      onClick={(e) => {
+      onClick={e => {
         if (repostAction) e.stopPropagation()
         if (!reposting && repostAction) repostAction()
       }}

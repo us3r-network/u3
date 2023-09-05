@@ -7,7 +7,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useState
 } from 'react'
 
 import { goerli } from 'viem/chains'
@@ -18,15 +18,15 @@ import {
   getPrivateKey,
   getSignedKeyRequest,
   setPrivateKey,
-  setSignedKeyRequest,
+  setSignedKeyRequest
 } from '../utils/farsign-utils'
 import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster'
-import FarcasterQRModal from '../components/Modal/FarcasterQRModal'
+import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal'
 import axios from 'axios'
 
 export const publicClient = createPublicClient({
   chain: goerli,
-  transport: http(),
+  transport: http()
 })
 
 export type Token = {
@@ -74,16 +74,16 @@ export interface FarcasterContextData {
 const FarcasterContext = createContext<FarcasterContextData | null>(null)
 
 const stopSign = {
-  stop: false,
+  stop: false
 }
 
-export default function FarcasterProvider({
-  children,
+export default function FarcasterProvider ({
+  children
 }: {
   children: ReactNode
 }) {
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
-    {},
+    {}
   )
 
   const [signer, setSigner] = useState<Signer>({
@@ -93,14 +93,14 @@ export default function FarcasterProvider({
       requestFid: 0,
       state: 'pending',
       token: '',
-      userFid: 0,
+      userFid: 0
     },
-    isConnected: false,
+    isConnected: false
   })
   const [showQR, setShowQR] = useState(false)
   const [token, setToken] = useState<Token>({
     token: '',
-    deepLink: '',
+    deepLink: ''
   })
   const [warpcastErr, setWarpcastErr] = useState<string>('')
 
@@ -138,22 +138,22 @@ export default function FarcasterProvider({
         break
       }
       tries += 1
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      await new Promise(resolve => setTimeout(resolve, 3000))
 
       const { signedKeyRequest } = await axios
         .get(`${WARPCAST_API}/v2/signed-key-request`, {
           params: {
-            token,
-          },
+            token
+          }
         })
-        .then((response) => response.data.result)
+        .then(response => response.data.result)
 
       if (signedKeyRequest.state === 'completed') {
         setSignedKeyRequest(signedKeyRequest)
 
         setSigner({
           SignedKeyRequest: signedKeyRequest,
-          isConnected: true,
+          isConnected: true
         })
         break
       }
@@ -181,9 +181,9 @@ export default function FarcasterProvider({
         key: convertedKey,
         requestFid: appFid,
         signature,
-        deadline,
+        deadline
       })
-      .then((response) => response.data.result.signedKeyRequest)
+      .then(response => response.data.result.signedKeyRequest)
 
     setPrivateKey(keyPair.privateKey)
     pollForSigner(token)
@@ -216,11 +216,11 @@ export default function FarcasterProvider({
     if (signer != null) {
       setToken({
         token: 'already connected',
-        deepLink: 'already connected',
+        deepLink: 'already connected'
       })
       setSigner({
         SignedKeyRequest: JSON.parse(signer),
-        isConnected: true,
+        isConnected: true
       })
     }
   }, [])
@@ -235,7 +235,7 @@ export default function FarcasterProvider({
         encryptedSigner,
         openFarcasterQR,
         farcasterUserData,
-        setFarcasterUserData,
+        setFarcasterUserData
       }}
     >
       {children}
@@ -257,12 +257,12 @@ export default function FarcasterProvider({
   )
 }
 
-export function useFarcasterCtx() {
+export function useFarcasterCtx () {
   const context = useContext(FarcasterContext)
   if (!context) {
     throw new Error('Missing context')
   }
   return {
-    ...context,
+    ...context
   }
 }

@@ -1,11 +1,11 @@
 import styled from 'styled-components'
-import ModalContainer from '../Modal/ModalContainer'
-import { useLensCtx } from '../../contexts/AppLensCtx'
-import { ButtonPrimary } from '../common/button/ButtonBase'
+import ModalContainer from '../../common/modal/ModalContainer'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
+import { ButtonPrimary } from '../../common/button/ButtonBase'
 
-export default function LensLoginModal({
+export default function LensLoginModal ({
   open,
-  closeModal,
+  closeModal
 }: {
   open: boolean
   closeModal: () => void

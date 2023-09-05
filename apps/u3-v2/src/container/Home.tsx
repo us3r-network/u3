@@ -1,23 +1,23 @@
 import styled from 'styled-components'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import LensPostCard from '../components/lens/LensPostCard'
+import LensPostCard from '../components/social/lens/LensPostCard'
 import { useActiveProfile } from '@lens-protocol/react-web'
-import FCast from '../components/farcaster/FCast'
+import FCast from '../components/social/farcaster/FCast'
 import { useLoadTrendingFeeds } from '../hooks/useLoadTrendingFeeds'
 import { useFarcasterCtx } from '../contexts/FarcasterCtx'
 import { useSearchParams } from 'react-router-dom'
 import Loading from '../components/common/loading/Loading'
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds'
 import { useAccount } from 'wagmi'
-import useFarcasterCurrFid from '../hooks/useFarcasterCurrFid'
+import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 enum FeedsType {
   FOLLOWING = 'following',
-  TRENDING = 'trending',
+  TRENDING = 'trending'
 }
 
-export default function Home() {
+export default function Home () {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile()
   const fid = useFarcasterCurrFid()
@@ -29,7 +29,7 @@ export default function Home() {
     feeds: trendingFeeds,
     pageInfo: trendingPageInfo,
     loadFirstFeeds: loadTrendingFirstFeeds,
-    loadMoreFeeds: loadTrendingMoreFeeds,
+    loadMoreFeeds: loadTrendingMoreFeeds
   } = useLoadTrendingFeeds()
 
   const {
@@ -38,7 +38,7 @@ export default function Home() {
     feeds: followingFeeds,
     pageInfo: followingPageInfo,
     loadFirstFeeds: loadFollowingFirstFeeds,
-    loadMoreFeeds: loadFollowingMoreFeeds,
+    loadMoreFeeds: loadFollowingMoreFeeds
   } = useLoadFollowingFeeds()
 
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx()
@@ -46,9 +46,9 @@ export default function Home() {
   const [searchParams] = useSearchParams()
   const currentSearchParams = useMemo(
     () => ({
-      keyword: searchParams.get('keyword') || '',
+      keyword: searchParams.get('keyword') || ''
     }),
-    [searchParams],
+    [searchParams]
   )
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING)
@@ -58,7 +58,7 @@ export default function Home() {
       feedsType === FeedsType.TRENDING
         ? trendingFirstLoading
         : followingFirstLoading,
-    [feedsType, trendingFirstLoading, followingFirstLoading],
+    [feedsType, trendingFirstLoading, followingFirstLoading]
   )
 
   const moreLoading = useMemo(
@@ -66,18 +66,18 @@ export default function Home() {
       feedsType === FeedsType.TRENDING
         ? trendingMoreLoading
         : followingMoreLoading,
-    [feedsType, trendingMoreLoading, followingMoreLoading],
+    [feedsType, trendingMoreLoading, followingMoreLoading]
   )
 
   const feeds = useMemo(
     () => (feedsType === FeedsType.TRENDING ? trendingFeeds : followingFeeds),
-    [feedsType, trendingFeeds, followingFeeds],
+    [feedsType, trendingFeeds, followingFeeds]
   )
 
   const pageInfo = useMemo(
     () =>
       feedsType === FeedsType.TRENDING ? trendingPageInfo : followingPageInfo,
-    [feedsType, trendingPageInfo, followingPageInfo],
+    [feedsType, trendingPageInfo, followingPageInfo]
   )
 
   const loadFirstFeeds = useCallback(() => {
@@ -86,12 +86,12 @@ export default function Home() {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
         address,
-        fid,
+        fid
       })
     } else {
       loadTrendingFirstFeeds({
         activeLensProfileId: activeLensProfile?.id,
-        keyword: currentSearchParams.keyword,
+        keyword: currentSearchParams.keyword
       })
     }
     return loadFollowingFirstFeeds
@@ -102,7 +102,7 @@ export default function Home() {
     currentSearchParams.keyword,
     address,
     fid,
-    feedsType,
+    feedsType
   ])
 
   const loadMoreFeeds = useCallback(() => {
@@ -111,12 +111,12 @@ export default function Home() {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
         address,
-        fid,
+        fid
       })
     } else {
       loadTrendingMoreFeeds({
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: activeLensProfile?.id
       })
     }
   }, [
@@ -126,7 +126,7 @@ export default function Home() {
     currentSearchParams.keyword,
     address,
     fid,
-    feedsType,
+    feedsType
   ])
 
   useEffect(() => {

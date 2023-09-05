@@ -1,13 +1,13 @@
 import { useCallback, useState } from 'react'
 import { Post, useActiveProfile } from '@lens-protocol/react-web'
-import { useLensCtx } from '../../contexts/AppLensCtx'
-import ReplyModal from '../common/ReplyModal'
-import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
-import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
+import ReplyModal from '../ReplyModal'
+import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
 
-export default function LensCommentPostModal({
+export default function LensCommentPostModal ({
   open,
-  closeModal,
+  closeModal
 }: {
   open: boolean
   closeModal: () => void
@@ -20,13 +20,13 @@ export default function LensCommentPostModal({
     onCommentSuccess: () => {
       closeModal()
       setContent('')
-    },
+    }
   })
 
   const onSubmit = useCallback(async () => {
     await createComment({
       publicationId: commentModalData?.id,
-      content,
+      content
     })
   }, [commentModalData?.id, content, createComment])
 

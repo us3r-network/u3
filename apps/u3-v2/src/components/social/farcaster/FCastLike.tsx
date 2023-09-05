@@ -1,32 +1,32 @@
-import { FarCast } from '../../api'
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
+import { FarCast } from '../../../api'
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,
   makeReactionAdd,
-  makeReactionRemove,
+  makeReactionRemove
 } from '@farcaster/hub-web'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 import {
   FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../../constants/farcaster'
-import useFarcasterUserData from '../../hooks/useFarcasterUserData'
-import useFarcasterCurrFid from '../../hooks/useFarcasterCurrFid'
-import useFarcasterCastId from '../../hooks/useFarcasterCastId'
-import { getCurrFid } from '../../utils/farsign-utils'
+  FARCASTER_WEB_CLIENT
+} from '../../../constants/farcaster'
+import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData'
+import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid'
+import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId'
+import { getCurrFid } from '../../../utils/farsign-utils'
 import PostLike, {
   PostLikeAvatar,
   PostLikeAvatarWrapper,
   PostLikeAvatarsWrapper,
-  PostLikeWrapper,
-} from '../common/PostLike'
+  PostLikeWrapper
+} from '../PostLike'
 
-export default function FCastLike({
+export default function FCastLike ({
   cast,
   farcasterUserData,
-  openFarcasterQR,
+  openFarcasterQR
 }: {
   cast: FarCast
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
@@ -35,7 +35,7 @@ export default function FCastLike({
   const { encryptedSigner, isConnected } = useFarcasterCtx()
   const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)))
   const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || 0),
+    Number(cast.like_count || 0)
   )
 
   const likeCast = useCallback(
@@ -50,13 +50,13 @@ export default function FCastLike({
         const cast = await makeReactionAdd(
           {
             type: ReactionType.LIKE,
-            targetCastId: castId,
+            targetCastId: castId
           },
           {
             fid: currFid,
-            network: FARCASTER_NETWORK,
+            network: FARCASTER_NETWORK
           },
-          encryptedSigner,
+          encryptedSigner
         )
         if (cast.isErr()) {
           throw new Error(cast.error.message)
@@ -78,7 +78,7 @@ export default function FCastLike({
         toast.error('error like')
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR],
+    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR]
   )
 
   const removeLikeCast = useCallback(
@@ -93,13 +93,13 @@ export default function FCastLike({
         const cast = await makeReactionRemove(
           {
             type: ReactionType.LIKE,
-            targetCastId: castId,
+            targetCastId: castId
           },
           {
             fid: currFid,
-            network: FARCASTER_NETWORK,
+            network: FARCASTER_NETWORK
           },
-          encryptedSigner,
+          encryptedSigner
         )
         if (cast.isErr()) {
           throw new Error(cast.error.message)
@@ -120,7 +120,7 @@ export default function FCastLike({
         toast.error('error like')
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR],
+    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR]
   )
 
   const currFid: string = useFarcasterCurrFid()
@@ -129,7 +129,7 @@ export default function FCastLike({
   return (
     <PostLikeWrapper>
       <PostLikeAvatarsWrapper>
-        {likes.slice(0, 3).map((item) => {
+        {likes.slice(0, 3).map(item => {
           return (
             <LikeAvatar
               key={item}
@@ -157,9 +157,9 @@ export default function FCastLike({
   )
 }
 
-function LikeAvatar({
+function LikeAvatar ({
   farcasterUserData,
-  fid,
+  fid
 }: {
   fid: string
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
@@ -168,7 +168,7 @@ function LikeAvatar({
   if (userData.pfp) {
     return (
       <PostLikeAvatarWrapper>
-        <PostLikeAvatar src={userData.pfp} alt="" />
+        <PostLikeAvatar src={userData.pfp} alt='' />
       </PostLikeAvatarWrapper>
     )
   }

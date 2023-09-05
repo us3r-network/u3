@@ -1,17 +1,17 @@
-import { LensPublication } from '../../api/lens'
+import { LensPublication } from '../../../api/lens'
 import { Post } from '@lens-protocol/react-web'
-import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import PostCard, { PostCardData } from '../common/PostCard'
-import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
-import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
-import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
-import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
+import PostCard, { PostCardData } from '../PostCard'
+import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
+import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote'
+import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror'
 import LensPostCardContent from './LensPostCardContent'
 
-export default function LensPostDetailCard({
-  data,
+export default function LensPostDetailCard ({
+  data
 }: {
   data: LensPublication
 }) {
@@ -19,7 +19,7 @@ export default function LensPostDetailCard({
     isLogin,
     setOpenLensLoginModal,
     setCommentModalData,
-    setOpenCommentModal,
+    setOpenCommentModal
   } = useLensCtx()
 
   const publication = data as unknown as Post
@@ -27,17 +27,17 @@ export default function LensPostDetailCard({
   const {
     toggleReactionUpvote,
     hasUpvote,
-    isPending: isPendingReactionUpvote,
+    isPending: isPendingReactionUpvote
   } = useReactionLensUpvote({
-    publication,
+    publication
   })
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
-    publication,
+    publication
   })
 
   const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
-    null,
+    null
   )
 
   useEffect(() => {
@@ -46,10 +46,10 @@ export default function LensPostDetailCard({
   }, [publication])
 
   useCreateLensComment({
-    onCommentSuccess: (commentArgs) => {
+    onCommentSuccess: commentArgs => {
       if (commentArgs.publicationId !== publication.id) return
 
-      setUpdatedPublication((prev) => {
+      setUpdatedPublication(prev => {
         if (!prev) return prev
         const stats = prev.stats
         console.log({ stats })
@@ -57,16 +57,16 @@ export default function LensPostDetailCard({
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
-          },
+            totalAmountOfComments: stats.totalAmountOfComments + 1
+          }
         }
       })
-    },
+    }
   })
 
   const cardData = useMemo<PostCardData>(
     () => lensPublicationToPostCardData(updatedPublication),
-    [updatedPublication],
+    [updatedPublication]
   )
 
   return (

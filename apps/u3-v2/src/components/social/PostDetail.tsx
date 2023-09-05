@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import ButtonBase from './button/ButtonBase'
+import ButtonBase from '../common/button/ButtonBase'
 
 export const PostDetailWrapper = styled.div`
   border-radius: 20px;

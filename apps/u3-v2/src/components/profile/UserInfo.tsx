@@ -2,17 +2,17 @@ import { UserInfo, UserInfoEditForm } from '@us3r-network/profile'
 import styled from 'styled-components'
 import { useState } from 'react'
 import { Dialog, Heading, Modal } from 'react-aria-components'
-import EditSvg from '../common/icons/svgs/edit.svg'
+import EditSvg from '../icons/svgs/edit.svg'
 import { getAvatarUploadOpts } from '../../utils/uploadAvatar'
 import { InputBaseCss } from '../common/input/InputBase'
 import { TextareaBaseCss } from '../common/input/TextareaBase'
 import { ButtonPrimaryLineCss } from '../common/button/ButtonBase'
 
-export default function UserInfoStyled() {
+export default function UserInfoStyled () {
   const [isOpenEdit, setIsOpenEdit] = useState(false)
   return (
     <UserInfoWrapper>
-      <div className="avatar-container">
+      <div className='avatar-container'>
         <UserInfo.Avatar
           onClick={() => {
             setIsOpenEdit(true)
@@ -20,7 +20,7 @@ export default function UserInfoStyled() {
         />
         <UserInfo.Name />
       </div>
-      <UserInfo.Bio data-state-element="Bio" />
+      <UserInfo.Bio data-state-element='Bio' />
       <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
         <Dialog>
           <Heading>Edit Info</Heading>

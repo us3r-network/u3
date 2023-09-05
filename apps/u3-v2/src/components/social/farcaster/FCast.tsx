@@ -1,7 +1,7 @@
-import { FarCast, SocailPlatform } from '../../api'
+import { FarCast, SocailPlatform } from '../../../api'
 import { CastId } from '@farcaster/hub-web'
-import useFarcasterUserData from '../../hooks/useFarcasterUserData'
-import useFarcasterCastId from '../../hooks/useFarcasterCastId'
+import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData'
+import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId'
 import FCastLike from './FCastLike'
 import FCastRecast from './FCastRecast'
 import { useNavigate } from 'react-router-dom'
@@ -12,15 +12,15 @@ import {
   PostCardEmbedWrapper,
   PostCardImgWrapper,
   PostCardUserInfo,
-  PostCardWrapper,
-} from '../common/PostCard'
+  PostCardWrapper
+} from '../PostCard'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { getFarcasterEmbedMetadata } from '../../api/farcaster'
+import { getFarcasterEmbedMetadata } from '../../../api/farcaster'
 
-export default function FCast({
+export default function FCast ({
   cast,
   farcasterUserData,
-  openFarcasterQR,
+  openFarcasterQR
 }: {
   cast: FarCast
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
@@ -50,11 +50,11 @@ export default function FCast({
         embed.url.endsWith('.gif')
       ) {
         imgs.push({
-          url: embed.url,
+          url: embed.url
         })
       } else {
         webpages.push({
-          url: embed.url,
+          url: embed.url
         })
       }
     }
@@ -74,13 +74,13 @@ export default function FCast({
           avatar: userData.pfp,
           name: userData.display,
           handle: userData.userName,
-          createdAt: cast.created_at,
+          createdAt: cast.created_at
         }}
       />
       <PostCardContentWrapper>{cast.text}</PostCardContentWrapper>
       <Embed embedImgs={embeds.imgs} embedWebpages={embeds.webpages} />
       <PostCardActionsWrapper
-        onClick={(e) => {
+        onClick={e => {
           e.stopPropagation()
         }}
       >
@@ -104,9 +104,9 @@ export default function FCast({
   )
 }
 
-function Embed({
+function Embed ({
   embedImgs,
-  embedWebpages,
+  embedWebpages
 }: {
   embedImgs: { url: string }[]
   embedWebpages: { url: string }[]
@@ -123,11 +123,11 @@ function Embed({
   >([])
 
   const getEmbedWebpagesMetadata = async () => {
-    const urls = embedWebpages.map((embed) => embed.url)
+    const urls = embedWebpages.map(embed => embed.url)
     if (urls.length === 0) return
     const res = await getFarcasterEmbedMetadata(urls)
     const { metadata } = res.data.data
-    const data = metadata.flatMap((m) => (m ? [m] : []))
+    const data = metadata.flatMap(m => (m ? [m] : []))
     setMetadata(data)
   }
 
@@ -151,23 +151,23 @@ function Embed({
     <div ref={viewRef}>
       {embedImgs && (
         <PostCardImgWrapper>
-          {embedImgs.map((img) => (
+          {embedImgs.map(img => (
             // eslint-disable-next-line jsx-a11y/alt-text
             <img src={img.url} />
           ))}
         </PostCardImgWrapper>
       )}
-      {metadata.map((item) => {
+      {metadata.map(item => {
         return (
-          <PostCardEmbedWrapper key={item.url} href={item.url} target="_blank">
+          <PostCardEmbedWrapper key={item.url} href={item.url} target='_blank'>
             <div>
               <h4>{item.title}</h4>
               <p>{item.description}</p>
             </div>
             <div
-              className="img"
+              className='img'
               style={{
-                backgroundImage: `url(${item.image})`,
+                backgroundImage: `url(${item.image})`
               }}
             />
           </PostCardEmbedWrapper>

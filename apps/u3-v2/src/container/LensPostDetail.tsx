@@ -4,33 +4,33 @@ import {
   publicationId,
   useComments,
   useActiveProfile,
-  CreateCommentArgs,
+  CreateCommentArgs
 } from '@lens-protocol/react-web'
 import { LensPublication } from '../api/lens'
 import styled from 'styled-components'
-import LensCommentPostForm from '../components/lens/LensCommentPostForm'
+import LensCommentPostForm from '../components/social/lens/LensCommentPostForm'
 import { useEffect, useState } from 'react'
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment'
-import LensReplyCard from '../components/lens/LensReplyCard'
-import LensPostDetailCard from '../components/lens/LensPostDetailCard'
-import ReplyCard from '../components/common/ReplyCard'
+import LensReplyCard from '../components/social/lens/LensReplyCard'
+import LensPostDetailCard from '../components/social/lens/LensPostDetailCard'
+import ReplyCard from '../components/social/ReplyCard'
 import GoBack from '../components/GoBack'
 import {
   LoadMoreBtn,
   PostDetailCommentsWrapper,
-  PostDetailWrapper,
-} from '../components/common/PostDetail'
+  PostDetailWrapper
+} from '../components/social/PostDetail'
 import Loading from '../components/common/loading/Loading'
 import getAvatar from '../utils/lens/getAvatar'
 
-export default function LensPostDetail() {
+export default function LensPostDetail () {
   const { publicationId: pid } = useParams()
 
   const { data: activeProfile } = useActiveProfile()
 
   const { data, loading } = usePublication({
     publicationId: publicationId(pid as string),
-    observerId: activeProfile?.id,
+    observerId: activeProfile?.id
   })
 
   const publication = { ...data } as unknown as LensPublication
@@ -39,21 +39,21 @@ export default function LensPostDetail() {
     data: comments,
     loading: commentsLoading,
     hasMore: hasMoreComments,
-    next: loadMoreComments,
+    next: loadMoreComments
   } = useComments({
     commentsOf: publicationId(pid as string),
-    limit: 50,
+    limit: 50
   })
 
   const [createdComments, setCreatedComments] = useState<CreateCommentArgs[]>(
-    [],
+    []
   )
 
   useCreateLensComment({
-    onCommentSuccess: (commentArgs) => {
+    onCommentSuccess: commentArgs => {
       if (commentArgs.publicationId !== data?.id) return
-      setCreatedComments((prev) => [commentArgs, ...prev])
-    },
+      setCreatedComments(prev => [commentArgs, ...prev])
+    }
   })
 
   useEffect(() => {
@@ -88,7 +88,7 @@ export default function LensPostDetail() {
                       name: activeProfile?.name || '',
                       handle: activeProfile?.handle || '',
                       createdAt: new Date() as any,
-                      content: comment.content,
+                      content: comment.content
                     }}
                     key={i}
                     showActions={false}
@@ -99,7 +99,7 @@ export default function LensPostDetail() {
           )}
           {comments && comments?.length > 0 && (
             <PostDetailCommentsWrapper>
-              {comments.map((comment) => {
+              {comments.map(comment => {
                 return <LensReplyCard data={comment} key={comment.id} />
               })}
             </PostDetailCommentsWrapper>

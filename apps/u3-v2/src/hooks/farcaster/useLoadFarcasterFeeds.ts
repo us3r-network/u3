@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getFarcasterFeeds } from '../api/farcaster'
+import { getFarcasterFeeds } from '../../api/farcaster'
 import { debounce } from 'lodash'
-import { FarCast } from '../api'
+import { FarCast } from '../../api'
 
 export default function useLoadFarcasterFeeds() {
   const [farcasterFeeds, setFarcasterFeeds] = useState<

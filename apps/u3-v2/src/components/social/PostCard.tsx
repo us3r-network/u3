@@ -1,8 +1,8 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
 import { SocailPlatform } from '../../api'
 import { useMemo } from 'react'
-import LensIcon from './icons/LensIcon'
-import FarcasterIcon from './icons/FarcasterIcon'
+import LensIcon from '../icons/LensIcon'
+import FarcasterIcon from '../icons/FarcasterIcon'
 import dayjs from 'dayjs'
 import PostLike from './PostLike'
 import PostReply from './PostReply'
@@ -34,7 +34,7 @@ interface PostCardProps {
   repostAction?: () => void
   showActions?: boolean
 }
-export default function PostCard({
+export default function PostCard ({
   data,
   contentRender,
   liked,
@@ -98,7 +98,7 @@ export type PostCardUserInfoData = {
   handle: string
   createdAt: string | number
 }
-export function PostCardUserInfo({
+export function PostCardUserInfo ({
   data,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & { data: PostCardUserInfoData }) {

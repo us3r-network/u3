@@ -2,12 +2,12 @@ import { useCallback, useState } from 'react'
 import { makeCastAdd } from '@farcaster/hub-web'
 import { toast } from 'react-toastify'
 
-import ModalContainer from './ModalContainer'
+import ModalContainer from '../common/modal/ModalContainer'
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
 
 import {
   FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
+  FARCASTER_WEB_CLIENT
 } from '../../constants/farcaster'
 import { getCurrFid } from '../../utils/farsign-utils'
 import styled from 'styled-components'
@@ -17,9 +17,9 @@ import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
 import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase'
 import TextareaBase from '../common/input/TextareaBase'
 
-export default function AddPostModal({
+export default function AddPostModal ({
   open,
-  closeModal,
+  closeModal
 }: {
   open: boolean
   closeModal: () => void
@@ -43,10 +43,10 @@ export default function AddPostModal({
             embeds: [],
             embedsDeprecated: [],
             mentions: [],
-            mentionsPositions: [],
+            mentionsPositions: []
           },
           { fid: currFid, network: FARCASTER_NETWORK },
-          encryptedSigner,
+          encryptedSigner
         )
       )._unsafeUnwrap()
       const result = await FARCASTER_WEB_CLIENT.submitMessage(cast)
@@ -125,8 +125,8 @@ export default function AddPostModal({
       isConnected,
       openFarcasterQR,
       isLoginLens,
-      setOpenLensLoginModal,
-    ],
+      setOpenLensLoginModal
+    ]
   )
   return (
     <ModalContainer
@@ -154,7 +154,7 @@ export default function AddPostModal({
           <ContentInput
             disabled={isPending}
             value={text}
-            onChange={(e) => setText(e.target.value)}
+            onChange={e => setText(e.target.value)}
           />
           <SubmitBtn
             onClick={() => {

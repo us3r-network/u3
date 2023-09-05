@@ -5,9 +5,9 @@ import useSendMessage from '../../hooks/xmtp/useSendMessage'
 import useSendAttachment from '../../hooks/xmtp/useSendAttachment'
 import { ButtonPrimary } from '../common/button/ButtonBase'
 import TextareaBase from '../common/input/TextareaBase'
-import ImgIcon from '../common/icons/ImgIcon'
+import ImgIcon from '../icons/ImgIcon'
 
-export default function SendMessageForm() {
+export default function SendMessageForm () {
   const { messageRouteParams } = useXmtpStore()
   const peerAddress = messageRouteParams?.peerAddress || ''
   const { isSending, sendMessage } = useSendMessage(peerAddress)
@@ -22,18 +22,18 @@ export default function SendMessageForm() {
 
   const inputDisabled = useMemo(
     () => isSending || isSendingAttachment,
-    [isSending, isSendingAttachment],
+    [isSending, isSendingAttachment]
   )
 
   const sendDisabled = useMemo(
     () => isSending || isSendingAttachment || (!message && !file),
-    [isSending, isSendingAttachment, message, file],
+    [isSending, isSendingAttachment, message, file]
   )
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   return (
     <SendMessageFormWrap
-      onSubmit={(e) => {
+      onSubmit={e => {
         e.preventDefault()
         if (!peerAddress) return
         if (file) {
@@ -41,9 +41,9 @@ export default function SendMessageForm() {
             onSuccess: () => {
               setFile(null)
             },
-            onFail: (error) => {
+            onFail: error => {
               alert(error.message)
-            },
+            }
           })
           return
         }
@@ -51,9 +51,9 @@ export default function SendMessageForm() {
           onSuccess: () => {
             setMessage('')
           },
-          onFail: (error) => {
+          onFail: error => {
             alert(error.message)
-          },
+          }
         })
       }}
     >
@@ -61,7 +61,7 @@ export default function SendMessageForm() {
         <PreviewImgWrapper>
           <FilePreview src={previewImage} />
           <DelFileIcon
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault()
               setFile(null)
               if (fileInputRef.current) {
@@ -75,28 +75,28 @@ export default function SendMessageForm() {
       )}
       <FormWrapper>
         <TextArea
-          placeholder="Write a message"
+          placeholder='Write a message'
           aria-disabled={inputDisabled}
           value={message}
-          onChange={(e) => {
+          onChange={e => {
             setMessage(e.target.value)
           }}
           disabled={!!file}
         />
 
         <ImgLabel>
-          <ImgIcon stroke="black" />
+          <ImgIcon stroke='black' />
           <FileInput
             ref={fileInputRef}
-            type="file"
+            type='file'
             disabled={isSending}
-            onChange={(e) => {
+            onChange={e => {
               setFile(e.target.files?.[0] || null)
             }}
           />
         </ImgLabel>
 
-        <SubmitButton type="submit" disabled={sendDisabled}>
+        <SubmitButton type='submit' disabled={sendDisabled}>
           {isSending ? 'Sending' : 'Send'}
         </SubmitButton>
       </FormWrapper>

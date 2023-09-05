@@ -1,28 +1,28 @@
-import { FarCast } from '../../api'
-// import { useFarcasterReactionCast } from '../hooks/useFarcaster'
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx'
+import { FarCast } from '../../../api'
+// import { useFarcasterReactionCast } from '../hooks/farcaster/useFarcaster'
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx'
 import {
   CastId,
   ReactionType,
   makeReactionAdd,
-  makeReactionRemove,
+  makeReactionRemove
 } from '@farcaster/hub-web'
 import { useCallback, useState } from 'react'
 import { toast } from 'react-toastify'
 
 import {
   FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../../constants/farcaster'
-import useFarcasterCastId from '../../hooks/useFarcasterCastId'
-import useFarcasterCurrFid from '../../hooks/useFarcasterCurrFid'
-import { getCurrFid } from '../../utils/farsign-utils'
-import PostReport from '../common/PostReport'
+  FARCASTER_WEB_CLIENT
+} from '../../../constants/farcaster'
+import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId'
+import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid'
+import { getCurrFid } from '../../../utils/farsign-utils'
+import PostReport from '../PostReport'
 
-export default function FCastRecast({
+export default function FCastRecast ({
   cast,
   farcasterUserData,
-  openFarcasterQR,
+  openFarcasterQR
 }: {
   cast: FarCast
   farcasterUserData: { [key: string]: { type: number; value: string }[] }
@@ -30,10 +30,10 @@ export default function FCastRecast({
 }) {
   const { encryptedSigner, isConnected } = useFarcasterCtx()
   const [recasts, setRecasts] = useState<string[]>(
-    Array.from(new Set(cast.recasts)),
+    Array.from(new Set(cast.recasts))
   )
   const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || 0),
+    Number(cast.recast_count || 0)
   )
 
   const recast = useCallback(
@@ -48,13 +48,13 @@ export default function FCastRecast({
         const cast = await makeReactionAdd(
           {
             type: ReactionType.RECAST,
-            targetCastId: castId,
+            targetCastId: castId
           },
           {
             fid: currFid,
-            network: FARCASTER_NETWORK,
+            network: FARCASTER_NETWORK
           },
-          encryptedSigner,
+          encryptedSigner
         )
         if (cast.isErr()) {
           throw new Error(cast.error.message)
@@ -75,7 +75,7 @@ export default function FCastRecast({
         toast.error('error recast')
       }
     },
-    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts],
+    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts]
   )
 
   const removeRecast = useCallback(
@@ -90,13 +90,13 @@ export default function FCastRecast({
         const cast = await makeReactionRemove(
           {
             type: ReactionType.RECAST,
-            targetCastId: castId,
+            targetCastId: castId
           },
           {
             fid: currFid,
-            network: FARCASTER_NETWORK,
+            network: FARCASTER_NETWORK
           },
-          encryptedSigner,
+          encryptedSigner
         )
         if (cast.isErr()) {
           throw new Error(cast.error.message)
@@ -117,7 +117,7 @@ export default function FCastRecast({
         toast.error('error recast')
       }
     },
-    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts],
+    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts]
   )
 
   const currFid: string = useFarcasterCurrFid()

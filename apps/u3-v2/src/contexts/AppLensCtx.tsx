@@ -6,7 +6,7 @@ import {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from 'react'
 import {
   LensProvider,
@@ -19,14 +19,14 @@ import {
   useUpdateDispatcherConfig,
   ProfileOwnedByMe,
   Post,
-  Comment,
+  Comment
 } from '@lens-protocol/react-web'
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi'
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { LENS_ENV } from '../constants/lens'
-import LensLoginModal from '../components/lens/LensLoginModal'
-import LensCommentPostModal from '../components/lens/LensCommentPostModal'
+import LensLoginModal from '../components/social/lens/LensLoginModal'
+import LensCommentPostModal from '../components/social/lens/LensCommentPostModal'
 import { LensPublication } from '../api/lens'
 
 type CommentModalData = LensPublication | Post | Comment | null
@@ -53,15 +53,15 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
   openCommentModal: false,
   setOpenCommentModal: () => {},
   commentModalData: null,
-  setCommentModalData: () => {},
+  setCommentModalData: () => {}
 })
 
 const lensConfig: LensConfig = {
   bindings: wagmiBindings(),
-  environment: LENS_ENV === 'production' ? production : development,
+  environment: LENS_ENV === 'production' ? production : development
 }
 
-export function AppLensProvider({ children }: PropsWithChildren) {
+export function AppLensProvider ({ children }: PropsWithChildren) {
   return (
     <LensProvider config={lensConfig}>
       <LensAuthProvider>{children}</LensAuthProvider>
@@ -69,7 +69,7 @@ export function AppLensProvider({ children }: PropsWithChildren) {
   )
 }
 
-export function LensAuthProvider({ children }: PropsWithChildren) {
+export function LensAuthProvider ({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false)
   const [openCommentModal, setOpenCommentModal] = useState(false)
   const [commentModalData, setCommentModalData] =
@@ -82,11 +82,11 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const { disconnectAsync } = useDisconnect()
 
   const { connectAsync } = useConnect({
-    connector: new InjectedConnector(),
+    connector: new InjectedConnector()
   })
 
   const { execute: updateDispatcher } = useUpdateDispatcherConfig({
-    profile: wallet as ProfileOwnedByMe,
+    profile: wallet as ProfileOwnedByMe
   })
 
   const updatedDispatcherFirst = useRef(false)
@@ -111,7 +111,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
       const address = walletClient.account.address
 
       await login({
-        address,
+        address
       })
     }
   }, [isConnected, disconnectAsync, connectAsync, login])
@@ -130,7 +130,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
         openCommentModal,
         setOpenCommentModal,
         commentModalData,
-        setCommentModalData,
+        setCommentModalData
       }}
     >
       {children}
@@ -146,11 +146,11 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   )
 }
 
-export function useLensCtx() {
+export function useLensCtx () {
   const context = useContext(LensAuthContext)
   if (!context) {
     throw Error(
-      'useLensCtx can only be used within the LensAuthProvider component',
+      'useLensCtx can only be used within the LensAuthProvider component'
     )
   }
   return context

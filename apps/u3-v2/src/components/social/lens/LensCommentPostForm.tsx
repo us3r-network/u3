@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react'
 import { useActiveProfile } from '@lens-protocol/react-web'
 import { toast } from 'react-toastify'
-import ReplyForm from '../common/ReplyForm'
-import { useLensCtx } from '../../contexts/AppLensCtx'
-import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
-import getAvatar from '../../utils/lens/getAvatar'
+import ReplyForm from '../ReplyForm'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
+import getAvatar from '../../../utils/lens/getAvatar'
 
-export default function LensCommentPostForm({
+export default function LensCommentPostForm ({
   publicationId,
-  canComment,
+  canComment
 }: {
   publicationId: string
   canComment?: boolean
@@ -21,7 +21,7 @@ export default function LensCommentPostForm({
   const { createComment, isPending } = useCreateLensComment({
     onCommentSuccess: () => {
       setContent('')
-    },
+    }
   })
 
   const onSubmit = useCallback(async () => {
@@ -39,7 +39,7 @@ export default function LensCommentPostForm({
     }
     await createComment({
       publicationId,
-      content,
+      content
     })
   }, [
     isLogin,
@@ -47,7 +47,7 @@ export default function LensCommentPostForm({
     publicationId,
     content,
     createComment,
-    setOpenLensLoginModal,
+    setOpenLensLoginModal
   ])
 
   return (

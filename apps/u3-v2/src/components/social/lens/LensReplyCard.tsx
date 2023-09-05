@@ -1,38 +1,38 @@
 import { Comment } from '@lens-protocol/react-web'
-import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import { lensPublicationToReplyCardData } from '../../utils/lens-ui-utils'
-import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
-import ReplyCard, { ReplyCardData } from '../common/ReplyCard'
-import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
-import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
+import { lensPublicationToReplyCardData } from '../../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
+import ReplyCard, { ReplyCardData } from '../ReplyCard'
+import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote'
+import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror'
 import LensPostCardContent from './LensPostCardContent'
 
-export default function LensReplyCard({ data }: { data: Comment }) {
+export default function LensReplyCard ({ data }: { data: Comment }) {
   const navigate = useNavigate()
   const {
     isLogin,
     setOpenLensLoginModal,
     setCommentModalData,
-    setOpenCommentModal,
+    setOpenCommentModal
   } = useLensCtx()
 
   const {
     toggleReactionUpvote,
     hasUpvote,
-    isPending: isPendingReactionUpvote,
+    isPending: isPendingReactionUpvote
   } = useReactionLensUpvote({
-    publication: data,
+    publication: data
   })
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
-    publication: data,
+    publication: data
   })
 
   const [updatedPublication, setUpdatedPublication] = useState<Comment | null>(
-    null,
+    null
   )
 
   useEffect(() => {
@@ -40,25 +40,25 @@ export default function LensReplyCard({ data }: { data: Comment }) {
   }, [data])
 
   useCreateLensComment({
-    onCommentSuccess: (commentArgs) => {
+    onCommentSuccess: commentArgs => {
       if (commentArgs.publicationId !== data.id) return
-      setUpdatedPublication((prev) => {
+      setUpdatedPublication(prev => {
         if (!prev) return prev
         const stats = prev.stats
         return {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
-          },
+            totalAmountOfComments: stats.totalAmountOfComments + 1
+          }
         }
       })
-    },
+    }
   })
 
   const cardData = useMemo<ReplyCardData>(
     () => lensPublicationToReplyCardData(updatedPublication),
-    [updatedPublication],
+    [updatedPublication]
   )
 
   return (

@@ -1,6 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import InputBase from './input/InputBase'
-import { ButtonPrimary } from './button/ButtonBase'
+import InputBase from '../common/input/InputBase'
+import { ButtonPrimary } from '../common/button/ButtonBase'
 
 export interface ReplyFormProps {
   avatar: string
@@ -10,7 +10,7 @@ export interface ReplyFormProps {
   submitting?: boolean
   onSubmit?: () => void
 }
-export default function ReplyForm({
+export default function ReplyForm ({
   avatar,
   content,
   setContent,
@@ -24,7 +24,7 @@ export default function ReplyForm({
       <Avatar src={avatar} />
       <Input
         disabled={disabled || submitting}
-        onChange={(e) => {
+        onChange={e => {
           setContent(e.target.value)
         }}
       />

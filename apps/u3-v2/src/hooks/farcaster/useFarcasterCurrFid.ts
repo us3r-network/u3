@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { getCurrFid } from '../utils/farsign-utils'
+import { getCurrFid } from '../../utils/farsign-utils'
 
 export default function useFarcasterCurrFid() {
   const currFid: string = useMemo(() => {

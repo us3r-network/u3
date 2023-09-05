@@ -1,14 +1,14 @@
 import { useCallback, useState } from 'react'
 import styled from 'styled-components'
-import ModalContainer from '../Modal/ModalContainer'
-import InputBase from '../common/input/InputBase'
-import { ButtonPrimaryLine } from '../common/button/ButtonBase'
+import ModalContainer from '../../common/modal/ModalContainer'
+import InputBase from '../../common/input/InputBase'
+import { ButtonPrimaryLine } from '../../common/button/ButtonBase'
 import { toast } from 'react-toastify'
-import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost'
+import { useCreateLensPost } from '../../../hooks/lens/useCreateLensPost'
 
-export default function LensCommentPostModal({
+export default function LensCommentPostModal ({
   open,
-  closeModal,
+  closeModal
 }: {
   open: boolean
   closeModal: () => void
@@ -37,7 +37,7 @@ export default function LensCommentPostModal({
         <ContentInput
           disabled={isPending}
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={e => setContent(e.target.value)}
         />
         <SubmitButton disabled={isPending} onClick={onSubmit}>
           {isPending ? 'Loading...' : '+ Create Post'}

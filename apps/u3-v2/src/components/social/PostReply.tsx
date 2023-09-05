@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import MessageIcon from './icons/MessageIcon'
+import MessageIcon from '../icons/MessageIcon'
 
 interface PostReplyProps {
   totalReplies: number
@@ -7,7 +7,7 @@ interface PostReplyProps {
   replying?: boolean
   replyAction?: () => void
 }
-export default function PostReply({
+export default function PostReply ({
   totalReplies,
   replied,
   replying,
@@ -16,7 +16,7 @@ export default function PostReply({
 }: StyledComponentPropsWithRef<'div'> & PostReplyProps) {
   return (
     <PostReplyWrapper
-      onClick={(e) => {
+      onClick={e => {
         if (replyAction) e.stopPropagation()
         if (!replying && replyAction) replyAction()
       }}

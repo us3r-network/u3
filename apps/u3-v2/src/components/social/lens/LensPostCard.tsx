@@ -1,29 +1,29 @@
-import { LensPublication } from '../../api/lens'
+import { LensPublication } from '../../../api/lens'
 import { Post } from '@lens-protocol/react-web'
-import { useLensCtx } from '../../contexts/AppLensCtx'
+import { useLensCtx } from '../../../contexts/AppLensCtx'
 import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'react-toastify'
-import PostCard, { PostCardData } from '../common/PostCard'
+import PostCard, { PostCardData } from '../PostCard'
 import { useNavigate } from 'react-router-dom'
-import { lensPublicationToPostCardData } from '../../utils/lens-ui-utils'
-import { useCreateLensComment } from '../../hooks/lens/useCreateLensComment'
-import { useReactionLensUpvote } from '../../hooks/lens/useReactionLensUpvote'
-import { useCreateLensMirror } from '../../hooks/lens/useCreateLensMirror'
+import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils'
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
+import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote'
+import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror'
 import LensPostCardContent from './LensPostCardContent'
 
-export default function LensPostCard({ data }: { data: LensPublication }) {
+export default function LensPostCard ({ data }: { data: LensPublication }) {
   const navigate = useNavigate()
   const {
     isLogin,
     setOpenLensLoginModal,
     setCommentModalData,
-    setOpenCommentModal,
+    setOpenCommentModal
   } = useLensCtx()
 
   const publication = data as unknown as Post
 
   const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
-    null,
+    null
   )
 
   useEffect(() => {
@@ -33,63 +33,63 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
   const {
     toggleReactionUpvote,
     hasUpvote,
-    isPending: isPendingReactionUpvote,
+    isPending: isPendingReactionUpvote
   } = useReactionLensUpvote({
     publication,
     onReactionSuccess: ({ originPublication, hasUpvote }) => {
       if (originPublication?.id !== data.id) return
-      setUpdatedPublication((prev) => {
+      setUpdatedPublication(prev => {
         if (!prev) return prev
         const stats = prev.stats
         return {
           ...prev,
           stats: {
             ...stats,
-            totalUpvotes: stats.totalUpvotes + 1,
-          },
+            totalUpvotes: stats.totalUpvotes + 1
+          }
         }
       })
-    },
+    }
   })
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
     publication,
-    onMirrorSuccess: (originPublication) => {
+    onMirrorSuccess: originPublication => {
       if (originPublication?.id !== data.id) return
-      setUpdatedPublication((prev) => {
+      setUpdatedPublication(prev => {
         if (!prev) return prev
         const stats = prev.stats
         return {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfMirrors: stats.totalAmountOfMirrors + 1,
-          },
+            totalAmountOfMirrors: stats.totalAmountOfMirrors + 1
+          }
         }
       })
-    },
+    }
   })
 
   useCreateLensComment({
-    onCommentSuccess: (commentArgs) => {
+    onCommentSuccess: commentArgs => {
       if (commentArgs.publicationId !== data.id) return
-      setUpdatedPublication((prev) => {
+      setUpdatedPublication(prev => {
         if (!prev) return prev
         const stats = prev.stats
         return {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
-          },
+            totalAmountOfComments: stats.totalAmountOfComments + 1
+          }
         }
       })
-    },
+    }
   })
 
   const cardData = useMemo<PostCardData>(
     () => lensPublicationToPostCardData(updatedPublication),
-    [updatedPublication],
+    [updatedPublication]
   )
 
   return (

@@ -1,38 +1,38 @@
 import { NavLink, useSearchParams } from 'react-router-dom'
 import styled from 'styled-components'
 import SearchInput from './common/input/SearchInput'
-import HomeIcon from './common/icons/HomeIcon'
-import HomeActiveIcon from './common/icons/HomeActiveIcon'
+import HomeIcon from './icons/HomeIcon'
+import HomeActiveIcon from './icons/HomeActiveIcon'
 import MessageMenu from './message/MessageMenu'
 import MessageModal from './message/MessageModal'
-import AddPost from './AddPost'
+import AddPost from './social/AddPost'
 import { useCallback } from 'react'
 import UserMenu from './UserMenu'
 
-export default function Nav() {
+export default function Nav () {
   const [searchParams, setSearchParams] = useSearchParams()
   const onSearch = useCallback(
     (value: string) => {
       setSearchParams(new URLSearchParams({ ...searchParams, keyword: value }))
     },
-    [searchParams, setSearchParams],
+    [searchParams, setSearchParams]
   )
   return (
     <NavContainer>
       <Main>
         <Left>
-          <NavLinkItem to="/">
+          <NavLinkItem to='/'>
             {({ isActive }) =>
               isActive ? (
-                <HomeActiveIcon className="nav-icon" />
+                <HomeActiveIcon className='nav-icon' />
               ) : (
-                <HomeIcon className="nav-icon" />
+                <HomeIcon className='nav-icon' />
               )
             }
           </NavLinkItem>
         </Left>
         <Center>
-          <Search placeholder="Search" onSearch={onSearch} />
+          <Search placeholder='Search' onSearch={onSearch} />
           <AddPost />
         </Center>
         <Right>

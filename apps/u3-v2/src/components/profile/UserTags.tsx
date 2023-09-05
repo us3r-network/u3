@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { Dialog, Heading, Modal } from 'react-aria-components'
 import { InputBaseCss } from '../common/input/InputBase'
 import { ButtonPrimaryLineCss } from '../common/button/ButtonBase'
-import AddIcon from '../common/icons/AddIcon'
+import AddIcon from '../icons/AddIcon'
 
-export default function UserTagsStyled() {
+export default function UserTagsStyled () {
   const [isOpenEdit, setIsOpenEdit] = useState(false)
   return (
     <UserTagsWrapper>
-      <div className="header">
+      <div className='header'>
         <h3>
           Tags (<UserTags.Count />)
         </h3>
@@ -23,7 +23,7 @@ export default function UserTagsStyled() {
         </span>
       </div>
       <UserTags.List>
-        {(item) => <UserTags.Item key={item.tag} value={item} />}
+        {item => <UserTags.Item key={item.tag} value={item} />}
       </UserTags.List>
       <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
         <Dialog>
