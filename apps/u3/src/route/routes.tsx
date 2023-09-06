@@ -42,6 +42,7 @@ export enum RouteKey {
   save = 'save',
   social = 'social',
   socialPostDetailLens = 'socialPostDetailLens',
+  socialPostDetailFcast = 'socialPostDetailFcast',
 }
 export enum RoutePermission {
   login = 'login',
@@ -234,7 +235,7 @@ export const routes: CutomRouteObject[] = [
   {
     path: 'post-detail/fcast/:castId',
     element: loadContainerElement('FarcasterPostDetail'),
-    key: RouteKey.socialPostDetailLens,
+    key: RouteKey.socialPostDetailFcast,
   },
   NoMatchRoute,
 ];
