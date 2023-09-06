@@ -56,7 +56,7 @@ module.exports = {
 
       config.plugins.push(
         new webpack.ProvidePlugin({
-          process: 'process/browser',
+          // process: 'process/browser',
           Buffer: ['buffer', 'Buffer'],
         })
       );
