@@ -39,6 +39,9 @@ export enum RouteKey {
   gallery = 'gallery',
   notification = 'notification',
   save = 'save',
+  social = 'social',
+  socialPostDetailLens = 'socialPostDetailLens',
+  socialPostDetailFcast = 'socialPostDetailFcast',
 }
 export enum RoutePermission {
   login = 'login',
@@ -211,6 +214,21 @@ export const routes: CutomRouteObject[] = [
     path: '/policy',
     element: loadContainerElement('Policy'),
     key: RouteKey.policy,
+  },
+  {
+    path: '/social',
+    element: loadContainerElement('Social'),
+    key: RouteKey.social,
+  },
+  {
+    path: '/post-detail/lens/:publicationId',
+    element: loadContainerElement('LensPostDetail'),
+    key: RouteKey.socialPostDetailLens,
+  },
+  {
+    path: 'post-detail/fcast/:castId',
+    element: loadContainerElement('FarcasterPostDetail'),
+    key: RouteKey.socialPostDetailFcast,
   },
   NoMatchRoute,
 ];

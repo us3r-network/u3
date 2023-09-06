@@ -10,27 +10,25 @@ import { isMobile } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../components/common/loading/Loading';
-import DappExploreListMobile from '../components/dapp/DappExploreListMobile';
 import Carousel from '../components/home/Carousel';
 import DiscoverProj from '../components/home/DiscoverProj';
 import Platform from '../components/home/Platform';
 import RecommendContent from '../components/home/RecommendContent';
 import RecommendContentMobile from '../components/home/RecommendContentMobile';
 import RecommendEvents from '../components/home/RecommendEvents';
-import TrendingEvents from '../components/home/TrendingEvents';
+
 import Poster from '../components/home/Poster';
 import { MainWrapper } from '../components/layout/Index';
 import { selectWebsite } from '../features/website/websiteSlice';
 import useConfigsPlatforms from '../hooks/useConfigsPlatforms';
 import {
-  getPlatforms,
   getTrendingDapps,
   getTrendingEvents,
   getTrendingContents,
 } from '../services/api/home';
 import { ContentListItem } from '../services/types/contents';
 import { EventExploreListItemResponse } from '../services/types/event';
-import { PlatformData } from '../services/types/home';
+
 import { DappExploreListItemResponse } from '../services/types/dapp';
 import { useAppSelector } from '../store/hooks';
 import PopularDappsMobile from '../components/home/PopularDappsMobile';
@@ -39,9 +37,8 @@ import RecommendEventMobile from '../components/home/RecommendEventsMobile';
 function Home() {
   const { homeBannerDisplay } = useAppSelector(selectWebsite);
   const navigate = useNavigate();
-  const [showOnBoard, setShowOnBoard] = useState(true);
   const [loading, setLoading] = useState(true);
-  const { platforms, loading: platformsLoading } = useConfigsPlatforms();
+  const { platforms } = useConfigsPlatforms();
   const showPlatforms = useMemo(
     () => platforms.filter((item) => !!item.number).slice(0, 16),
     [platforms]
@@ -52,7 +49,7 @@ function Home() {
   const [contents, setContents] = useState<Array<ContentListItem>>([]);
   const [events, setEvents] = useState<Array<EventExploreListItemResponse>>([]);
   const recommendEvents = events.slice(0, 8);
-  const trendingEvents = events.slice(-6);
+  // const trendingEvents = events.slice(-6);
 
   const loadDapps = useCallback(async () => {
     const { data } = await getTrendingDapps();

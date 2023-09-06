@@ -29,6 +29,8 @@ import { injectStore, injectU3Token } from './services/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx';
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
+import { AppLensProvider } from './contexts/AppLensCtx';
+import FarcasterProvider from './contexts/FarcasterCtx';
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -51,12 +53,16 @@ function App() {
           >
             <XmtpClientProvider>
               <XmtpStoreProvider>
-                <ReduxProvider store={store}>
-                  <GlobalStyle />
-                  <BrowserRouter>
-                    <Layout />
-                  </BrowserRouter>
-                </ReduxProvider>
+                <AppLensProvider>
+                  <FarcasterProvider>
+                    <ReduxProvider store={store}>
+                      <GlobalStyle />
+                      <BrowserRouter>
+                        <Layout />
+                      </BrowserRouter>
+                    </ReduxProvider>
+                  </FarcasterProvider>
+                </AppLensProvider>
               </XmtpStoreProvider>
             </XmtpClientProvider>
           </U3LoginProvider>
