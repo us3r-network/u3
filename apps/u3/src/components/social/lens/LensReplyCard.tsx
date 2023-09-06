@@ -49,7 +49,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
+            totalAmountOfComments: Number(stats.totalAmountOfComments) + 1,
           },
         };
       });

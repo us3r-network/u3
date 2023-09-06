@@ -46,7 +46,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
           ...prev,
           stats: {
             ...stats,
-            totalUpvotes: stats.totalUpvotes + 1,
+            totalUpvotes: Number(stats.totalUpvotes) + 1,
           },
         };
       });
@@ -64,7 +64,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfMirrors: stats.totalAmountOfMirrors + 1,
+            totalAmountOfMirrors: Number(stats.totalAmountOfMirrors) + 1,
           },
         };
       });
@@ -81,7 +81,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
+            totalAmountOfComments: Number(stats.totalAmountOfComments) + 1,
           },
         };
       });

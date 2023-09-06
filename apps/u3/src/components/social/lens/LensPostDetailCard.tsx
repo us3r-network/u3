@@ -57,7 +57,7 @@ export default function LensPostDetailCard({
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1,
+            totalAmountOfComments: Number(stats.totalAmountOfComments) + 1,
           },
         };
       });
