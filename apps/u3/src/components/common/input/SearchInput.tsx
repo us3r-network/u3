@@ -62,6 +62,7 @@ interface Props extends StyledComponentPropsWithRef<'div'> {
   placeholder?: string;
   debounce?: boolean; // 是否开启防抖 default: true
   debounceMs?: number; // 防抖间隔毫秒数 default: 300
+  disabled?: boolean;
 }
 
 export default function SearchInput({
@@ -69,6 +70,7 @@ export default function SearchInput({
   placeholder = 'Search',
   debounce: needDebounce = true,
   debounceMs = 300,
+  disabled,
   ...otherProps
 }: Props) {
   const [value, setValue] = useState('');
@@ -101,6 +103,7 @@ export default function SearchInput({
         placeholder={placeholder}
         value={value}
         onChange={handleInputChange}
+        disabled={disabled}
       />
     </Wrapper>
   );

@@ -136,14 +136,14 @@ export default function Nav({ onlyIcon }: Props) {
     </NavWrapper>
   );
 }
-const NavWrapper = styled.div`
+export const NavWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   transition: all 0.3s ease-out;
 `;
-const PcNavItem = styled.div<{ isActive: boolean }>`
+export const PcNavItem = styled.div<{ isActive: boolean }>`
   overflow: hidden;
   height: 40px;
   font-weight: 400;
@@ -169,7 +169,7 @@ const PcNavItem = styled.div<{ isActive: boolean }>`
   }
   transition: all 0.3s ease-out;
 `;
-const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
+export const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -183,11 +183,11 @@ const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
   `}
   transition: all 0.3s ease-out;
 `;
-const PcNavItemTextBox = styled.div`
+export const PcNavItemTextBox = styled.div`
   overflow: hidden;
   transition: all 0.5s ease-out;
 `;
-const PcNavItemTextInner = styled.div`
+export const PcNavItemTextInner = styled.div`
   white-space: nowrap;
 `;
 const PcNavGroupBox = styled.div`

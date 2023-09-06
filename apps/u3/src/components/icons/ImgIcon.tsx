@@ -2,8 +2,8 @@ export default function ImgIcon({
   fill,
   stroke,
 }: {
-  fill?: string
-  stroke?: string
+  fill?: string;
+  stroke?: string;
 }) {
   return (
     <svg
@@ -23,17 +23,17 @@ export default function ImgIcon({
       <path
         d="M1 15.0217L8.77778 11.7859L21 17.1788"
         stroke={stroke || 'white'}
-        stroke-width="1.5"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
         d="M15.4439 8.5502C14.2166 8.5502 13.2217 7.5844 13.2217 6.39302C13.2217 5.20164 14.2166 4.23584 15.4439 4.23584C16.6712 4.23584 17.6661 5.20164 17.6661 6.39302C17.6661 7.5844 16.6712 8.5502 15.4439 8.5502Z"
         stroke={stroke || 'white'}
-        stroke-width="1.5"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
