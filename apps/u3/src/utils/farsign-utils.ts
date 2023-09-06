@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as ed from '@noble/ed25519';
 import {
   NobleEd25519Signer,

@@ -1,33 +1,33 @@
-import styled, { StyledComponentPropsWithRef } from 'styled-components'
-import dayjs from 'dayjs'
-import PostLike from './PostLike'
-import PostReply from './PostReply'
-import PostReport from './PostReport'
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import dayjs from 'dayjs';
+import PostLike from './PostLike';
+import PostReply from './PostReply';
+import PostReport from './PostReport';
 
 export type ReplyCardData = {
-  avatar: string
-  name: string
-  handle: string
-  createdAt: string | number
-  content?: string
-  totalLikes?: number
-  totalReplies?: number
-  totalReposts?: number
-  likeAvatars?: string[]
-}
+  avatar: string;
+  name: string;
+  handle: string;
+  createdAt: string | number;
+  content?: string;
+  totalLikes?: number;
+  totalReplies?: number;
+  totalReposts?: number;
+  likeAvatars?: string[];
+};
 interface ReplyCardProps {
-  data: ReplyCardData
-  contentRender?: () => JSX.Element
-  liked?: boolean
-  replied?: boolean
-  reposted?: boolean
-  liking?: boolean
-  replying?: boolean
-  reposting?: boolean
-  likeAction?: () => void
-  replyAction?: () => void
-  repostAction?: () => void
-  showActions?: boolean
+  data: ReplyCardData;
+  contentRender?: () => JSX.Element;
+  liked?: boolean;
+  replied?: boolean;
+  reposted?: boolean;
+  liking?: boolean;
+  replying?: boolean;
+  reposting?: boolean;
+  likeAction?: () => void;
+  replyAction?: () => void;
+  repostAction?: () => void;
+  showActions?: boolean;
 }
 export default function ReplyCard({
   data,
@@ -76,7 +76,7 @@ export default function ReplyCard({
         {contentRender ? contentRender() : data?.content}
       </ReplyCardContentWrapper>
     </ReplyCardWrapper>
-  )
+  );
 }
 
 export const ReplyCardWrapper = styled.div`
@@ -86,20 +86,20 @@ export const ReplyCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-`
+`;
 export const ReplyCardHeader = styled.div`
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
-`
+`;
 
 export type ReplyCardUserInfoData = {
-  avatar: string
-  name: string
-  handle: string
-  createdAt: string | number
-}
+  avatar: string;
+  name: string;
+  handle: string;
+  createdAt: string | number;
+};
 export function ReplyCardUserInfo({
   data,
   ...wrapperProps
@@ -114,27 +114,27 @@ export function ReplyCardUserInfo({
         </Handle>
       </ReplyCardUserInfoCenter>
     </ReplyCardUserInfoWrapper>
-  )
+  );
 }
 
 const ReplyCardUserInfoWrapper = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 10px;
-`
+`;
 const ReplyCardUserInfoCenter = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
-`
+`;
 const Avatar = styled.img`
   width: 40px;
   height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
   object-fit: cover;
-`
+`;
 const Name = styled.div`
   display: flex;
   align-items: center;
@@ -146,7 +146,7 @@ const Name = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-`
+`;
 const Handle = styled.div`
   display: flex;
   align-items: center;
@@ -158,12 +158,12 @@ const Handle = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-`
+`;
 export const ReplyCardActionsWrapper = styled.div`
   display: flex;
   align-items: center;
   gap: 15px;
-`
+`;
 export const ReplyCardContentWrapper = styled.div`
   color: #fff;
   font-family: Baloo Bhai 2;
@@ -171,4 +171,4 @@ export const ReplyCardContentWrapper = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 25px; /* 156.25% */
-`
+`;

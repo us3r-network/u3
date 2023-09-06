@@ -11,6 +11,7 @@ import sanitizeDStorageUrl from './sanitizeDStorageUrl';
  * @param namedTransform The named transform to use.
  * @returns The avatar image URL.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getAvatar = (profile: any, namedTransform = AVATAR): string => {
   const avatarUrl =
     profile?.avatar ??

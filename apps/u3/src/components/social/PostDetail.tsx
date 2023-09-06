@@ -1,16 +1,16 @@
-import styled from 'styled-components'
-import ButtonBase from '../common/button/ButtonBase'
+import styled from 'styled-components';
+import ButtonBase from '../common/button/ButtonBase';
 
 export const PostDetailWrapper = styled.div`
   border-radius: 20px;
   background: #212228;
   overflow: hidden;
-`
+`;
 export const PostDetailCommentsWrapper = styled.div`
   & > *:not(:first-child) {
     border-top: 1px solid #191a1f;
   }
-`
+`;
 
 export const LoadMoreBtn = styled(ButtonBase)`
   width: 100%;
@@ -23,4 +23,4 @@ export const LoadMoreBtn = styled(ButtonBase)`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-`
+`;

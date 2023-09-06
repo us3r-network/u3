@@ -1,54 +1,54 @@
-import { useCallback, useState } from 'react'
-import { useActiveProfile } from '@lens-protocol/react-web'
-import { toast } from 'react-toastify'
-import ReplyForm from '../ReplyForm'
-import { useLensCtx } from '../../../contexts/AppLensCtx'
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
-import getAvatar from '../../../utils/lens/getAvatar'
+import { useCallback, useState } from 'react';
+import { useActiveProfile } from '@lens-protocol/react-web';
+import { toast } from 'react-toastify';
+import ReplyForm from '../ReplyForm';
+import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
+import getAvatar from '../../../utils/lens/getAvatar';
 
-export default function LensCommentPostForm ({
+export default function LensCommentPostForm({
   publicationId,
-  canComment
+  canComment,
 }: {
-  publicationId: string
-  canComment?: boolean
+  publicationId: string;
+  canComment?: boolean;
 }) {
-  const [content, setContent] = useState('')
+  const [content, setContent] = useState('');
 
-  const { isLogin, setOpenLensLoginModal } = useLensCtx()
-  const { data: activeProfile } = useActiveProfile()
+  const { isLogin, setOpenLensLoginModal } = useLensCtx();
+  const { data: activeProfile } = useActiveProfile();
 
   const { createComment, isPending } = useCreateLensComment({
     onCommentSuccess: () => {
-      setContent('')
-    }
-  })
+      setContent('');
+    },
+  });
 
   const onSubmit = useCallback(async () => {
     if (!isLogin) {
-      setOpenLensLoginModal(true)
-      return
+      setOpenLensLoginModal(true);
+      return;
     }
     if (!content) {
-      toast.warn('Please input comment content.')
-      return
+      toast.warn('Please input comment content.');
+      return;
     }
     if (!canComment) {
-      toast.error('No comment permission')
-      return
+      toast.error('No comment permission');
+      return;
     }
     await createComment({
       publicationId,
-      content
-    })
+      content,
+    });
   }, [
     isLogin,
     canComment,
     publicationId,
     content,
     createComment,
-    setOpenLensLoginModal
-  ])
+    setOpenLensLoginModal,
+  ]);
 
   return (
     <ReplyForm
@@ -59,5 +59,5 @@ export default function LensCommentPostForm ({
       submitting={isPending}
       onSubmit={onSubmit}
     />
-  )
+  );
 }

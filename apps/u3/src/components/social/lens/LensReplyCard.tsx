@@ -1,109 +1,110 @@
-import { Comment } from '@lens-protocol/react-web'
-import { useLensCtx } from '../../../contexts/AppLensCtx'
-import { useEffect, useMemo, useState } from 'react'
-import { toast } from 'react-toastify'
-import { useNavigate } from 'react-router-dom'
-import { lensPublicationToReplyCardData } from '../../../utils/lens-ui-utils'
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment'
-import ReplyCard, { ReplyCardData } from '../ReplyCard'
-import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote'
-import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror'
-import LensPostCardContent from './LensPostCardContent'
+import { Comment } from '@lens-protocol/react-web';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { lensPublicationToReplyCardData } from '../../../utils/lens-ui-utils';
+import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
+import ReplyCard, { ReplyCardData } from '../ReplyCard';
+import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote';
+import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
+import LensPostCardContent from './LensPostCardContent';
+import { useLensCtx } from '../../../contexts/AppLensCtx';
 
-export default function LensReplyCard ({ data }: { data: Comment }) {
-  const navigate = useNavigate()
+export default function LensReplyCard({ data }: { data: Comment }) {
+  const navigate = useNavigate();
   const {
     isLogin,
     setOpenLensLoginModal,
     setCommentModalData,
-    setOpenCommentModal
-  } = useLensCtx()
+    setOpenCommentModal,
+  } = useLensCtx();
 
   const {
     toggleReactionUpvote,
     hasUpvote,
-    isPending: isPendingReactionUpvote
+    isPending: isPendingReactionUpvote,
   } = useReactionLensUpvote({
-    publication: data
-  })
+    publication: data,
+  });
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
-    publication: data
-  })
+    publication: data,
+  });
 
   const [updatedPublication, setUpdatedPublication] = useState<Comment | null>(
     null
-  )
+  );
 
   useEffect(() => {
-    setUpdatedPublication(data)
-  }, [data])
+    setUpdatedPublication(data);
+  }, [data]);
 
   useCreateLensComment({
-    onCommentSuccess: commentArgs => {
-      if (commentArgs.publicationId !== data.id) return
-      setUpdatedPublication(prev => {
-        if (!prev) return prev
-        const stats = prev.stats
+    onCommentSuccess: (commentArgs) => {
+      if (commentArgs.publicationId !== data.id) return;
+      setUpdatedPublication((prev) => {
+        if (!prev) return prev;
+        const { stats } = prev;
         return {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: stats.totalAmountOfComments + 1
-          }
-        }
-      })
-    }
-  })
+            totalAmountOfComments: stats.totalAmountOfComments + 1,
+          },
+        };
+      });
+    },
+  });
 
   const cardData = useMemo<ReplyCardData>(
     () => lensPublicationToReplyCardData(updatedPublication),
     [updatedPublication]
-  )
+  );
 
   return (
     <ReplyCard
+      // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => (
-        <LensPostCardContent publication={updatedPublication as Comment} />
+        <LensPostCardContent publication={updatedPublication} />
       )}
       onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`)
+        navigate(`/post-detail/lens/${data.id}`);
       }}
       data={cardData}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
         if (!isLogin) {
-          setOpenLensLoginModal(true)
-          return
+          setOpenLensLoginModal(true);
+          return;
         }
-        toggleReactionUpvote()
+        toggleReactionUpvote();
       }}
       replying={false}
       replyAction={() => {
         if (!isLogin) {
-          setOpenLensLoginModal(true)
-          return
+          setOpenLensLoginModal(true);
+          return;
         }
         if (!data?.canComment?.result) {
-          toast.error('No comment permission')
-          return
+          toast.error('No comment permission');
+          return;
         }
-        setCommentModalData(data)
-        setOpenCommentModal(true)
+        setCommentModalData(data);
+        setOpenCommentModal(true);
       }}
       reposting={isPendingMirror}
       repostAction={() => {
         if (!isLogin) {
-          setOpenLensLoginModal(true)
-          return
+          setOpenLensLoginModal(true);
+          return;
         }
         if (!data?.canMirror?.result) {
-          toast.error('No mirror permission')
-          return
+          toast.error('No mirror permission');
+          return;
         }
-        createMirror()
+        createMirror();
       }}
     />
-  )
+  );
 }
