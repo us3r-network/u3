@@ -6,6 +6,7 @@
     "@airstack/airstack-react": "^0.4.7",
     "@loadable/component": "^5.15.2",
     "@multiavatar/multiavatar": "^1.0.7",
+    "@rainbow-me/rainbowkit": "1.0.2",
     "@react-spring/web": "^9.6.1",
     "@reduxjs/toolkit": "^1.8.3",
     "@testing-library/user-event": "^13.5.0",
@@ -20,6 +21,8 @@
     "@us3r-network/auth-with-rainbowkit": "^0.1.10",
     "@us3r-network/link": "0.2.4",
     "@us3r-network/profile": "^0.5.6",
+    "@xmtp/content-type-remote-attachment": "^1.0.7",
+    "@xmtp/xmtp-js": "^10.2.1",
     "antd": "^5.0.7",
     "assert": "^2.0.0",
     "axios": "^0.27.2",
@@ -70,11 +73,10 @@
     "swiper": "^8.2.4",
     "three": "^0.147.0",
     "tslib": "^2.3.0",
-    "web-vitals": "^2.1.4",
-    "yup": "^0.32.11",
-    "wagmi": "^1.0.7",
     "viem": "^0.3.37",
-    "@rainbow-me/rainbowkit": "1.0.2"
+    "wagmi": "^1.0.7",
+    "web-vitals": "^2.1.4",
+    "yup": "^0.32.11"
   },
   "scripts": {
     "start": "craco start",

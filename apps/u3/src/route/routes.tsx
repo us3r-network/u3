@@ -38,7 +38,6 @@ export enum RouteKey {
   asset = 'asset',
   gallery = 'gallery',
   notification = 'notification',
-  message = 'message',
   save = 'save',
 }
 export enum RoutePermission {
@@ -105,12 +104,6 @@ export const routes: CutomRouteObject[] = [
     path: '/notification',
     element: loadContainerElement('Notification'),
     key: RouteKey.notification,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/message',
-    element: loadContainerElement('Message'),
-    key: RouteKey.message,
     permissions: [RoutePermission.login],
   },
   {

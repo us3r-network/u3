@@ -12,7 +12,6 @@ import { ReactComponent as HeartSvg } from './svgs/heart.svg';
 import { ReactComponent as WalletSvg } from './svgs/wallet.svg';
 import { ReactComponent as ImageSvg } from './svgs/image.svg';
 import { ReactComponent as BellSvg } from './svgs/bell.svg';
-import { ReactComponent as MessageChatSquareSvg } from './svgs/message-chat-square.svg';
 import { ReactComponent as UserCircleSvg } from './svgs/user-circle.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
@@ -67,11 +66,5 @@ export const navs: CutomNavObject[] = [
     activeRouteKeys: [RouteKey.notification],
     icon: React.createElement(BellSvg),
     route: getRoute(RouteKey.notification),
-  },
-  {
-    name: 'message',
-    activeRouteKeys: [RouteKey.message],
-    icon: React.createElement(MessageChatSquareSvg),
-    route: getRoute(RouteKey.message),
   },
 ];

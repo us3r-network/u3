@@ -5,16 +5,25 @@
  * @LastEditTime: 2023-01-17 21:38:11
  * @Description: file description
  */
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import LoginButton from './LoginButton';
-import Nav from './Nav';
+import Nav, {
+  NavWrapper,
+  PcNavItem,
+  PcNavItemIconBox,
+  PcNavItemTextBox,
+  PcNavItemTextInner,
+} from './Nav';
 import { ReactComponent as LogoIconSvg } from '../imgs/logo-icon.svg';
 import LogoutConfirmModal from './LogoutConfirmModal';
 import useLogin from '../../hooks/useLogin';
 import { useAppSelector } from '../../store/hooks';
 import { selectKarmaState } from '../../features/profile/karma';
+import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
+import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
+import MessageModal from '../message/MessageModal';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -39,15 +48,19 @@ export default function Menu() {
       <NavListBox>
         <Nav onlyIcon={!isOpen} />
       </NavListBox>
-      <LoginButtonBox>
-        <LoginButton
-          onlyIcon={!isOpen}
-          // onLogout={() => {
-          //   setOpenLogoutConfirm(true);
-          // }}
-          karmaScore={totalScore}
-        />
-      </LoginButtonBox>
+
+      <FooterBox>
+        <FooterNav onlyIcon={!isOpen} />
+        <LoginButtonBox>
+          <LoginButton
+            onlyIcon={!isOpen}
+            // onLogout={() => {
+            //   setOpenLogoutConfirm(true);
+            // }}
+            karmaScore={totalScore}
+          />
+        </LoginButtonBox>
+      </FooterBox>
       {/* <LogoutConfirmModal
         isOpen={openLogoutConfirm}
         onClose={() => {
@@ -61,9 +74,55 @@ export default function Menu() {
           setIsOpen(false);
         }}
       /> */}
+
+      <MessageModal />
     </MenuWrapper>
   );
 }
+
+function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
+  const { openMessageModal, setOpenMessageModal } = useXmtpStore();
+
+  const navItemTextInnerEls = useRef(new Map());
+  const renderNavItemText = useCallback(
+    (text: string) => {
+      if (navItemTextInnerEls.current.has(text)) {
+        const innerEl = navItemTextInnerEls.current.get(text);
+        innerEl.parentElement.style.width = onlyIcon
+          ? '0px'
+          : `${innerEl.scrollWidth}px`;
+      }
+      return (
+        <PcNavItemTextBox>
+          <PcNavItemTextInner
+            ref={(el) => {
+              if (el) {
+                navItemTextInnerEls.current.set(text, el);
+              }
+            }}
+          >
+            {text}
+          </PcNavItemTextInner>
+        </PcNavItemTextBox>
+      );
+    },
+    [onlyIcon]
+  );
+  return (
+    <NavWrapper>
+      <PcNavItem
+        isActive={openMessageModal}
+        onClick={() => setOpenMessageModal((open) => !open)}
+      >
+        <PcNavItemIconBox isActive={openMessageModal}>
+          <MessageChatSquareSvg />
+        </PcNavItemIconBox>
+        {renderNavItemText('Message')}
+      </PcNavItem>
+    </NavWrapper>
+  );
+}
+
 const MenuWrapper = styled.div<{ isOpen: boolean }>`
   background: #1b1e23;
   width: ${({ isOpen }) => (isOpen ? '180px' : '60px')};
@@ -75,8 +134,6 @@ const MenuWrapper = styled.div<{ isOpen: boolean }>`
   padding: 20px 10px;
   border-right: 1px solid #39424c;
   box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
   transition: all 0.3s ease-out;
   display: flex;
   flex-direction: column;
@@ -116,6 +173,14 @@ const NavListBox = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
+`;
+const FooterBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
 `;
 const LoginButtonBox = styled.div`
   width: 100%;
