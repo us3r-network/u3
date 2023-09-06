@@ -26,6 +26,8 @@ module.exports = {
   ],
   rules: {
     /** js语法 **/
+    // 允许使用console
+    "no-console": "off",
     // 不限制js的语法 （如：不禁止使用for of语法）
     'no-restricted-syntax': 'off',
     // 允许在for循环中使用一元运算符 ++,-- (其它位置仍给出警告)
