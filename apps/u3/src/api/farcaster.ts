@@ -1,8 +1,8 @@
 import axios, { AxiosPromise } from 'axios';
 import { ApiResp, FarCast } from '.';
-import { API_BASE_URL } from '../constants';
+import { FARCARSTER_API } from '../constants';
 
-console.log({ API_BASE_URL });
+console.log({ FARCARSTER_API });
 
 export function getFarcasterFeeds({
   endFarcasterCursor,
@@ -21,7 +21,7 @@ export function getFarcasterFeeds({
   }>
 > {
   return axios({
-    url: `${API_BASE_URL}/3r/farcasts`,
+    url: `${FARCARSTER_API}/3r/farcasts`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -34,7 +34,7 @@ export function getFarcasterUserInfo(
   fids: number[]
 ): AxiosPromise<ApiResp<{ type: number; value: string }[]>> {
   return axios({
-    url: `${API_BASE_URL}/3r/farcaster/userinfo`,
+    url: `${FARCARSTER_API}/3r/farcaster/userinfo`,
     method: 'get',
     params: {
       fids,
@@ -63,7 +63,7 @@ export function getFarcasterCastInfo(
   }>
 > {
   return axios({
-    url: `${API_BASE_URL}/3r/farcaster/cast/${hash}`,
+    url: `${FARCARSTER_API}/3r/farcaster/cast/${hash}`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -80,7 +80,7 @@ export function getFarcasterSignature(key: string): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${API_BASE_URL}/3r/farcaster/signature/${key}`,
+    url: `${FARCARSTER_API}/3r/farcaster/signature/${key}`,
     method: 'get',
   });
 }
@@ -97,7 +97,7 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${API_BASE_URL}/3r/embed`,
+    url: `${FARCARSTER_API}/3r/embed`,
     method: 'get',
     params: {
       urls,
