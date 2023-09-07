@@ -2,8 +2,9 @@ import styled from 'styled-components';
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import ConversationList from './ConversationList';
 import NoConversations from './NoConversations';
-import SearchConversation from './SearchConversation';
+// import SearchConversation from './SearchConversation';
 import MessageModalCloseBtn from './MessageModalCloseBtn';
+import StartNewConversation from './StartNewConversation';
 
 export default function ConversationsPage() {
   const { conversations } = useXmtpStore();
@@ -13,7 +14,8 @@ export default function ConversationsPage() {
         <Title>Message</Title>
         <MessageModalCloseBtn />
       </Header>
-      <SearchConversation />
+      {/* <SearchConversation /> */}
+      <StartNewConversation />
       {conversations.size === 0 ? <NoConversations /> : <Conversations />}
     </Wrapper>
   );
