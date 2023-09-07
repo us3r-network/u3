@@ -17,6 +17,7 @@ import { ScreeshotsMobile } from './detail/Screeshots';
 import { UserScoreMobile } from './detail/UserScore';
 import { RecommendDappsMobile } from './detail/RecommendDapps';
 import { IntroductionMobile } from './detail/Introduction';
+import { ButtonPrimary } from '../common/button/ButtonBase';
 
 export default function DappPageMobile({
   id,
@@ -39,6 +40,14 @@ export default function DappPageMobile({
       </QuotaBox>
       <ScreeshotsMobile urls={data?.screenshots ?? []} />
       <IntroductionMobile text={data.description} />
+      <OpenButton
+        onClick={(e) => {
+          e.stopPropagation();
+          window.open(data.url, '_blank');
+        }}
+      >
+        Open Dapp
+      </OpenButton>
       <UserScoreMobile streamId={data.linkStreamId} />
       <RecommendDappsMobile
         data={recommendDapps}
@@ -78,3 +87,4 @@ const QuotaBox = styled.div`
     align-items: center;
   }
 `;
+const OpenButton = styled(ButtonPrimary)``;
