@@ -1,8 +1,8 @@
 import axios, { AxiosPromise } from 'axios';
 import { ApiResp, FarCast } from '.';
-import { FARCARSTER_API } from '../constants';
+import { REACT_APP_API_SOCIAL_URL } from '../constants';
 
-console.log({ FARCARSTER_API });
+// console.log({ REACT_APP_API_SOCIAL_URL });
 
 export function getFarcasterFeeds({
   endFarcasterCursor,
@@ -21,7 +21,7 @@ export function getFarcasterFeeds({
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/farcasts`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcasts`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -34,7 +34,7 @@ export function getFarcasterUserInfo(
   fids: number[]
 ): AxiosPromise<ApiResp<{ type: number; value: string }[]>> {
   return axios({
-    url: `${FARCARSTER_API}/3r/farcaster/userinfo`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/userinfo`,
     method: 'get',
     params: {
       fids,
@@ -63,7 +63,7 @@ export function getFarcasterCastInfo(
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/farcaster/cast/${hash}`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/cast/${hash}`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -80,7 +80,7 @@ export function getFarcasterSignature(key: string): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/farcaster/signature/${key}`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/signature/${key}`,
     method: 'get',
   });
 }
@@ -97,7 +97,7 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/embed`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/embed`,
     method: 'get',
     params: {
       urls,
