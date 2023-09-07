@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from 'axios';
-import { ApiResp, FarCast } from '.';
+import { ApiResp, FarCast, FarCastEmbedMeta } from '.';
 import { FARCARSTER_API } from '../constants';
 
 console.log({ FARCARSTER_API });
@@ -87,13 +87,7 @@ export function getFarcasterSignature(key: string): AxiosPromise<
 
 export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
   ApiResp<{
-    metadata: (null | {
-      description: string;
-      icon: string;
-      image: string;
-      title: string;
-      url: string;
-    })[];
+    metadata: (null | FarCastEmbedMeta)[];
   }>
 > {
   return axios({

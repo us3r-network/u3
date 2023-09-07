@@ -198,22 +198,77 @@ export const PostCardImgWrapper = styled.div`
   }
 `;
 
+export const PostCardCastWrapper = styled.div`
+  border-radius: 10px;
+  border: 1px solid #9c9c9c;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    > img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+    }
+  }
+  > p {
+    color: #c8c4c4;
+    margin-bottom: 0;
+    margin-top: 10px;
+    padding: 0;
+  }
+`;
+
+export const PostCardNftWrapper = styled.div`
+  color: #fff;
+  width: 300px;
+  border: 1px solid #9c9c9c;
+  border-radius: 10px;
+  > img {
+    width: 100%;
+  }
+  > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    > h4 {
+      margin: 10px 0;
+    }
+    > button {
+      background: inherit;
+      border: 1px solid #9c9c9c;
+      padding: 5px 10px;
+      border-radius: 10px;
+      outline: none;
+      color: inherit;
+    }
+  }
+`;
+
 export const PostCardEmbedWrapper = styled.a`
   color: #fff;
   border: 1px solid #9c9c9c;
+  border-radius: 10px;
   padding: 10px;
   display: flex;
-  border-radius: 10px;
   gap: 20px;
   justify-content: space-between;
   margin-bottom: 10px;
+  text-decoration: none;
   > .img {
     flex-shrink: 0;
     width: 110px;
     height: 110px;
+    overflow: hidden;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
+    > img {
+      width: 100%;
+    }
   }
 
   p {
