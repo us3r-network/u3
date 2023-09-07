@@ -12,6 +12,7 @@ import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 import Loading from '../components/common/loading/Loading';
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds';
 import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
+import useLogin from '../hooks/useLogin';
 
 enum FeedsType {
   FOLLOWING = 'following',
@@ -19,6 +20,8 @@ enum FeedsType {
 }
 
 export default function Home() {
+  const { isLogin: isLoginU3 } = useLogin();
+
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const fid = useFarcasterCurrFid();
@@ -146,7 +149,7 @@ export default function Home() {
   return (
     <HomeWrapper id="social-wrapper">
       <MainWrapper>
-        {!!address && (
+        {isLoginU3 && !!address && (
           <FeedsTypeTabsWrapper>
             <FeedsTypeTab
               active={feedsType === FeedsType.FOLLOWING}

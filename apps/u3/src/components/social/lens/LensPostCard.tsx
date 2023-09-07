@@ -11,8 +11,10 @@ import LensPostCardContent from './LensPostCardContent';
 import { LensPublication } from '../../../api/lens';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
+import useLogin from '../../../hooks/useLogin';
 
 export default function LensPostCard({ data }: { data: LensPublication }) {
+  const { isLogin: isLoginU3 } = useLogin();
   const navigate = useNavigate();
   const {
     isLogin,
@@ -104,7 +106,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -112,7 +114,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -125,7 +127,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
