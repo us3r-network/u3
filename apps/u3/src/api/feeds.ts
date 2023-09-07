@@ -1,5 +1,5 @@
 import axios, { AxiosPromise } from 'axios';
-import { FARCARSTER_API } from '../constants';
+import { REACT_APP_API_SOCIAL_URL } from '../constants';
 import { LensPublication } from './lens';
 import { ApiResp, FarCast, SocailPlatform } from '.';
 
@@ -33,7 +33,7 @@ export function getFeeds({
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/feeds`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/feeds`,
     method: 'get',
     params: {
       pageSize,
@@ -69,7 +69,7 @@ export function getFollowingFeeds({
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/followingFeeds`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/followingFeeds`,
     method: 'get',
     params: {
       pageSize,
@@ -103,7 +103,7 @@ export function getTrendingFeeds({
   }>
 > {
   return axios({
-    url: `${FARCARSTER_API}/3r/trendingFeeds`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/trendingFeeds`,
     method: 'get',
     params: {
       pageSize,
