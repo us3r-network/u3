@@ -65,6 +65,9 @@ module.exports = {
         config.plugins.push(new BundleAnalyzerPlugin());
 
       config.ignoreWarnings = [/Failed to parse source map/];
+      config.optimization.splitChunks = {
+        chunks: 'all',
+      };
       return config;
     },
   },
