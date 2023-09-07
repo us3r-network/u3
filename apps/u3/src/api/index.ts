@@ -9,6 +9,24 @@ export type ApiResp<T> = {
   data: T;
 };
 
+export type FarCastEmbedMetaCast = {
+  type: 'cast';
+  cast: Partial<FarCast>;
+  user: { [key: string]: any }[];
+};
+
+export type FarCastEmbedMeta = {
+  description: string;
+  icon: string;
+  image: string;
+  title: string;
+  url: string;
+  collection: string | undefined;
+  nftSchema: string | undefined;
+  creatorAddress: string | undefined;
+  contractAddress: string | undefined;
+};
+
 export type FarCast = {
   created_at: string;
   deleted_at: string | null;

@@ -1,8 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CastId } from '@farcaster/hub-web';
+import { CastId, UserDataType } from '@farcaster/hub-web';
+import styled from 'styled-components';
 
-import { FarCast, SocailPlatform } from '../../../api';
+import {
+  FarCast,
+  FarCastEmbedMeta,
+  FarCastEmbedMetaCast,
+  SocailPlatform,
+} from '../../../api';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import FCastLike from './FCastLike';
@@ -10,9 +17,11 @@ import FCastRecast from './FCastRecast';
 import FCastComment from './FCastComment';
 import {
   PostCardActionsWrapper,
+  PostCardCastWrapper,
   PostCardContentWrapper,
   PostCardEmbedWrapper,
   PostCardImgWrapper,
+  PostCardNftWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../PostCard';
@@ -44,12 +53,7 @@ export default function FCast({
     const webpages = [];
     for (const embed of cast.embeds) {
       if (embed?.url) {
-        if (
-          embed.url.endsWith('.png') ||
-          embed.url.endsWith('.jpg') ||
-          embed.url.endsWith('.jpeg') ||
-          embed.url.endsWith('.gif')
-        ) {
+        if (isImg(embed.url)) {
           imgs.push({
             url: embed.url,
           });
@@ -115,13 +119,7 @@ function Embed({
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
   const [metadata, setMetadata] = useState<
-    {
-      description: string;
-      icon: string;
-      image: string;
-      title: string;
-      url: string;
-    }[]
+    (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
   >([]);
 
   const getEmbedWebpagesMetadata = async () => {
@@ -155,8 +153,8 @@ function Embed({
   }, [viewRef]);
 
   return (
-    <div ref={viewRef} onClick={(e) => e.stopPropagation()}>
-      {embedImgs && (
+    <EmbedBox ref={viewRef} onClick={(e) => e.stopPropagation()}>
+      {embedImgs.length > 0 && (
         <PostCardImgWrapper>
           {embedImgs.map((img) => (
             // eslint-disable-next-line jsx-a11y/alt-text
@@ -164,22 +162,118 @@ function Embed({
           ))}
         </PostCardImgWrapper>
       )}
-      {metadata.map((item) => {
-        return (
-          <PostCardEmbedWrapper key={item.url} href={item.url} target="_blank">
-            <div>
-              <h4>{item.title}</h4>
-              <p>{item.description}</p>
-            </div>
-            <div
-              className="img"
-              style={{
-                backgroundImage: `url(${item.image})`,
-              }}
+      {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
+        if ((item as any).type === 'cast') {
+          const { cast } = item as FarCastEmbedMetaCast;
+          return (
+            <EmbedCast
+              data={item as FarCastEmbedMetaCast}
+              key={Buffer.from(cast.hash.data).toString('hex')}
             />
-          </PostCardEmbedWrapper>
+          );
+        }
+        if ((item as any).collection) {
+          return (
+            <EmbedNFT item={item as FarCastEmbedMeta} key={(item as any).url} />
+          );
+        }
+        return (
+          <EmbedImg item={item as FarCastEmbedMeta} key={(item as any).url} />
         );
       })}
-    </div>
+    </EmbedBox>
   );
 }
+
+function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
+  const navigate = useNavigate();
+
+  const userData = useMemo(() => {
+    const img = data.user.find((u) => u.type === UserDataType.PFP)?.value;
+    const username = data.user.find(
+      (u) => u.type === UserDataType.USERNAME
+    )?.value;
+    return {
+      img,
+      username,
+    };
+  }, [data.user]);
+
+  return (
+    <PostCardCastWrapper
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(
+          `/post-detail/fcast/${Buffer.from(data.cast.hash.data).toString(
+            'hex'
+          )}`
+        );
+      }}
+    >
+      <div>
+        <img src={userData.img} alt="" />
+        <span>{userData.username}</span>
+      </div>
+      <p>{data.cast.text}</p>
+    </PostCardCastWrapper>
+  );
+}
+
+function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
+  return (
+    <PostCardNftWrapper key={item.url}>
+      <img src={item.image} alt="" />
+      <div>
+        <h4>{item.collection}</h4>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            window.open(item.url, '_blank');
+          }}
+        >
+          Mint
+        </button>
+      </div>
+    </PostCardNftWrapper>
+  );
+}
+
+function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
+  return (
+    <PostCardEmbedWrapper href={item.url} target="_blank">
+      <div>
+        <h4>{item.title}</h4>
+        <p>{item.description}</p>
+      </div>
+      {(isImg(item.image || '') && (
+        <div
+          className="img"
+          style={{
+            backgroundImage: `url(${item.image})`,
+          }}
+        />
+      )) || (
+        <div className="img">
+          <img src={item.image} alt="" />
+        </div>
+      )}
+    </PostCardEmbedWrapper>
+  );
+}
+
+function isImg(url?: string) {
+  if (!url) return false;
+  return (
+    url.endsWith('.png') ||
+    url.endsWith('.jpg') ||
+    url.endsWith('.jpeg') ||
+    url.endsWith('.gif')
+  );
+}
+
+const EmbedBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
