@@ -1,15 +1,20 @@
-import { useState } from 'react'
-import AddPostModal from './AddPostModal'
-import ButtonBase from '../common/button/ButtonBase'
-import styled from 'styled-components'
+import { useState } from 'react';
+import styled from 'styled-components';
+import AddPostModal from './AddPostModal';
+import ButtonBase from '../common/button/ButtonBase';
+import useLogin from '../../hooks/useLogin';
 
-export default function AddPost () {
-  const [open, setOpen] = useState(false)
+export default function AddPost() {
+  const [open, setOpen] = useState(false);
+  const { isLogin, login } = useLogin();
   return (
     <div>
       <AddButton
-        onClick={() => {
-          setOpen(true)
+        onClick={async () => {
+          if (!isLogin) {
+            await login();
+          }
+          setOpen(true);
         }}
       >
         Post
@@ -17,11 +22,11 @@ export default function AddPost () {
       <AddPostModal
         open={open}
         closeModal={() => {
-          setOpen(false)
+          setOpen(false);
         }}
       />
     </div>
-  )
+  );
 }
 
 const AddButton = styled(ButtonBase)`
@@ -37,4 +42,4 @@ const AddButton = styled(ButtonBase)`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-`
+`;

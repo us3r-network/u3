@@ -6,6 +6,7 @@ import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import FCastCommentPostModal from './FCastCommentPostModal';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import PostReply from '../PostReply';
+import useLogin from '../../../hooks/useLogin';
 
 export default function FCastComment({
   cast,
@@ -16,6 +17,7 @@ export default function FCastComment({
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
 }) {
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const [commentCount, setCommentCount] = useState(
     Number(cast.comment_count || 0)
   );
@@ -27,6 +29,10 @@ export default function FCastComment({
       <PostReply
         totalReplies={commentCount}
         replyAction={() => {
+          if (!isLoginU3) {
+            loginU3();
+            return;
+          }
           if (!isConnected) {
             openFarcasterQR();
             return;

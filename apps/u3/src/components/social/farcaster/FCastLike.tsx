@@ -23,6 +23,7 @@ import PostLike, {
 } from '../PostLike';
 import { FarCast } from '../../../api';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import useLogin from '../../../hooks/useLogin';
 
 export default function FCastLike({
   cast,
@@ -33,6 +34,7 @@ export default function FCastLike({
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
 }) {
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const { encryptedSigner, isConnected } = useFarcasterCtx();
   const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
   const [likeCount, setLikeCount] = useState<number>(
@@ -147,6 +149,10 @@ export default function FCastLike({
         totalLikes={likeCount}
         liked={likes.includes(currFid)}
         likeAction={() => {
+          if (!isLoginU3) {
+            loginU3();
+            return;
+          }
           if (likes.includes(currFid)) {
             removeLikeCast(castId);
           } else {

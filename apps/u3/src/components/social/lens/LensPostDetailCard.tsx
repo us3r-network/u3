@@ -9,6 +9,7 @@ import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import { LensPublication } from '../../../api/lens';
+import useLogin from '../../../hooks/useLogin';
 
 export default function LensPostDetailCard({
   data,
@@ -21,6 +22,8 @@ export default function LensPostDetailCard({
     setCommentModalData,
     setOpenCommentModal,
   } = useLensCtx();
+
+  const { isLogin: isLoginU3 } = useLogin();
 
   const publication = data as unknown as Post;
 
@@ -79,7 +82,7 @@ export default function LensPostDetailCard({
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -87,7 +90,7 @@ export default function LensPostDetailCard({
       }}
       replying={false}
       replyAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -100,7 +103,7 @@ export default function LensPostDetailCard({
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }

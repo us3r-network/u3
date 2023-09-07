@@ -20,12 +20,14 @@ interface XmtpClientCtxValue {
   xmtpClient: Client | null;
   enablingXmtp: boolean;
   enableXmtp: (signer: Signer) => Promise<void>;
+  disconnectXmtp: () => void;
 }
 
 const defaultContextValue: XmtpClientCtxValue = {
   xmtpClient: null,
   enablingXmtp: false,
   enableXmtp: async () => {},
+  disconnectXmtp: () => {},
 };
 
 export const XmtpClientCtx = createContext(defaultContextValue);
@@ -89,6 +91,10 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const disconnectXmtp = useCallback(() => {
+    setXmtpClient(null);
+  }, []);
+
   useEffect(() => {
     if (!signer) {
       setXmtpClient(null);
@@ -100,8 +106,8 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   return (
     <XmtpClientCtx.Provider
       value={useMemo(
-        () => ({ xmtpClient, enablingXmtp, enableXmtp }),
-        [xmtpClient, enablingXmtp, enableXmtp]
+        () => ({ xmtpClient, enablingXmtp, enableXmtp, disconnectXmtp }),
+        [xmtpClient, enablingXmtp, enableXmtp, disconnectXmtp]
       )}
     >
       {children}

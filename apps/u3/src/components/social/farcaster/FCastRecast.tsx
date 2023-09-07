@@ -20,6 +20,7 @@ import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
 import { getCurrFid } from '../../../utils/farsign-utils';
 import PostReport from '../PostReport';
+import useLogin from '../../../hooks/useLogin';
 
 export default function FCastRecast({
   cast,
@@ -30,6 +31,7 @@ export default function FCastRecast({
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
 }) {
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const { encryptedSigner, isConnected } = useFarcasterCtx();
   const [recasts, setRecasts] = useState<string[]>(
     Array.from(new Set(cast.recasts))
@@ -129,6 +131,10 @@ export default function FCastRecast({
     <PostReport
       totalReposts={recastCount}
       repostAction={() => {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
         if (recasts.includes(currFid)) {
           removeRecast(castId);
         } else {

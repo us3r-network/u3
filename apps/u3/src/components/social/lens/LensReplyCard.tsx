@@ -9,8 +9,11 @@ import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote
 import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
+import useLogin from '../../../hooks/useLogin';
 
 export default function LensReplyCard({ data }: { data: Comment }) {
+  const { isLogin: isLoginU3 } = useLogin();
+
   const navigate = useNavigate();
   const {
     isLogin,
@@ -74,7 +77,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -82,7 +85,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -95,7 +98,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLogin) {
+        if (!isLoginU3 || !isLogin) {
           setOpenLensLoginModal(true);
           return;
         }

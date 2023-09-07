@@ -5,6 +5,7 @@ import ReplyForm from '../ReplyForm';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
 import getAvatar from '../../../utils/lens/getAvatar';
+import useLogin from '../../../hooks/useLogin';
 
 export default function LensCommentPostForm({
   publicationId,
@@ -13,6 +14,7 @@ export default function LensCommentPostForm({
   publicationId: string;
   canComment?: boolean;
 }) {
+  const { isLogin: isLoginU3 } = useLogin();
   const [content, setContent] = useState('');
 
   const { isLogin, setOpenLensLoginModal } = useLensCtx();
@@ -25,7 +27,7 @@ export default function LensCommentPostForm({
   });
 
   const onSubmit = useCallback(async () => {
-    if (!isLogin) {
+    if (!isLoginU3 || !isLogin) {
       setOpenLensLoginModal(true);
       return;
     }
@@ -42,6 +44,7 @@ export default function LensCommentPostForm({
       content,
     });
   }, [
+    isLoginU3,
     isLogin,
     canComment,
     publicationId,
