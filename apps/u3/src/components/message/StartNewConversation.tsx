@@ -39,7 +39,7 @@ export default function StartNewConversation() {
           }}
         />
         <SubmitButton type="submit" disabled={isStarting}>
-          Start Convo
+          Start
         </SubmitButton>
       </StartFormWrap>
       {errMsg && <ErrMsg>{errMsg}</ErrMsg>}
