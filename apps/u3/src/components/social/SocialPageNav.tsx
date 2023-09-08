@@ -1,5 +1,6 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
+import MobilePageHeader from '../common/mobile/MobilePageHeader';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -24,40 +25,78 @@ export default function SocialPageNav({
       )}
 
       <SocialNavCenter>
-        {showFeedsTabs && (
-          <FeedsTypeTabsWrapper>
-            <FeedsTypeTab
-              active={feedsType === FeedsType.FOLLOWING}
-              onClick={() => {
-                onChangeFeedsType(FeedsType.FOLLOWING);
-              }}
-            >
-              Following
-            </FeedsTypeTab>
-            <FeedsTypeTab
-              active={feedsType === FeedsType.TRENDING}
-              onClick={() => {
-                onChangeFeedsType(FeedsType.TRENDING);
-              }}
-            >
-              Trending
-            </FeedsTypeTab>
-          </FeedsTypeTabsWrapper>
-        )}
+        {showFeedsTabs &&
+          (isMobile ? (
+            <MobileFeedsTypeTable
+              feedsType={feedsType}
+              onChangeFeedsType={onChangeFeedsType}
+            />
+          ) : (
+            <PcFeedsTypeTable
+              feedsType={feedsType}
+              onChangeFeedsType={onChangeFeedsType}
+            />
+          ))}
       </SocialNavCenter>
       {!isMobile && <SocialNavRight />}
     </SocialNavWrapper>
   );
 }
+function PcFeedsTypeTable({
+  feedsType,
+  onChangeFeedsType,
+}: {
+  feedsType: FeedsType;
+  onChangeFeedsType: (feedsType: FeedsType) => void;
+}) {
+  return (
+    <FeedsTypeTabsWrapper>
+      <FeedsTypeTab
+        active={feedsType === FeedsType.FOLLOWING}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.FOLLOWING);
+        }}
+      >
+        Following
+      </FeedsTypeTab>
+      <FeedsTypeTab
+        active={feedsType === FeedsType.TRENDING}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.TRENDING);
+        }}
+      >
+        Trending
+      </FeedsTypeTab>
+    </FeedsTypeTabsWrapper>
+  );
+}
+function MobileFeedsTypeTable({
+  feedsType,
+  onChangeFeedsType,
+}: {
+  feedsType: FeedsType;
+  onChangeFeedsType: (feedsType: FeedsType) => void;
+}) {
+  const tabs = [FeedsType.FOLLOWING, FeedsType.TRENDING];
+  return (
+    <MobilePageHeader
+      tabs={tabs}
+      setTab={onChangeFeedsType}
+      curTab={feedsType}
+    />
+  );
+}
 const SocialNavWrapper = styled.div`
   width: 100%;
-  height: 72px;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
+  ${!isMobile &&
+  `  height: 72px;
   gap: 40px;
   align-self: stretch;
   border-bottom: 1px solid #39424c;
-  box-sizing: border-box;
+  `}
 `;
 const SocialNavLeft = styled.div`
   flex: 1;

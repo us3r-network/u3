@@ -20,8 +20,8 @@ import SocialPlatformChoice from '../components/social/SocialPlatformChoice';
 import AddPost from '../components/social/AddPost';
 import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
-import { AddPostCard } from '../components/social/AddPostModal';
 import ModalImg from '../components/social/ModalImg';
+import AddPostForm from '../components/social/AddPostForm';
 
 export default function Home() {
   const { isLogin: isLoginU3 } = useLogin();
@@ -187,7 +187,10 @@ export default function Home() {
         )}
 
         <MainCenter>
-          <AddPostCard />
+          <AddPostFormWrapper>
+            <AddPostForm />
+          </AddPostFormWrapper>
+
           {firstLoading ? (
             <LoadingWrapper>
               <Loading />
@@ -253,6 +256,12 @@ const HomeWrapper = styled.div`
   box-sizing: border-box;
   padding: 24px;
   margin-bottom: 20px;
+  ${isMobile &&
+  `
+  height: 100vh;
+  padding: 10px;
+  padding-bottom: 60px;
+  `}
 `;
 const MainWrapper = styled.div`
   margin-top: 20px;
@@ -307,4 +316,11 @@ const PostList = styled.div`
   /* & > *:not(:first-child) { */
   border-top: 1px solid #718096;
   /* } */
+`;
+const AddPostFormWrapper = styled.div`
+  background: #212228;
+  border-radius: 20px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 20px;
 `;

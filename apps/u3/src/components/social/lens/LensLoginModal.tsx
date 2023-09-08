@@ -84,5 +84,5 @@ const Btns = styled.div`
   align-items: center;
 `;
 const Button = styled(SocialButtonPrimary)`
-  width: 140px;
+  min-width: 140px;
 `;
