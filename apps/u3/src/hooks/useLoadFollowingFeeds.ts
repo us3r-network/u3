@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { FeedsDataItem, FeedsPageInfo, getFollowingFeeds } from '../api/feeds';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
+import { SocailPlatform } from '../api';
 
 export function useLoadFollowingFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
@@ -21,6 +22,7 @@ export function useLoadFollowingFeeds() {
       activeLensProfileId?: string;
       address?: string;
       fid?: string;
+      platforms?: SocailPlatform[];
     }) => {
       const { address = '', fid = '' } = opts || {};
       setFirstLoading(true);
@@ -30,6 +32,7 @@ export function useLoadFollowingFeeds() {
           keyword: opts?.keyword,
           address,
           fid,
+          platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
         });
         const {
           data,
@@ -37,7 +40,7 @@ export function useLoadFollowingFeeds() {
           pageInfo: respPageInfo,
         } = res.data.data;
         const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData.forEach((item) => {
+        farcasterUserData?.forEach((item) => {
           if (temp[item.fid]) {
             temp[item.fid].push(item);
           } else {
@@ -48,6 +51,7 @@ export function useLoadFollowingFeeds() {
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(respPageInfo);
       } catch (error) {
+        setFeeds([]);
         console.error(error);
       } finally {
         setFirstLoading(false);
@@ -62,6 +66,7 @@ export function useLoadFollowingFeeds() {
       activeLensProfileId?: string;
       address?: string;
       fid?: string;
+      platforms?: SocailPlatform[];
     }) => {
       const { address = '', fid = '' } = opts || {};
       if (firstLoading || moreLoading || !pageInfo.hasNextPage || !address)
@@ -75,6 +80,7 @@ export function useLoadFollowingFeeds() {
           keyword: opts?.keyword,
           address,
           fid,
+          platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
         });
         const {
           data,
@@ -82,7 +88,7 @@ export function useLoadFollowingFeeds() {
           pageInfo: newPageInfo,
         } = res.data.data;
         const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData.forEach((item) => {
+        farcasterUserData?.forEach((item) => {
           if (temp[item.fid]) {
             temp[item.fid].push(item);
           } else {

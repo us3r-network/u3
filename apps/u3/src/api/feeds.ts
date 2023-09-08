@@ -1,7 +1,26 @@
 import axios, { AxiosPromise } from 'axios';
+import qs from 'qs';
 import { REACT_APP_API_SOCIAL_URL } from '../constants';
 import { LensPublication } from './lens';
 import { ApiResp, FarCast, SocailPlatform } from '.';
+
+// axios 实例
+const axiosInstance = axios.create();
+
+// 添加请求拦截器
+axiosInstance.interceptors.request.use(
+  (config) => {
+    // 2、get请求，params参数序列化
+    if (config.method === 'get') {
+      config.paramsSerializer = (params) =>
+        qs.stringify(params, { arrayFormat: 'repeat' });
+    }
+    return config;
+  },
+  (error) =>
+    // 对请求错误做些什么
+    Promise.reject(error)
+);
 
 export type FeedsDataItem =
   | { data: FarCast; platform: SocailPlatform.Farcaster }
@@ -19,12 +38,14 @@ export function getFeeds({
   endFarcasterCursor,
   endLensCursor,
   activeLensProfileId,
+  platforms,
 }: {
   pageSize?: number;
   keyword?: string;
   endFarcasterCursor?: string;
   endLensCursor?: string;
   activeLensProfileId?: string;
+  platforms?: SocailPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -32,7 +53,7 @@ export function getFeeds({
     pageInfo: FeedsPageInfo;
   }>
 > {
-  return axios({
+  return axiosInstance({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/feeds`,
     method: 'get',
     params: {
@@ -41,6 +62,7 @@ export function getFeeds({
       endFarcasterCursor,
       endLensCursor,
       activeLensProfileId,
+      platforms,
     },
   });
 }
@@ -53,6 +75,7 @@ export function getFollowingFeeds({
   activeLensProfileId,
   address,
   fid,
+  platforms,
 }: {
   pageSize?: number;
   keyword?: string;
@@ -61,6 +84,7 @@ export function getFollowingFeeds({
   activeLensProfileId?: string;
   address?: string;
   fid?: string;
+  platforms?: SocailPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -68,7 +92,7 @@ export function getFollowingFeeds({
     pageInfo: FeedsPageInfo;
   }>
 > {
-  return axios({
+  return axiosInstance({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/followingFeeds`,
     method: 'get',
     params: {
@@ -79,6 +103,7 @@ export function getFollowingFeeds({
       activeLensProfileId,
       address,
       fid,
+      platforms,
     },
   });
 }
@@ -89,12 +114,14 @@ export function getTrendingFeeds({
   endFarcasterCursor,
   endLensCursor,
   activeLensProfileId,
+  platforms,
 }: {
   pageSize?: number;
   keyword?: string;
   endFarcasterCursor?: string;
   endLensCursor?: string;
   activeLensProfileId?: string;
+  platforms?: SocailPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -102,7 +129,7 @@ export function getTrendingFeeds({
     pageInfo: FeedsPageInfo;
   }>
 > {
-  return axios({
+  return axiosInstance({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/trendingFeeds`,
     method: 'get',
     params: {
@@ -111,6 +138,7 @@ export function getTrendingFeeds({
       endFarcasterCursor,
       endLensCursor,
       activeLensProfileId,
+      platforms,
     },
   });
 }
