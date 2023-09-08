@@ -246,6 +246,12 @@ const HomeWrapper = styled.div`
   box-sizing: border-box;
   padding: 24px;
   margin-bottom: 20px;
+  ${isMobile &&
+  `
+  height: 100vh;
+  padding: 10px;
+  padding-bottom: 60px;
+  `}
 `;
 const MainWrapper = styled.div`
   margin-top: 20px;

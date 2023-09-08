@@ -5,6 +5,7 @@ export default function S3UserAvatar(props: UserAvatarProps) {
   return <UserAvatarStyled {...props} />;
 }
 const UserAvatarStyled = styled(UserAvatar)`
+  display: block;
   width: 40px;
   height: 40px;
   border-radius: 50%;
