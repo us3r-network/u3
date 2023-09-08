@@ -65,7 +65,7 @@ export const NoMatchRoute: CutomRouteObject = {
 export const routes: CutomRouteObject[] = [
   {
     path: '/',
-    element: <Navigate to="/dapp-store" />,
+    element: <Navigate to="/social" />,
     key: RouteKey.home,
   },
   {
