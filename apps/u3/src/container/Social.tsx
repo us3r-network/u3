@@ -101,11 +101,13 @@ export default function Home() {
         keyword: currentSearchParams.keyword,
         address,
         fid,
+        platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       loadTrendingFirstFeeds({
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
+        platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
     return loadFollowingFirstFeeds;
@@ -117,6 +119,7 @@ export default function Home() {
     address,
     fid,
     feedsType,
+    socialPlatform,
   ]);
 
   const loadMoreFeeds = useCallback(() => {
@@ -126,11 +129,13 @@ export default function Home() {
         activeLensProfileId: activeLensProfile?.id,
         address,
         fid,
+        platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       loadTrendingMoreFeeds({
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
+        platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
   }, [
@@ -141,6 +146,7 @@ export default function Home() {
     address,
     fid,
     feedsType,
+    socialPlatform,
   ]);
 
   useEffect(() => {

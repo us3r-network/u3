@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { FeedsDataItem, FeedsPageInfo, getTrendingFeeds } from '../api/feeds';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
+import { SocailPlatform } from '../api';
 
 export function useLoadTrendingFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
@@ -16,12 +17,17 @@ export function useLoadTrendingFeeds() {
   const [moreLoading, setMoreLoading] = useState(false);
 
   const loadFirstFeeds = useCallback(
-    async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
+    async (opts?: {
+      keyword?: string;
+      activeLensProfileId?: string;
+      platforms?: SocailPlatform[];
+    }) => {
       setFirstLoading(true);
       try {
         const res = await getTrendingFeeds({
           activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
+          platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
         });
         const {
           data,
@@ -29,7 +35,7 @@ export function useLoadTrendingFeeds() {
           pageInfo: respPageInfo,
         } = res.data.data;
         const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData.forEach((item) => {
+        farcasterUserData?.forEach((item) => {
           if (temp[item.fid]) {
             temp[item.fid].push(item);
           } else {
@@ -49,7 +55,11 @@ export function useLoadTrendingFeeds() {
   );
 
   const loadMoreFeeds = useCallback(
-    async (opts?: { keyword?: string; activeLensProfileId?: string }) => {
+    async (opts?: {
+      keyword?: string;
+      activeLensProfileId?: string;
+      platforms?: SocailPlatform[];
+    }) => {
       if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
       setMoreLoading(true);
       try {
@@ -58,6 +68,7 @@ export function useLoadTrendingFeeds() {
           endLensCursor: pageInfo.endLensCursor,
           activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
+          platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
         });
         const {
           data,
@@ -65,7 +76,7 @@ export function useLoadTrendingFeeds() {
           pageInfo: newPageInfo,
         } = res.data.data;
         const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData.forEach((item) => {
+        farcasterUserData?.forEach((item) => {
           if (temp[item.fid]) {
             temp[item.fid].push(item);
           } else {
