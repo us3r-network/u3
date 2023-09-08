@@ -191,8 +191,9 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   const userData = useMemo(() => {
     const img = data.user.find((u) => u.type === UserDataType.PFP)?.value;
     const username = data.user.find(
-      (u) => u.type === UserDataType.USERNAME
+      (u) => u.type === UserDataType.DISPLAY
     )?.value;
+
     return {
       img,
       username,
@@ -220,6 +221,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
 }
 
 function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
+  // const { setIframeUrl } = useFarcasterCtx();
   return (
     <PostCardNftWrapper key={item.url}>
       <img src={item.image} alt="" />
@@ -229,7 +231,11 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
+            // if (item.url.includes('zora.co')) {
+            //   setIframeUrl(item.url);
+            // } else {
             window.open(item.url, '_blank');
+            // }
           }}
         >
           Mint

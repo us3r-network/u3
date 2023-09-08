@@ -25,6 +25,7 @@ import {
 import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
 
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
+import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -71,6 +72,7 @@ export interface FarcasterContextData {
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
+  setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -87,6 +89,7 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
+  const [iframeUrl, setIframeUrl] = useState('');
 
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
@@ -240,6 +243,7 @@ export default function FarcasterProvider({
         openFarcasterQR,
         farcasterUserData,
         setFarcasterUserData,
+        setIframeUrl,
       }}
     >
       {children}
@@ -255,6 +259,14 @@ export default function FarcasterProvider({
         afterCloseAction={() => {
           setShowQR(false);
           stopSign.stop = true;
+        }}
+      />
+      <FarcasterIframeModal
+        iframeUrl={iframeUrl}
+        open={!!iframeUrl}
+        closeModal={() => {}}
+        afterCloseAction={() => {
+          setIframeUrl('');
         }}
       />
     </FarcasterContext.Provider>
