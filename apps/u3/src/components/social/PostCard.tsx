@@ -209,8 +209,8 @@ export const PostCardCastWrapper = styled.div`
     align-items: center;
     gap: 10px;
     > img {
-      width: 30px;
-      height: 30px;
+      width: 25px;
+      height: 25px;
       border-radius: 50%;
     }
   }
@@ -227,6 +227,7 @@ export const PostCardNftWrapper = styled.div`
   width: 300px;
   border: 1px solid #9c9c9c;
   border-radius: 10px;
+  overflow: hidden;
   > img {
     width: 100%;
   }
@@ -234,6 +235,7 @@ export const PostCardNftWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 10px;
     > h4 {
       margin: 10px 0;
     }
