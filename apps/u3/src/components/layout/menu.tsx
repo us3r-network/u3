@@ -24,6 +24,7 @@ import { selectKarmaState } from '../../features/profile/karma';
 import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import MessageModal from '../message/MessageModal';
+import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -110,6 +111,12 @@ function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
   );
   return (
     <NavWrapper>
+      <PcNavItem disabled>
+        <PcNavItemIconBox isActive={openMessageModal}>
+          <BellSvg />
+        </PcNavItemIconBox>
+        {renderNavItemText('notification')}
+      </PcNavItem>
       <PcNavItem
         isActive={openMessageModal}
         onClick={() => setOpenMessageModal((open) => !open)}

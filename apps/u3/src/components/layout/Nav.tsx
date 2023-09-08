@@ -143,7 +143,7 @@ export const NavWrapper = styled.div`
   gap: 10px;
   transition: all 0.3s ease-out;
 `;
-export const PcNavItem = styled.div<{ isActive: boolean }>`
+export const PcNavItem = styled.div<{ isActive?: boolean; disabled?: boolean }>`
   overflow: hidden;
   height: 40px;
   font-weight: 400;
@@ -157,17 +157,23 @@ export const PcNavItem = styled.div<{ isActive: boolean }>`
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  background: ${(props) => (props.isActive ? '#14171A' : 'none')};
-  color: ${(props) => (props.isActive ? '#fff' : '#718096')};
+  background: ${(props) => (props?.isActive ? '#14171A' : 'none')};
+  color: ${(props) => (props?.isActive ? '#fff' : '#718096')};
   &:hover {
     ${(props) =>
-      !props.isActive &&
+      !props?.isActive &&
       `
       background: #14171a;
       opacity: 0.8;
     `};
   }
   transition: all 0.3s ease-out;
+  ${(props) =>
+    props?.disabled &&
+    `
+      opacity: 0.5;
+      cursor: not-allowed;
+    `};
 `;
 export const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
   width: 16px;
