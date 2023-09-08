@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import { isMobile } from 'react-device-detect';
 import LensPostCard from '../components/social/lens/LensPostCard';
 import FCast from '../components/social/farcaster/FCast';
 import { useLoadTrendingFeeds } from '../hooks/useLoadTrendingFeeds';
@@ -173,13 +174,16 @@ export default function Home() {
         }}
       />
       <MainWrapper>
-        <MainLeft>
-          <SocialPlatformChoice
-            platform={socialPlatform}
-            onChangePlatform={setSocialPlatform}
-          />
-          <AddPost />
-        </MainLeft>
+        {!isMobile && (
+          <MainLeft>
+            <SocialPlatformChoice
+              platform={socialPlatform}
+              onChangePlatform={setSocialPlatform}
+            />
+            <AddPost />
+          </MainLeft>
+        )}
+
         <MainCenter>
           {firstLoading ? (
             <LoadingWrapper>
@@ -224,10 +228,12 @@ export default function Home() {
             </InfiniteScroll>
           )}
         </MainCenter>
-        <MainRight>
-          <SearchInput placeholder="Search" onSearch={onSearch} />
-          <SocialWhoToFollow />
-        </MainRight>
+        {!isMobile && (
+          <MainRight>
+            <SearchInput placeholder="Search" onSearch={onSearch} />
+            <SocialWhoToFollow />
+          </MainRight>
+        )}
       </MainWrapper>
     </HomeWrapper>
   );
