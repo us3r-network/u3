@@ -13,11 +13,12 @@ import Loading from '../components/common/loading/Loading';
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds';
 import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
 import useLogin from '../hooks/useLogin';
-
-enum FeedsType {
-  FOLLOWING = 'following',
-  TRENDING = 'trending',
-}
+import SocialPageNav, { FeedsType } from '../components/social/SocialPageNav';
+import { SocailPlatform } from '../api';
+import SocialPlatformChoice from '../components/social/SocialPlatformChoice';
+import AddPost from '../components/social/AddPost';
+import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
+import SearchInput from '../components/common/input/SearchInput';
 
 export default function Home() {
   const { isLogin: isLoginU3 } = useLogin();
@@ -47,15 +48,24 @@ export default function Home() {
 
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentSearchParams = useMemo(
     () => ({
       keyword: searchParams.get('keyword') || '',
     }),
     [searchParams]
   );
+  const onSearch = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams();
+      params.append('keyword', value);
+      setSearchParams(params);
+    },
+    [setSearchParams]
+  );
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
+  const [socialPlatform, setSocialPlatform] = useState<SocailPlatform | ''>('');
 
   const firstLoading = useMemo(
     () =>
@@ -148,74 +158,71 @@ export default function Home() {
 
   return (
     <HomeWrapper id="social-wrapper">
+      <SocialPageNav
+        showFeedsTabs={isLoginU3 && !!address}
+        feedsType={feedsType}
+        onChangeFeedsType={(type) => {
+          setFeedsType(type);
+          loadFirstFeeds();
+        }}
+      />
       <MainWrapper>
-        {isLoginU3 && !!address && (
-          <FeedsTypeTabsWrapper>
-            <FeedsTypeTab
-              active={feedsType === FeedsType.FOLLOWING}
-              onClick={() => {
-                setFeedsType(FeedsType.FOLLOWING);
-                loadFirstFeeds();
+        <MainLeft>
+          <SocialPlatformChoice
+            platform={socialPlatform}
+            onChangePlatform={setSocialPlatform}
+          />
+          <AddPost />
+        </MainLeft>
+        <MainCenter>
+          {firstLoading ? (
+            <LoadingWrapper>
+              <Loading />
+            </LoadingWrapper>
+          ) : (
+            <InfiniteScroll
+              dataLength={feeds.length}
+              next={() => {
+                if (moreLoading) return;
+                loadMoreFeeds();
               }}
+              hasMore={!firstLoading && pageInfo.hasNextPage}
+              loader={
+                moreLoading ? (
+                  <LoadingMoreWrapper>
+                    <Loading />
+                  </LoadingMoreWrapper>
+                ) : null
+              }
+              scrollableTarget="social-wrapper"
             >
-              Home
-            </FeedsTypeTab>
-            <FeedsTypeTab
-              active={feedsType === FeedsType.TRENDING}
-              onClick={() => {
-                setFeedsType(FeedsType.TRENDING);
-                loadFirstFeeds();
-              }}
-            >
-              Trending
-            </FeedsTypeTab>
-          </FeedsTypeTabsWrapper>
-        )}
-
-        {firstLoading ? (
-          <LoadingWrapper>
-            <Loading />
-          </LoadingWrapper>
-        ) : (
-          <InfiniteScroll
-            dataLength={feeds.length}
-            next={() => {
-              if (moreLoading) return;
-              loadMoreFeeds();
-            }}
-            hasMore={!firstLoading && pageInfo.hasNextPage}
-            loader={
-              moreLoading ? (
-                <LoadingMoreWrapper>
-                  <Loading />
-                </LoadingMoreWrapper>
-              ) : null
-            }
-            scrollableTarget="social-wrapper"
-          >
-            <PostList>
-              {feeds.map(({ platform, data }) => {
-                if (platform === 'lens') {
-                  return <LensPostCard key={data.id} data={data} />;
-                }
-                if (platform === 'farcaster') {
-                  const key = Buffer.from(data.hash.data).toString('hex');
-                  return (
-                    <FCast
-                      key={key}
-                      cast={data}
-                      openFarcasterQR={openFarcasterQR}
-                      farcasterUserData={farcasterUserData}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </PostList>
-          </InfiniteScroll>
-        )}
+              <PostList>
+                {feeds.map(({ platform, data }) => {
+                  if (platform === 'lens') {
+                    return <LensPostCard key={data.id} data={data} />;
+                  }
+                  if (platform === 'farcaster') {
+                    const key = Buffer.from(data.hash.data).toString('hex');
+                    return (
+                      <FCast
+                        key={key}
+                        cast={data}
+                        openFarcasterQR={openFarcasterQR}
+                        farcasterUserData={farcasterUserData}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </PostList>
+            </InfiniteScroll>
+          )}
+        </MainCenter>
+        <MainRight>
+          <SearchInput placeholder="Search" onSearch={onSearch} />
+          <SocialWhoToFollow />
+        </MainRight>
       </MainWrapper>
-      <SidebarWrapper>Comming soon</SidebarWrapper>
     </HomeWrapper>
   );
 }
@@ -225,13 +232,28 @@ const HomeWrapper = styled.div`
   height: 100%;
   overflow: scroll;
   box-sizing: border-box;
-  display: flex;
-  gap: 40px;
   padding: 24px;
   margin-bottom: 20px;
 `;
 const MainWrapper = styled.div`
-  width: 750px;
+  margin-top: 20px;
+  display: flex;
+  gap: 40px;
+`;
+const MainLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+const MainCenter = styled.div`
+  width: 600px;
+`;
+const MainRight = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -258,31 +280,4 @@ const PostList = styled.div`
   & > *:not(:first-child) {
     border-top: 1px solid #191a1f;
   }
-`;
-const SidebarWrapper = styled.div`
-  width: 0;
-  flex: 1;
-  height: 344px;
-  flex-shrink: 0;
-  border-radius: 20px;
-  background: #212228;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const FeedsTypeTabsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  margin-bottom: 10px;
-`;
-const FeedsTypeTab = styled.div<{ active: boolean }>`
-  color: ${({ active }) => (active ? '#D6F16C' : '#9C9C9C')};
-  font-family: Baloo Bhai 2;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: ${({ active }) => (active ? 700 : 400)};
-  line-height: 32px;
-  cursor: pointer;
 `;

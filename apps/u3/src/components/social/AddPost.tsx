@@ -8,11 +8,12 @@ export default function AddPost() {
   const [open, setOpen] = useState(false);
   const { isLogin, login } = useLogin();
   return (
-    <div>
+    <>
       <AddButton
-        onClick={async () => {
+        onClick={() => {
           if (!isLogin) {
-            await login();
+            login();
+            return;
           }
           setOpen(true);
         }}
@@ -25,21 +26,28 @@ export default function AddPost() {
           setOpen(false);
         }}
       />
-    </div>
+    </>
   );
 }
 
 const AddButton = styled(ButtonBase)`
-  width: 60px;
-  height: 40px;
+  display: flex;
+  width: 100%;
+  height: 60px;
+  padding: 10px 20px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
-  border-radius: 10px;
-  background: #d6f16c;
+  border-radius: 20px;
+  background: linear-gradient(87deg, #cd62ff 0%, #62aaff 100%);
 
   color: #000;
-  font-family: Baloo Bhai 2;
+
+  /* medium-16 */
+  font-family: Rubik;
   font-size: 16px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 500;
   line-height: normal;
 `;
