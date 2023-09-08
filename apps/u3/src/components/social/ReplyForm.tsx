@@ -1,6 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import InputBase from '../common/input/InputBase';
-import { ButtonPrimary } from '../common/button/ButtonBase';
+import { SocialButtonPrimary } from './button/SocialButton';
 
 export interface ReplyFormProps {
   avatar: string;
@@ -23,6 +23,7 @@ export default function ReplyForm({
     <ReplyFormWrapper {...wrapperProps}>
       <Avatar src={avatar} />
       <Input
+        placeholder="Post your reply..."
         disabled={disabled || submitting}
         onChange={(e) => {
           setContent(e.target.value);
@@ -57,4 +58,4 @@ const Input = styled(InputBase)`
   background: none;
 `;
 
-const SubmitBtn = styled(ButtonPrimary)``;
+const SubmitBtn = styled(SocialButtonPrimary)``;

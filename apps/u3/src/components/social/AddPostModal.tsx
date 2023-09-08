@@ -15,8 +15,12 @@ import { getCurrFid } from '../../utils/farsign-utils';
 import { SocailPlatform } from '../../api';
 import { useLensCtx } from '../../contexts/AppLensCtx';
 import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost';
-import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase';
+import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 import TextareaBase from '../common/input/TextareaBase';
+import { SocialButtonPrimary } from './button/SocialButton';
+import LensIcon from '../icons/LensIcon';
+import FarcasterIcon from '../icons/FarcasterIcon';
+import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 
 export default function AddPostModal({
   open,
@@ -147,22 +151,31 @@ export default function AddPostModal({
       zIndex={100}
     >
       <ModalBody>
-        <PlatformOptions>
-          <PlatformOption
-            selected={platforms.has(SocailPlatform.Farcaster)}
-            onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}
-          >
-            Farcast {platforms.has(SocailPlatform.Farcaster) && '(✓)'}
-          </PlatformOption>
-          <PlatformOption
-            selected={platforms.has(SocailPlatform.Lens)}
-            onClick={() => onSelectPlatform(SocailPlatform.Lens)}
-          >
-            Lens {platforms.has(SocailPlatform.Lens) && '(✓)'}
-          </PlatformOption>
-        </PlatformOptions>
+        <ModalHeader>
+          <PlatformOptions>
+            <PlatformOption
+              selected={platforms.has(SocailPlatform.Lens)}
+              onClick={() => onSelectPlatform(SocailPlatform.Lens)}
+            >
+              <LensIcon />
+              Lens
+            </PlatformOption>
+            <PlatformOption
+              selected={platforms.has(SocailPlatform.Farcaster)}
+              onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}
+            >
+              <FarcasterIcon />
+              Farcaster
+            </PlatformOption>
+          </PlatformOptions>
+          <ModalDescription>
+            Post to more than one protocol cannot mention other users
+          </ModalDescription>
+          <ModalCloseBtn onClick={closeModal} />
+        </ModalHeader>
         <PostBox>
           <ContentInput
+            placeholder="Create a post..."
             disabled={isPending}
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -172,7 +185,7 @@ export default function AddPostModal({
               handleSubmit();
             }}
           >
-            {isPending ? 'Sharing...' : 'Share'}
+            {isPending ? 'Posting...' : 'Post'}
           </SubmitBtn>
         </PostBox>
       </ModalBody>
@@ -181,7 +194,7 @@ export default function AddPostModal({
 }
 
 const ModalBody = styled.div`
-  width: 730px;
+  width: 600px;
   flex-shrink: 0;
 
   padding: 20px;
@@ -192,7 +205,20 @@ const ModalBody = styled.div`
   justify-content: space-between;
   gap: 20px;
 `;
-
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+`;
+const ModalDescription = styled.div`
+  color: #718096;
+  font-family: Rubik;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
 const PostBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -204,18 +230,24 @@ const PlatformOptions = styled.div`
   gap: 10px;
 `;
 const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
-  width: 114px;
-  height: 28px;
-
-  border-style: ${({ selected }) => (selected ? 'solid' : 'dashed')};
-
+  height: 24px;
+  padding: 5px 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  box-sizing: border-box;
+  font-family: Rubik;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
   ${({ selected }) =>
-    selected &&
-    `
-    background: #d6f16c;
-    color: #000;
-  `}
+    selected ? 'border: 1px solid #fff; ' : 'border: 1px dashed #9C9C9C;'}
+  color: ${({ selected }) => (selected ? '#fff' : '#9C9C9C')};
 `;
-const ContentInput = styled(TextareaBase)``;
+const ContentInput = styled(TextareaBase)`
+  resize: vertical;
+`;
 
-const SubmitBtn = styled(ButtonPrimary)``;
+const SubmitBtn = styled(SocialButtonPrimary)``;

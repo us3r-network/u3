@@ -2,6 +2,11 @@ import QRCode from 'react-qr-code';
 import styled from 'styled-components';
 
 import ModalContainer from '../../common/modal/ModalContainer';
+import {
+  ModalCloseBtn,
+  ModalDescription,
+  ModalTitle,
+} from '../../common/modal/ModalWidgets';
 
 type Token = {
   token: string;
@@ -29,55 +34,47 @@ export default function FarcasterQRModal({
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
     >
-      {(warpcastErr && (
-        <div>
-          {warpcastErr}
-          <p>please try again in a few minutes</p>
-          <button type="button" onClick={closeModal}>
-            close
-          </button>
-        </div>
-      )) || (
-        <ModalBody>
-          <Title>Farcaster handle verify</Title>
-          <Description>
-            Login with Warpcast or apply for farcaster handle.
-          </Description>
-          {(showQR && <QRCode value={token.deepLink} />) || (
-            <div>Loading QR code...</div>
-          )}
-        </ModalBody>
-      )}
+      <ModalBody>
+        <ModalHeader>
+          <ModalTitle>Farcaster handle verify</ModalTitle>
+          <ModalCloseBtn onClick={closeModal} />
+        </ModalHeader>
+
+        {(warpcastErr && (
+          <ModalDescription>
+            {warpcastErr}
+            <p>please try again in a few minutes</p>
+          </ModalDescription>
+        )) || (
+          <>
+            <ModalDescription>
+              Login with Warpcast or apply for farcaster handle.
+            </ModalDescription>
+            {(showQR && <QRCode value={token.deepLink} />) || (
+              <ModalDescription>Loading QR code...</ModalDescription>
+            )}
+          </>
+        )}
+      </ModalBody>
     </ModalContainer>
   );
 }
 
 const ModalBody = styled.div`
-  width: 730px;
+  width: 600px;
   /* height: 220px; */
   flex-shrink: 0;
 
-  padding: 20px;
+  padding: 30px;
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   gap: 30px;
 `;
-
-const Title = styled.h3`
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-`;
-const Description = styled.div`
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 `;

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import ModalContainer from '../common/modal/ModalContainer';
 import PostCard, { PostCardData } from './PostCard';
 import ReplyForm, { ReplyFormProps } from './ReplyForm';
+import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 
 export default function ReplyModal({
   open,
@@ -25,8 +26,9 @@ export default function ReplyModal({
       afterCloseAction={() => setContent('')}
     >
       <ModalBody>
+        <CloseBtn onClick={closeModal} />
         <PostCard data={postData} showActions={false} />
-        <ReplyForm
+        <ReplyFormStyled
           disabled={disabled}
           avatar={avatar}
           content={content}
@@ -39,6 +41,15 @@ export default function ReplyModal({
   );
 }
 const ModalBody = styled.div`
-  width: 730px;
+  width: 600px;
   flex-shrink: 0;
+  position: relative;
+`;
+const CloseBtn = styled(ModalCloseBtn)`
+  position: absolute;
+  top: 20px;
+  right: 20px;
+`;
+const ReplyFormStyled = styled(ReplyForm)`
+  background: #14171a;
 `;

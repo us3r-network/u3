@@ -4,7 +4,12 @@ import ModalContainer from '../../common/modal/ModalContainer';
 
 // eslint-disable-next-line import/no-cycle
 import { useLensCtx } from '../../../contexts/AppLensCtx';
-import { ButtonPrimary } from '../../common/button/ButtonBase';
+import {
+  ModalCloseBtn,
+  ModalDescription,
+  ModalTitle,
+} from '../../common/modal/ModalWidgets';
+import { SocialButtonPrimary } from '../button/SocialButton';
 
 export default function LensLoginModal({
   open,
@@ -18,10 +23,14 @@ export default function LensLoginModal({
   return (
     <ModalContainer open={open} closeModal={closeModal}>
       <ModalBody>
-        <Title>Lens handle verify</Title>
-        <Description>
+        <ModalHeader>
+          <ModalTitle>Lens handle verify</ModalTitle>
+          <ModalCloseBtn onClick={closeModal} />
+        </ModalHeader>
+
+        <ModalDescription>
           Connect wallet which has Lens handle or join Lens waitlist.
-        </Description>
+        </ModalDescription>
         <Btns>
           <Button
             onClick={async () => {
@@ -52,38 +61,28 @@ export default function LensLoginModal({
   );
 }
 const ModalBody = styled.div`
-  width: 730px;
+  width: 600px;
   height: 220px;
   flex-shrink: 0;
 
-  padding: 20px;
+  padding: 30px;
   box-sizing: border-box;
 
   display: flex;
   flex-direction: column;
   gap: 30px;
 `;
-const Title = styled.h3`
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-`;
-const Description = styled.div`
-  color: #fff;
-  font-family: Baloo Bhai 2;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+const ModalHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
 `;
 const Btns = styled.div`
   display: flex;
   gap: 20px;
   align-items: center;
 `;
-const Button = styled(ButtonPrimary)`
+const Button = styled(SocialButtonPrimary)`
   width: 140px;
 `;
