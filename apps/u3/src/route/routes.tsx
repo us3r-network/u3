@@ -38,8 +38,10 @@ export enum RouteKey {
   asset = 'asset',
   gallery = 'gallery',
   notification = 'notification',
-  message = 'message',
   save = 'save',
+  social = 'social',
+  socialPostDetailLens = 'socialPostDetailLens',
+  socialPostDetailFcast = 'socialPostDetailFcast',
 }
 export enum RoutePermission {
   login = 'login',
@@ -63,7 +65,7 @@ export const NoMatchRoute: CutomRouteObject = {
 export const routes: CutomRouteObject[] = [
   {
     path: '/',
-    element: <Navigate to="/dapp-store" />,
+    element: <Navigate to="/social" />,
     key: RouteKey.home,
   },
   {
@@ -105,12 +107,6 @@ export const routes: CutomRouteObject[] = [
     path: '/notification',
     element: loadContainerElement('Notification'),
     key: RouteKey.notification,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/message',
-    element: loadContainerElement('Message'),
-    key: RouteKey.message,
     permissions: [RoutePermission.login],
   },
   {
@@ -218,6 +214,21 @@ export const routes: CutomRouteObject[] = [
     path: '/policy',
     element: loadContainerElement('Policy'),
     key: RouteKey.policy,
+  },
+  {
+    path: '/social',
+    element: loadContainerElement('Social'),
+    key: RouteKey.social,
+  },
+  {
+    path: '/post-detail/lens/:publicationId',
+    element: loadContainerElement('LensPostDetail'),
+    key: RouteKey.socialPostDetailLens,
+  },
+  {
+    path: 'post-detail/fcast/:castId',
+    element: loadContainerElement('FarcasterPostDetail'),
+    key: RouteKey.socialPostDetailFcast,
   },
   NoMatchRoute,
 ];

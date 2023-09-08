@@ -48,3 +48,6 @@ export const WALLET_CONNECT_PROJECT_ID =
 
 export const AIRSTACK_API_KEY =
   process.env.REACT_APP_AIRSTACK_API_KEY || '135391e4df1d47fa898d43c9f4b27329';
+
+export const REACT_APP_API_SOCIAL_URL =
+  process.env.REACT_APP_API_SOCIAL_URL || 'https://api.u3.xyz';

@@ -136,14 +136,14 @@ export default function Nav({ onlyIcon }: Props) {
     </NavWrapper>
   );
 }
-const NavWrapper = styled.div`
+export const NavWrapper = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 10px;
   transition: all 0.3s ease-out;
 `;
-const PcNavItem = styled.div<{ isActive: boolean }>`
+export const PcNavItem = styled.div<{ isActive?: boolean; disabled?: boolean }>`
   overflow: hidden;
   height: 40px;
   font-weight: 400;
@@ -157,37 +157,43 @@ const PcNavItem = styled.div<{ isActive: boolean }>`
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  background: ${(props) => (props.isActive ? '#14171A' : 'none')};
-  color: ${(props) => (props.isActive ? '#fff' : '#718096')};
+  background: ${(props) => (props?.isActive ? '#14171A' : 'none')};
+  color: ${(props) => (props?.isActive ? '#fff' : '#718096')};
   &:hover {
     ${(props) =>
-      !props.isActive &&
+      !props?.isActive &&
       `
       background: #14171a;
       opacity: 0.8;
     `};
   }
   transition: all 0.3s ease-out;
+  ${(props) =>
+    props?.disabled &&
+    `
+      opacity: 0.5;
+      cursor: not-allowed;
+    `};
 `;
-const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
+export const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  ${({ isActive }) =>
-    isActive &&
-    `
+  svg {
+    width: 16px;
+    max-height: 16px;
     path {
-      stroke: #fff;
+      stroke: ${({ isActive }) => (isActive ? `#fff` : '#718096')};
       transition: all 0.3s ease-out;
     }
-  `}
+  }
   transition: all 0.3s ease-out;
 `;
-const PcNavItemTextBox = styled.div`
+export const PcNavItemTextBox = styled.div`
   overflow: hidden;
   transition: all 0.5s ease-out;
 `;
-const PcNavItemTextInner = styled.div`
+export const PcNavItemTextInner = styled.div`
   white-space: nowrap;
 `;
 const PcNavGroupBox = styled.div`
