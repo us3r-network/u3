@@ -11,9 +11,10 @@ import { ReactComponent as LineChartUpSvg } from './svgs/line-chart-up.svg';
 import { ReactComponent as HeartSvg } from './svgs/heart.svg';
 import { ReactComponent as WalletSvg } from './svgs/wallet.svg';
 import { ReactComponent as ImageSvg } from './svgs/image.svg';
-import { ReactComponent as BellSvg } from './svgs/bell.svg';
-import { ReactComponent as MessageChatSquareSvg } from './svgs/message-chat-square.svg';
-import { ReactComponent as UserCircleSvg } from './svgs/user-circle.svg';
+// import { ReactComponent as BellSvg } from './svgs/bell.svg';
+// import { ReactComponent as UserCircleSvg } from './svgs/user-circle.svg';
+// import { ReactComponent as SocialSvg } from './svgs/social.svg';
+import { ReactComponent as HomeSvg } from './svgs/home.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
 
@@ -27,17 +28,23 @@ export type CutomNavObject = {
 };
 export const navs: CutomNavObject[] = [
   {
+    name: 'social',
+    activeRouteKeys: [RouteKey.social],
+    icon: React.createElement(HomeSvg),
+    route: getRoute(RouteKey.social),
+  },
+  {
     name: 'dapp store',
     activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
     icon: React.createElement(CompassSvg),
     route: getRoute(RouteKey.dappStore),
   },
-  {
-    name: 'profile',
-    activeRouteKeys: [RouteKey.profile],
-    icon: React.createElement(UserCircleSvg),
-    route: getRoute(RouteKey.profile),
-  },
+  // {
+  //   name: 'profile',
+  //   activeRouteKeys: [RouteKey.profile],
+  //   icon: React.createElement(UserCircleSvg),
+  //   route: getRoute(RouteKey.profile),
+  // },
   {
     name: 'activity',
     activeRouteKeys: [RouteKey.activity],
@@ -62,16 +69,10 @@ export const navs: CutomNavObject[] = [
     icon: React.createElement(ImageSvg),
     route: getRoute(RouteKey.gallery),
   },
-  {
-    name: 'notification',
-    activeRouteKeys: [RouteKey.notification],
-    icon: React.createElement(BellSvg),
-    route: getRoute(RouteKey.notification),
-  },
-  {
-    name: 'message',
-    activeRouteKeys: [RouteKey.message],
-    icon: React.createElement(MessageChatSquareSvg),
-    route: getRoute(RouteKey.message),
-  },
+  // {
+  //   name: 'notification',
+  //   activeRouteKeys: [RouteKey.notification],
+  //   icon: React.createElement(BellSvg),
+  //   route: getRoute(RouteKey.notification),
+  // },
 ];

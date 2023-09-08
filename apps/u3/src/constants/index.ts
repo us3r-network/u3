@@ -6,7 +6,7 @@
  * @Description: 系统相关常量定义
  */
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-export const API_SCAN_URL = 'https://cscan.onrender.com';
+export const API_SCAN_URL = process.env.REACT_APP_S3_API_BASE_URL;
 export const MEDIA_BREAK_POINTS = {
   xs: 320,
   sm: 480,
@@ -41,3 +41,13 @@ export const Types: { [key: string]: string } = {
   '2': 'Model',
   '3': 'ModelInstanceDocument',
 };
+
+export const WALLET_CONNECT_PROJECT_ID =
+  process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID ||
+  'c652d0148879353d7e965d7f6f361e59';
+
+export const AIRSTACK_API_KEY =
+  process.env.REACT_APP_AIRSTACK_API_KEY || '135391e4df1d47fa898d43c9f4b27329';
+
+export const REACT_APP_API_SOCIAL_URL =
+  process.env.REACT_APP_API_SOCIAL_URL || 'https://api.u3.xyz';

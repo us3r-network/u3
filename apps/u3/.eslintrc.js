@@ -26,6 +26,8 @@ module.exports = {
   ],
   rules: {
     /** js语法 **/
+    // 允许使用console
+    "no-console": "off",
     // 不限制js的语法 （如：不禁止使用for of语法）
     'no-restricted-syntax': 'off',
     // 允许在for循环中使用一元运算符 ++,-- (其它位置仍给出警告)
@@ -69,7 +71,8 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     //设置可以直接展开 props
     'react/jsx-props-no-spreading': 'off',
-
+    //检查 JSX 属性和子元素中是否缺少必要的花括号(0 = off, 1 = warn, 2 = error)
+    'react/jsx-curly-brace-presence': 0,
     // 组件的可选参数不强制要求设置默认值，函数组件直接忽略此规则
     'react/require-default-props': [
       1,

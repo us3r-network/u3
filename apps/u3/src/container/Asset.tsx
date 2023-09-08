@@ -56,12 +56,12 @@ export default function Asset() {
     const profileWallets = profile?.wallets?.map(
       ({ address: walletAddress }) => walletAddress
     );
-    const wallets = [...new Set([sessWallet, ...profileWallets])];
+    const wallets = [...new Set([sessWallet, ...(profileWallets || [])])];
     fetchData(wallets);
   }, [fetchData, sessWallet, wallet, profile]);
 
   return (
-    <Wrapper>
+    <Wrapper id="top-wrapper">
       {isMobile ? (
         <MobilePageHeader
           tabs={['Asset', 'Gallery']}
@@ -71,7 +71,7 @@ export default function Asset() {
       ) : (
         <PageTitle>Asset</PageTitle>
       )}
-      <ContentWrapper>
+      <ContentWrapper id="content-wrapper">
         {(loading && (
           <div className="loading">
             <Loading />

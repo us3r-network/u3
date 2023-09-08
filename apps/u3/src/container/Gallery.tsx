@@ -50,7 +50,7 @@ export default function Gallery() {
     const profileWallets = profile?.wallets?.map(
       ({ address: walletAddress }) => walletAddress
     );
-    const wallets = [...new Set([sessWallet, ...profileWallets])];
+    const wallets = [...new Set([sessWallet, ...(profileWallets || [])])];
     fetchData(wallets);
   }, [fetchData, sessWallet, wallet, profile]);
 
