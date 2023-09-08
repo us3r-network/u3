@@ -1,3 +1,4 @@
+import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 
 export enum FeedsType {
@@ -15,10 +16,13 @@ export default function SocialPageNav({
 }) {
   return (
     <SocialNavWrapper>
-      <SocialNavLeft>
-        <SocialNavTitle>Social</SocialNavTitle>
-        <SocialNavDividingLine />
-      </SocialNavLeft>
+      {!isMobile && (
+        <SocialNavLeft>
+          <SocialNavTitle>Social</SocialNavTitle>
+          <SocialNavDividingLine />
+        </SocialNavLeft>
+      )}
+
       <SocialNavCenter>
         {showFeedsTabs && (
           <FeedsTypeTabsWrapper>
@@ -41,7 +45,7 @@ export default function SocialPageNav({
           </FeedsTypeTabsWrapper>
         )}
       </SocialNavCenter>
-      <SocialNavRight />
+      {!isMobile && <SocialNavRight />}
     </SocialNavWrapper>
   );
 }
