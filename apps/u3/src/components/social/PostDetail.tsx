@@ -8,7 +8,7 @@ export const PostDetailWrapper = styled.div`
 `;
 export const PostDetailCommentsWrapper = styled.div`
   & > *:not(:first-child) {
-    border-top: 1px solid #191a1f;
+    border-top: 1px solid #718096;
   }
 `;
 

@@ -20,6 +20,8 @@ import SocialPlatformChoice from '../components/social/SocialPlatformChoice';
 import AddPost from '../components/social/AddPost';
 import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
+import { AddPostCard } from '../components/social/AddPostModal';
+import ModalImg from '../components/social/ModalImg';
 
 export default function Home() {
   const { isLogin: isLoginU3 } = useLogin();
@@ -46,7 +48,7 @@ export default function Home() {
     loadFirstFeeds: loadFollowingFirstFeeds,
     loadMoreFeeds: loadFollowingMoreFeeds,
   } = useLoadFollowingFeeds();
-
+  const [modalImg, setModalImg] = useState('');
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -185,6 +187,7 @@ export default function Home() {
         )}
 
         <MainCenter>
+          <AddPostCard />
           {firstLoading ? (
             <LoadingWrapper>
               <Loading />
@@ -219,6 +222,9 @@ export default function Home() {
                         cast={data}
                         openFarcasterQR={openFarcasterQR}
                         farcasterUserData={farcasterUserData}
+                        openImgModal={(url) => {
+                          setModalImg(url);
+                        }}
                       />
                     );
                   }
@@ -235,6 +241,7 @@ export default function Home() {
           </MainRight>
         )}
       </MainWrapper>
+      <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
     </HomeWrapper>
   );
 }
@@ -257,6 +264,9 @@ const MainLeft = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
 `;
 const MainCenter = styled.div`
   width: 600px;
@@ -266,6 +276,9 @@ const MainRight = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -287,9 +300,11 @@ const PostList = styled.div`
   gap: 1px;
 
   border-radius: 20px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
   background: #212228;
   overflow: hidden;
-  & > *:not(:first-child) {
-    border-top: 1px solid #191a1f;
-  }
+  /* & > *:not(:first-child) { */
+  border-top: 1px solid #718096;
+  /* } */
 `;

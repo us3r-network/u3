@@ -90,6 +90,9 @@ export const PostCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  &:hover {
+    background: #39424c;
+  }
 `;
 
 export type PostCardUserInfoData = {
@@ -164,7 +167,7 @@ const Handle = styled.div`
   align-items: center;
   gap: 5px;
 
-  color: #9c9c9c;
+  color: #718096;
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
@@ -172,7 +175,18 @@ const Handle = styled.div`
   line-height: normal;
 `;
 
-export const PostCardContentWrapper = styled.div`
+export const PostCardShowMoreWrapper = styled.div`
+  > button {
+    border: none;
+    background: linear-gradient(87deg, #cd62ff 0%, #62aaff 100%);
+    -webkit-background-clip: text;
+    color: transparent;
+    padding: 0;
+    cursor: pointer;
+  }
+`;
+
+export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   color: #fff;
   font-family: Baloo Bhai 2;
   font-size: 16px;
@@ -181,18 +195,23 @@ export const PostCardContentWrapper = styled.div`
   line-height: 25px; /* 156.25% */
   word-break: break-all;
   white-space: pre-line;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: ${(props) => (props.showMore ? 5 : 'initial')};
+  overflow: hidden;
 `;
 export const PostCardActionsWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 20px;
 `;
 
 export const PostCardImgWrapper = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
-  > img {
+  img {
     max-width: 60%;
   }
 `;

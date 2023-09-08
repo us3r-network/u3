@@ -21,6 +21,7 @@ import { SocialButtonPrimary } from './button/SocialButton';
 import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
+import usePostAdd from '../../hooks/usePostAdd';
 
 export default function AddPostModal({
   open,
@@ -29,120 +30,16 @@ export default function AddPostModal({
   open: boolean;
   closeModal: () => void;
 }) {
-  const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
-  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { createText: createTextToLens } = useCreateLensPost();
-
-  const [text, setText] = useState('');
-  const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
-  const [isPending, setIsPending] = useState(false);
-
-  const handleSubmitToFarcaster = useCallback(async () => {
-    if (!text || !encryptedSigner) return;
-    const currFid = getCurrFid();
-    try {
-      // eslint-disable-next-line no-underscore-dangle
-      const cast = (
-        await makeCastAdd(
-          {
-            text,
-            embeds: [],
-            embedsDeprecated: [],
-            mentions: [],
-            mentionsPositions: [],
-          },
-          { fid: currFid, network: FARCASTER_NETWORK },
-          encryptedSigner
-        )
-      )._unsafeUnwrap();
-      const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
-      if (result.isErr()) {
-        throw new Error(result.error.message);
-      }
-      toast.success('successfully posted to farcaster');
-    } catch (error: any) {
-      console.error(error);
-      toast.error('failed to post to farcaster');
-    }
-  }, [text, encryptedSigner]);
-
-  const handleSubmitToLens = useCallback(async () => {
-    if (!text) return;
-    try {
-      await createTextToLens(text);
-      toast.success('successfully posted to lens');
-    } catch (error: any) {
-      console.error(error);
-      toast.error('failed to post to lens');
-    }
-  }, [text, createTextToLens]);
-
-  const handleSubmit = useCallback(async () => {
-    if (!text) {
-      toast.warn('Please input text to publish.');
-      return;
-    }
-    if (!platforms.size) {
-      toast.warn('Please select a platform to publish.');
-      return;
-    }
-    setIsPending(true);
-    if (platforms.has(SocailPlatform.Farcaster)) {
-      await handleSubmitToFarcaster();
-    }
-    if (platforms.has(SocailPlatform.Lens)) {
-      await handleSubmitToLens();
-    }
-    setIsPending(false);
-    closeModal();
-  }, [
+  const {
+    setText,
     text,
     platforms,
-    handleSubmitToFarcaster,
-    handleSubmitToLens,
+    onSelectPlatform,
+    isPending,
+    handleSubmit,
+  } = usePostAdd({
     closeModal,
-  ]);
-
-  const onSelectPlatform = useCallback(
-    (platform: SocailPlatform) => {
-      switch (platform) {
-        case SocailPlatform.Farcaster:
-          if (!isConnected) {
-            openFarcasterQR();
-            return;
-          }
-          if (platforms.has(SocailPlatform.Farcaster)) {
-            platforms.delete(SocailPlatform.Farcaster);
-          } else {
-            platforms.add(SocailPlatform.Farcaster);
-          }
-          setPlatforms(new Set(platforms));
-          break;
-        case SocailPlatform.Lens:
-          if (!isLoginLens) {
-            setOpenLensLoginModal(true);
-            return;
-          }
-          if (platforms.has(SocailPlatform.Lens)) {
-            platforms.delete(SocailPlatform.Lens);
-          } else {
-            platforms.add(SocailPlatform.Lens);
-          }
-          setPlatforms(new Set(platforms));
-          break;
-        default:
-          console.error('unknown platform', platform);
-          break;
-      }
-    },
-    [
-      platforms,
-      isConnected,
-      openFarcasterQR,
-      isLoginLens,
-      setOpenLensLoginModal,
-    ]
-  );
+  });
   return (
     <ModalContainer
       open={open}
@@ -192,6 +89,84 @@ export default function AddPostModal({
     </ModalContainer>
   );
 }
+
+export function AddPostCard() {
+  const {
+    setText,
+    text,
+    platforms,
+    onSelectPlatform,
+    isPending,
+    handleSubmit,
+  } = usePostAdd({});
+
+  return (
+    <PostCardWrapper>
+      <div className="top">
+        <PlatformOptions>
+          <PlatformOption
+            selected={platforms.has(SocailPlatform.Lens)}
+            onClick={() => onSelectPlatform(SocailPlatform.Lens)}
+          >
+            <LensIcon />
+            Lens
+          </PlatformOption>
+          <PlatformOption
+            selected={platforms.has(SocailPlatform.Farcaster)}
+            onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}
+          >
+            <FarcasterIcon />
+            Farcaster
+          </PlatformOption>
+        </PlatformOptions>
+        <ModalDescription>
+          Post to more than one protocol cannot mention other users
+        </ModalDescription>
+      </div>
+      <div>
+        <ContentInput
+          placeholder="Create a post..."
+          disabled={isPending}
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+        />
+      </div>
+      <div className="tools">
+        <span />
+        <SubmitBtn
+          onClick={() => {
+            handleSubmit();
+          }}
+        >
+          {isPending ? 'Posting...' : 'Post'}
+        </SubmitBtn>
+      </div>
+    </PostCardWrapper>
+  );
+}
+
+const PostCardWrapper = styled.div`
+  background: #212228;
+  border-radius: 20px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+  /* border-bottom: 1px solid #718096; */
+  > .top {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  > .tools {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+`;
 
 const ModalBody = styled.div`
   width: 600px;
@@ -248,6 +223,7 @@ const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
 `;
 const ContentInput = styled(TextareaBase)`
   resize: vertical;
+  padding: 10px;
 `;
 
 const SubmitBtn = styled(SocialButtonPrimary)``;
