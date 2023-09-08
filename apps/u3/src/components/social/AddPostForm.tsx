@@ -89,7 +89,8 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
       await handleSubmitToLens();
     }
     setIsPending(false);
-    onSuccess();
+    setText('');
+    if (onSuccess) onSuccess();
   }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
 
   const onSelectPlatform = useCallback(

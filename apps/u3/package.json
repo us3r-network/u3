@@ -10,7 +10,7 @@
     "@loadable/component": "^5.15.2",
     "@multiavatar/multiavatar": "^1.0.7",
     "@noble/ed25519": "^2.0.0",
-    "@rainbow-me/rainbowkit": "1.0.2",
+    "@rainbow-me/rainbowkit": "^1.0.11",
     "@react-spring/web": "^9.6.1",
     "@reduxjs/toolkit": "^1.8.3",
     "@us3r-network/auth-with-rainbowkit": "^0.1.10",
