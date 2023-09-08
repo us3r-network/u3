@@ -10,7 +10,7 @@ const modalStyles = {
     backdropFilter: 'blur(10px)',
     transform: 'translate(-50%, -50%)',
     borderRadius: '20px',
-    background: '#212228',
+    background: '#1B1E23',
     padding: '0px',
     border: 'none',
   },
