@@ -200,6 +200,11 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     };
   }, [data.user]);
 
+  const castImg = useMemo(() => {
+    const img = data.cast.embeds.find((item) => isImg(item?.url))?.url;
+    return img;
+  }, [data.cast]);
+
   return (
     <PostCardCastWrapper
       onClick={(e) => {
@@ -212,10 +217,13 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
       }}
     >
       <div>
-        <img src={userData.img} alt="" />
-        <span>{userData.username}</span>
+        <div>
+          <img src={userData.img} alt="" />
+          <span>{userData.username}</span>
+        </div>
+        <p>{data.cast.text}</p>
       </div>
-      <p>{data.cast.text}</p>
+      {castImg && <img src={castImg} alt="" />}
     </PostCardCastWrapper>
   );
 }
