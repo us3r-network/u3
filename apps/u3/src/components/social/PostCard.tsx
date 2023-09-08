@@ -191,7 +191,6 @@ export const PostCardActionsWrapper = styled.div`
 export const PostCardImgWrapper = styled.div`
   display: flex;
   gap: 10px;
-  margin: 10px;
   flex-direction: column;
   > img {
     max-width: 60%;
@@ -204,21 +203,39 @@ export const PostCardCastWrapper = styled.div`
   color: #fff;
   padding: 10px;
   cursor: pointer;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
   > div {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    > img {
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
+    > div {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      > img {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+      }
+    }
+    > p {
+      color: #c8c4c4;
+      margin-bottom: 0;
+      margin-top: 10px;
+      padding: 0;
+      word-break: break-all;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
     }
   }
-  > p {
-    color: #c8c4c4;
-    margin-bottom: 0;
-    margin-top: 10px;
-    padding: 0;
+  > img {
+    flex-shrink: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
   }
 `;
 
