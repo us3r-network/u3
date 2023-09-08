@@ -1,4 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useState } from 'react';
+
 import HeartIcon from '../icons/HeartIcon';
 
 interface PostLikeProps {
@@ -16,38 +18,62 @@ export default function PostLike({
   likeAction,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostLikeProps) {
+  const [hover, setHover] = useState(false);
   return (
     <PostLikeWrapper
+      onMouseEnter={() => {
+        setHover(true);
+      }}
+      onMouseLeave={() => {
+        setHover(false);
+      }}
       onClick={(e) => {
         if (likeAction) e.stopPropagation();
         if (!liking && likeAction) likeAction();
       }}
+      hover={hover}
       {...wrapperProps}
     >
       {likeAvatars && likeAvatars.length > 0 && (
         <PostLikeAvatars likeAvatars={likeAvatars} />
       )}
-      <HeartIcon
-        fill={liked ? '#E63734' : 'none'}
-        stroke={liked ? '#E63734' : 'white'}
-      />
+      <span>
+        <HeartIcon
+          fill={hover ? '#E63734' : liked ? '#E63734' : 'none'}
+          stroke={hover ? '#E63734' : liked ? '#E63734' : 'white'}
+        />
+      </span>
       {totalLikes} {liking ? 'Liking' : 'Likes'}
     </PostLikeWrapper>
   );
 }
 
-export const PostLikeWrapper = styled.div`
+export const PostLikeWrapper = styled.div<{ hover?: boolean }>`
   display: flex;
   align-items: center;
   gap: 5px;
   cursor: pointer;
 
-  color: #9c9c9c;
+  color: #718096;
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: 30px; /* 250% */
+  > span {
+    height: 24px;
+    width: 24px;
+    display: flex;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: ${(props) =>
+      props.hover ? 'rgba(248, 23, 117, 0.20)' : 'transparent'};
+  }
+  &:hover {
+    color: #e63734;
+  }
 `;
 
 export function PostLikeAvatars({
@@ -72,7 +98,7 @@ export const PostLikeAvatarsWrapper = styled.div`
   display: flex;
   align-items: center;
   & > * {
-    margin-left: -5px;
+    margin-left: 0px;
   }
 `;
 export const PostLikeAvatarWrapper = styled.div`

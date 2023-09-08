@@ -22,6 +22,7 @@ import {
   PostCardEmbedWrapper,
   PostCardImgWrapper,
   PostCardNftWrapper,
+  PostCardShowMoreWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../PostCard';
@@ -31,15 +32,18 @@ export default function FCast({
   cast,
   farcasterUserData,
   openFarcasterQR,
+  openImgModal,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
+  openImgModal: (url: string) => void;
 }) {
   const navigate = useNavigate();
-
+  const viewRef = useRef<HTMLDivElement>(null);
   const castId: CastId = useFarcasterCastId({ cast });
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
+  const [showMore, setShowMore] = useState(false);
 
   const embeds: {
     imgs: {
@@ -67,9 +71,30 @@ export default function FCast({
     return { imgs, webpages };
   }, [cast]);
 
+  useEffect(() => {
+    if (!viewRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        console.log(entry.target, entry.target.clientHeight);
+        if (entry.target.clientHeight > 125) {
+          setShowMore(true);
+        }
+
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(viewRef.current);
+    // eslint-disable-next-line consistent-return
+    return () => {
+      observer.disconnect();
+    };
+  }, [viewRef]);
+
   return (
     <PostCardWrapper
       onClick={() => {
+        if (showMore) return;
         const id = Buffer.from(castId.hash).toString('hex');
         navigate(`/post-detail/fcast/${id}`);
       }}
@@ -83,8 +108,28 @@ export default function FCast({
           createdAt: cast.created_at,
         }}
       />
-      <PostCardContentWrapper>{cast.text}</PostCardContentWrapper>
-      <Embed embedImgs={embeds.imgs} embedWebpages={embeds.webpages} />
+      <PostCardContentWrapper ref={viewRef} showMore={showMore}>
+        {cast.text}
+      </PostCardContentWrapper>
+      {showMore && (
+        <PostCardShowMoreWrapper>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              const id = Buffer.from(castId.hash).toString('hex');
+              navigate(`/post-detail/fcast/${id}`);
+            }}
+          >
+            Show more
+          </button>
+        </PostCardShowMoreWrapper>
+      )}
+      <Embed
+        embedImgs={embeds.imgs}
+        embedWebpages={embeds.webpages}
+        openImgModal={openImgModal}
+      />
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
@@ -113,9 +158,11 @@ export default function FCast({
 function Embed({
   embedImgs,
   embedWebpages,
+  openImgModal,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
+  openImgModal: (url: string) => void;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
   const [metadata, setMetadata] = useState<
@@ -152,13 +199,21 @@ function Embed({
     };
   }, [viewRef]);
 
+  if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
+
   return (
     <EmbedBox ref={viewRef} onClick={(e) => e.stopPropagation()}>
       {embedImgs.length > 0 && (
         <PostCardImgWrapper>
           {embedImgs.map((img) => (
-            // eslint-disable-next-line jsx-a11y/alt-text
-            <img src={img.url} key={img.url} />
+            <span
+              key={img.url}
+              onClick={() => {
+                openImgModal(img.url);
+              }}
+            >
+              <img src={img.url} alt="" />
+            </span>
           ))}
         </PostCardImgWrapper>
       )}

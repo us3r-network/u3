@@ -75,6 +75,7 @@ export default function FarcasterPostDetail() {
             cast={cast}
             openFarcasterQR={openFarcasterQR}
             farcasterUserData={farcasterUserData}
+            openImgModal={(url) => {}}
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
@@ -85,6 +86,7 @@ export default function FarcasterPostDetail() {
                   cast={item.data}
                   openFarcasterQR={openFarcasterQR}
                   farcasterUserData={farcasterUserData}
+                  openImgModal={(url) => {}}
                 />
               );
             })}
