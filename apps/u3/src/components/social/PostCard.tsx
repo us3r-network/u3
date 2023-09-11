@@ -90,6 +90,7 @@ export const PostCardWrapper = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  cursor: pointer;
   &:hover {
     background: #39424c;
   }
@@ -213,6 +214,8 @@ export const PostCardImgWrapper = styled.div`
   flex-direction: column;
   img {
     max-width: 60%;
+    border-radius: 10px;
+    overflow: hidden;
   }
 `;
 

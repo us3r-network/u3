@@ -94,7 +94,6 @@ export default function FCast({
   return (
     <PostCardWrapper
       onClick={() => {
-        if (showMore) return;
         const id = Buffer.from(castId.hash).toString('hex');
         navigate(`/post-detail/fcast/${id}`);
       }}
@@ -202,18 +201,20 @@ function Embed({
   if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
 
   return (
-    <EmbedBox ref={viewRef} onClick={(e) => e.stopPropagation()}>
+    <EmbedBox ref={viewRef}>
       {embedImgs.length > 0 && (
         <PostCardImgWrapper>
           {embedImgs.map((img) => (
-            <span
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+            <img
+              src={img.url}
+              alt=""
               key={img.url}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 openImgModal(img.url);
               }}
-            >
-              <img src={img.url} alt="" />
-            </span>
+            />
           ))}
         </PostCardImgWrapper>
       )}

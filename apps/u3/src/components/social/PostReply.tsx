@@ -42,7 +42,7 @@ export default function PostReply({
 const PostReplyWrapper = styled.div<{ hover?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   cursor: pointer;
 
   color: #718096;
@@ -52,8 +52,8 @@ const PostReplyWrapper = styled.div<{ hover?: boolean }>`
   font-weight: 400;
   line-height: 30px; /* 250% */
   > span {
-    height: 24px;
-    width: 24px;
+    height: 20px;
+    width: 20px;
     display: flex;
     box-sizing: border-box;
     align-items: center;
