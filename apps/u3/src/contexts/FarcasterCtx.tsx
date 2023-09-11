@@ -11,6 +11,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { isMobile } from 'react-device-detect';
 import axios from 'axios';
 import { goerli } from 'viem/chains';
 import { WARPCAST_API } from '../constants/farcaster';
@@ -192,8 +193,12 @@ export default function FarcasterProvider({
 
     setPrivateKey(keyPair.privateKey);
     pollForSigner(token);
-    setShowQR(true);
     setToken({ token, deepLink: deeplinkUrl });
+    if (isMobile) {
+      window.open(deeplinkUrl, '_blank');
+    } else {
+      setShowQR(true);
+    }
   }, [pollForSigner]);
 
   const openFarcasterQR = () => {
