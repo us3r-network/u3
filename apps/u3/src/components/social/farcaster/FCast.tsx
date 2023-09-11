@@ -1,8 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId, UserDataType } from '@farcaster/hub-web';
 import styled from 'styled-components';
+import dayjs from 'dayjs';
 
 import {
   FarCast,
@@ -75,7 +77,6 @@ export default function FCast({
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        console.log(entry.target, entry.target.clientHeight);
         if (entry.target.clientHeight > 125) {
           setShowMore(true);
         }
@@ -107,8 +108,9 @@ export default function FCast({
           createdAt: cast.created_at,
         }}
       />
+
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
-        {cast.text}
+        <CardText text={cast.text} />
       </PostCardContentWrapper>
       {showMore && (
         <PostCardShowMoreWrapper>
@@ -154,6 +156,26 @@ export default function FCast({
   );
 }
 
+function CardText({ text }: { text: string }) {
+  const t = useMemo(() => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function a(url) {
+      return `<a href="${url}" target="_blank">${url}</a>`;
+    });
+  }, [text]);
+  // eslint-disable-next-line react/no-danger
+  return (
+    <div
+      dangerouslySetInnerHTML={{ __html: t }}
+      onClick={(e) => {
+        if (e.target instanceof HTMLAnchorElement) {
+          e.stopPropagation();
+        }
+      }}
+    />
+  );
+}
+
 function Embed({
   embedImgs,
   embedWebpages,
@@ -172,7 +194,7 @@ function Embed({
     const urls = embedWebpages.map((embed) => embed.url);
     if (urls.length === 0) return;
     try {
-      const res = await getFarcasterEmbedMetadata(urls);
+      const res = await getFarcasterEmbedMetadata([urls[0]]);
       const { metadata: respMetadata } = res.data.data;
       const data = respMetadata.flatMap((m) => (m ? [m] : []));
       setMetadata(data);
@@ -234,7 +256,10 @@ function Embed({
           );
         }
         return (
-          <EmbedImg item={item as FarCastEmbedMeta} key={(item as any).url} />
+          <EmbedWebsite
+            item={item as FarCastEmbedMeta}
+            key={(item as any).url}
+          />
         );
       })}
     </EmbedBox>
@@ -249,10 +274,14 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     const username = data.user.find(
       (u) => u.type === UserDataType.DISPLAY
     )?.value;
+    const uname = data.user.find(
+      (u) => u.type === UserDataType.USERNAME
+    )?.value;
 
     return {
       img,
       username,
+      uname,
     };
   }, [data.user]);
 
@@ -260,6 +289,8 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     const img = data.cast.embeds.find((item) => isImg(item?.url))?.url;
     return img;
   }, [data.cast]);
+
+  if (!castImg) return null;
 
   return (
     <PostCardCastWrapper
@@ -275,7 +306,14 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
       <div>
         <div>
           <img src={userData.img} alt="" />
-          <span>{userData.username}</span>
+          <div>
+            <span className="username">{userData.username}</span>
+            <span className="uname">
+              @{userData.uname}
+              {'  '}·{'  '}
+              {dayjs(data.cast.created_at).fromNow()}
+            </span>
+          </div>
         </div>
         <p>{data.cast.text}</p>
       </div>
@@ -309,13 +347,10 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   );
 }
 
-function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
+function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
+  if (!item.image) return null;
   return (
     <PostCardEmbedWrapper href={item.url} target="_blank">
-      <div>
-        <h4>{item.title}</h4>
-        <p>{item.description}</p>
-      </div>
       {(isImg(item.image || '') && (
         <div
           className="img"
@@ -328,6 +363,11 @@ function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
           <img src={item.image} alt="" />
         </div>
       )}
+      <div className="intro">
+        <h4>{item.title}</h4>
+        {item.description && <p>{item.description}</p>}
+        <span>{new URL(item.url).host}</span>
+      </div>
     </PostCardEmbedWrapper>
   );
 }
