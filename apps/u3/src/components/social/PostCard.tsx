@@ -201,6 +201,11 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: ${(props) => (props.showMore ? 5 : 'initial')};
   overflow: hidden;
+
+  a {
+    color: #2594ef;
+    text-decoration: none;
+  }
 `;
 export const PostCardActionsWrapper = styled.div`
   display: flex;
@@ -221,22 +226,44 @@ export const PostCardImgWrapper = styled.div`
 
 export const PostCardCastWrapper = styled.div`
   border-radius: 10px;
-  border: 1px solid #9c9c9c;
   color: #fff;
-  padding: 10px;
+  padding: 20px;
   cursor: pointer;
   display: flex;
   gap: 10px;
   justify-content: space-between;
+  background-color: #14171a;
   > div {
     > div {
       display: flex;
       align-items: center;
       gap: 10px;
       > img {
-        width: 25px;
-        height: 25px;
+        width: 21px;
+        height: 21px;
         border-radius: 50%;
+      }
+      > div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .username {
+        color: #fff;
+        font-family: Rubik;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        margin-right: 5px;
+      }
+      .uname {
+        color: #718096;
+        font-family: Rubik;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
       }
     }
     > p {
@@ -263,10 +290,10 @@ export const PostCardCastWrapper = styled.div`
 
 export const PostCardNftWrapper = styled.div`
   color: #fff;
-  width: 300px;
-  border: 1px solid #9c9c9c;
+  width: 373px;
   border-radius: 10px;
   overflow: hidden;
+  background-color: #14171a;
   > img {
     width: 100%;
   }
@@ -274,41 +301,86 @@ export const PostCardNftWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
+    padding: 20px;
     > h4 {
-      margin: 10px 0;
+      margin: 0;
+      color: #fff;
+      font-family: Rubik;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 187.5% */
     }
     > button {
-      background: inherit;
-      border: 1px solid #9c9c9c;
-      padding: 5px 10px;
       border-radius: 10px;
+      background: linear-gradient(81deg, #cd62ff 0%, #62aaff 100%);
+      padding: 5px 10px;
+      border: none;
       outline: none;
       color: inherit;
+      color: #000;
+      font-family: Rubik;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
     }
   }
 `;
 
 export const PostCardEmbedWrapper = styled.a`
   color: #fff;
-  border: 1px solid #9c9c9c;
   border-radius: 10px;
-  padding: 10px;
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  overflow: hidden;
+  background-color: #14171a;
   text-decoration: none;
+  width: 373px;
+  min-height: 373px;
+  display: flex;
+  flex-direction: column;
+
   > .img {
+    flex-grow: 1;
     flex-shrink: 0;
-    width: 110px;
-    height: 110px;
+    width: 100%;
+    /* min-height: 373px; */
     overflow: hidden;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     > img {
       width: 100%;
+    }
+  }
+
+  > .intro {
+    padding: 20px;
+
+    > h4 {
+      color: #fff;
+      font-family: Rubik;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 30px; /* 214.286% */
+      margin: 0;
+    }
+    > p {
+      color: #fff;
+      font-family: Rubik;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 250% */
+    }
+
+    > span {
+      color: #718096;
+      font-family: Rubik;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 250% */
     }
   }
 
