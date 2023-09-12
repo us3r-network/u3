@@ -71,7 +71,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
         <LensPostCardContent publication={updatedPublication} />
       )}
       onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`);
+        navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
       liked={hasUpvote}

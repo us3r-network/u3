@@ -39,5 +39,6 @@ const ModalBody = styled.div`
   > img {
     width: 80%;
     max-height: 95%;
+    border-radius: 10px;
   }
 `;
