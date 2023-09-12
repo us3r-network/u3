@@ -1,8 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId, UserDataType } from '@farcaster/hub-web';
 import styled from 'styled-components';
+import dayjs from 'dayjs';
 
 import {
   FarCast,
@@ -75,7 +77,6 @@ export default function FCast({
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        console.log(entry.target, entry.target.clientHeight);
         if (entry.target.clientHeight > 125) {
           setShowMore(true);
         }
@@ -94,9 +95,8 @@ export default function FCast({
   return (
     <PostCardWrapper
       onClick={() => {
-        if (showMore) return;
         const id = Buffer.from(castId.hash).toString('hex');
-        navigate(`/post-detail/fcast/${id}`);
+        navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
       <PostCardUserInfo
@@ -108,8 +108,9 @@ export default function FCast({
           createdAt: cast.created_at,
         }}
       />
+
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
-        {cast.text}
+        <CardText text={cast.text} />
       </PostCardContentWrapper>
       {showMore && (
         <PostCardShowMoreWrapper>
@@ -118,7 +119,7 @@ export default function FCast({
             onClick={(e) => {
               e.stopPropagation();
               const id = Buffer.from(castId.hash).toString('hex');
-              navigate(`/post-detail/fcast/${id}`);
+              navigate(`/social/post-detail/fcast/${id}`);
             }}
           >
             Show more
@@ -155,6 +156,27 @@ export default function FCast({
   );
 }
 
+function CardText({ text }: { text: string }) {
+  const t = useMemo(() => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function a(url) {
+      return `<a href="${url}" target="_blank">${url}</a>`;
+    });
+  }, [text]);
+
+  return (
+    <div
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: t }}
+      onClick={(e) => {
+        if (e.target instanceof HTMLAnchorElement) {
+          e.stopPropagation();
+        }
+      }}
+    />
+  );
+}
+
 function Embed({
   embedImgs,
   embedWebpages,
@@ -173,7 +195,7 @@ function Embed({
     const urls = embedWebpages.map((embed) => embed.url);
     if (urls.length === 0) return;
     try {
-      const res = await getFarcasterEmbedMetadata(urls);
+      const res = await getFarcasterEmbedMetadata([urls[0]]);
       const { metadata: respMetadata } = res.data.data;
       const data = respMetadata.flatMap((m) => (m ? [m] : []));
       setMetadata(data);
@@ -202,18 +224,20 @@ function Embed({
   if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
 
   return (
-    <EmbedBox ref={viewRef} onClick={(e) => e.stopPropagation()}>
+    <EmbedBox ref={viewRef}>
       {embedImgs.length > 0 && (
         <PostCardImgWrapper>
           {embedImgs.map((img) => (
-            <span
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+            <img
+              src={img.url}
+              alt=""
               key={img.url}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 openImgModal(img.url);
               }}
-            >
-              <img src={img.url} alt="" />
-            </span>
+            />
           ))}
         </PostCardImgWrapper>
       )}
@@ -233,7 +257,10 @@ function Embed({
           );
         }
         return (
-          <EmbedImg item={item as FarCastEmbedMeta} key={(item as any).url} />
+          <EmbedWebsite
+            item={item as FarCastEmbedMeta}
+            key={(item as any).url}
+          />
         );
       })}
     </EmbedBox>
@@ -248,10 +275,14 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     const username = data.user.find(
       (u) => u.type === UserDataType.DISPLAY
     )?.value;
+    const uname = data.user.find(
+      (u) => u.type === UserDataType.USERNAME
+    )?.value;
 
     return {
       img,
       username,
+      uname,
     };
   }, [data.user]);
 
@@ -260,21 +291,30 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     return img;
   }, [data.cast]);
 
+  if (!castImg) return null;
+
   return (
     <PostCardCastWrapper
       onClick={(e) => {
         e.stopPropagation();
         navigate(
-          `/post-detail/fcast/${Buffer.from(data.cast.hash.data).toString(
-            'hex'
-          )}`
+          `/social/post-detail/fcast/${Buffer.from(
+            data.cast.hash.data
+          ).toString('hex')}`
         );
       }}
     >
       <div>
         <div>
           <img src={userData.img} alt="" />
-          <span>{userData.username}</span>
+          <div>
+            <span className="username">{userData.username}</span>
+            <span className="uname">
+              @{userData.uname}
+              {'  '}·{'  '}
+              {dayjs(data.cast.created_at).fromNow()}
+            </span>
+          </div>
         </div>
         <p>{data.cast.text}</p>
       </div>
@@ -308,13 +348,10 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   );
 }
 
-function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
+function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
+  if (!item.image) return null;
   return (
     <PostCardEmbedWrapper href={item.url} target="_blank">
-      <div>
-        <h4>{item.title}</h4>
-        <p>{item.description}</p>
-      </div>
       {(isImg(item.image || '') && (
         <div
           className="img"
@@ -327,6 +364,11 @@ function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
           <img src={item.image} alt="" />
         </div>
       )}
+      <div className="intro">
+        <h4>{item.title}</h4>
+        {item.description && <p>{item.description}</p>}
+        <span>{new URL(item.url).host}</span>
+      </div>
     </PostCardEmbedWrapper>
   );
 }

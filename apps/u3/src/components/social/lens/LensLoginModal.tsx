@@ -61,8 +61,7 @@ export default function LensLoginModal({
   );
 }
 const ModalBody = styled.div`
-  width: 600px;
-  height: 220px;
+  width: fit-content;
   flex-shrink: 0;
 
   padding: 30px;

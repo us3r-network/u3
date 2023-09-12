@@ -1,9 +1,16 @@
-import { useCallback, useState } from 'react';
+import {
+  ChangeEvent,
+  ClipboardEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import { makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { UserAvatar } from '@us3r-network/profile';
+import { MediaObject } from '@lens-protocol/react-web';
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
 
 import {
@@ -23,25 +30,104 @@ import FarcasterIcon from '../icons/FarcasterIcon';
 import EmojiIcon from '../icons/EmojiIcon';
 import ImgIcon from '../icons/ImgIcon';
 
+import type {
+  FilesWithId,
+  ImageData,
+  ImagesPreview,
+} from '../../utils/social/file';
+import { getImagesData } from '../../utils/social/validation';
+import { ImagePreview } from './ImagePreview';
+import { uploadImage } from '../../services/api/upload';
+import useLogin from '../../hooks/useLogin';
+
 export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
+  const { user, isLogin: isLoginU3, login } = useLogin();
   const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { createText: createTextToLens } = useCreateLensPost();
+  const { createPost: createPostToLens } = useCreateLensPost();
 
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
 
+  const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
+  const [imagesPreview, setImagesPreview] = useState<ImagesPreview>([]);
+  const previewCount = imagesPreview.length;
+  const isUploadingImages = !!previewCount;
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const inputFileRef = useRef<HTMLInputElement>(null);
+  const handleImageUpload = (
+    e: ChangeEvent<HTMLInputElement> | ClipboardEvent<HTMLTextAreaElement>
+  ): void => {
+    const isClipboardEvent = 'clipboardData' in e;
+
+    if (isClipboardEvent) {
+      const isPastingText = e.clipboardData.getData('text');
+      if (isPastingText) return;
+    }
+
+    const files = isClipboardEvent ? e.clipboardData.files : e.target.files;
+
+    const imagesData = getImagesData(files, previewCount);
+
+    if (!imagesData) {
+      toast.error('Please choose a GIF or photo up to 4');
+      return;
+    }
+
+    const { imagesPreviewData, selectedImagesData } = imagesData;
+
+    setImagesPreview([...imagesPreview, ...imagesPreviewData]);
+    setSelectedImages([...selectedImages, ...selectedImagesData]);
+
+    inputRef.current?.focus();
+  };
+  // remove a image
+  const removeImage = (targetId: string) => (): void => {
+    setSelectedImages(selectedImages.filter(({ id }) => id !== targetId));
+    setImagesPreview(imagesPreview.filter(({ id }) => id !== targetId));
+
+    const { src } = imagesPreview.find(
+      ({ id }) => id === targetId
+    ) as ImageData;
+
+    URL.revokeObjectURL(src);
+  };
+  // remove all images
+  const cleanImage = (): void => {
+    imagesPreview.forEach(({ src }) => URL.revokeObjectURL(src));
+
+    setSelectedImages([]);
+    setImagesPreview([]);
+  };
+
+  const uploadSelectedImages = async () => {
+    try {
+      return await Promise.all(
+        selectedImages.map((image) =>
+          uploadImage(image, user.token).then((result) => {
+            return { url: result.data.url, mimeType: image.type }; // convert to Embed for farcaster or MediaObject for lens
+          })
+        )
+      );
+    } catch (e) {
+      console.log(e);
+      toast.error('Failed to upload image');
+      return null;
+    }
+  };
+
   const handleSubmitToFarcaster = useCallback(async () => {
     if (!text || !encryptedSigner) return;
     const currFid = getCurrFid();
     try {
+      const uploadedLinks = await uploadSelectedImages();
       // eslint-disable-next-line no-underscore-dangle
       const cast = (
         await makeCastAdd(
           {
             text,
-            embeds: [],
+            embeds: [...uploadedLinks],
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
@@ -55,7 +141,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
         throw new Error(result.error.message);
       }
       toast.success('successfully posted to farcaster');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       toast.error('failed to post to farcaster');
     }
@@ -64,13 +150,14 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
     try {
-      await createTextToLens(text);
+      const media = await uploadSelectedImages();
+      await createPostToLens(text, media as MediaObject[]);
       toast.success('successfully posted to lens');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createTextToLens]);
+  }, [text, createPostToLens]);
 
   const handleSubmit = useCallback(async () => {
     if (!text) {
@@ -90,6 +177,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
     }
     setIsPending(false);
     setText('');
+    cleanImage();
     if (onSuccess) onSuccess();
   }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
 
@@ -157,26 +245,47 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
         </Description>
       </Header>
       <PostBox>
-        <ContentWrapper>
+        <UserPostWrapepr>
           <UserAvatarStyled />
-          <ContentInput
-            placeholder="Create a post..."
-            disabled={isPending}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
-        </ContentWrapper>
-
+          <ContentWrapper>
+            <ContentInput
+              placeholder="Create a post..."
+              disabled={isPending}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              onPaste={handleImageUpload}
+            />
+            {isUploadingImages && (
+              <ImagePreview
+                imagesPreview={imagesPreview}
+                removeImage={removeImage}
+              />
+            )}
+          </ContentWrapper>
+        </UserPostWrapepr>
         <FooterWrapper>
-          <SendImgBtn disabled>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            ref={inputFileRef}
+            multiple
+            hidden
+          />
+          <SendImgBtn onClick={() => inputFileRef.current?.click()}>
             <ImgIcon />
           </SendImgBtn>
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
           <SubmitBtn
+            disabled={text === '' || platforms.size === 0}
             onClick={() => {
-              handleSubmit();
+              if (!isLoginU3) {
+                login();
+              } else {
+                handleSubmit();
+              }
             }}
           >
             {isPending ? 'Posting...' : 'Post'}
@@ -238,9 +347,15 @@ const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
     selected ? 'border: 1px solid #fff; ' : 'border: 1px dashed #9C9C9C;'}
   color: ${({ selected }) => (selected ? '#fff' : '#9C9C9C')};
 `;
-const ContentWrapper = styled.div`
+const UserPostWrapepr = styled.div`
   display: flex;
-  gap: 20px;
+  gap: 10px;
+`;
+const ContentWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 `;
 const UserAvatarStyled = styled(UserAvatar)`
   display: block;

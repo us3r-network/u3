@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import {
   CollectPolicyType,
   ContentFocus,
+  MediaObject,
   ReferencePolicyType,
   useActiveProfile,
   useCreatePost,
@@ -35,5 +36,22 @@ export function useCreateLensPost() {
     [create]
   );
 
-  return { createText, error, isPending };
+  const createPost = useCallback(
+    async (content: string, media?: MediaObject[]) =>
+      create({
+        content,
+        contentFocus: ContentFocus.ARTICLE,
+        locale: 'en',
+        media: media || [],
+        collect: {
+          type: CollectPolicyType.NO_COLLECT,
+        },
+        reference: {
+          type: ReferencePolicyType.ANYONE,
+        },
+      }),
+    [create]
+  );
+
+  return { createText, createPost, error, isPending };
 }
