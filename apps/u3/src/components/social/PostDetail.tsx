@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 import ButtonBase from '../common/button/ButtonBase';
 
-export const PostDetailWrapper = styled.div`
+export const PostDetailWrapper = styled.div<{ isMobile?: boolean }>`
   border-radius: 20px;
   background: #212228;
   overflow: hidden;
+  width: ${(props) => (props.isMobile ? '100%' : '600px')};
 `;
 export const PostDetailCommentsWrapper = styled.div`
   & > * {
