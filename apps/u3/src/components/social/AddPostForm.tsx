@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { UserAvatar } from '@us3r-network/profile';
+import { MediaObject } from '@lens-protocol/react-web';
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
 
 import {
@@ -43,7 +44,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { createText: createTextToLens } = useCreateLensPost();
+  const { createPost: createPostToLens } = useCreateLensPost();
 
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
@@ -103,7 +104,11 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const uploadSelectedImages = async () => {
     try {
       return await Promise.all(
-        selectedImages.map((image) => uploadImage(image, user.token))
+        selectedImages.map((image) =>
+          uploadImage(image, user.token).then((result) => {
+            return { url: result.data.url, mimeType: image.type }; // convert to Embed for farcaster or MediaObject for lens
+          })
+        )
       );
     } catch (e) {
       console.log(e);
@@ -122,7 +127,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
         await makeCastAdd(
           {
             text,
-            embeds: [...uploadedLinks.map((link) => ({ url: link.data.url }))],
+            embeds: [...uploadedLinks],
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
@@ -145,15 +150,14 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
     try {
-      // todo: add image upload
-      // const uploadedLinks = await uploadSelectedImages();
-      await createTextToLens(text);
+      const media = await uploadSelectedImages();
+      await createPostToLens(text, media as MediaObject[]);
       toast.success('successfully posted to lens');
     } catch (error: unknown) {
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createTextToLens]);
+  }, [text, createPostToLens]);
 
   const handleSubmit = useCallback(async () => {
     if (!text) {
