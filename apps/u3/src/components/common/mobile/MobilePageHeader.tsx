@@ -33,6 +33,7 @@ export default function MobilePageHeader({
 }
 
 const PageHeader = styled.div<{ tab: string }>`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   border: 1px solid #39424c;
