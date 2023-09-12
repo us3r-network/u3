@@ -22,8 +22,8 @@ export default function AddPostModal({
 }
 
 const ModalBody = styled.div`
-  width: 600px;
-  min-height: 194px;
+  width: fit-content;
+  /* min-height: 194px; */
   flex-shrink: 0;
 
   padding: 20px;

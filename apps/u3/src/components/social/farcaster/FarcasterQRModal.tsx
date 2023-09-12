@@ -71,7 +71,8 @@ export default function FarcasterQRModal({
 }
 
 const ModalBody = styled.div`
-  width: 480px;
+  width: fit-content;
+  max-width: 480px;
   /* height: 220px; */
   flex-shrink: 0;
 
@@ -102,13 +103,13 @@ const ModalContent = styled.div`
   justify-content: space-between;
 `;
 const Left = styled.div`
-  width: 200px;
+  width: 50%;
   display: flex;
   flex-direction: column;
   gap: 10px;
 `;
 const Right = styled.div`
-  width: 200px;
+  width: 50%;
   height: 200px;
   display: flex;
   justify-content: center;
