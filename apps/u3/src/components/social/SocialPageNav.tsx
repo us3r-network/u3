@@ -1,6 +1,8 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import MobilePageHeader from '../common/mobile/MobilePageHeader';
+import { ArrowLeft } from '../icons/ArrowLeft';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -42,6 +44,33 @@ export default function SocialPageNav({
     </SocialNavWrapper>
   );
 }
+
+export function SocialBackNav() {
+  const navigate = useNavigate();
+  return (
+    <SocialNavWrapper>
+      {!isMobile && (
+        <SocialNavLeft>
+          <SocialNavTitle>Social</SocialNavTitle>
+          <SocialNavDividingLine />
+        </SocialNavLeft>
+      )}
+      <SocialNavCenter>
+        <button
+          type="button"
+          onClick={() => {
+            navigate(-1);
+          }}
+        >
+          <ArrowLeft />
+        </button>
+        <span>Post</span>
+      </SocialNavCenter>
+      {!isMobile && <SocialNavRight />}
+    </SocialNavWrapper>
+  );
+}
+
 function PcFeedsTypeTable({
   feedsType,
   onChangeFeedsType,
@@ -107,9 +136,39 @@ const SocialNavLeft = styled.div`
 const SocialNavCenter = styled.div`
   width: 600px;
   height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  > button {
+    border-radius: 50%;
+    display: flex;
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-shrink: 0;
+    border-radius: 100px;
+    border: 1px solid #39424c;
+    background: var(--neutral-100, #1a1e23);
+    cursor: pointer;
+  }
+  > span {
+    overflow: hidden;
+    color: #fff;
+    text-overflow: ellipsis;
+    font-family: Rubik;
+    font-size: 18px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+  }
 `;
 const SocialNavRight = styled.div`
-  flex: 1;
+  flex-basis: 350px;
+  flex-grow: 0;
+  flex-shrink: 0;
 `;
 const SocialNavTitle = styled.div`
   color: #fff;

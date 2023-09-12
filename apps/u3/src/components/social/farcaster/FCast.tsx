@@ -96,7 +96,7 @@ export default function FCast({
     <PostCardWrapper
       onClick={() => {
         const id = Buffer.from(castId.hash).toString('hex');
-        navigate(`/post-detail/fcast/${id}`);
+        navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
       <PostCardUserInfo
@@ -119,7 +119,7 @@ export default function FCast({
             onClick={(e) => {
               e.stopPropagation();
               const id = Buffer.from(castId.hash).toString('hex');
-              navigate(`/post-detail/fcast/${id}`);
+              navigate(`/social/post-detail/fcast/${id}`);
             }}
           >
             Show more
@@ -163,9 +163,10 @@ function CardText({ text }: { text: string }) {
       return `<a href="${url}" target="_blank">${url}</a>`;
     });
   }, [text]);
-  // eslint-disable-next-line react/no-danger
+
   return (
     <div
+      // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: t }}
       onClick={(e) => {
         if (e.target instanceof HTMLAnchorElement) {
@@ -297,9 +298,9 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
       onClick={(e) => {
         e.stopPropagation();
         navigate(
-          `/post-detail/fcast/${Buffer.from(data.cast.hash.data).toString(
-            'hex'
-          )}`
+          `/social/post-detail/fcast/${Buffer.from(
+            data.cast.hash.data
+          ).toString('hex')}`
         );
       }}
     >

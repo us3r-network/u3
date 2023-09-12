@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { getFarcasterCastInfo } from '../api/farcaster';
 import { FarCast } from '../api';
 import FCast from '../components/social/farcaster/FCast';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
-import GoBack from '../components/GoBack';
 import {
   PostDetailCommentsWrapper,
   PostDetailWrapper,
@@ -22,6 +21,9 @@ export default function FarcasterPostDetail() {
   const [farcasterUserData, setFarcasterUserData] = useState<{
     [key: string]: { type: number; value: string }[];
   }>({});
+  const { setModalImg } = useOutletContext<{
+    setModalImg: React.Dispatch<React.SetStateAction<string>>;
+  }>();
 
   const loadCastInfo = useCallback(async () => {
     if (!castId) return;
@@ -69,13 +71,14 @@ export default function FarcasterPostDetail() {
   if (cast) {
     return (
       <DetailBox>
-        <GoBack />
         <PostDetailWrapper>
           <FCast
             cast={cast}
             openFarcasterQR={openFarcasterQR}
             farcasterUserData={farcasterUserData}
-            openImgModal={(url) => {}}
+            openImgModal={(url) => {
+              setModalImg(url);
+            }}
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
@@ -86,7 +89,9 @@ export default function FarcasterPostDetail() {
                   cast={item.data}
                   openFarcasterQR={openFarcasterQR}
                   farcasterUserData={farcasterUserData}
-                  openImgModal={(url) => {}}
+                  openImgModal={(url) => {
+                    setModalImg(url);
+                  }}
                 />
               );
             })}
@@ -99,11 +104,11 @@ export default function FarcasterPostDetail() {
 }
 
 const DetailBox = styled.div`
-  padding: 24px;
+  width: 600px;
 `;
 
 const LoadingWrapper = styled.div`
-  width: 100%;
+  width: 600px;
   height: 80vh;
   display: flex;
   justify-content: center;

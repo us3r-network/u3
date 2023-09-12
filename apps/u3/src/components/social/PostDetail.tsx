@@ -7,7 +7,7 @@ export const PostDetailWrapper = styled.div`
   overflow: hidden;
 `;
 export const PostDetailCommentsWrapper = styled.div`
-  & > *:not(:first-child) {
+  & > * {
     border-top: 1px solid #718096;
   }
 `;

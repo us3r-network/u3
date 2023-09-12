@@ -100,7 +100,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => <LensPostCardContent publication={publication} />}
       onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`);
+        navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
       liked={hasUpvote}
