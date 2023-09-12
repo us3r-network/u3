@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { isMobile } from 'react-device-detect';
+
 import { getFarcasterCastInfo } from '../api/farcaster';
 import { FarCast } from '../api';
 import FCast from '../components/social/farcaster/FCast';
@@ -71,7 +73,7 @@ export default function FarcasterPostDetail() {
   if (cast) {
     return (
       <DetailBox>
-        <PostDetailWrapper>
+        <PostDetailWrapper isMobile={isMobile}>
           <FCast
             cast={cast}
             openFarcasterQR={openFarcasterQR}
