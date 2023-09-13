@@ -35,11 +35,13 @@ export default function FCast({
   farcasterUserData,
   openFarcasterQR,
   openImgModal,
+  isDetail,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
   openImgModal: (url: string) => void;
+  isDetail?: boolean;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -74,6 +76,7 @@ export default function FCast({
   }, [cast]);
 
   useEffect(() => {
+    if (isDetail) return;
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
@@ -94,7 +97,9 @@ export default function FCast({
 
   return (
     <PostCardWrapper
+      isDetail={isDetail}
       onClick={() => {
+        if (isDetail) return;
         const id = Buffer.from(castId.hash).toString('hex');
         navigate(`/social/post-detail/fcast/${id}`);
       }}

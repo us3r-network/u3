@@ -15,7 +15,7 @@ import Loading from '../components/common/loading/Loading';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [cast, setCast] = useState<FarCast>();
   const { openFarcasterQR } = useFarcasterCtx();
   const [comments, setComments] =
@@ -81,6 +81,7 @@ export default function FarcasterPostDetail() {
             openImgModal={(url) => {
               setModalImg(url);
             }}
+            isDetail
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
@@ -102,7 +103,7 @@ export default function FarcasterPostDetail() {
       </DetailBox>
     );
   }
-  return null;
+  return <LoadingWrapper />;
 }
 
 const DetailBox = styled.div`

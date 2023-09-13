@@ -83,7 +83,7 @@ export default function PostCard({
   );
 }
 
-export const PostCardWrapper = styled.div`
+export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   background: #212228;
   padding: 20px;
   box-sizing: border-box;
@@ -92,7 +92,7 @@ export const PostCardWrapper = styled.div`
   gap: 20px;
   cursor: pointer;
   &:hover {
-    background: #39424c;
+    background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
   }
 `;
 

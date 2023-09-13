@@ -59,6 +59,7 @@ export default function Home() {
 
   return (
     <HomeWrapper id="social-wrapper">
+      {!isMobile && <div className="op" />}
       {titleElem}
       <MainWrapper>
         {!isMobile && (
@@ -71,7 +72,11 @@ export default function Home() {
           </MainLeft>
         )}
 
-        <Outlet context={{ setModalImg, socialPlatform, feedsType }} />
+        {(!isMobile && (
+          <div className="outlet-op">
+            <Outlet context={{ setModalImg, socialPlatform, feedsType }} />
+          </div>
+        )) || <Outlet context={{ setModalImg, socialPlatform, feedsType }} />}
 
         {!isMobile && (
           <MainRight>
@@ -91,6 +96,7 @@ const HomeWrapper = styled.div`
   overflow: scroll;
   box-sizing: border-box;
   padding: 24px;
+  padding-top: 0;
   margin-bottom: 20px;
   ${isMobile &&
   `
@@ -98,6 +104,17 @@ const HomeWrapper = styled.div`
   padding: 10px;
   padding-bottom: 60px;
   `}
+
+  > .op {
+    height: 24px;
+    z-index: 10;
+    background: #14171a;
+    position: sticky;
+    top: 0;
+  }
+  .outlet-op {
+    width: 600px;
+  }
 `;
 const MainWrapper = styled.div`
   margin-top: 20px;
@@ -110,7 +127,7 @@ const MainLeft = styled.div`
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 0;
+  top: 116px;
   height: fit-content;
 `;
 
@@ -120,6 +137,6 @@ const MainRight = styled.div`
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 0;
+  top: 116px;
   height: fit-content;
 `;
