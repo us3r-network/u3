@@ -8,14 +8,10 @@ import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote
 import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
-import { LensPublication } from '../../../api/lens';
+import { LensPost } from '../../../api/lens';
 import useLogin from '../../../hooks/useLogin';
 
-export default function LensPostDetailCard({
-  data,
-}: {
-  data: LensPublication;
-}) {
+export default function LensPostDetailCard({ data }: { data: LensPost }) {
   const {
     isLogin,
     setOpenLensLoginModal,

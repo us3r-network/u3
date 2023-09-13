@@ -10,7 +10,7 @@ import {
 } from '@lens-protocol/react-web';
 import { isMobile } from 'react-device-detect';
 
-import { LensPublication } from '../api/lens';
+import { LensPost } from '../api/lens';
 import LensCommentPostForm from '../components/social/lens/LensCommentPostForm';
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment';
 import LensReplyCard from '../components/social/lens/LensReplyCard';
@@ -34,7 +34,7 @@ export default function LensPostDetail() {
     observerId: activeProfile?.id,
   });
 
-  const publication = { ...data } as unknown as LensPublication;
+  const publication = { ...data } as unknown as LensPost;
 
   const {
     data: comments,
