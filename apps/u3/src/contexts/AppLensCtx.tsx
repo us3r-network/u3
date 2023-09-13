@@ -22,8 +22,8 @@ import {
   Comment,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+import { useAccount, useDisconnect } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { LENS_ENV } from '../constants/lens';
 
 import LensLoginModal from '../components/social/lens/LensLoginModal';
@@ -63,6 +63,10 @@ const lensConfig: LensConfig = {
   environment: LENS_ENV === 'production' ? production : development,
 };
 
+export enum LensPubSubTopic {
+  LOGIN_WITH_RAINBOWKIT = 'lens-login-with-rainbowkit',
+}
+
 export function AppLensProvider({ children }: PropsWithChildren) {
   return (
     <LensProvider config={lensConfig}>
@@ -83,9 +87,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const { isConnected } = useAccount();
   const { disconnectAsync } = useDisconnect();
 
-  const { connectAsync } = useConnect({
-    connector: new InjectedConnector(),
-  });
+  const { openConnectModal } = useConnectModal();
 
   const { execute: updateDispatcher } = useUpdateDispatcherConfig({
     profile: wallet,
@@ -102,21 +104,40 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [wallet, updateDispatcher]);
 
-  const lensLogin = useCallback(async () => {
-    if (isConnected) {
-      await disconnectAsync();
-    }
-    const { connector } = await connectAsync();
-
-    if (connector instanceof InjectedConnector) {
+  useAccount({
+    async onConnect({ connector, isReconnected }) {
+      if (isReconnected) {
+        return;
+      }
       const walletClient = await connector.getWalletClient();
       const { address } = walletClient.account;
 
       await login({
         address,
       });
+    },
+  });
+
+  const lensLoginOpenRainbowkit = useCallback(() => {
+    if (openConnectModal) openConnectModal();
+  }, [openConnectModal]);
+
+  const lensLogin = useCallback(async () => {
+    if (isConnected) {
+      await disconnectAsync();
     }
-  }, [isConnected, disconnectAsync, connectAsync, login]);
+    PubSub.publish(LensPubSubTopic.LOGIN_WITH_RAINBOWKIT);
+  }, [isConnected, disconnectAsync]);
+
+  useEffect(() => {
+    const loginToken = PubSub.subscribe(
+      LensPubSubTopic.LOGIN_WITH_RAINBOWKIT,
+      () => lensLoginOpenRainbowkit()
+    );
+    return () => {
+      PubSub.unsubscribe(loginToken);
+    };
+  }, [lensLoginOpenRainbowkit]);
 
   const isLogin = useMemo(() => !!wallet, [wallet]);
 
