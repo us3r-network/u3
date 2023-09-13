@@ -64,7 +64,7 @@ const lensConfig: LensConfig = {
 };
 
 export enum LensPubSubTopic {
-  LOGIN_WITH_RAINBOWKIT = 'login-with-rainbowkit',
+  LOGIN_WITH_RAINBOWKIT = 'lens-login-with-rainbowkit',
 }
 
 export function AppLensProvider({ children }: PropsWithChildren) {
