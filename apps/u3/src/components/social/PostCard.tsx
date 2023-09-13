@@ -34,6 +34,7 @@ interface PostCardProps {
   replyAction?: () => void;
   repostAction?: () => void;
   showActions?: boolean;
+  isDetail?: boolean;
 }
 export default function PostCard({
   data,
