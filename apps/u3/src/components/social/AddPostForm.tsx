@@ -5,12 +5,13 @@ import {
   useRef,
   useState,
 } from 'react';
-import { makeCastAdd } from '@farcaster/hub-web';
+import { UserDataType, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 
 import { UserAvatar } from '@us3r-network/profile';
-import { MediaObject } from '@lens-protocol/react-web';
+import { MediaObject, useActiveProfile } from '@lens-protocol/react-web';
+import { ToggleButton } from 'react-aria-components';
 import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
 
 import {
@@ -22,7 +23,7 @@ import { getCurrFid } from '../../utils/farsign-utils';
 import { SocailPlatform } from '../../api';
 import { useLensCtx } from '../../contexts/AppLensCtx';
 import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost';
-import ButtonBase, { ButtonPrimaryLine } from '../common/button/ButtonBase';
+import ButtonBase from '../common/button/ButtonBase';
 import TextareaBase from '../common/input/TextareaBase';
 import { SocialButtonPrimary } from './button/SocialButton';
 import LensIcon from '../icons/LensIcon';
@@ -39,11 +40,19 @@ import { getImagesData } from '../../utils/social/validation';
 import { ImagePreview } from './ImagePreview';
 import { uploadImage } from '../../services/api/upload';
 import useLogin from '../../hooks/useLogin';
+import getAvatar from '../../utils/lens/getAvatar';
 
 export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
-  const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
+  const {
+    encryptedSigner,
+    isConnected: isLoginFarcaster,
+    currFid: farcasterUserFid,
+    currUserInfo: farcasterUserInfo,
+    openFarcasterQR,
+  } = useFarcasterCtx();
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
+  const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
   const [text, setText] = useState('');
@@ -181,68 +190,84 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
     if (onSuccess) onSuccess();
   }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
 
-  const onSelectPlatform = useCallback(
-    (platform: SocailPlatform) => {
-      switch (platform) {
-        case SocailPlatform.Farcaster:
-          if (!isConnected) {
-            openFarcasterQR();
-            return;
-          }
-          if (platforms.has(SocailPlatform.Farcaster)) {
-            platforms.delete(SocailPlatform.Farcaster);
-          } else {
-            platforms.add(SocailPlatform.Farcaster);
-          }
-          setPlatforms(new Set(platforms));
-          break;
-        case SocailPlatform.Lens:
-          if (!isLoginLens) {
-            setOpenLensLoginModal(true);
-            return;
-          }
-          if (platforms.has(SocailPlatform.Lens)) {
-            platforms.delete(SocailPlatform.Lens);
-          } else {
-            platforms.add(SocailPlatform.Lens);
-          }
-          setPlatforms(new Set(platforms));
-          break;
-        default:
-          console.error('unknown platform', platform);
-          break;
-      }
-    },
-    [
-      platforms,
-      isConnected,
-      openFarcasterQR,
-      isLoginLens,
-      setOpenLensLoginModal,
-    ]
-  );
   return (
     <Wrapper>
       <Header>
         <PlatformOptions>
-          <PlatformOption
-            selected={platforms.has(SocailPlatform.Lens)}
-            onClick={() => onSelectPlatform(SocailPlatform.Lens)}
-          >
-            <LensIcon />
-            Lens
+          <PlatformOption>
+            {isLoginLens ? (
+              <PlatformToggleButton
+                isSelected={platforms.has(SocailPlatform.Lens)}
+                platform={SocailPlatform.Lens}
+                onChange={() => {
+                  if (platforms.has(SocailPlatform.Lens)) {
+                    platforms.delete(SocailPlatform.Lens);
+                  } else {
+                    platforms.add(SocailPlatform.Lens);
+                  }
+                  setPlatforms(new Set(platforms));
+                }}
+              >
+                <Avatar src={getAvatar(lensUserInfo)} />
+                <UserName>{lensUserInfo.name}</UserName>
+                <UserHandle>@{lensUserInfo.handle}</UserHandle>
+                <LensIcon />
+              </PlatformToggleButton>
+            ) : (
+              <LoginWraper>
+                <LensIcon />
+                Lens
+                <LoginButton onClick={() => setOpenLensLoginModal(true)}>
+                  login
+                </LoginButton>
+              </LoginWraper>
+            )}
           </PlatformOption>
-          <PlatformOption
-            selected={platforms.has(SocailPlatform.Farcaster)}
-            onClick={() => onSelectPlatform(SocailPlatform.Farcaster)}
-          >
-            <FarcasterIcon />
-            Farcaster
+          <PlatformOption>
+            {isLoginFarcaster && farcasterUserInfo ? (
+              <PlatformToggleButton
+                isSelected={platforms.has(SocailPlatform.Farcaster)}
+                platform={SocailPlatform.Farcaster}
+                onChange={() => {
+                  if (platforms.has(SocailPlatform.Farcaster)) {
+                    platforms.delete(SocailPlatform.Farcaster);
+                  } else {
+                    platforms.add(SocailPlatform.Farcaster);
+                  }
+                  setPlatforms(new Set(platforms));
+                }}
+              >
+                <Avatar
+                  src={
+                    farcasterUserInfo[farcasterUserFid].find(
+                      (item) => item.type === UserDataType.PFP
+                    )?.value || ''
+                  }
+                />
+                <UserName>
+                  {farcasterUserInfo[farcasterUserFid].find(
+                    (item) => item.type === UserDataType.DISPLAY
+                  )?.value || ''}
+                </UserName>
+                <UserHandle>
+                  @
+                  {farcasterUserInfo[farcasterUserFid].find(
+                    (item) => item.type === UserDataType.USERNAME
+                  )?.value || ''}
+                </UserHandle>
+                <FarcasterIcon />
+              </PlatformToggleButton>
+            ) : (
+              <LoginWraper>
+                <FarcasterIcon />
+                Farcaster
+                <LoginButton onClick={() => openFarcasterQR()}>
+                  login
+                </LoginButton>
+              </LoginWraper>
+            )}
           </PlatformOption>
         </PlatformOptions>
-        <Description>
-          Post to more than one protocol cannot mention other users
-        </Description>
       </Header>
       <PostBox>
         <UserPostWrapepr>
@@ -278,6 +303,16 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
+          <Description
+            hidden={
+              !(
+                platforms.has(SocailPlatform.Lens) &&
+                platforms.has(SocailPlatform.Farcaster)
+              )
+            }
+          >
+            Post to more than one protocol cannot mention other users
+          </Description>
           <SubmitBtn
             disabled={text === '' || platforms.size === 0}
             onClick={() => {
@@ -314,11 +349,11 @@ const Header = styled.div`
 `;
 const Description = styled.div`
   color: #718096;
-  font-family: Rubik;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  margin-left: auto;
 `;
 const PostBox = styled.div`
   display: flex;
@@ -330,9 +365,36 @@ const PlatformOptions = styled.div`
   display: flex;
   gap: 10px;
 `;
-const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
+const PlatformOption = styled.div`
+  display: flex;
+`;
+const LoginWraper = styled.div`
+  display: flex;
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  padding-left: 6px;
+  font-size: 12px;
+  border: 1px dashed #9c9c9c;
+  color: #fff;
+`;
+const LoginButton = styled(SocialButtonPrimary)`
+  width: 60px;
   height: 24px;
-  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 400;
+`;
+const PlatformToggleButton = styled(ToggleButton)<{
+  platform?: SocailPlatform;
+}>`
+  cursor: pointer;
+  outline: none;
+  /* height: 24px; */
+  padding: 0;
+  padding-right: 6px;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -343,9 +405,29 @@ const PlatformOption = styled(ButtonPrimaryLine)<{ selected?: boolean }>`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  ${({ selected }) =>
-    selected ? 'border: 1px solid #fff; ' : 'border: 1px dashed #9C9C9C;'}
-  color: ${({ selected }) => (selected ? '#fff' : '#9C9C9C')};
+  background-color: #000;
+  border: 1px dashed #9c9c9c;
+  color: #9c9c9c;
+  &[data-selected] {
+    border: 1px solid;
+    border-color: ${({ platform }) =>
+      platform === SocailPlatform.Lens ? '#9BEA1D' : '#825DC5'};
+    color: ${({ platform }) =>
+      platform === SocailPlatform.Lens ? '#9BEA1D' : '#825DC5'};
+  }
+`;
+const Avatar = styled.img`
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+`;
+const UserName = styled.div`
+  font-weight: 600;
+`;
+const UserHandle = styled.div`
+  opacity: 0.5;
 `;
 const UserPostWrapepr = styled.div`
   display: flex;

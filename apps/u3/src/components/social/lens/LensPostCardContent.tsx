@@ -1,13 +1,15 @@
 import ReactMarkdown from 'react-markdown';
 import styled from 'styled-components';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Post, Comment } from '@lens-protocol/react-web';
 import getMetadataImg from '../../../utils/lens/getMetadataImg';
+import { PostCardContentWrapper, PostCardShowMoreWrapper } from '../PostCard';
 
 type Props = {
   publication: Post | Comment;
+  isDetail?: boolean;
 };
-export default function LensPostCardContent({ publication }: Props) {
+export default function LensPostCardContent({ publication, isDetail }: Props) {
   const img = useMemo(() => getMetadataImg(publication), [publication]);
   const markdownContent = useMemo(() => {
     let content = publication?.metadata?.content;
@@ -18,25 +20,44 @@ export default function LensPostCardContent({ publication }: Props) {
     );
     return content;
   }, [publication]);
+
+  const viewRef = useRef<HTMLDivElement>(null);
+  const [showMore, setShowMore] = useState(false);
+  useEffect(() => {
+    if (isDetail) return;
+    if (!viewRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        if (entry.target.clientHeight > 125) {
+          setShowMore(true);
+        }
+
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(viewRef.current);
+    // eslint-disable-next-line consistent-return
+    return () => {
+      observer.disconnect();
+    };
+  }, [isDetail]);
+
   return (
-    <ContentWrapper>
-      <ReactMarkdown>{markdownContent}</ReactMarkdown>
+    <>
+      <PostCardContentWrapper ref={viewRef} showMore={showMore}>
+        <ReactMarkdown>{markdownContent}</ReactMarkdown>
+      </PostCardContentWrapper>
+      {showMore && (
+        <PostCardShowMoreWrapper>
+          <button type="button">Show more</button>
+        </PostCardShowMoreWrapper>
+      )}
       {!!img && <Image src={img} />}
-    </ContentWrapper>
+    </>
   );
 }
 
-const ContentWrapper = styled.div`
-  width: 100%;
-  * {
-    color: #fff;
-    font-family: Baloo Bhai 2;
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 25px; /* 156.25% */
-  }
-`;
 const Image = styled.img`
   width: 60%;
   object-fit: cover;

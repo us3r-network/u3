@@ -24,7 +24,7 @@ const customStyles = {
     padding: 0,
     overflow: 'auto',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 1,
+    zIndex: 100,
   },
   content: {
     width: 'fit-content',

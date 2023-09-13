@@ -74,9 +74,10 @@ export default function LensPostDetailCard({
 
   return (
     <PostCard
+      isDetail
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => (
-        <LensPostCardContent publication={updatedPublication} />
+        <LensPostCardContent publication={updatedPublication} isDetail />
       )}
       data={cardData}
       liked={hasUpvote}
