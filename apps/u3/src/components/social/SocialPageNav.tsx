@@ -123,6 +123,10 @@ const SocialNavWrapper = styled.div`
   ${!isMobile &&
   `  height: 72px;
   gap: 40px;
+  top: 24px;
+  position: sticky;
+  background: #14171a;
+  z-index: 10;
   align-self: stretch;
   border-bottom: 1px solid #39424c;
   `}
