@@ -8,7 +8,7 @@ import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
 export default function FollowingDefault(
   props: StyledComponentPropsWithRef<'div'>
 ) {
-  const { setOpenLensLoginModal } = useLensCtx();
+  const { setOpenLensLoginModal, isLoginPending } = useLensCtx();
   const { openFarcasterQR } = useFarcasterCtx();
   return (
     <Wrapper {...props}>
@@ -18,7 +18,10 @@ export default function FollowingDefault(
         You need at least one handle to view following posts.
       </Description>
       <BtnsWrapper>
-        <LensLoginBtn onClick={() => setOpenLensLoginModal(true)}>
+        <LensLoginBtn
+          onClick={() => setOpenLensLoginModal(true)}
+          disabled={isLoginPending}
+        >
           <LensIcon />
           <LensLoginText>Lens handle verify</LensLoginText>
         </LensLoginBtn>
