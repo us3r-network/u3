@@ -7,7 +7,7 @@ export default function useFarcasterCurrFid() {
   const { isConnected } = useFarcasterCtx();
   const currFid: string = useMemo(() => {
     const fid = getCurrFid();
-    return fid === 0 ? '' : `${fid}`;
+    return `${fid}`;
   }, [isConnected]);
   return currFid;
 }

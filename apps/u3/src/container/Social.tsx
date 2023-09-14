@@ -43,7 +43,11 @@ export default function Home() {
     socialPlatform: SocailPlatform | '';
     feedsType: FeedsType;
   }>();
-  const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
+  const {
+    openFarcasterQR,
+    farcasterUserData,
+    isConnected: isConnectedFarcaster,
+  } = useFarcasterCtx();
 
   const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
@@ -86,7 +90,7 @@ export default function Home() {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
         address: lensProfileOwnedByAddress,
-        fid,
+        fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
@@ -106,6 +110,7 @@ export default function Home() {
     fid,
     feedsType,
     socialPlatform,
+    isConnectedFarcaster,
   ]);
 
   const loadMoreFeeds = useCallback(() => {
@@ -114,7 +119,7 @@ export default function Home() {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
         address: lensProfileOwnedByAddress,
-        fid,
+        fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
@@ -133,6 +138,7 @@ export default function Home() {
     fid,
     feedsType,
     socialPlatform,
+    isConnectedFarcaster,
   ]);
 
   useEffect(() => {
@@ -140,7 +146,11 @@ export default function Home() {
     loadFirstFeeds();
   }, [activeLensProfileLoading, loadFirstFeeds]);
 
-  if (feedsType === FeedsType.FOLLOWING && !fid && !lensProfileOwnedByAddress) {
+  if (
+    feedsType === FeedsType.FOLLOWING &&
+    !isConnectedFarcaster &&
+    !lensProfileOwnedByAddress
+  ) {
     return (
       <MainCenter>
         <FollowingDefault />

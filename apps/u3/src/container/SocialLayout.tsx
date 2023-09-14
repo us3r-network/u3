@@ -15,11 +15,11 @@ import AddPost from '../components/social/AddPost';
 import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
 import ModalImg from '../components/social/ModalImg';
-import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
+import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 
 export default function Home() {
   const location = useLocation();
-  const fid = useFarcasterCurrFid();
+  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
@@ -42,7 +42,7 @@ export default function Home() {
   const switchedFeedsTypeFirst = useRef(false);
   useEffect(() => {
     if (!switchedFeedsTypeFirst.current) {
-      if (!fid && !lensProfileOwnedByAddress) {
+      if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
         setFeedsType(FeedsType.TRENDING);
       } else {
         setFeedsType(FeedsType.FOLLOWING);
@@ -51,7 +51,11 @@ export default function Home() {
     if (!activeLensProfileLoading) {
       switchedFeedsTypeFirst.current = true;
     }
-  }, [fid, lensProfileOwnedByAddress, activeLensProfileLoading]);
+  }, [
+    isConnectedFarcaster,
+    lensProfileOwnedByAddress,
+    activeLensProfileLoading,
+  ]);
 
   const titleElem = location.pathname.includes('post-detail') ? (
     <SocialBackNav />

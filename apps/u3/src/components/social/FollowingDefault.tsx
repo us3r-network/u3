@@ -1,4 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { isMobile } from 'react-device-detect';
 import { SocialButtonPrimary } from './button/SocialButton';
 import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
@@ -36,7 +37,7 @@ export default function FollowingDefault(
 
 const Wrapper = styled.div`
   width: 100%;
-  padding: 60px;
+  padding: ${isMobile ? '0px' : '60px'};
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -45,6 +46,7 @@ const Wrapper = styled.div`
 `;
 const NothingImg = styled.img`
   width: 400px;
+  max-width: 100%;
   object-fit: cover;
 `;
 const Description = styled.span`
@@ -59,6 +61,7 @@ const Description = styled.span`
 const BtnsWrapper = styled.div`
   display: flex;
   gap: 20px;
+  ${isMobile ? 'flex-direction: column;' : ''}
 `;
 const PlatformLoginButton = styled(SocialButtonPrimary)`
   padding: 10px 25px;
