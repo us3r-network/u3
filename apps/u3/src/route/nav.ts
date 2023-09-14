@@ -20,7 +20,7 @@ import { CutomRouteObject, getRoute, RouteKey } from './routes';
 
 export type CutomNavObject = {
   name: string;
-  activeRouteKeys: RouteKey[];
+  activeRouteKeys: RouteKey[]; // 指定哪些路由key下，该nav被激活（可用来高亮显示,有子菜单展开子菜单等...）
   icon?: ReactNode;
   children?: CutomNavObject[];
   key?: string;
@@ -29,7 +29,12 @@ export type CutomNavObject = {
 export const navs: CutomNavObject[] = [
   {
     name: 'social',
-    activeRouteKeys: [RouteKey.social],
+    activeRouteKeys: [
+      RouteKey.social,
+      RouteKey.socialLayout,
+      RouteKey.socialPostDetailFcast,
+      RouteKey.socialPostDetailLens,
+    ],
     icon: React.createElement(HomeSvg),
     route: getRoute(RouteKey.social),
   },
