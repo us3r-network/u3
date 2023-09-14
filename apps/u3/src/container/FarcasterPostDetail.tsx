@@ -12,6 +12,7 @@ import {
   PostDetailWrapper,
 } from '../components/social/PostDetail';
 import Loading from '../components/common/loading/Loading';
+import FarcasterCommentForm from '../components/social/farcaster/FarcasterCommentForm';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
@@ -82,6 +83,12 @@ export default function FarcasterPostDetail() {
               setModalImg(url);
             }}
             isDetail
+          />
+          <FarcasterCommentForm
+            castId={{
+              hash: Buffer.from(cast.hash.data),
+              fid: Number(cast.fid),
+            }}
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
