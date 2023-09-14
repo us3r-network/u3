@@ -20,9 +20,10 @@ import {
   useUpdateDispatcherConfig,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
-import { useAccount, useDisconnect } from 'wagmi';
+import { Connector, useAccount, useNetwork } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { LENS_ENV } from '../constants/lens';
+import { isMobile } from 'react-device-detect';
+import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
 
 import LensLoginModal from '../components/social/lens/LensLoginModal';
 import LensCommentPostModal from '../components/social/lens/LensCommentPostModal';
@@ -61,10 +62,6 @@ const lensConfig: LensConfig = {
   environment: LENS_ENV === 'production' ? production : development,
 };
 
-export enum LensPubSubTopic {
-  LOGIN_WITH_RAINBOWKIT = 'lens-login-with-rainbowkit',
-}
-
 export function AppLensProvider({ children }: PropsWithChildren) {
   return (
     <LensProvider config={lensConfig}>
@@ -82,8 +79,6 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const { execute: login, isPending: isLoginPending } = useWalletLogin();
   const { execute: lensLogout } = useWalletLogout();
   const { data: wallet } = useActiveProfile();
-  const { isConnected } = useAccount();
-  const { disconnectAsync } = useDisconnect();
 
   const { openConnectModal } = useConnectModal();
 
@@ -102,40 +97,38 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [wallet, updateDispatcher]);
 
-  useAccount({
-    async onConnect({ connector, isReconnected }) {
-      if (isReconnected) {
-        return;
+  const lensLoginStartRef = useRef(false);
+  const lensLoginAdpater = useCallback(async (connector: Connector) => {
+    if (isMobile) {
+      const chainId = await connector.getChainId();
+      if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
+        if (connector?.switchChain) {
+          await connector?.switchChain(LENS_ENV_POLYGON_CHAIN_ID);
+        }
       }
-      const walletClient = await connector.getWalletClient();
-      const { address } = walletClient.account;
+    }
+    const walletClient = await connector.getWalletClient();
+    const { address } = walletClient.account;
+    await login({ address });
+  }, []);
 
-      await login({
-        address,
-      });
+  const { connector: activeConnector, isConnected } = useAccount({
+    async onConnect({ connector }) {
+      if (lensLoginStartRef.current) {
+        await lensLoginAdpater(connector);
+        lensLoginStartRef.current = false;
+      }
     },
   });
 
-  const lensLoginOpenRainbowkit = useCallback(() => {
-    if (openConnectModal) openConnectModal();
-  }, [openConnectModal]);
-
   const lensLogin = useCallback(async () => {
     if (isConnected) {
-      await disconnectAsync();
+      await lensLoginAdpater(activeConnector);
+    } else if (openConnectModal) {
+      lensLoginStartRef.current = true;
+      openConnectModal();
     }
-    PubSub.publish(LensPubSubTopic.LOGIN_WITH_RAINBOWKIT);
-  }, [isConnected, disconnectAsync]);
-
-  useEffect(() => {
-    const loginToken = PubSub.subscribe(
-      LensPubSubTopic.LOGIN_WITH_RAINBOWKIT,
-      () => lensLoginOpenRainbowkit()
-    );
-    return () => {
-      PubSub.unsubscribe(loginToken);
-    };
-  }, [lensLoginOpenRainbowkit]);
+  }, [isConnected, openConnectModal, activeConnector, lensLoginAdpater]);
 
   const isLogin = useMemo(() => !!wallet, [wallet]);
 
