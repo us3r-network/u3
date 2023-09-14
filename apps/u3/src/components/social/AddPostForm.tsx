@@ -271,7 +271,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
       </Header>
       <PostBox>
         <UserPostWrapepr>
-          <UserAvatarStyled />
+          {/* <UserAvatarStyled /> */}
           <ContentWrapper>
             <ContentInput
               placeholder="Create a post..."
@@ -439,10 +439,11 @@ const ContentWrapper = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
-const UserAvatarStyled = styled(UserAvatar)`
-  display: block;
-`;
+// const UserAvatarStyled = styled(UserAvatar)`
+//   display: block;
+// `;
 const ContentInput = styled(TextareaBase)`
+  padding: 10px;
   border: none;
   resize: vertical;
 `;
