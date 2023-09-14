@@ -46,7 +46,11 @@ export default function Profile() {
   const [feedsType, setFeedsType] = useState(FeedsType.POSTS);
   const [modalImg, setModalImg] = useState('');
 
-  const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
+  const {
+    openFarcasterQR,
+    farcasterUserData,
+    isConnected: isConnectedFarcaster,
+  } = useFarcasterCtx();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
 
@@ -65,20 +69,34 @@ export default function Profile() {
     loadFirstFeeds({
       activeLensProfileId: activeLensProfile?.id,
       lensProfileId: activeLensProfile?.id,
-      fid,
+      fid: isConnectedFarcaster ? fid : undefined,
       group: feedsType as unknown as ProfileFeedsGroups,
     });
-  }, [loadFirstFeeds, activeLensProfile?.id, fid, feedsType, wallet]);
+  }, [
+    loadFirstFeeds,
+    activeLensProfile?.id,
+    fid,
+    feedsType,
+    wallet,
+    isConnectedFarcaster,
+  ]);
 
   const loadMoreSocialFeeds = useCallback(() => {
     if (feedsType === FeedsType.ACTIVITIES) return;
     loadMoreFeeds({
       activeLensProfileId: activeLensProfile?.id,
       lensProfileId: activeLensProfile?.id,
-      fid,
+      fid: isConnectedFarcaster ? fid : undefined,
       group: feedsType as unknown as ProfileFeedsGroups,
     });
-  }, [loadMoreFeeds, activeLensProfile?.id, fid, feedsType, wallet]);
+  }, [
+    loadMoreFeeds,
+    activeLensProfile?.id,
+    fid,
+    feedsType,
+    wallet,
+    isConnectedFarcaster,
+  ]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;
