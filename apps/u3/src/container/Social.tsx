@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
-import { useAccount } from 'wagmi';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 import LensPostCard from '../components/social/lens/LensPostCard';
@@ -15,13 +14,13 @@ import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
 import { FeedsType } from '../components/social/SocialPageNav';
 import { SocailPlatform } from '../api';
 import AddPostForm from '../components/social/AddPostForm';
+import FollowingDefault from '../components/social/FollowingDefault';
 
 export default function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const fid = useFarcasterCurrFid();
-
-  const { address } = useAccount();
+  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
   const {
     firstLoading: trendingFirstLoading,
     moreLoading: trendingMoreLoading,
@@ -86,7 +85,7 @@ export default function Home() {
       loadFollowingFirstFeeds({
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
-        address,
+        address: lensProfileOwnedByAddress,
         fid,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
@@ -103,7 +102,7 @@ export default function Home() {
     loadTrendingFirstFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
-    address,
+    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
@@ -114,7 +113,7 @@ export default function Home() {
       loadFollowingMoreFeeds({
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
-        address,
+        address: lensProfileOwnedByAddress,
         fid,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
@@ -130,7 +129,7 @@ export default function Home() {
     loadTrendingMoreFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
-    address,
+    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
@@ -141,57 +140,69 @@ export default function Home() {
     loadFirstFeeds();
   }, [activeLensProfileLoading, loadFirstFeeds]);
 
+  if (feedsType === FeedsType.FOLLOWING && !fid && !lensProfileOwnedByAddress) {
+    return (
+      <MainCenter>
+        <FollowingDefault />
+      </MainCenter>
+    );
+  }
   return (
     <MainCenter>
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
 
-      {firstLoading ? (
-        <LoadingWrapper>
-          <Loading />
-        </LoadingWrapper>
-      ) : (
-        <InfiniteScroll
-          dataLength={feeds.length}
-          next={() => {
-            if (moreLoading) return;
-            loadMoreFeeds();
-          }}
-          hasMore={!firstLoading && pageInfo.hasNextPage}
-          loader={
-            moreLoading ? (
-              <LoadingMoreWrapper>
-                <Loading />
-              </LoadingMoreWrapper>
-            ) : null
-          }
-          scrollableTarget="social-wrapper"
-        >
-          <PostList>
-            {feeds.map(({ platform, data }) => {
-              if (platform === 'lens') {
-                return <LensPostCard key={data.id} data={data} />;
-              }
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex');
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                    openImgModal={(url) => {
-                      setModalImg(url);
-                    }}
-                  />
-                );
-              }
-              return null;
-            })}
-          </PostList>
-        </InfiniteScroll>
-      )}
+      {(() => {
+        if (firstLoading) {
+          return (
+            <LoadingWrapper>
+              <Loading />
+            </LoadingWrapper>
+          );
+        }
+        return (
+          <InfiniteScroll
+            dataLength={feeds.length}
+            next={() => {
+              if (moreLoading) return;
+              loadMoreFeeds();
+            }}
+            hasMore={!firstLoading && pageInfo.hasNextPage}
+            loader={
+              moreLoading ? (
+                <LoadingMoreWrapper>
+                  <Loading />
+                </LoadingMoreWrapper>
+              ) : null
+            }
+            scrollableTarget="social-wrapper"
+          >
+            <PostList>
+              {feeds.map(({ platform, data }) => {
+                if (platform === 'lens') {
+                  return <LensPostCard key={data.id} data={data} />;
+                }
+                if (platform === 'farcaster') {
+                  const key = Buffer.from(data.hash.data).toString('hex');
+                  return (
+                    <FCast
+                      key={key}
+                      cast={data}
+                      openFarcasterQR={openFarcasterQR}
+                      farcasterUserData={farcasterUserData}
+                      openImgModal={(url) => {
+                        setModalImg(url);
+                      }}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </PostList>
+          </InfiniteScroll>
+        );
+      })()}
     </MainCenter>
   );
 }
@@ -199,7 +210,6 @@ export default function Home() {
 const MainCenter = styled.div`
   width: 600px;
 `;
-
 const LoadingWrapper = styled.div`
   width: 100%;
   height: 80vh;
