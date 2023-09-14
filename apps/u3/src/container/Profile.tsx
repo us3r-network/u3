@@ -1,265 +1,286 @@
-/*
- * @Author: shixuewen friendlysxw@163.com
- * @Date: 2022-11-29 17:59:06
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2022-11-30 15:18:30
- * @Description: file description
- */
 import { useCallback, useEffect, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import { toast } from 'react-toastify';
+import { useActiveProfile } from '@lens-protocol/react-web';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
-import Info from '../components/info';
-import DailyDigest from '../components/info/DailyDigest';
-import Credential from '../components/profile/Credential';
-import OnChainInterest, {
-  OnChainNoItem,
-} from '../components/profile/OnChainInterest';
-import {
-  addOrDelWallet,
-  fetchU3Profiles,
-  fetchU3ProfileWithWallet,
-  fetchU3Wallets,
-  ProfileDefault,
-} from '../services/api/profile';
-import { ProfileEntity, ProfileWallet } from '../services/types/profile';
+import ProfilePageNav, {
+  FeedsType,
+} from '../components/profile/ProfilePageNav';
+import { useLoadProfileFeeds } from '../hooks/useLoadProfileFeeds';
+import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
+import UserInfoStyled from '../components/s3/profile/UserInfoStyled';
+import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
+import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
 import Loading from '../components/common/loading/Loading';
-import { mergeProfilesData } from '../utils/mergeProfilesData';
-import Activities from '../components/profile/Activities';
-import useLogin from '../hooks/useLogin';
+import LensPostCard from '../components/social/lens/LensPostCard';
+import FCast from '../components/social/farcaster/FCast';
+import { useFarcasterCtx } from '../contexts/FarcasterCtx';
+import ModalImg from '../components/social/ModalImg';
+import { ProfileFeedsGroups } from '../api/feeds';
+import { LensComment, LensMirror, LensPost } from '../api/lens';
+import Rss3Content from '../components/fren/Rss3Content';
+import { NoActivity } from './Activity';
 
-function Profile() {
+function ProfileInfo() {
+  return (
+    <ProfileInfoWrap>
+      <UserInfoStyled />
+      <UserWalletsStyled />
+      <UserTagsStyled />
+    </ProfileInfoWrap>
+  );
+}
+const ProfileInfoWrap = styled.div`
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  & > div {
+    width: 100%;
+  }
+`;
+
+export default function Profile() {
   const { wallet } = useParams();
-  const { user } = useLogin();
-  const [tab, setTab] = useState<
-    'Credential' | 'OnChain' | 'OffChain' | 'Activities'
-  >('Credential');
-  const [loading, setLoading] = useState(true);
-  const [profileData, setProfileData] = useState<ProfileEntity>();
-  const [wallets, setWallets] = useState<ProfileWallet[]>([]);
+  const [feedsType, setFeedsType] = useState(FeedsType.POSTS);
+  const [modalImg, setModalImg] = useState('');
 
-  const fetchData = useCallback(async () => {
-    if (!user?.token) return;
-    try {
-      const { data } = await fetchU3Profiles(user?.token);
-      const r = mergeProfilesData(data.data);
-      setProfileData(r);
-      // setProfileData(data.data);
-    } catch (error) {
-      setProfileData(ProfileDefault);
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
+  const {
+    openFarcasterQR,
+    farcasterUserData,
+    isConnected: isConnectedFarcaster,
+  } = useFarcasterCtx();
+  const { data: activeLensProfile, loading: activeLensProfileLoading } =
+    useActiveProfile();
 
-  const fetchWallets = useCallback(async () => {
-    if (!user?.token) return;
-    try {
-      const { data } = await fetchU3Wallets(user?.token);
-      setWallets(data.data);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }, [user?.token]);
+  const fid = useFarcasterCurrFid();
+  const {
+    firstLoading,
+    moreLoading,
+    feeds,
+    pageInfo,
+    loadFirstFeeds,
+    loadMoreFeeds,
+  } = useLoadProfileFeeds();
 
-  const fetchDataWithWallet = useCallback(async () => {
-    try {
-      const { data } = await fetchU3ProfileWithWallet(wallet);
-      setProfileData(data.data);
-    } catch (error) {
-      setProfileData(ProfileDefault);
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [wallet]);
+  const loadFirstSocialFeeds = useCallback(() => {
+    if (feedsType === FeedsType.ACTIVITIES) return;
+    loadFirstFeeds({
+      activeLensProfileId: activeLensProfile?.id,
+      lensProfileId: activeLensProfile?.id,
+      fid: isConnectedFarcaster ? fid : undefined,
+      group: feedsType as unknown as ProfileFeedsGroups,
+    });
+  }, [
+    loadFirstFeeds,
+    activeLensProfile?.id,
+    fid,
+    feedsType,
+    wallet,
+    isConnectedFarcaster,
+  ]);
 
-  const addOrRemoveWallet = useCallback(
-    async (addr: string, add: boolean) => {
-      if (!user?.token) return;
-      try {
-        await addOrDelWallet(addr, add, user?.token);
-      } catch (error) {
-        toast.error(error.message);
-      }
-    },
-    [user?.token]
-  );
-
-  const addWallet = useCallback(
-    async (addr: string) => {
-      await addOrRemoveWallet(addr, true);
-      await fetchWallets();
-      return true;
-    },
-    [user?.token]
-  );
-  const delWallet = useCallback(
-    async (addr: string) => {
-      if (!user?.token) return;
-      await addOrRemoveWallet(addr, false);
-      await fetchWallets();
-    },
-    [user?.token]
-  );
+  const loadMoreSocialFeeds = useCallback(() => {
+    if (feedsType === FeedsType.ACTIVITIES) return;
+    loadMoreFeeds({
+      activeLensProfileId: activeLensProfile?.id,
+      lensProfileId: activeLensProfile?.id,
+      fid: isConnectedFarcaster ? fid : undefined,
+      group: feedsType as unknown as ProfileFeedsGroups,
+    });
+  }, [
+    loadMoreFeeds,
+    activeLensProfile?.id,
+    fid,
+    feedsType,
+    wallet,
+    isConnectedFarcaster,
+  ]);
 
   useEffect(() => {
-    if (wallet) {
-      fetchDataWithWallet();
-    } else {
-      fetchData();
-    }
-    fetchWallets();
-  }, [fetchData, fetchDataWithWallet, wallet]);
+    if (activeLensProfileLoading) return;
+    loadFirstSocialFeeds();
+  }, [activeLensProfileLoading, loadFirstSocialFeeds]);
 
   return (
     <ProfileWrapper id="profile-wrapper">
-      <div>
-        {!wallet && user && (
-          <div className="infos">
-            <Info
-              {...{
-                // User defined in package
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                date: (user as any).createdAt,
-                nickname: user.name,
-                avatar: user.avatar,
-                wallets,
-                walletAddr:
-                  user.accounts[0]?.thirdpartyName ||
-                  user.accounts[0]?.thirdpartyId,
-              }}
-              addWallet={addWallet}
-              delWallet={delWallet}
-            />
-            {/* <DailyDigest /> */}
-          </div>
+      <ProfilePageNav
+        feedsType={feedsType}
+        onChangeFeedsType={(type) => {
+          setFeedsType(type);
+        }}
+      />
+      <MainWrapper>
+        {!isMobile && (
+          <MainLeft>
+            <ProfileInfo />
+          </MainLeft>
         )}
 
-        {(loading && (
-          <div className="loading">
-            <Loading />
-          </div>
-        )) || (
-          <div className="content">
-            <div className="tab">
-              <div
-                onClick={() => setTab('Credential')}
-                className={tab === 'Credential' ? 'active' : ''}
-              >
-                Credential Data
-              </div>
-              <div
-                onClick={() => setTab('OnChain')}
-                className={tab === 'OnChain' ? 'active' : ''}
-              >
-                On-Chain Interest
-              </div>
-              <div
-                onClick={() => setTab('Activities')}
-                className={tab === 'Activities' ? 'active' : ''}
-              >
-                Activities
-              </div>
-            </div>
-
-            {tab === 'Credential' && profileData && (
-              <Credential
-                {...{
-                  poap: profileData.poap,
-                  noox: profileData.noox,
-                  galxe: profileData.galxe,
-                }}
-              />
-            )}
-            {tab === 'OnChain' &&
-              ((profileData.nfts.result.length > 0 && (
-                <OnChainInterest
-                  data={profileData.nfts}
-                  wallet={profileData.erc20Balances}
-                  ethBalance={profileData.ethBalance}
+        <MainCenter>
+          {(() => {
+            if (feedsType === FeedsType.ACTIVITIES) {
+              return (
+                <Rss3Content
+                  empty={
+                    <NoActivityWrapper>
+                      <NoActivity />
+                    </NoActivityWrapper>
+                  }
                 />
-              )) || <OnChainNoItem />)}
-            {tab === 'Activities' && <Activities />}
-          </div>
-        )}
-      </div>
+              );
+            }
+
+            if (firstLoading) {
+              return (
+                <LoadingWrapper>
+                  <Loading />
+                </LoadingWrapper>
+              );
+            }
+
+            return (
+              <InfiniteScroll
+                dataLength={feeds.length}
+                next={() => {
+                  console.log('next');
+                  console.log({ moreLoading, firstLoading, pageInfo });
+
+                  if (moreLoading) return;
+                  loadMoreSocialFeeds();
+                }}
+                hasMore={!firstLoading && pageInfo.hasNextPage}
+                loader={
+                  moreLoading ? (
+                    <LoadingMoreWrapper>
+                      <Loading />
+                    </LoadingMoreWrapper>
+                  ) : null
+                }
+                scrollableTarget="profile-wrapper"
+              >
+                <PostList>
+                  {feeds.map(({ platform, data }) => {
+                    if (platform === 'lens') {
+                      let d;
+                      switch (feedsType) {
+                        case FeedsType.POSTS:
+                          d = data as LensPost;
+                          break;
+                        case FeedsType.REPOSTS:
+                          d = (data as LensMirror).mirrorOf;
+                          break;
+                        case FeedsType.REPLIES:
+                          d = (data as LensComment).commentOn;
+                          break;
+                        default:
+                          break;
+                      }
+                      if (!d) return null;
+                      return <LensPostCard key={d.id} data={d} />;
+                    }
+                    if (platform === 'farcaster') {
+                      const key = Buffer.from(data.hash.data).toString('hex');
+                      return (
+                        <FCast
+                          key={key}
+                          cast={data}
+                          openFarcasterQR={openFarcasterQR}
+                          farcasterUserData={farcasterUserData}
+                          openImgModal={(url) => {
+                            setModalImg(url);
+                          }}
+                        />
+                      );
+                    }
+                    return null;
+                  })}
+                </PostList>
+              </InfiniteScroll>
+            );
+          })()}
+        </MainCenter>
+        {!isMobile && <MainRight />}
+      </MainWrapper>
+      <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
     </ProfileWrapper>
   );
 }
-export default Profile;
 const ProfileWrapper = styled.div`
+  width: 100%;
   height: 100%;
   overflow: scroll;
-  & div.loading {
-    display: flex;
-    justify-content: center;
-    height: calc(100% - 210px);
-    align-items: center;
-  }
-  > div {
-    margin: 0 auto;
-    padding: 24px;
+  box-sizing: border-box;
+  padding: 24px;
+  margin-bottom: 20px;
+  ${isMobile &&
+  `
+  height: 100vh;
+  padding: 10px;
+  padding-bottom: 60px;
+  `}
+`;
+const MainWrapper = styled.div`
+  margin-top: 20px;
+  display: flex;
+  gap: 40px;
+`;
+const MainLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
+`;
+const MainCenter = styled.div`
+  width: 600px;
+`;
+const MainRight = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
+`;
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  border-radius: 20px;
+  /* border-top-right-radius: 0;
+  border-top-left-radius: 0; */
+  background: #212228;
+  overflow: hidden;
+  /* & > *:not(:first-child) { */
+  /* border-top: 1px solid #718096; */
+  /* } */
+`;
+const NoActivityWrapper = styled.div`
+  .no-item {
     height: 100%;
-    box-sizing: border-box;
-
-    .infos {
-      display: flex;
-      gap: 40px;
-      margin-bottom: 24px;
-    }
-
-    .content {
-      .tab {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        padding: 0px;
-        gap: 24px;
-
-        height: 72px;
-
-        border-bottom: 1px solid #39424c;
-        color: white;
-
-        > div {
-          cursor: pointer;
-          align-items: center;
-          display: flex;
-          position: relative;
-          height: inherit;
-          font-weight: 700;
-          font-size: 18px;
-          line-height: 24px;
-          color: #ffffff;
-          > span {
-            margin-left: 3px;
-            padding: 3px;
-            background: #718096;
-            border-radius: 4px;
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 14px;
-            color: #14171a;
-          }
-          &.active {
-            &::after {
-              content: ' ';
-              height: 3px;
-              position: absolute;
-              width: 100%;
-              background: #ffffff;
-              border-radius: 100px 100px 0px 0px;
-              bottom: 0;
-            }
-          }
-        }
-      }
-
-      & .placeholder {
-        min-height: 100px;
-      }
-    }
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 `;

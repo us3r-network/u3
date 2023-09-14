@@ -51,6 +51,7 @@ const Avatar = styled.img`
   height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const Input = styled(InputBase)`

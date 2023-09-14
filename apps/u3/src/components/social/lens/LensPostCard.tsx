@@ -8,12 +8,11 @@ import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
 import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote';
 import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
-import { LensPublication } from '../../../api/lens';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/useLogin';
 
-export default function LensPostCard({ data }: { data: LensPublication }) {
+export default function LensPostCard({ data }: { data: Post }) {
   const { isLogin: isLoginU3 } = useLogin();
   const navigate = useNavigate();
   const {
@@ -23,7 +22,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
     setOpenCommentModal,
   } = useLensCtx();
 
-  const publication = data as unknown as Post;
+  const publication = data;
 
   const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
     null

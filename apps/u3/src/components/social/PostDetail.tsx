@@ -4,12 +4,13 @@ import ButtonBase from '../common/button/ButtonBase';
 export const PostDetailWrapper = styled.div<{ isMobile?: boolean }>`
   border-radius: 20px;
   background: #212228;
+  border: 1px solid #39424c;
   overflow: hidden;
   width: ${(props) => (props.isMobile ? '100%' : '600px')};
 `;
 export const PostDetailCommentsWrapper = styled.div`
   & > * {
-    border-top: 1px solid #718096;
+    border-top: 1px solid #39424c;
   }
 `;
 
