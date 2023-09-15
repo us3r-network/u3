@@ -13,6 +13,7 @@ import {
   AttachmentCodec,
   RemoteAttachmentCodec,
 } from '@xmtp/content-type-remote-attachment';
+import { isMobile } from 'react-device-detect';
 import { loadKeys, storeKeys } from '../../utils/xmtp';
 import { XMTP_ENV } from '../../constants/xmtp';
 
@@ -96,12 +97,13 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    if (isMobile) return;
     if (!signer) {
       setXmtpClient(null);
       return;
     }
     enableXmtp(signer);
-  }, [signer, enableXmtp]);
+  }, [signer, enableXmtp, isMobile]);
 
   return (
     <XmtpClientCtx.Provider
