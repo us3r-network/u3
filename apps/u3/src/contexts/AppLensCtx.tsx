@@ -99,12 +99,10 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
   const lensLoginStartRef = useRef(false);
   const lensLoginAdpater = async (connector: Connector) => {
-    if (isMobile) {
-      const chainId = await connector.getChainId();
-      if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
-        if (connector?.switchChain) {
-          await connector?.switchChain(LENS_ENV_POLYGON_CHAIN_ID);
-        }
+    const chainId = await connector.getChainId();
+    if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
+      if (connector?.switchChain) {
+        await connector?.switchChain(LENS_ENV_POLYGON_CHAIN_ID);
       }
     }
     const walletClient = await connector.getWalletClient();
