@@ -69,8 +69,8 @@ export function useLoadFollowingFeeds() {
       platforms?: SocailPlatform[];
     }) => {
       const { address = '', fid = '' } = opts || {};
-      if (firstLoading || moreLoading || !pageInfo.hasNextPage || !address)
-        return;
+      if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
+
       setMoreLoading(true);
       try {
         const res = await getFollowingFeeds({
