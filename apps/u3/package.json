@@ -13,7 +13,7 @@
     "@rainbow-me/rainbowkit": "^1.0.11",
     "@react-spring/web": "^9.6.1",
     "@reduxjs/toolkit": "^1.8.3",
-    "@us3r-network/auth-with-rainbowkit": "^0.1.10",
+    "@us3r-network/auth-with-rainbowkit": "^0.1.11",
     "@us3r-network/link": "0.2.4",
     "@us3r-network/profile": "^0.5.6",
     "@xmtp/content-type-remote-attachment": "^1.0.7",

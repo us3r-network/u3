@@ -20,7 +20,7 @@ import {
   useUpdateDispatcherConfig,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
-import { Connector, useAccount, useNetwork } from 'wagmi';
+import { Connector, useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'react-device-detect';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
@@ -98,7 +98,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   }, [wallet, updateDispatcher]);
 
   const lensLoginStartRef = useRef(false);
-  const lensLoginAdpater = useCallback(async (connector: Connector) => {
+  const lensLoginAdpater = async (connector: Connector) => {
     if (isMobile) {
       const chainId = await connector.getChainId();
       if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
@@ -110,7 +110,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     const walletClient = await connector.getWalletClient();
     const { address } = walletClient.account;
     await login({ address });
-  }, []);
+  };
 
   const { connector: activeConnector, isConnected } = useAccount({
     async onConnect({ connector }) {
