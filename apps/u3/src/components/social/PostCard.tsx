@@ -211,15 +211,20 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
 export const PostCardActionsWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 `;
 
-export const PostCardImgWrapper = styled.div`
+export const PostCardImgWrapper = styled.div<{ len: number }>`
   display: flex;
-  gap: 10px;
-  flex-direction: column;
+  gap: 20px;
+  flex-wrap: wrap;
   img {
-    max-width: 60%;
+    width: ${(props) =>
+      props.len >= 3
+        ? 'calc(33% - 12px)'
+        : props.len === 2
+        ? 'calc(50% - 10px)'
+        : '70%'};
     border-radius: 10px;
     overflow: hidden;
   }

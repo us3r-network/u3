@@ -132,7 +132,7 @@ export default function FCast({
         </PostCardShowMoreWrapper>
       )}
       <Embed
-        embedImgs={embeds.imgs}
+        embedImgs={[...embeds.imgs]}
         embedWebpages={embeds.webpages}
         openImgModal={openImgModal}
       />
@@ -231,7 +231,7 @@ function Embed({
   return (
     <EmbedBox ref={viewRef}>
       {embedImgs.length > 0 && (
-        <PostCardImgWrapper>
+        <PostCardImgWrapper len={embedImgs.length}>
           {embedImgs.map((img) => (
             // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
             <img

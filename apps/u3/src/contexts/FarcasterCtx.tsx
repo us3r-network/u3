@@ -14,6 +14,8 @@ import {
 import { isMobile } from 'react-device-detect';
 import axios from 'axios';
 import { goerli } from 'viem/chains';
+import { toast } from 'react-toastify';
+
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
@@ -24,7 +26,6 @@ import {
   setSignedKeyRequest,
 } from '../utils/farsign-utils';
 import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
-
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
 import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
 
@@ -162,6 +163,7 @@ export default function FarcasterProvider({
           SignedKeyRequest: signedKeyRequest,
           isConnected: true,
         });
+        toast.success('Farcaster connected');
         break;
       }
     }

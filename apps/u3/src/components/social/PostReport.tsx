@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import ForwardIcon from '../icons/ForwardIcon';
+import { ForwardIcon2 } from '../icons/ForwardIcon';
 
 interface PostReportProps {
   totalReposts: number;
@@ -18,6 +18,7 @@ export default function PostReport({
   const [hover, setHover] = useState(false);
   return (
     <PostReportWrapper
+      reposted={reposted}
       onClick={(e) => {
         if (repostAction) e.stopPropagation();
         if (!reposting && repostAction) repostAction();
@@ -32,8 +33,8 @@ export default function PostReport({
       {...wrapperProps}
     >
       <span>
-        <ForwardIcon
-          stroke={hover ? '#00b171' : reposted ? '#9C9C9C' : 'white'}
+        <ForwardIcon2
+          stroke={hover ? '#00b171' : reposted ? '#00B171' : '#718096'}
         />
       </span>
       {totalReposts} {reposting ? 'Reposting' : 'Reposts'}
@@ -41,13 +42,13 @@ export default function PostReport({
   );
 }
 
-const PostReportWrapper = styled.div<{ hover?: boolean }>`
+const PostReportWrapper = styled.div<{ hover?: boolean; reposted?: boolean }>`
   display: flex;
   align-items: center;
   gap: 7px;
   cursor: pointer;
 
-  color: #718096;
+  color: ${(props) => (props.reposted ? '#00B171' : '#718096')};
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
