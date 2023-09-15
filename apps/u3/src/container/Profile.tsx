@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import styled from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
@@ -21,10 +21,13 @@ import { ProfileFeedsGroups } from '../api/feeds';
 import { LensComment, LensMirror, LensPost } from '../api/lens';
 import Rss3Content from '../components/fren/Rss3Content';
 import { NoActivity } from './Activity';
+import { LogoutButton } from '../components/layout/LoginButton';
+import useLogin from '../hooks/useLogin';
+import LogoutConfirmModal from '../components/layout/LogoutConfirmModal';
 
-function ProfileInfo() {
+function ProfileInfo(props: StyledComponentPropsWithRef<'div'>) {
   return (
-    <ProfileInfoWrap>
+    <ProfileInfoWrap {...props}>
       <UserInfoStyled />
       <UserWalletsStyled />
       <UserTagsStyled />
@@ -42,6 +45,8 @@ const ProfileInfoWrap = styled.div`
 `;
 
 export default function Profile() {
+  const { logout } = useLogin();
+  const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const { wallet } = useParams();
   const [feedsType, setFeedsType] = useState(FeedsType.POSTS);
   const [modalImg, setModalImg] = useState('');
@@ -105,6 +110,17 @@ export default function Profile() {
 
   return (
     <ProfileWrapper id="profile-wrapper">
+      {isMobile && (
+        <ProfileInfoMobileWrapper>
+          <ProfileInfoMobile />
+          <LogoutButton
+            className="logout-button"
+            onClick={() => {
+              setOpenLogoutConfirm(true);
+            }}
+          />
+        </ProfileInfoMobileWrapper>
+      )}
       <ProfilePageNav
         feedsType={feedsType}
         onChangeFeedsType={(type) => {
@@ -115,6 +131,12 @@ export default function Profile() {
         {!isMobile && (
           <MainLeft>
             <ProfileInfo />
+            <LogoutButton
+              className="logout-button"
+              onClick={() => {
+                setOpenLogoutConfirm(true);
+              }}
+            />
           </MainLeft>
         )}
 
@@ -204,6 +226,16 @@ export default function Profile() {
         {!isMobile && <MainRight />}
       </MainWrapper>
       <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
+      <LogoutConfirmModal
+        isOpen={openLogoutConfirm}
+        onClose={() => {
+          setOpenLogoutConfirm(false);
+        }}
+        onConfirm={() => {
+          logout();
+          setOpenLogoutConfirm(false);
+        }}
+      />
     </ProfileWrapper>
   );
 }
@@ -220,6 +252,17 @@ const ProfileWrapper = styled.div`
   padding: 10px;
   padding-bottom: 60px;
   `}
+`;
+const ProfileInfoMobileWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+`;
+const ProfileInfoMobile = styled(ProfileInfo)`
+  width: 100%;
 `;
 const MainWrapper = styled.div`
   margin-top: 20px;
