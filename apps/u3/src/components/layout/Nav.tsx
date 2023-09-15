@@ -5,11 +5,11 @@
  * @LastEditTime: 2023-01-12 15:56:34
  * @Description: file description
  */
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import useLogin from '../../hooks/useLogin';
-import { CutomNavObject, navs } from '../../route/nav';
+import { CustomNavObject, navs } from '../../route/nav';
 import useRoute from '../../route/useRoute';
 
 type Props = {
@@ -32,14 +32,14 @@ export default function Nav({ onlyIcon }: Props) {
     [openGroupKeys, setOpenGroupKeys]
   );
   const navItemIsActive = useCallback(
-    (nav: CutomNavObject) => nav.activeRouteKeys.includes(firstRouteMeta.key),
+    (nav: CustomNavObject) => nav.activeRouteKeys.includes(firstRouteMeta.key),
     [firstRouteMeta]
   );
 
   const groupChidrenInnerEls = useRef(new WeakMap());
   const navItemTextInnerEls = useRef(new WeakMap());
   const renderNavItemText = useCallback(
-    (nav: CutomNavObject) => {
+    (nav: CustomNavObject) => {
       if (navItemTextInnerEls.current.has(nav)) {
         const innerEl = navItemTextInnerEls.current.get(nav);
         innerEl.parentElement.style.width = onlyIcon
@@ -63,7 +63,7 @@ export default function Nav({ onlyIcon }: Props) {
     [onlyIcon]
   );
   const renderNavItem = useCallback(
-    (nav: CutomNavObject) => {
+    (nav: CustomNavObject) => {
       const isActive = navItemIsActive(nav);
       return (
         <PcNavItem
