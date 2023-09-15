@@ -1,7 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useState } from 'react';
 
-import HeartIcon from '../icons/HeartIcon';
+import HeartIcon, { HeartIcon2 } from '../icons/HeartIcon';
 
 interface PostLikeProps {
   totalLikes: number;
@@ -21,6 +21,7 @@ export default function PostLike({
   const [hover, setHover] = useState(false);
   return (
     <PostLikeWrapper
+      liked={liked}
       onMouseEnter={() => {
         setHover(true);
       }}
@@ -38,23 +39,20 @@ export default function PostLike({
         <PostLikeAvatars likeAvatars={likeAvatars} />
       )}
       <span>
-        <HeartIcon
-          fill={hover ? '#E63734' : liked ? '#E63734' : 'none'}
-          stroke={hover ? '#E63734' : liked ? '#E63734' : 'white'}
-        />
+        <HeartIcon2 fill={hover ? '#F81775' : liked ? '#F81775' : ''} />
       </span>
       {totalLikes} {liking ? 'Liking' : 'Likes'}
     </PostLikeWrapper>
   );
 }
 
-export const PostLikeWrapper = styled.div<{ hover?: boolean }>`
+export const PostLikeWrapper = styled.div<{ hover?: boolean; liked?: boolean }>`
   display: flex;
   align-items: center;
   gap: 7px;
   cursor: pointer;
 
-  color: #718096;
+  color: ${(props) => (props.liked ? '#F81775' : '#718096')};
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
@@ -117,4 +115,5 @@ export const PostLikeAvatar = styled.img`
   height: 100%;
   flex-shrink: 0;
   border-radius: 50%;
+  object-fit: cover;
 `;

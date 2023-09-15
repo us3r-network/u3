@@ -46,6 +46,7 @@ export type FarCast = {
   like_count: string | null;
   recasts: string[];
   recast_count: string | null;
+  comments?: string[];
   comment_count: string | null;
 };
 
