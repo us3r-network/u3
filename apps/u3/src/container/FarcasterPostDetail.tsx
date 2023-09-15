@@ -24,9 +24,6 @@ export default function FarcasterPostDetail() {
   const [farcasterUserData, setFarcasterUserData] = useState<{
     [key: string]: { type: number; value: string }[];
   }>({});
-  const { setModalImg } = useOutletContext<{
-    setModalImg: React.Dispatch<React.SetStateAction<string>>;
-  }>();
 
   const loadCastInfo = useCallback(async () => {
     if (!castId) return;
@@ -79,9 +76,6 @@ export default function FarcasterPostDetail() {
             cast={cast}
             openFarcasterQR={openFarcasterQR}
             farcasterUserData={farcasterUserData}
-            openImgModal={(url) => {
-              setModalImg(url);
-            }}
             isDetail
           />
           <FarcasterCommentForm
@@ -99,9 +93,6 @@ export default function FarcasterPostDetail() {
                   cast={item.data}
                   openFarcasterQR={openFarcasterQR}
                   farcasterUserData={farcasterUserData}
-                  openImgModal={(url) => {
-                    setModalImg(url);
-                  }}
                 />
               );
             })}

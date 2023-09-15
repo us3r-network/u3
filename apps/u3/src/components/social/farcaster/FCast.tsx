@@ -23,13 +23,11 @@ export default function FCast({
   cast,
   farcasterUserData,
   openFarcasterQR,
-  openImgModal,
   isDetail,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
-  openImgModal: (url: string) => void;
   isDetail?: boolean;
 }) {
   const navigate = useNavigate();
@@ -120,11 +118,7 @@ export default function FCast({
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed
-        embedImgs={[...embeds.imgs]}
-        embedWebpages={embeds.webpages}
-        openImgModal={openImgModal}
-      />
+      <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
