@@ -14,7 +14,6 @@ import SocialPlatformChoice from '../components/social/SocialPlatformChoice';
 import AddPost from '../components/social/AddPost';
 import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
-import ModalImg from '../components/social/ModalImg';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 
 export default function Home() {
@@ -24,7 +23,6 @@ export default function Home() {
     useActiveProfile();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
-  const [modalImg, setModalImg] = useState('');
   const [, setSearchParams] = useSearchParams();
 
   const onSearch = useCallback(
@@ -86,9 +84,9 @@ export default function Home() {
 
         {(!isMobile && (
           <div className="outlet-op">
-            <Outlet context={{ setModalImg, socialPlatform, feedsType }} />
+            <Outlet context={{ socialPlatform, feedsType }} />
           </div>
-        )) || <Outlet context={{ setModalImg, socialPlatform, feedsType }} />}
+        )) || <Outlet context={{ socialPlatform, feedsType }} />}
 
         {!isMobile && (
           <MainRight>
@@ -97,7 +95,6 @@ export default function Home() {
           </MainRight>
         )}
       </MainWrapper>
-      <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
     </HomeWrapper>
   );
 }

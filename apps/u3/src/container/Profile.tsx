@@ -16,7 +16,6 @@ import Loading from '../components/common/loading/Loading';
 import LensPostCard from '../components/social/lens/LensPostCard';
 import FCast from '../components/social/farcaster/FCast';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
-import ModalImg from '../components/social/ModalImg';
 import { ProfileFeedsGroups } from '../api/feeds';
 import { LensComment, LensMirror, LensPost } from '../api/lens';
 import Rss3Content from '../components/fren/Rss3Content';
@@ -49,7 +48,6 @@ export default function Profile() {
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const { wallet } = useParams();
   const [feedsType, setFeedsType] = useState(FeedsType.POSTS);
-  const [modalImg, setModalImg] = useState('');
 
   const {
     openFarcasterQR,
@@ -210,9 +208,6 @@ export default function Profile() {
                           cast={data}
                           openFarcasterQR={openFarcasterQR}
                           farcasterUserData={farcasterUserData}
-                          openImgModal={(url) => {
-                            setModalImg(url);
-                          }}
                         />
                       );
                     }
@@ -225,7 +220,6 @@ export default function Profile() {
         </MainCenter>
         {!isMobile && <MainRight />}
       </MainWrapper>
-      <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
       <LogoutConfirmModal
         isOpen={openLogoutConfirm}
         onClose={() => {

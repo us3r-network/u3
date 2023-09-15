@@ -227,6 +227,7 @@ export const PostCardImgWrapper = styled.div<{ len: number }>`
         : '70%'};
     border-radius: 10px;
     overflow: hidden;
+    cursor: pointer;
   }
 `;
 

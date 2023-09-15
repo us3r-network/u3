@@ -38,8 +38,7 @@ export default function Home() {
     loadFirstFeeds: loadFollowingFirstFeeds,
     loadMoreFeeds: loadFollowingMoreFeeds,
   } = useLoadFollowingFeeds();
-  const { setModalImg, socialPlatform, feedsType } = useOutletContext<{
-    setModalImg: React.Dispatch<React.SetStateAction<string>>;
+  const { socialPlatform, feedsType } = useOutletContext<{
     socialPlatform: SocailPlatform | '';
     feedsType: FeedsType;
   }>();
@@ -201,9 +200,6 @@ export default function Home() {
                       cast={data}
                       openFarcasterQR={openFarcasterQR}
                       farcasterUserData={farcasterUserData}
-                      openImgModal={(url) => {
-                        setModalImg(url);
-                      }}
                     />
                   );
                 }
