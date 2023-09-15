@@ -91,7 +91,7 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  cursor: pointer;
+  cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
   &:hover {
     background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
   }
@@ -296,10 +296,11 @@ export const PostCardCastWrapper = styled.div`
 
 export const PostCardNftWrapper = styled.div`
   color: #fff;
-  width: 373px;
+  width: 70%;
   border-radius: 10px;
   overflow: hidden;
   background-color: #14171a;
+  cursor: initial;
   > img {
     width: 100%;
   }
@@ -318,6 +319,7 @@ export const PostCardNftWrapper = styled.div`
       line-height: 30px; /* 187.5% */
     }
     > button {
+      cursor: pointer;
       border-radius: 10px;
       background: linear-gradient(81deg, #cd62ff 0%, #62aaff 100%);
       padding: 10px 20px;
@@ -340,7 +342,7 @@ export const PostCardEmbedWrapper = styled.a`
   overflow: hidden;
   background-color: #14171a;
   text-decoration: none;
-  width: 373px;
+  width: 70%;
   min-height: 373px;
   display: flex;
   flex-direction: column;
