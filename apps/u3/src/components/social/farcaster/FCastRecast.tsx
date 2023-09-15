@@ -129,6 +129,7 @@ export default function FCastRecast({
 
   return (
     <PostReport
+      reposted={recasts.includes(currFid)}
       totalReposts={recastCount}
       repostAction={() => {
         if (!isLoginU3) {

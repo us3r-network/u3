@@ -7,6 +7,7 @@ import FCastCommentPostModal from './FCastCommentPostModal';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import PostReply from '../PostReply';
 import useLogin from '../../../hooks/useLogin';
+import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
 
 export default function FCastComment({
   cast,
@@ -21,12 +22,14 @@ export default function FCastComment({
   const [commentCount, setCommentCount] = useState(
     Number(cast.comment_count || 0)
   );
+  const currFid: string = useFarcasterCurrFid();
   const [openComment, setOpenComment] = useState(false);
   const { isConnected } = useFarcasterCtx();
   const castId: CastId = useFarcasterCastId({ cast });
   return (
     <>
       <PostReply
+        replied={cast.comments?.includes(currFid)}
         totalReplies={commentCount}
         replyAction={() => {
           if (!isLoginU3) {
