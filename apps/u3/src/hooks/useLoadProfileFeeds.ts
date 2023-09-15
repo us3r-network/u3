@@ -77,13 +77,7 @@ export function useLoadProfileFeeds() {
       group?: ProfileFeedsGroups;
     }) => {
       const { lensProfileId = '', fid = '' } = opts || {};
-      if (
-        firstLoading ||
-        moreLoading ||
-        !pageInfo.hasNextPage ||
-        !lensProfileId
-      )
-        return;
+      if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
       setMoreLoading(true);
       try {
         const res = await getProfileFeeds({
