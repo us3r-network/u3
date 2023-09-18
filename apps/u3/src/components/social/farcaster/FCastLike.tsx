@@ -131,20 +131,22 @@ export default function FCastLike({
 
   return (
     <PostLikeWrapper>
-      <PostLikeAvatarsWrapper>
-        {likes.slice(0, 3).map((item) => {
-          return (
-            <LikeAvatar
-              key={item}
-              fid={item}
-              farcasterUserData={farcasterUserData}
-            />
-          );
-        })}
-        {likes.length > 3 && (
-          <PostLikeAvatarWrapper>+{likes.length - 3}</PostLikeAvatarWrapper>
-        )}
-      </PostLikeAvatarsWrapper>
+      {likes.length > 0 && (
+        <PostLikeAvatarsWrapper>
+          {likes.slice(0, 3).map((item) => {
+            return (
+              <LikeAvatar
+                key={item}
+                fid={item}
+                farcasterUserData={farcasterUserData}
+              />
+            );
+          })}
+          {likes.length > 3 && (
+            <PostLikeAvatarWrapper>+{likes.length - 3}</PostLikeAvatarWrapper>
+          )}
+        </PostLikeAvatarsWrapper>
+      )}
       <PostLike
         totalLikes={likeCount}
         liked={likes.includes(currFid)}

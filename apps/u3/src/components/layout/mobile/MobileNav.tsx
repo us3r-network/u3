@@ -43,6 +43,12 @@ const MobileNavWrapper = styled.div`
         display: none;
       }
     }
+    & > div:nth-child(4) {
+      display: none;
+    }
+    & > div:nth-child(5) {
+      display: none;
+    }
     & > div:nth-child(6) {
       display: none;
     }

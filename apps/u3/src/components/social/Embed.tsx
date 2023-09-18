@@ -14,20 +14,20 @@ import {
   PostCardNftWrapper,
 } from './PostCard';
 import { getFarcasterEmbedMetadata } from '../../api/farcaster';
+import ModalImg from './ModalImg';
 
 export default function Embed({
   embedImgs,
   embedWebpages,
-  openImgModal,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
-  openImgModal: (url: string) => void;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
   const [metadata, setMetadata] = useState<
     (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
   >([]);
+  const [modalImgIdx, setModalImgIdx] = useState(-1);
 
   const getEmbedWebpagesMetadata = async () => {
     const urls = embedWebpages.map((embed) => embed.url);
@@ -64,21 +64,29 @@ export default function Embed({
   return (
     <EmbedBox ref={viewRef}>
       {embedImgs.length > 0 && (
-        <PostCardImgWrapper len={embedImgs.length}>
-          {embedImgs.map((img) => (
-            // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-            <img
-              src={img.url}
-              alt=""
-              key={img.url}
-              onClick={(e) => {
-                e.stopPropagation();
-                openImgModal(img.url);
-              }}
-            />
-          ))}
-        </PostCardImgWrapper>
+        <>
+          <PostCardImgWrapper len={embedImgs.length}>
+            {embedImgs.map((img, idx) => (
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+              <img
+                src={img.url}
+                alt=""
+                key={img.url}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setModalImgIdx(idx);
+                }}
+              />
+            ))}
+          </PostCardImgWrapper>
+          <ModalImg
+            currIdx={modalImgIdx}
+            urls={embedImgs.map((item) => item.url)}
+            onAfterClose={() => setModalImgIdx(-1)}
+          />
+        </>
       )}
+
       {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
         if ((item as any).type === 'cast') {
           const { cast } = item as FarCastEmbedMetaCast;

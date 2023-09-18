@@ -18,18 +18,17 @@ import {
   PostCardWrapper,
 } from '../PostCard';
 import Embed, { isImg } from '../Embed';
+import FarcasterChannel from './FarcasterChannel';
 
 export default function FCast({
   cast,
   farcasterUserData,
   openFarcasterQR,
-  openImgModal,
   isDetail,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
-  openImgModal: (url: string) => void;
   isDetail?: boolean;
 }) {
   const navigate = useNavigate();
@@ -120,11 +119,7 @@ export default function FCast({
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed
-        embedImgs={[...embeds.imgs]}
-        embedWebpages={embeds.webpages}
-        openImgModal={openImgModal}
-      />
+      <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
@@ -146,6 +141,7 @@ export default function FCast({
           farcasterUserData={farcasterUserData}
         />
       </PostCardActionsWrapper>
+      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
     </PostCardWrapper>
   );
 }

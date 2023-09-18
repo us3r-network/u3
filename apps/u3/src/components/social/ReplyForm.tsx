@@ -23,6 +23,7 @@ export default function ReplyForm({
     <ReplyFormWrapper {...wrapperProps}>
       <Avatar src={avatar} />
       <Input
+        value={content}
         placeholder="Post your reply..."
         disabled={disabled || submitting}
         onChange={(e) => {

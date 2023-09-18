@@ -38,8 +38,7 @@ export default function Home() {
     loadFirstFeeds: loadFollowingFirstFeeds,
     loadMoreFeeds: loadFollowingMoreFeeds,
   } = useLoadFollowingFeeds();
-  const { setModalImg, socialPlatform, feedsType } = useOutletContext<{
-    setModalImg: React.Dispatch<React.SetStateAction<string>>;
+  const { socialPlatform, feedsType } = useOutletContext<{
     socialPlatform: SocailPlatform | '';
     feedsType: FeedsType;
   }>();
@@ -201,9 +200,6 @@ export default function Home() {
                       cast={data}
                       openFarcasterQR={openFarcasterQR}
                       farcasterUserData={farcasterUserData}
-                      openImgModal={(url) => {
-                        setModalImg(url);
-                      }}
                     />
                   );
                 }
@@ -218,7 +214,7 @@ export default function Home() {
 }
 
 const MainCenter = styled.div`
-  width: 600px;
+  width: 100%;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -254,4 +250,6 @@ const AddPostFormWrapper = styled.div`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 `;
