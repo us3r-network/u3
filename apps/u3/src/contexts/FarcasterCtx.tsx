@@ -140,8 +140,12 @@ export default function FarcasterProvider({
   const pollForSigner = useCallback(async (token: string) => {
     let tries = 0;
 
+    let signerSuccess = false;
+    let stopped = false;
+
     while (tries < 40) {
       if (stopSign.stop) {
+        stopped = true;
         break;
       }
       tries += 1;
@@ -163,9 +167,15 @@ export default function FarcasterProvider({
           SignedKeyRequest: signedKeyRequest,
           isConnected: true,
         });
-        toast.success('Farcaster connected');
+        signerSuccess = true;
         break;
       }
+    }
+
+    if (signerSuccess) {
+      toast.success('Farcaster connected');
+    } else if (!stopped) {
+      toast.error('Farcaster connect failed');
     }
 
     setTimeout(() => {
