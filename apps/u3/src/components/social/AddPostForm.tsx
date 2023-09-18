@@ -334,9 +334,6 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
 const Wrapper = styled.div`
   width: 100%;
   flex-shrink: 0;
-
-  box-sizing: border-box;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -346,6 +343,7 @@ const Header = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  width: 100%;
 `;
 const Description = styled.div`
   color: #718096;
@@ -363,10 +361,13 @@ const PostBox = styled.div`
 `;
 const PlatformOptions = styled.div`
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 `;
 const PlatformOption = styled.div`
   display: flex;
+  max-width: 100%;
 `;
 const LoginWraper = styled.div`
   display: flex;
@@ -389,6 +390,7 @@ const LoginButton = styled(SocialButtonPrimary)`
 const PlatformToggleButton = styled(ToggleButton)<{
   platform?: SocailPlatform;
 }>`
+  max-width: 100%;
   cursor: pointer;
   outline: none;
   /* height: 24px; */
@@ -399,7 +401,6 @@ const PlatformToggleButton = styled(ToggleButton)<{
   justify-content: center;
   align-items: center;
   gap: 10px;
-  box-sizing: border-box;
   font-family: Rubik;
   font-size: 12px;
   font-style: normal;
@@ -423,11 +424,19 @@ const Avatar = styled.img`
   border-radius: 50%;
   object-fit: cover;
 `;
-const UserName = styled.div`
+const UserName = styled.label`
   font-weight: 600;
+  flex-shrink: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
-const UserHandle = styled.div`
+const UserHandle = styled.label`
   opacity: 0.5;
+  flex-shrink: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 `;
 const UserPostWrapepr = styled.div`
   display: flex;

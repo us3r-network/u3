@@ -214,7 +214,7 @@ export default function Home() {
 }
 
 const MainCenter = styled.div`
-  width: 600px;
+  width: 100%;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -250,4 +250,6 @@ const AddPostFormWrapper = styled.div`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 `;
