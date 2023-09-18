@@ -18,6 +18,7 @@ import {
   PostCardWrapper,
 } from '../PostCard';
 import Embed, { isImg } from '../Embed';
+import FarcasterChannel from './FarcasterChannel';
 
 export default function FCast({
   cast,
@@ -140,6 +141,7 @@ export default function FCast({
           farcasterUserData={farcasterUserData}
         />
       </PostCardActionsWrapper>
+      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
     </PostCardWrapper>
   );
 }
