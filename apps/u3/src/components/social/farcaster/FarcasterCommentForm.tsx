@@ -62,7 +62,7 @@ export default function FarcasterCommentForm({
       }
       toast.success('post created');
       setContent('');
-      if (successAction) successAction();
+      if (successAction) setTimeout(successAction, 1500);
     } catch (error) {
       console.error(error);
       toast.error('error creating post');
