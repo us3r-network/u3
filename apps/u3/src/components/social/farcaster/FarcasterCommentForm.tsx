@@ -13,7 +13,13 @@ import {
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
 
-export default function FarcasterCommentForm({ castId }: { castId: CastId }) {
+export default function FarcasterCommentForm({
+  castId,
+  successAction,
+}: {
+  castId: CastId;
+  successAction?: () => void;
+}) {
   const { isLogin: isLoginU3, login } = useLogin();
   const [content, setContent] = useState('');
   const { currUserInfo, openFarcasterQR, isConnected, encryptedSigner } =
@@ -55,6 +61,8 @@ export default function FarcasterCommentForm({ castId }: { castId: CastId }) {
         throw new Error(result.error.message);
       }
       toast.success('post created');
+      setContent('');
+      if (successAction) successAction();
     } catch (error) {
       console.error(error);
       toast.error('error creating post');

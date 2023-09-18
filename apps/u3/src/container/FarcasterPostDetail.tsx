@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 
@@ -28,7 +28,6 @@ export default function FarcasterPostDetail() {
   const loadCastInfo = useCallback(async () => {
     if (!castId) return;
     try {
-      setLoading(true);
       const resp = await getFarcasterCastInfo(castId, {});
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
@@ -52,13 +51,14 @@ export default function FarcasterPostDetail() {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   }, [castId]);
 
   useEffect(() => {
-    loadCastInfo();
+    setLoading(true);
+    loadCastInfo().finally(() => {
+      setLoading(false);
+    });
   }, [loadCastInfo]);
 
   if (loading) {
@@ -83,6 +83,7 @@ export default function FarcasterPostDetail() {
               hash: Buffer.from(cast.hash.data),
               fid: Number(cast.fid),
             }}
+            successAction={loadCastInfo}
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
