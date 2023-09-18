@@ -4,12 +4,12 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
+import { useAccount } from 'wagmi';
 import ProfilePageNav, {
   FeedsType,
 } from '../components/profile/ProfilePageNav';
 import { useLoadProfileFeeds } from '../hooks/useLoadProfileFeeds';
 import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
-import UserInfoStyled from '../components/s3/profile/UserInfoStyled';
 import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
 import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
 import Loading from '../components/common/loading/Loading';
@@ -23,11 +23,13 @@ import { NoActivity } from './Activity';
 import { LogoutButton } from '../components/layout/LoginButton';
 import useLogin from '../hooks/useLogin';
 import LogoutConfirmModal from '../components/layout/LogoutConfirmModal';
+import ProfileInfoCard from '../components/profile/profile-info/ProfileInfoCard';
 
 function ProfileInfo(props: StyledComponentPropsWithRef<'div'>) {
+  const { address } = useAccount();
   return (
     <ProfileInfoWrap {...props}>
-      <UserInfoStyled />
+      <ProfileInfoCard address={address} />
       <UserWalletsStyled />
       <UserTagsStyled />
     </ProfileInfoWrap>
