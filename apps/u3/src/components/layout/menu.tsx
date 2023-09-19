@@ -25,6 +25,8 @@ import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-ch
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
+import { useNotificationStore } from '../../contexts/NotificationStoreCtx';
+import NotificationModal from '../notification/NotificationModal';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -77,12 +79,15 @@ export default function Menu() {
       /> */}
 
       <MessageModal />
+      <NotificationModal />
     </MenuWrapper>
   );
 }
 
 function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
   const { openMessageModal, setOpenMessageModal } = useXmtpStore();
+  const { openNotificationModal, setOpenNotificationModal } =
+    useNotificationStore();
 
   const navItemTextInnerEls = useRef(new Map());
   const renderNavItemText = useCallback(
@@ -111,15 +116,24 @@ function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
   );
   return (
     <NavWrapper>
-      <PcNavItem disabled>
-        <PcNavItemIconBox isActive={openMessageModal}>
+      <PcNavItem
+        isActive={openNotificationModal}
+        onClick={() => {
+          if (openMessageModal) setOpenMessageModal(false);
+          setOpenNotificationModal((open) => !open);
+        }}
+      >
+        <PcNavItemIconBox isActive={openNotificationModal}>
           <BellSvg />
         </PcNavItemIconBox>
-        {renderNavItemText('notification')}
+        {renderNavItemText('Notification')}
       </PcNavItem>
       <PcNavItem
         isActive={openMessageModal}
-        onClick={() => setOpenMessageModal((open) => !open)}
+        onClick={() => {
+          if (openNotificationModal) setOpenNotificationModal(false);
+          setOpenMessageModal((open) => !open);
+        }}
       >
         <PcNavItemIconBox isActive={openMessageModal}>
           <MessageChatSquareSvg />
