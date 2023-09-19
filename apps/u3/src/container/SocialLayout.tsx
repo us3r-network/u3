@@ -69,7 +69,6 @@ export default function Home() {
 
   return (
     <HomeWrapper id="social-wrapper">
-      {!isMobile && <div className="op" />}
       {titleElem}
       <MainWrapper>
         {!isMobile && (
@@ -114,13 +113,6 @@ const HomeWrapper = styled.div`
   padding-bottom: 60px;
   `}
 
-  > .op {
-    height: 24px;
-    z-index: 10;
-    background: #14171a;
-    position: sticky;
-    top: 0;
-  }
   .outlet-op {
     width: 600px;
   }
