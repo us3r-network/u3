@@ -1,9 +1,14 @@
 import styled from 'styled-components';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import {
+  useLocation,
+  useOutletContext,
+  useSearchParams,
+} from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import KeepAlive from 'react-activation';
 import LensPostCard from '../components/social/lens/LensPostCard';
 import FCast from '../components/social/farcaster/FCast';
 import { useLoadTrendingFeeds } from '../hooks/useLoadTrendingFeeds';
@@ -15,8 +20,9 @@ import { FeedsType } from '../components/social/SocialPageNav';
 import { SocailPlatform } from '../api';
 import AddPostForm from '../components/social/AddPostForm';
 import FollowingDefault from '../components/social/FollowingDefault';
+import { RouteKey } from '../route/routes';
 
-export default function Home() {
+function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const fid = useFarcasterCurrFid();
@@ -213,6 +219,40 @@ export default function Home() {
   );
 }
 
+export default function keepAliveSocial() {
+  const location = useLocation();
+  const { socialPlatform, feedsType } = useOutletContext<{
+    socialPlatform: SocailPlatform | '';
+    feedsType: FeedsType;
+  }>();
+  const { state: locationState } = location;
+  const isGoback = !!((locationState || {}) as { isGoback?: boolean })
+    ?.isGoback;
+  const cacheKey = `${RouteKey.social}_${socialPlatform || 'all'}_${feedsType}`;
+  if (isGoback) {
+    return (
+      <KeepAlive cacheKey={cacheKey} saveScrollPosition="#social-wrapper">
+        <Home />
+      </KeepAlive>
+    );
+  }
+
+  return (
+    <>
+      <Home />
+      {/* TODO 把第一次渲染的home 缓存到keeper (临时解决) */}
+      <HiddenHomeKeepAliveWrapper>
+        <KeepAlive cacheKey={cacheKey} saveScrollPosition="#social-wrapper">
+          <Home />
+        </KeepAlive>
+      </HiddenHomeKeepAliveWrapper>
+      ;
+    </>
+  );
+}
+const HiddenHomeKeepAliveWrapper = styled.div`
+  display: none;
+`;
 const MainCenter = styled.div`
   width: 100%;
 `;

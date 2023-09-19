@@ -59,7 +59,7 @@ export function SocialBackNav() {
         <button
           type="button"
           onClick={() => {
-            navigate(-1);
+            navigate('/social', { state: { isGoback: true } });
           }}
         >
           <ArrowLeft />
