@@ -5,6 +5,8 @@ import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 
 import { useActiveProfile } from '@lens-protocol/react-web';
+import KeepAlive from 'react-activation';
+import { RouteKey } from 'src/route/routes';
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
@@ -67,6 +69,24 @@ export default function Home() {
     />
   );
 
+  const keepAliveSocialOutlet = (
+    <KeepAlive
+      cacheKey={`${RouteKey.socialLayout}_${socialPlatform}_${feedsType}`}
+      saveScrollPosition="#social-wrapper"
+    >
+      {(!isMobile && (
+        <div className="outlet-op">
+          <Outlet context={{ socialPlatform, feedsType }} />
+        </div>
+      )) || <Outlet context={{ socialPlatform, feedsType }} />}
+    </KeepAlive>
+  );
+  const PostDetailOutlet = (!isMobile && (
+    <div className="outlet-op">
+      <Outlet context={{ socialPlatform, feedsType }} />
+    </div>
+  )) || <Outlet context={{ socialPlatform, feedsType }} />;
+  const isPostDetail = location.pathname.includes('post-detail');
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
@@ -80,13 +100,7 @@ export default function Home() {
             <AddPost />
           </MainLeft>
         )}
-
-        {(!isMobile && (
-          <div className="outlet-op">
-            <Outlet context={{ socialPlatform, feedsType }} />
-          </div>
-        )) || <Outlet context={{ socialPlatform, feedsType }} />}
-
+        {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
         {!isMobile && (
           <MainRight>
             <SearchInput placeholder="Search" onSearch={onSearch} />

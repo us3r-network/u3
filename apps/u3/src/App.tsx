@@ -16,6 +16,7 @@ import { init } from '@airstack/airstack-react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import { AliveScope } from 'react-activation';
 import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './GlobalStyle';
@@ -58,7 +59,9 @@ function App() {
                     <ReduxProvider store={store}>
                       <GlobalStyle />
                       <BrowserRouter>
-                        <Layout />
+                        <AliveScope>
+                          <Layout />
+                        </AliveScope>
                       </BrowserRouter>
                     </ReduxProvider>
                   </FarcasterProvider>
