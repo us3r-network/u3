@@ -52,6 +52,8 @@ export type CutomRouteObject = RouteObject & {
   key: RouteKey;
   children?: Array<CutomRouteObject>;
   permissions?: RoutePermission[];
+  keepAlive?: boolean; // 永久缓存，适合从其它页面调整过来不需要重新加载的页面
+  keepAliveScrollPosition?: string; // 缓存页面的滚动条盒子id
 };
 
 const loadContainerElement = (fileName: string): ReactNode => {
@@ -133,6 +135,8 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('Profile'),
     key: RouteKey.profileWallet,
     permissions: [RoutePermission.login],
+    keepAlive: true,
+    keepAliveScrollPosition: '#profile-wrapper',
   },
   {
     path: '/events',

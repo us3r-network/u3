@@ -15,6 +15,7 @@ import {
   setHomeBannerHiddenToStore,
   verifyHomeBannerHiddenByStore,
 } from '../../utils/homeStore';
+import { FeedsType } from '../../components/profile/ProfilePageNav';
 
 type WebsiteState = {
   mobileNavDisplay: boolean;
@@ -23,6 +24,7 @@ type WebsiteState = {
   openEventCompleteGuideModal: boolean;
   eventCompleteGuideEndCallback: () => void;
   homeBannerDisplay: boolean;
+  profilePageFeedsType: FeedsType;
 };
 
 // 站点状态信息
@@ -33,6 +35,7 @@ const websiteState: WebsiteState = {
   openEventCompleteGuideModal: false,
   eventCompleteGuideEndCallback: () => {},
   homeBannerDisplay: !verifyHomeBannerHiddenByStore(),
+  profilePageFeedsType: FeedsType.POSTS,
 };
 
 export const websiteSlice = createSlice({
@@ -63,6 +66,9 @@ export const websiteSlice = createSlice({
       state.homeBannerDisplay = false;
       setHomeBannerHiddenToStore();
     },
+    setProfilePageFeedsType: (state, action: PayloadAction<FeedsType>) => {
+      state.profilePageFeedsType = action.payload;
+    },
   },
 });
 
@@ -74,6 +80,7 @@ export const {
   setOpenEventCompleteGuideModal,
   setEventCompleteGuideEndCallback,
   setHomeBannerHidden,
+  setProfilePageFeedsType,
 } = actions;
 export const selectWebsite = (state: RootState) => state.website;
 export default reducer;
