@@ -1,7 +1,7 @@
 import { UserInfo, UserInfoEditForm } from '@us3r-network/profile';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Profile,
@@ -10,6 +10,9 @@ import {
   useProfilesOwnedBy,
 } from '@lens-protocol/react-web';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
+
+import { getFarcasterFollow } from 'src/api/farcaster';
+
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
@@ -28,6 +31,8 @@ import {
   useXmtpStore,
 } from '../../../contexts/xmtp/XmtpStoreCtx';
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
@@ -38,7 +43,11 @@ export default function ProfileInfoCard({
 }: ProfileInfoCardProps) {
   const session = useSession();
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-
+  const { currFid, farcasterUserData } = useFarcasterCtx();
+  const [farcasterFollowData, setFarcasterFollowData] = useState({
+    followers: 0,
+    following: 0,
+  });
   const did = useMemo(() => getDidPkhWithAddress(address), [address]);
 
   const isLoginUser = useMemo(() => session?.id === did, [session, did]);
@@ -47,33 +56,58 @@ export default function ProfileInfoCard({
     address,
   });
 
+  const userData = useFarcasterUserData({
+    fid: `${currFid}`,
+    farcasterUserData,
+  });
+
+  const getFarcasterFollowData = useCallback(async () => {
+    if (!currFid) return;
+    const resp = await getFarcasterFollow(currFid);
+    setFarcasterFollowData(resp.data.data);
+  }, [currFid]);
+
+  useEffect(() => {
+    getFarcasterFollowData().catch(console.error);
+  }, [getFarcasterFollowData]);
+
   const platformAccounts: PlatformAccountsData = useMemo(() => {
-    const lensAccounts = lensProfiles?.map((lensProfile) => ({
-      platform: SocailPlatform.Lens,
-      avatar: getAvatar(lensProfile),
-      name: lensProfile.name,
-      handle: lensProfile.handle,
-    }));
-    // TODO 加上farcaster平台的account
-    return lensAccounts || [];
-  }, [lensProfiles]);
+    const lensAccounts =
+      lensProfiles?.map((lensProfile) => ({
+        platform: SocailPlatform.Lens,
+        avatar: getAvatar(lensProfile),
+        name: lensProfile.name,
+        handle: lensProfile.handle,
+      })) || [];
+
+    if (userData) {
+      return [
+        ...lensAccounts,
+        {
+          platform: SocailPlatform.Farcaster,
+          avatar: userData.pfp,
+          name: userData.userName,
+          handle: userData.display,
+        },
+      ];
+    }
+    return lensAccounts;
+  }, [lensProfiles, userData]);
 
   const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfiles?.reduce(
-      (acc, cur) => acc + cur.stats.totalFollowers,
-      0
-    );
-    // TODO 加上farcaster平台的followers数量
-    return lensFollowersCount || 0;
-  }, [lensProfiles]);
+    const lensFollowersCount =
+      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowers, 0) ||
+      0;
+
+    return lensFollowersCount + farcasterFollowData.followers;
+  }, [lensProfiles, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfiles?.reduce(
-      (acc, cur) => acc + cur.stats.totalFollowing,
-      0
-    );
-    // TODO 加上farcaster平台的following数量
-    return lensFollowersCount || 0;
+    const lensFollowersCount =
+      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowing, 0) ||
+      0;
+
+    return lensFollowersCount + farcasterFollowData.following;
   }, [lensProfiles]);
 
   // TODO lens 一个address可能有多个profile，需要每个profile都follow吗？
