@@ -121,12 +121,13 @@ const SocialNavWrapper = styled.div`
   display: flex;
   align-items: center;
   ${!isMobile &&
-  `  height: 72px;
+  `  height: 96px;
   gap: 40px;
-  top: 24px;
+  top: 0;
+  padding-top: 24px;
   position: sticky;
   background: #14171a;
-  z-index: 10;
+  z-index: 1;
   align-self: stretch;
   border-bottom: 1px solid #39424c;
   `}

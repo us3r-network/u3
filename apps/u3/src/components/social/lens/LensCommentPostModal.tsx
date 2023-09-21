@@ -5,6 +5,7 @@ import { useLensCtx } from '../../../contexts/AppLensCtx';
 import ReplyModal from '../ReplyModal';
 import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils';
 import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
+import getAvatar from '../../../utils/lens/getAvatar';
 
 export default function LensCommentPostModal({
   open,
@@ -36,7 +37,7 @@ export default function LensCommentPostModal({
       open={open}
       closeModal={closeModal}
       postData={lensPublicationToPostCardData(commentModalData as Post)}
-      avatar={(activeProfile?.picture as any)?.original?.url}
+      avatar={getAvatar(activeProfile)}
       content={content}
       setContent={setContent}
       onSubmit={onSubmit}

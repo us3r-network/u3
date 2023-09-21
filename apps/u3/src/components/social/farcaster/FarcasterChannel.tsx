@@ -4,9 +4,7 @@ import FarcasterChannelData from '../../../constants/warpcast.json';
 
 export default function FarcasterChannel({ url }: { url: string }) {
   const channel = FarcasterChannelData.find((c) => c.parent_url === url);
-  if (!channel.name && !channel.channel_description) {
-    console.log('channel not found', channel);
-  }
+
   if (channel) {
     return (
       <ChannelBox
@@ -20,6 +18,7 @@ export default function FarcasterChannel({ url }: { url: string }) {
       </ChannelBox>
     );
   }
+  console.log('channel not found', channel, url);
   return null;
 }
 

@@ -4,12 +4,13 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import KeepAlive from 'react-activation';
 import ProfilePageNav, {
   FeedsType,
 } from '../components/profile/ProfilePageNav';
 import { useLoadProfileFeeds } from '../hooks/useLoadProfileFeeds';
 import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
-import UserInfoStyled from '../components/s3/profile/UserInfoStyled';
 import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
 import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
 import Loading from '../components/common/loading/Loading';
@@ -23,11 +24,19 @@ import { NoActivity } from './Activity';
 import { LogoutButton } from '../components/layout/LoginButton';
 import useLogin from '../hooks/useLogin';
 import LogoutConfirmModal from '../components/layout/LogoutConfirmModal';
+import ProfileInfoCard from '../components/profile/profile-info/ProfileInfoCard';
+import { RouteKey } from '../route/routes';
+import {
+  selectWebsite,
+  setProfilePageFeedsType,
+} from '../features/website/websiteSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 function ProfileInfo(props: StyledComponentPropsWithRef<'div'>) {
+  const { address } = useAccount();
   return (
     <ProfileInfoWrap {...props}>
-      <UserInfoStyled />
+      <ProfileInfoCard address={address} />
       <UserWalletsStyled />
       <UserTagsStyled />
     </ProfileInfoWrap>
@@ -47,8 +56,71 @@ export default function Profile() {
   const { logout } = useLogin();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const { wallet } = useParams();
-  const [feedsType, setFeedsType] = useState(FeedsType.POSTS);
+  const { profilePageFeedsType } = useAppSelector(selectWebsite);
+  const dispatch = useAppDispatch();
+  return (
+    <ProfileWrapper id="profile-wrapper">
+      {isMobile && (
+        <ProfileInfoMobileWrapper>
+          <ProfileInfoMobile />
+          <LogoutButton
+            className="logout-button"
+            onClick={() => {
+              setOpenLogoutConfirm(true);
+            }}
+          />
+        </ProfileInfoMobileWrapper>
+      )}
+      <ProfilePageNav
+        feedsType={profilePageFeedsType}
+        onChangeFeedsType={(type) => {
+          dispatch(setProfilePageFeedsType(type));
+        }}
+      />
 
+      <MainWrapper>
+        {!isMobile && (
+          <MainLeft>
+            <ProfileInfo />
+            <LogoutButton
+              className="logout-button"
+              onClick={() => {
+                setOpenLogoutConfirm(true);
+              }}
+            />
+          </MainLeft>
+        )}
+
+        <KeepAlive
+          cacheKey={`${RouteKey.profile}_social_${wallet}_${profilePageFeedsType}`}
+          saveScrollPosition="#profile-wrapper"
+        >
+          <ProfileSocial wallet={wallet} feedsType={profilePageFeedsType} />
+        </KeepAlive>
+
+        {!isMobile && <MainRight />}
+      </MainWrapper>
+      <LogoutConfirmModal
+        isOpen={openLogoutConfirm}
+        onClose={() => {
+          setOpenLogoutConfirm(false);
+        }}
+        onConfirm={() => {
+          logout();
+          setOpenLogoutConfirm(false);
+        }}
+      />
+    </ProfileWrapper>
+  );
+}
+
+function ProfileSocial({
+  wallet,
+  feedsType,
+}: {
+  wallet: string;
+  feedsType: FeedsType;
+}) {
   const {
     openFarcasterQR,
     farcasterUserData,
@@ -105,132 +177,87 @@ export default function Profile() {
     if (activeLensProfileLoading) return;
     loadFirstSocialFeeds();
   }, [activeLensProfileLoading, loadFirstSocialFeeds]);
-
   return (
-    <ProfileWrapper id="profile-wrapper">
-      {isMobile && (
-        <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile />
-          <LogoutButton
-            className="logout-button"
-            onClick={() => {
-              setOpenLogoutConfirm(true);
-            }}
-          />
-        </ProfileInfoMobileWrapper>
-      )}
-      <ProfilePageNav
-        feedsType={feedsType}
-        onChangeFeedsType={(type) => {
-          setFeedsType(type);
-        }}
-      />
-      <MainWrapper>
-        {!isMobile && (
-          <MainLeft>
-            <ProfileInfo />
-            <LogoutButton
-              className="logout-button"
-              onClick={() => {
-                setOpenLogoutConfirm(true);
-              }}
+    <MainCenter>
+      {(() => {
+        if (feedsType === FeedsType.ACTIVITIES) {
+          return (
+            <Rss3Content
+              empty={
+                <NoActivityWrapper>
+                  <NoActivity />
+                </NoActivityWrapper>
+              }
             />
-          </MainLeft>
-        )}
+          );
+        }
 
-        <MainCenter>
-          {(() => {
-            if (feedsType === FeedsType.ACTIVITIES) {
-              return (
-                <Rss3Content
-                  empty={
-                    <NoActivityWrapper>
-                      <NoActivity />
-                    </NoActivityWrapper>
-                  }
-                />
-              );
-            }
+        if (firstLoading) {
+          return (
+            <LoadingWrapper>
+              <Loading />
+            </LoadingWrapper>
+          );
+        }
 
-            if (firstLoading) {
-              return (
-                <LoadingWrapper>
+        return (
+          <InfiniteScroll
+            dataLength={feeds.length}
+            next={() => {
+              console.log('next');
+              console.log({ moreLoading, firstLoading, pageInfo });
+
+              if (moreLoading) return;
+              loadMoreSocialFeeds();
+            }}
+            hasMore={!firstLoading && pageInfo.hasNextPage}
+            loader={
+              moreLoading ? (
+                <LoadingMoreWrapper>
                   <Loading />
-                </LoadingWrapper>
-              );
+                </LoadingMoreWrapper>
+              ) : null
             }
-
-            return (
-              <InfiniteScroll
-                dataLength={feeds.length}
-                next={() => {
-                  console.log('next');
-                  console.log({ moreLoading, firstLoading, pageInfo });
-
-                  if (moreLoading) return;
-                  loadMoreSocialFeeds();
-                }}
-                hasMore={!firstLoading && pageInfo.hasNextPage}
-                loader={
-                  moreLoading ? (
-                    <LoadingMoreWrapper>
-                      <Loading />
-                    </LoadingMoreWrapper>
-                  ) : null
+            scrollableTarget="profile-wrapper"
+          >
+            <PostList>
+              {feeds.map(({ platform, data }) => {
+                if (platform === 'lens') {
+                  let d;
+                  switch (feedsType) {
+                    case FeedsType.POSTS:
+                      d = data as LensPost;
+                      break;
+                    case FeedsType.REPOSTS:
+                      d = (data as LensMirror).mirrorOf;
+                      break;
+                    case FeedsType.REPLIES:
+                      d = (data as LensComment).commentOn;
+                      break;
+                    default:
+                      break;
+                  }
+                  if (!d) return null;
+                  return <LensPostCard key={d.id} data={d} />;
                 }
-                scrollableTarget="profile-wrapper"
-              >
-                <PostList>
-                  {feeds.map(({ platform, data }) => {
-                    if (platform === 'lens') {
-                      let d;
-                      switch (feedsType) {
-                        case FeedsType.POSTS:
-                          d = data as LensPost;
-                          break;
-                        case FeedsType.REPOSTS:
-                          d = (data as LensMirror).mirrorOf;
-                          break;
-                        case FeedsType.REPLIES:
-                          d = (data as LensComment).commentOn;
-                          break;
-                        default:
-                          break;
-                      }
-                      if (!d) return null;
-                      return <LensPostCard key={d.id} data={d} />;
-                    }
-                    if (platform === 'farcaster') {
-                      const key = Buffer.from(data.hash.data).toString('hex');
-                      return (
-                        <FCast
-                          key={key}
-                          cast={data}
-                          openFarcasterQR={openFarcasterQR}
-                          farcasterUserData={farcasterUserData}
-                        />
-                      );
-                    }
-                    return null;
-                  })}
-                </PostList>
-              </InfiniteScroll>
-            );
-          })()}
-        </MainCenter>
-        {!isMobile && <MainRight />}
-      </MainWrapper>
-      <LogoutConfirmModal
-        isOpen={openLogoutConfirm}
-        onClose={() => {
-          setOpenLogoutConfirm(false);
-        }}
-        onConfirm={() => {
-          logout();
-          setOpenLogoutConfirm(false);
-        }}
-      />
-    </ProfileWrapper>
+                if (platform === 'farcaster') {
+                  const key = Buffer.from(data.hash.data).toString('hex');
+                  return (
+                    <FCast
+                      key={key}
+                      cast={data}
+                      openFarcasterQR={openFarcasterQR}
+                      farcasterUserData={farcasterUserData}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </PostList>
+          </InfiniteScroll>
+        );
+      })()}
+    </MainCenter>
   );
 }
 const ProfileWrapper = styled.div`
@@ -271,6 +298,8 @@ const MainLeft = styled.div`
   position: sticky;
   top: 0;
   height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
 `;
 const MainCenter = styled.div`
   width: 600px;
