@@ -1,10 +1,18 @@
 import { UserInfo, UserInfoEditForm } from '@us3r-network/profile';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useProfilesOwnedBy } from '@lens-protocol/react-web';
+import {
+  Profile,
+  useActiveProfile,
+  useFollow,
+  useProfilesOwnedBy,
+} from '@lens-protocol/react-web';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
+
+import { getFarcasterFollow } from 'src/api/farcaster';
+
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
@@ -16,8 +24,15 @@ import { Copy } from '../../icons/copy';
 import { shortPubKey } from '../../../utils/shortPubKey';
 import getAvatar from '../../../utils/lens/getAvatar';
 import { SocailPlatform } from '../../../api';
-// import { SocialButtonPrimary } from '../../social/button/SocialButton';
-// import { ReactComponent as MessageChatSquareSvg } from '../../icons/svgs/message-chat-square.svg';
+import { SocialButtonPrimary } from '../../social/button/SocialButton';
+import { ReactComponent as MessageChatSquareSvg } from '../../icons/svgs/message-chat-square.svg';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../../contexts/xmtp/XmtpStoreCtx';
+import useCanMessage from '../../../hooks/xmtp/useCanMessage';
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
@@ -28,7 +43,11 @@ export default function ProfileInfoCard({
 }: ProfileInfoCardProps) {
   const session = useSession();
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-
+  const { currFid, farcasterUserData } = useFarcasterCtx();
+  const [farcasterFollowData, setFarcasterFollowData] = useState({
+    followers: 0,
+    following: 0,
+  });
   const did = useMemo(() => getDidPkhWithAddress(address), [address]);
 
   const isLoginUser = useMemo(() => session?.id === did, [session, did]);
@@ -37,34 +56,95 @@ export default function ProfileInfoCard({
     address,
   });
 
+  const userData = useFarcasterUserData({
+    fid: `${currFid}`,
+    farcasterUserData,
+  });
+
+  const getFarcasterFollowData = useCallback(async () => {
+    if (!currFid) return;
+    const resp = await getFarcasterFollow(currFid);
+    setFarcasterFollowData(resp.data.data);
+  }, [currFid]);
+
+  useEffect(() => {
+    getFarcasterFollowData().catch(console.error);
+  }, [getFarcasterFollowData]);
+
   const platformAccounts: PlatformAccountsData = useMemo(() => {
-    const lensAccounts = lensProfiles?.map((lensProfile) => ({
-      platform: SocailPlatform.Lens,
-      avatar: getAvatar(lensProfile),
-      name: lensProfile.name,
-      handle: lensProfile.handle,
-    }));
-    // TODO 加上其它平台的account
-    return lensAccounts || [];
-  }, [lensProfiles]);
+    const lensAccounts =
+      lensProfiles?.map((lensProfile) => ({
+        platform: SocailPlatform.Lens,
+        avatar: getAvatar(lensProfile),
+        name: lensProfile.name,
+        handle: lensProfile.handle,
+      })) || [];
+
+    if (userData) {
+      return [
+        ...lensAccounts,
+        {
+          platform: SocailPlatform.Farcaster,
+          avatar: userData.pfp,
+          name: userData.userName,
+          handle: userData.display,
+        },
+      ];
+    }
+    return lensAccounts;
+  }, [lensProfiles, userData]);
 
   const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfiles?.reduce(
-      (acc, cur) => acc + cur.stats.totalFollowers,
-      0
-    );
-    // TODO 加上其它平台的followers数量
-    return lensFollowersCount || 0;
-  }, [lensProfiles]);
+    const lensFollowersCount =
+      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowers, 0) ||
+      0;
+
+    return lensFollowersCount + farcasterFollowData.followers;
+  }, [lensProfiles, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfiles?.reduce(
-      (acc, cur) => acc + cur.stats.totalFollowing,
-      0
-    );
-    // TODO 加上其它平台的following数量
-    return lensFollowersCount || 0;
+    const lensFollowersCount =
+      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowing, 0) ||
+      0;
+
+    return lensFollowersCount + farcasterFollowData.following;
   }, [lensProfiles]);
+
+  // TODO lens 一个address可能有多个profile，需要每个profile都follow吗？
+  const { data: activeProfile } = useActiveProfile();
+  const lensProfileFirst = lensProfiles?.[0];
+  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
+    followee: lensProfileFirst || ({ id: '' } as Profile),
+    follower: activeProfile,
+  });
+  const onFollow = useCallback(async () => {
+    if (
+      !lensFollowIsPending &&
+      lensProfileFirst &&
+      !lensProfileFirst.isFollowedByMe &&
+      lensProfileFirst.followStatus.canFollow
+    ) {
+      try {
+        await lensFollow();
+        toast.success('Lens follow success!');
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
+
+    // TODO farcaster平台的follow
+  }, [lensProfileFirst, lensFollow, lensFollowIsPending]);
+
+  const showFollowBtn = useMemo(() => {
+    return !isLoginUser;
+  }, [isLoginUser]);
+
+  const canMesssage = useCanMessage(address);
+  const showMessageBtn = useMemo(() => {
+    return !isLoginUser && canMesssage;
+  }, [isLoginUser, canMesssage]);
+
+  const { setOpenMessageModal, setMessageRouteParams } = useXmtpStore();
 
   return (
     <ProfileInfoCardWrapper did={did} {...wrapperProps}>
@@ -108,12 +188,25 @@ export default function ProfileInfoCard({
         </CountItem>
       </CountsWrapper>
 
-      {/* <BtnsWrapper>
-        <FollowBtn>Follow</FollowBtn>
-        <MessageBtn>
-          <MessageChatSquareSvg />
-        </MessageBtn>
-      </BtnsWrapper> */}
+      {(showFollowBtn || showMessageBtn) && (
+        <BtnsWrapper>
+          {showFollowBtn && <FollowBtn onClick={onFollow}>Follow</FollowBtn>}
+
+          {showMessageBtn && (
+            <MessageBtn
+              onClick={() => {
+                setOpenMessageModal(true);
+                setMessageRouteParams({
+                  route: MessageRoute.DETAIL,
+                  peerAddress: address,
+                });
+              }}
+            >
+              <MessageChatSquareSvg />
+            </MessageBtn>
+          )}
+        </BtnsWrapper>
+      )}
 
       <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
         <Dialog>
@@ -317,31 +410,31 @@ const CountText = styled.span`
   line-height: normal;
 `;
 
-// const BtnsWrapper = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-//   gap: 20px;
-//   margin-top: 30px;
-// `;
+const BtnsWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-top: 30px;
+`;
 
-// const FollowBtn = styled(SocialButtonPrimary)`
-//   flex: 1;
-//   color: #000;
-//   font-family: Baloo Bhai 2;
-//   font-size: 12px;
-//   font-style: normal;
-//   font-weight: 700;
-//   line-height: normal;
-// `;
-// const MessageBtn = styled(SocialButtonPrimary)`
-//   width: 40px;
-//   height: 40px;
-//   flex-shrink: 0;
-//   padding: 10px;
-//   svg {
-//     path {
-//       stroke: #14171a;
-//     }
-//   }
-// `;
+const FollowBtn = styled(SocialButtonPrimary)`
+  flex: 1;
+  color: #000;
+  font-family: Baloo Bhai 2;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+`;
+const MessageBtn = styled(SocialButtonPrimary)`
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  padding: 10px;
+  svg {
+    path {
+      stroke: #14171a;
+    }
+  }
+`;

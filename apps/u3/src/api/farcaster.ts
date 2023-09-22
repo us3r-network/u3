@@ -178,3 +178,18 @@ export function clearFarcasterUnreadNotification({
     },
   });
 }
+
+export function getFarcasterFollow(fid: string | number): AxiosPromise<
+  ApiResp<{
+    followers: number;
+    following: number;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/follow`,
+    method: 'get',
+    params: {
+      fid,
+    },
+  });
+}
