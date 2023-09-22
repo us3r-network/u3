@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useActiveProfile } from '@lens-protocol/react-web';
+import { useActiveProfile, useProfilesOwnedBy } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
@@ -31,12 +31,29 @@ import {
   setProfilePageFeedsType,
 } from '../features/website/websiteSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
+import ProfilePageFollowNav, {
+  FollowType,
+} from '../components/profile/ProfilePageFollowNav';
+import LensProfileFollowing from '../components/profile/lens/LensProfileFollowing';
+import LensProfileFollowers from '../components/profile/lens/LensProfileFollowers';
+import { SocailPlatform } from '../api';
 
-function ProfileInfo(props: StyledComponentPropsWithRef<'div'>) {
+function ProfileInfo({
+  clickFollowing,
+  clickFollowers,
+  ...props
+}: StyledComponentPropsWithRef<'div'> & {
+  clickFollowing?: () => void;
+  clickFollowers?: () => void;
+}) {
   const { address } = useAccount();
   return (
     <ProfileInfoWrap {...props}>
-      <ProfileInfoCard address={address} />
+      <ProfileInfoCard
+        address={address}
+        clickFollowing={clickFollowing}
+        clickFollowers={clickFollowers}
+      />
       <UserWalletsStyled />
       <UserTagsStyled />
     </ProfileInfoWrap>
@@ -53,11 +70,49 @@ const ProfileInfoWrap = styled.div`
 `;
 
 export default function Profile() {
+  const { address } = useAccount();
   const { logout } = useLogin();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const { wallet } = useParams();
   const { profilePageFeedsType } = useAppSelector(selectWebsite);
   const dispatch = useAppDispatch();
+
+  const [followNavData, setFollowNavData] = useState({
+    showFollowNav: false,
+    followNavType: FollowType.FOLLOWING,
+    followingActivePlatform: SocailPlatform.Lens,
+    followersActivePlatform: SocailPlatform.Lens,
+    followingPlatformCount: {
+      [SocailPlatform.Lens]: 0,
+      [SocailPlatform.Farcaster]: 0,
+    },
+    followersPlatformCount: {
+      [SocailPlatform.Lens]: 0,
+      [SocailPlatform.Farcaster]: 0,
+    },
+  });
+
+  const { data: lensProfiles } = useProfilesOwnedBy({
+    address,
+  });
+  const lensProfileFirst = lensProfiles?.[0];
+
+  useEffect(() => {
+    setFollowNavData((prevData) => ({
+      ...prevData,
+      followingPlatformCount: {
+        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
+        // TODO: 加上 farcaster 的 following 数量
+        [SocailPlatform.Farcaster]: 0,
+      },
+      followersPlatformCount: {
+        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
+        // TODO: 加上 farcaster 的 followers 数量
+        [SocailPlatform.Farcaster]: 0,
+      },
+    }));
+  }, [lensProfileFirst]);
+
   return (
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
@@ -71,17 +126,90 @@ export default function Profile() {
           />
         </ProfileInfoMobileWrapper>
       )}
-      <ProfilePageNav
-        feedsType={profilePageFeedsType}
-        onChangeFeedsType={(type) => {
-          dispatch(setProfilePageFeedsType(type));
-        }}
-      />
+      {(() => {
+        const {
+          showFollowNav,
+          followNavType,
+          followingActivePlatform,
+          followersActivePlatform,
+          followingPlatformCount,
+          followersPlatformCount,
+        } = followNavData;
+        if (showFollowNav) {
+          if (followNavType === FollowType.FOLLOWING) {
+            return (
+              <ProfilePageFollowNav
+                followType={FollowType.FOLLOWING}
+                activePlatform={followingActivePlatform}
+                platformCount={followingPlatformCount}
+                onChangePlatform={(platform) => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    followingActivePlatform: platform,
+                  }));
+                }}
+                goBack={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: false,
+                  }));
+                }}
+              />
+            );
+          }
+          if (followNavType === FollowType.FOLLOWERS) {
+            return (
+              <ProfilePageFollowNav
+                followType={FollowType.FOLLOWERS}
+                activePlatform={followersActivePlatform}
+                platformCount={followersPlatformCount}
+                onChangePlatform={(platform) => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    followersActivePlatform: platform,
+                  }));
+                }}
+                goBack={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: false,
+                  }));
+                }}
+              />
+            );
+          }
+          return null;
+        }
+
+        return (
+          <ProfilePageNav
+            feedsType={profilePageFeedsType}
+            onChangeFeedsType={(type) => {
+              dispatch(setProfilePageFeedsType(type));
+            }}
+          />
+        );
+      })()}
 
       <MainWrapper>
         {!isMobile && (
           <MainLeft>
-            <ProfileInfo />
+            <ProfileInfo
+              clickFollowing={() => {
+                setFollowNavData((prevData) => ({
+                  ...prevData,
+                  showFollowNav: true,
+                  followNavType: FollowType.FOLLOWING,
+                }));
+              }}
+              clickFollowers={() => {
+                setFollowNavData((prevData) => ({
+                  ...prevData,
+                  showFollowNav: true,
+                  followNavType: FollowType.FOLLOWERS,
+                }));
+              }}
+            />
             <LogoutButton
               className="logout-button"
               onClick={() => {
@@ -91,12 +219,47 @@ export default function Profile() {
           </MainLeft>
         )}
 
-        <KeepAlive
-          cacheKey={`${RouteKey.profile}_social_${wallet}_${profilePageFeedsType}`}
-          saveScrollPosition="#profile-wrapper"
-        >
-          <ProfileSocial wallet={wallet} feedsType={profilePageFeedsType} />
-        </KeepAlive>
+        {(() => {
+          const { showFollowNav, followNavType, followingActivePlatform } =
+            followNavData;
+          if (showFollowNav) {
+            if (
+              followNavType === FollowType.FOLLOWING &&
+              followingActivePlatform === SocailPlatform.Lens
+            ) {
+              return <LensProfileFollowing address={address} />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWERS &&
+              followingActivePlatform === SocailPlatform.Lens
+            ) {
+              return <LensProfileFollowers address={address} />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWING &&
+              followingActivePlatform === SocailPlatform.Farcaster
+            ) {
+              // TODO farcaster 的 following 列表，加完后记得把下面的 FollowComingSoon 相关代码删了
+              return <FollowComingSoon />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWERS &&
+              followingActivePlatform === SocailPlatform.Farcaster
+            ) {
+              // TODO farcaster 的 followers 列表，加完后记得把下面的 FollowComingSoon 相关代码删了
+              return <FollowComingSoon />;
+            }
+            return null;
+          }
+          return (
+            <KeepAlive
+              cacheKey={`${RouteKey.profile}_social_${wallet}_${profilePageFeedsType}`}
+              saveScrollPosition="#profile-wrapper"
+            >
+              <ProfileSocial wallet={wallet} feedsType={profilePageFeedsType} />
+            </KeepAlive>
+          );
+        })()}
 
         {!isMobile && <MainRight />}
       </MainWrapper>
@@ -113,6 +276,24 @@ export default function Profile() {
     </ProfileWrapper>
   );
 }
+
+function FollowComingSoon() {
+  return <FollowComingSoonWrapper>Coming Soon!</FollowComingSoonWrapper>;
+}
+const FollowComingSoonWrapper = styled.div`
+  width: 600px;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #fff;
+  font-family: Rubik;
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: normal;
+`;
 
 function ProfileSocial({
   wallet,
@@ -204,9 +385,6 @@ function ProfileSocial({
           <InfiniteScroll
             dataLength={feeds.length}
             next={() => {
-              console.log('next');
-              console.log({ moreLoading, firstLoading, pageInfo });
-
               if (moreLoading) return;
               loadMoreSocialFeeds();
             }}

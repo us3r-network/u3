@@ -20,3 +20,17 @@ export const SocialButtonPrimary = styled(ButtonPrimary)`
   font-weight: 700;
   line-height: normal;
 `;
+
+export const SocialButtonPrimaryLine = styled(SocialButtonPrimary)`
+  border: 1px solid #cd62ff;
+
+  font-family: Baloo Bhai 2;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  background: linear-gradient(83deg, #cd62ff 0%, #62aaff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`;

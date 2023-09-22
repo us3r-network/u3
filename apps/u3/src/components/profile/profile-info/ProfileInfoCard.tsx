@@ -31,9 +31,13 @@ import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
+  clickFollowing?: () => void;
+  clickFollowers?: () => void;
 }
 export default function ProfileInfoCard({
   address,
+  clickFollowing,
+  clickFollowers,
   ...wrapperProps
 }: ProfileInfoCardProps) {
   const session = useSession();
@@ -144,11 +148,11 @@ export default function ProfileInfoCard({
       <UserInfo.Bio />
 
       <CountsWrapper>
-        <CountItem>
+        <CountItem onClick={clickFollowers}>
           <Count>{followersCount}</Count>
           <CountText>Followers</CountText>
         </CountItem>
-        <CountItem>
+        <CountItem onClick={clickFollowing}>
           <Count>{followingCount}</Count>
           <CountText>Following</CountText>
         </CountItem>
@@ -352,10 +356,11 @@ const CountsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-const CountItem = styled.div`
+const CountItem = styled.div<{ onClick: () => void }>`
   display: flex;
   align-items: center;
   gap: 5px;
+  ${(props) => !!props.onClick && `cursor: pointer;`}
 `;
 const Count = styled.span`
   color: #fff;
