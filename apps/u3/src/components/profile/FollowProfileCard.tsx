@@ -7,7 +7,7 @@ import FarcasterIcon from '../icons/FarcasterIcon';
 import useCanMessage from '../../hooks/xmtp/useCanMessage';
 import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 
-export type ProfileFollowData = {
+export type FollowProfileData = {
   handle: string;
   avatar: string;
   name: string;
@@ -18,7 +18,7 @@ export type ProfileFollowData = {
 };
 
 export type FollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
-  data: ProfileFollowData;
+  data: FollowProfileData;
   followPending?: boolean;
   unfollowPending?: boolean;
   followAction?: () => void;
