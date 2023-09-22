@@ -3,10 +3,8 @@ import {
   useProfileFollowers,
   useProfilesOwnedBy,
 } from '@lens-protocol/react-web';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import getAvatar from '../../../utils/lens/getAvatar';
-import { SocailPlatform } from '../../../api';
 import LensFollowProfileCard from './LensFollowProfileCard';
 import Loading from '../../common/loading/Loading';
 import {
@@ -33,20 +31,6 @@ export default function LensProfileFollowers({ address }: { address: string }) {
     profileId: lensProfile.id,
   });
 
-  const followersList = useMemo(() => {
-    return (
-      followersData?.map((item) => ({
-        handle: item.wallet.defaultProfile.handle,
-        address: item.wallet.defaultProfile.ownedBy,
-        name: item.wallet.defaultProfile.name,
-        avatar: getAvatar(item.wallet.defaultProfile),
-        bio: item.wallet.defaultProfile.bio,
-        isFollowed: item.wallet.defaultProfile.isFollowedByMe,
-        platforms: [SocailPlatform.Lens],
-      })) || []
-    );
-  }, [followersData]);
-
   const [moreLoading, setMoreLoading] = useState(false);
   const loadMore = useCallback(async () => {
     if (!moreLoading && hasMore) {
@@ -72,7 +56,7 @@ export default function LensProfileFollowers({ address }: { address: string }) {
         }
         return (
           <InfiniteScroll
-            dataLength={followersList.length}
+            dataLength={followersData.length}
             next={() => {
               if (moreLoading) return;
               loadMore();
@@ -88,8 +72,8 @@ export default function LensProfileFollowers({ address }: { address: string }) {
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {followersList.map((item) => (
-                <LensFollowProfileCard data={item} lensProfile={lensProfile} />
+              {followersData.map((item) => (
+                <LensFollowProfileCard profile={item.wallet.defaultProfile} />
               ))}
             </FollowList>
           </InfiniteScroll>

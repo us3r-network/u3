@@ -2,10 +2,8 @@ import {
   useActiveProfile,
   useProfileFollowing,
 } from '@lens-protocol/react-web';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import getAvatar from '../../../utils/lens/getAvatar';
-import { SocailPlatform } from '../../../api';
 import LensFollowProfileCard from './LensFollowProfileCard';
 import Loading from '../../common/loading/Loading';
 import {
@@ -27,20 +25,6 @@ export default function LensProfileFollowing({ address }: { address: string }) {
     observerId: lensActiveProfile?.id,
     walletAddress: address,
   });
-
-  const followingList = useMemo(() => {
-    return (
-      followingData?.map((item) => ({
-        handle: item.profile.handle,
-        address: item.profile.ownedBy,
-        name: item.profile.name,
-        avatar: getAvatar(item.profile),
-        bio: item.profile.bio,
-        isFollowed: item.profile.isFollowedByMe,
-        platforms: [SocailPlatform.Lens],
-      })) || []
-    );
-  }, [followingData]);
 
   const [moreLoading, setMoreLoading] = useState(false);
   const loadMore = useCallback(async () => {
@@ -67,7 +51,7 @@ export default function LensProfileFollowing({ address }: { address: string }) {
         }
         return (
           <InfiniteScroll
-            dataLength={followingList.length}
+            dataLength={followingData.length}
             next={() => {
               if (moreLoading) return;
               loadMore();
@@ -83,11 +67,8 @@ export default function LensProfileFollowing({ address }: { address: string }) {
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {followingList.map((item) => (
-                <LensFollowProfileCard
-                  data={item}
-                  lensProfile={lensActiveProfile}
-                />
+              {followingData.map((item) => (
+                <LensFollowProfileCard profile={item.profile} />
               ))}
             </FollowList>
           </InfiniteScroll>
