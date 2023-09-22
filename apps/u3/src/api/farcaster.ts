@@ -4,6 +4,28 @@ import { REACT_APP_API_SOCIAL_URL } from '../constants';
 
 // console.log({ REACT_APP_API_SOCIAL_URL });
 
+export type FarcasterNotification = {
+  message_fid: number;
+  message_type: number;
+  message_timestamp: string;
+  message_hash: Buffer;
+  reaction_type?: number;
+  id?: string;
+  text?: string;
+  userData: unknown;
+};
+
+export type FarcasterPageInfo = {
+  endFarcasterCursor: string;
+  hasNextPage: boolean;
+};
+
+export type FarcasterUserData = {
+  fid: string;
+  type: number;
+  value: string;
+};
+
 export function getFarcasterFeeds({
   endFarcasterCursor,
   pageSize,
@@ -13,11 +35,8 @@ export function getFarcasterFeeds({
 }): AxiosPromise<
   ApiResp<{
     data: { data: FarCast; platform: 'farcaster' }[];
-    farcasterUserData: { fid: string; type: number; value: string }[];
-    pageInfo: {
-      endFarcasterCursor: string;
-      hasNextPage: boolean;
-    };
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
   }>
 > {
   return axios({
@@ -32,7 +51,7 @@ export function getFarcasterFeeds({
 
 export function getFarcasterUserInfo(
   fids: number[]
-): AxiosPromise<ApiResp<{ type: number; value: string }[]>> {
+): AxiosPromise<ApiResp<FarcasterUserData[]>> {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/userinfo`,
     method: 'get',
@@ -55,11 +74,8 @@ export function getFarcasterCastInfo(
   ApiResp<{
     cast: FarCast;
     comments: { data: FarCast; platform: 'farcaster' }[];
-    farcasterUserData: { fid: string; type: number; value: string }[];
-    pageInfo: {
-      endFarcasterCursor: string;
-      hasNextPage: boolean;
-    };
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
   }>
 > {
   return axios({
@@ -95,6 +111,70 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
     method: 'get',
     params: {
       urls,
+    },
+  });
+}
+
+export function getFarcasterNotifications({
+  fid,
+  endFarcasterCursor,
+  pageSize,
+}: {
+  fid: number;
+  endFarcasterCursor?: string;
+  pageSize?: number;
+}): AxiosPromise<
+  ApiResp<{
+    notifications: FarcasterNotification[];
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications`,
+    method: 'get',
+    params: {
+      fid,
+      pageSize,
+      next: endFarcasterCursor,
+      withInfo: true,
+    },
+  });
+}
+
+export function getFarcasterUnreadNotificationCount({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<
+  ApiResp<{
+    count: number;
+    lastTime: string | null;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications/unreadCount`,
+    method: 'get',
+    params: {
+      fid,
+    },
+  });
+}
+
+export function clearFarcasterUnreadNotification({
+  fid,
+}: {
+  fid: number;
+}): AxiosPromise<
+  ApiResp<{
+    lastTime: string;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications/clearUnread`,
+    method: 'post',
+    params: {
+      fid,
     },
   });
 }

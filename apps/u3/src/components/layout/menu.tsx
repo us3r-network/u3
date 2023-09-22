@@ -8,6 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { useActiveProfile } from '@lens-protocol/react-web';
 import LoginButton from './LoginButton';
 import Nav, {
   NavWrapper,
@@ -25,8 +26,12 @@ import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-ch
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
-import { useNotificationStore } from '../../contexts/NotificationStoreCtx';
+import {
+  useNotificationStore,
+  NotificationStoreProvider,
+} from '../../contexts/NotificationStoreCtx';
 import NotificationModal from '../notification/NotificationModal';
+import useFarcasterCurrFid from '../../hooks/farcaster/useFarcasterCurrFid';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -34,6 +39,11 @@ export default function Menu() {
   const navigate = useNavigate();
   // const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const { totalScore } = useAppSelector(selectKarmaState);
+
+  const { data: lensProfile } = useActiveProfile();
+  const lensProfileId = lensProfile?.id;
+  const fid = Number(useFarcasterCurrFid());
+  console.log({ lensProfileId, fid });
 
   return (
     <MenuWrapper
@@ -53,7 +63,14 @@ export default function Menu() {
       </NavListBox>
 
       <FooterBox>
-        <FooterNav onlyIcon={!isOpen} />
+        <NotificationStoreProvider
+          config={{
+            fid,
+            lensProfileId,
+          }}
+        >
+          <FooterNav onlyIcon={!isOpen} />
+        </NotificationStoreProvider>
         <LoginButtonBox>
           <LoginButton
             onlyIcon={!isOpen}
@@ -77,9 +94,6 @@ export default function Menu() {
           setIsOpen(false);
         }}
       /> */}
-
-      <MessageModal />
-      <NotificationModal />
     </MenuWrapper>
   );
 }
@@ -126,8 +140,9 @@ function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
         <PcNavItemIconBox isActive={openNotificationModal}>
           <BellSvg />
         </PcNavItemIconBox>
-        {renderNavItemText('Notification')}
+        {renderNavItemText(`Notification`)}
       </PcNavItem>
+      <NotificationModal />
       <PcNavItem
         isActive={openMessageModal}
         onClick={() => {
@@ -140,6 +155,7 @@ function FooterNav({ onlyIcon }: { onlyIcon: boolean }) {
         </PcNavItemIconBox>
         {renderNavItemText('Message')}
       </PcNavItem>
+      <MessageModal />
     </NavWrapper>
   );
 }

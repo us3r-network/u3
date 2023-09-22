@@ -31,7 +31,6 @@ import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx';
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
 import { AppLensProvider } from './contexts/AppLensCtx';
 import FarcasterProvider from './contexts/FarcasterCtx';
-import { NotificationStoreProvider } from './contexts/NotificationStoreCtx';
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -56,14 +55,12 @@ function App() {
               <XmtpStoreProvider>
                 <AppLensProvider>
                   <FarcasterProvider>
-                    <NotificationStoreProvider>
-                      <ReduxProvider store={store}>
-                        <GlobalStyle />
-                        <BrowserRouter>
-                          <Layout />
-                        </BrowserRouter>
-                      </ReduxProvider>
-                    </NotificationStoreProvider>
+                    <ReduxProvider store={store}>
+                      <GlobalStyle />
+                      <BrowserRouter>
+                        <Layout />
+                      </BrowserRouter>
+                    </ReduxProvider>
                   </FarcasterProvider>
                 </AppLensProvider>
               </XmtpStoreProvider>
