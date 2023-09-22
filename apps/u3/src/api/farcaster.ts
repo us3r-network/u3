@@ -173,7 +173,7 @@ export function clearFarcasterUnreadNotification({
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications/clearUnread`,
     method: 'post',
-    params: {
+    data: {
       fid,
     },
   });

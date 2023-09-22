@@ -10,38 +10,35 @@ import {
 } from 'react';
 
 import {
-  useNotifications,
-  useUnreadNotificationCount,
+  useNotifications as useLensNotifications,
+  useUnreadNotificationCount as useUnreadLensNotificationCount,
   Notification as LensNotification,
   ProfileId,
 } from '@lens-protocol/react-web';
-import { debounce, forEach } from 'lodash';
-import useFarcasterUserData from 'src/hooks/farcaster/useFarcasterUserData';
+
+import { debounce } from 'lodash';
 import useFarcasterNotifications from '../hooks/farcaster/useFarcasterNotifications';
+import useUnreadFarcasterNotificationsCount from '../hooks/farcaster/useUnreadFarcasterNotificationsCount';
 import { FarcasterNotification } from '../api/farcaster';
 
 interface NotificationStoreCtxValue {
   notifications: (LensNotification | FarcasterNotification)[] | undefined;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
-  // unreadCount: number;
-  // clearUnread: () => void;
+  unreadCount: number;
+  clearUnread: () => void;
   loading: boolean;
   hasMore: boolean;
   loadMore: () => void;
-  openNotificationModal: boolean;
-  setOpenNotificationModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const defaultContextValue: NotificationStoreCtxValue = {
   notifications: [],
   farcasterUserData: {},
-  // unreadCount: 0,
-  // clearUnread: () => {},
+  unreadCount: 0,
+  clearUnread: () => {},
   loading: false,
   hasMore: false,
   loadMore: () => {},
-  openNotificationModal: false,
-  setOpenNotificationModal: () => {},
 };
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -54,19 +51,27 @@ const mergeNotifications = (
   if (!lensNotifications && !farcasterNotifications) {
     return [] as (LensNotification | FarcasterNotification)[];
   }
-  if (!lensNotifications && farcasterNotifications) {
+  if (
+    (!lensNotifications || lensNotifications.length === 0) &&
+    farcasterNotifications
+  ) {
     return farcasterNotifications as (
       | LensNotification
       | FarcasterNotification
     )[];
   }
-  if (!lensNotifications && farcasterNotifications) {
-    return farcasterNotifications as (
-      | LensNotification
-      | FarcasterNotification
-    )[];
+  if (
+    lensNotifications &&
+    (!farcasterNotifications || farcasterNotifications.length === 0)
+  ) {
+    return lensNotifications as (LensNotification | FarcasterNotification)[];
   }
-  if (lensNotifications && farcasterNotifications) {
+  if (
+    lensNotifications &&
+    farcasterNotifications &&
+    lensNotifications.length > 0 &&
+    farcasterNotifications.length > 0
+  ) {
     const notifications = [];
     let lensIndex = 0;
     let farcasterIndex = 0;
@@ -114,28 +119,25 @@ export function NotificationStoreProvider({
   children,
   config,
 }: NotificationStoreProviderProps) {
-  const [openNotificationModal, setOpenNotificationModal] = useState(
-    defaultContextValue.openNotificationModal
-  );
   const [notifications, setNotifications] = useState(
     defaultContextValue.notifications
   );
-  // const [unreadCount, setUnreadCount] = useState(
-  //   defaultContextValue.unreadCount
-  // );
+  const [unreadCount, setUnreadCount] = useState(
+    defaultContextValue.unreadCount
+  );
 
-  // // get unread notification count
-  // const {
-  //   unreadNotificationCount: unreadLensNotificationsCount,
-  //   clear: clearLensUnread,
-  // } = useUnreadNotificationCount({ profileId: config.lensProfileId });
+  // get unread notification count
+  const { unreadNotificationCount: unreadLensCount, clear: clearLensUnread } =
+    useUnreadLensNotificationCount({
+      profileId: config.lensProfileId,
+    });
 
   const {
     data: lensNotifications,
     loading: lensNotificationsLoading,
     hasMore: lensNotificationsHasMore,
     next: loadMoreLensNotifications,
-  } = useNotifications({
+  } = useLensNotifications({
     profileId: config.lensProfileId,
     limit: config.pageSize || DEFAULT_PAGE_SIZE,
     highSignalFilter: false,
@@ -152,6 +154,10 @@ export function NotificationStoreProvider({
     config.fid,
     config.pageSize || DEFAULT_PAGE_SIZE
   );
+  const {
+    unreadNotificationCount: unreadFarcasterCount,
+    clear: clearFarcasterUnread,
+  } = useUnreadFarcasterNotificationsCount(config.fid);
 
   const updateNotifications = useCallback(() => {
     if (lensNotifications && farcasterNotifications) {
@@ -186,20 +192,22 @@ export function NotificationStoreProvider({
     farcasterNotifications,
   ]);
 
-  // const clearUnread = useCallback(async () => {
-  //   if (clearLensUnread) {
-  //     await clearLensUnread();
-  //   }
-  //   setUnreadCount(0);
-  // }, [clearLensUnread]);
+  const clearUnread = useCallback(async () => {
+    if (clearLensUnread) {
+      await clearLensUnread();
+      await clearFarcasterUnread();
+    }
+    setUnreadCount(0);
+  }, [clearLensUnread, clearFarcasterUnread]);
 
   useEffect(() => {
     debounce(updateNotifications, 500)();
   }, [updateNotifications, config]);
 
-  // useEffect(() => {
-  //   setUnreadCount(unreadLensNotificationsCount);
-  // }, [unreadLensNotificationsCount, config]);
+  useEffect(() => {
+    console.log({ unreadLensCount, unreadFarcasterCount });
+    setUnreadCount(unreadLensCount + unreadFarcasterCount);
+  }, [unreadLensCount, unreadFarcasterCount, config]);
 
   return (
     <NotificationStoreCtx.Provider
@@ -210,19 +218,10 @@ export function NotificationStoreProvider({
           loadMore,
           notifications,
           farcasterUserData,
-          // unreadCount,
-          // clearUnread,
-          openNotificationModal,
-          setOpenNotificationModal,
+          unreadCount,
+          clearUnread,
         }),
-        [
-          loadMore,
-          notifications,
-          // unreadCount,
-          // clearUnread,
-          openNotificationModal,
-          setOpenNotificationModal,
-        ]
+        [loadMore, notifications, unreadCount, clearUnread]
       )}
     >
       {children}

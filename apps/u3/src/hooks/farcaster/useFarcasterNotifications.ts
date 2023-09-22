@@ -4,8 +4,6 @@ import { debounce } from 'lodash';
 import {
   FarcasterNotification,
   getFarcasterNotifications,
-  getFarcasterUnreadNotificationCount,
-  clearFarcasterUnreadNotification,
 } from '../../api/farcaster';
 
 export default function useFarcasterNotifications(

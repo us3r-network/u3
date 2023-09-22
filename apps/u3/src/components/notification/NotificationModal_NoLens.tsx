@@ -9,7 +9,7 @@ import {
 import { MessageType, ReactionType } from '@farcaster/hub-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
-import { useNotificationStore } from '../../contexts/NotificationStoreCtx';
+import { useNotificationStore } from '../../contexts/NotificationStoreCtx_NoLens';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import { FarcasterNotification } from '../../api/farcaster';
 import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
@@ -19,7 +19,7 @@ import FarcasterIcon from '../icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';
 
-export default function NotificationModal() {
+export default function NotificationModalNoLens() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
   const { notifications, loading, hasMore, loadMore } = useNotificationStore();
 
@@ -49,14 +49,14 @@ export default function NotificationModal() {
           >
             <NotificationList>
               {notifications.map((notification) => {
-                if ('notificationId' in notification) {
-                  return (
-                    <NotificationItemWraper key={notification.notificationId}>
-                      <LensIcon />
-                      <LensNotificationItem notification={notification} />
-                    </NotificationItemWraper>
-                  );
-                }
+                // if ('notificationId' in notification) {
+                //   return (
+                //     <NotificationItemWraper key={notification.notificationId}>
+                //       <LensIcon />
+                //       <LensNotificationItem notification={notification} />
+                //     </NotificationItemWraper>
+                //   );
+                // }
                 if ('message_hash' in notification) {
                   return (
                     <NotificationItemWraper
