@@ -1,12 +1,11 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 
 import { isMobile } from 'react-device-detect';
 
 import { useActiveProfile } from '@lens-protocol/react-web';
 import KeepAlive from 'react-activation';
-import { RouteKey } from 'src/route/routes';
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
@@ -17,6 +16,7 @@ import AddPost from '../components/social/AddPost';
 import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
+import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
 
 export default function Home() {
   const location = useLocation();
@@ -69,45 +69,60 @@ export default function Home() {
     />
   );
 
-  const keepAliveSocialOutlet = (
-    <KeepAlive
-      cacheKey={`${RouteKey.socialLayout}_${socialPlatform}_${feedsType}`}
-      saveScrollPosition="#social-wrapper"
-    >
-      {(!isMobile && (
-        <div className="outlet-op">
-          <Outlet context={{ socialPlatform, feedsType }} />
-        </div>
-      )) || <Outlet context={{ socialPlatform, feedsType }} />}
-    </KeepAlive>
-  );
-  const PostDetailOutlet = (!isMobile && (
-    <div className="outlet-op">
-      <Outlet context={{ socialPlatform, feedsType }} />
-    </div>
-  )) || <Outlet context={{ socialPlatform, feedsType }} />;
+  const keepAliveSocialOutlet = useMemo(() => {
+    const socialCacheKey = getSocialScrollWrapperId(feedsType, socialPlatform);
+    return (
+      <KeepAlive cacheKey={socialCacheKey}>
+        <MainWrapper id={socialCacheKey}>
+          {!isMobile && <MainLeft />}
+          <MainCenter>
+            <MainOutletWrapper>
+              <Outlet context={{ socialPlatform, feedsType }} />
+            </MainOutletWrapper>
+          </MainCenter>
+          {!isMobile && <MainRight />}
+        </MainWrapper>
+      </KeepAlive>
+    );
+  }, [socialPlatform, feedsType]);
+
+  const PostDetailOutlet = useMemo(() => {
+    return (
+      <DetailMainWrapper>
+        <MainWrapper>
+          <MainLeft />
+          <MainCenter>
+            <MainOutletWrapper>
+              <Outlet context={{ socialPlatform, feedsType }} />
+            </MainOutletWrapper>
+          </MainCenter>
+          <MainRight />
+        </MainWrapper>
+      </DetailMainWrapper>
+    );
+  }, [socialPlatform, feedsType]);
   const isPostDetail = location.pathname.includes('post-detail');
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
-      <MainWrapper>
-        {!isMobile && (
-          <MainLeft>
-            <SocialPlatformChoice
-              platform={socialPlatform}
-              onChangePlatform={setSocialPlatform}
-            />
-            <AddPost />
-          </MainLeft>
-        )}
-        {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
-        {!isMobile && (
-          <MainRight>
-            <SearchInput placeholder="Search" onSearch={onSearch} />
-            <SocialWhoToFollow />
-          </MainRight>
-        )}
-      </MainWrapper>
+      {!isMobile && (
+        <LeftWrapper>
+          <SocialPlatformChoice
+            platform={socialPlatform}
+            onChangePlatform={setSocialPlatform}
+          />
+          <AddPost />
+        </LeftWrapper>
+      )}
+
+      {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
+
+      {!isMobile && (
+        <RightWrapper>
+          <SearchInput placeholder="Search" onSearch={onSearch} />
+          <SocialWhoToFollow />
+        </RightWrapper>
+      )}
     </HomeWrapper>
   );
 }
@@ -115,11 +130,9 @@ export default function Home() {
 const HomeWrapper = styled.div`
   width: 100%;
   height: 100%;
-  overflow: scroll;
+  padding: 0px 24px;
   box-sizing: border-box;
-  padding: 24px;
-  padding-top: 0;
-  margin-bottom: 20px;
+  position: relative;
   ${isMobile &&
   `
   height: 100vh;
@@ -127,31 +140,60 @@ const HomeWrapper = styled.div`
   padding-bottom: 60px;
   `}
 
-  .outlet-op {
-    width: 600px;
+  .ka-wrapper {
+    width: 100%;
+    height: calc(100% - 96px);
+  }
+  .ka-content {
+    width: 100%;
+    height: 100%;
   }
 `;
+const DetailMainWrapper = styled.div`
+  width: 100%;
+  height: calc(100% - 96px);
+  padding-bottom: 20px;
+  box-sizing: border-box;
+`;
 const MainWrapper = styled.div`
-  margin-top: 20px;
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
   display: flex;
   gap: 40px;
 `;
 const MainLeft = styled.div`
-  flex: 1;
+  width: 302px;
+`;
+const MainRight = styled.div`
+  width: 350px;
+`;
+const MainCenter = styled.div`
+  width: 600px;
+  padding: 20px 0px;
+  box-sizing: border-box;
+`;
+const MainOutletWrapper = styled.div`
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+`;
+
+const LeftWrapper = styled(MainLeft)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  position: sticky;
+  position: absolute;
   top: 116px;
   height: fit-content;
 `;
 
-const MainRight = styled.div`
-  flex: 1;
+const RightWrapper = styled(MainRight)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  position: sticky;
+  position: absolute;
   top: 116px;
+  right: 24px;
   height: fit-content;
 `;
