@@ -1,11 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import {
-  Notification as LensNotification,
-  Post,
-} from '@lens-protocol/react-web';
-
 import { MessageType, ReactionType } from '@farcaster/hub-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
@@ -13,8 +8,6 @@ import { useNotificationStore } from '../../contexts/NotificationStoreCtx_NoLens
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import { FarcasterNotification } from '../../api/farcaster';
 import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
-import getAvatar from '../../utils/lens/getAvatar';
-import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';
@@ -41,18 +34,25 @@ export default function NotificationModalNoLens() {
             loader={
               loading ? (
                 <LoadingMoreWrapper>
-                  <Loading />
+                  <Loading scale={0.3} />
                 </LoadingMoreWrapper>
               ) : null
             }
             scrollableTarget="notification-list-wraper"
+            scrollThreshold="200px"
+            endMessage="No More Notifications!"
+            style={{
+              color: '#718096',
+              textAlign: 'center',
+              lineHeight: '32px',
+              fontSize: '14px',
+            }}
           >
             <NotificationList>
               {notifications.map((notification) => {
                 // if ('notificationId' in notification) {
                 //   return (
                 //     <NotificationItemWraper key={notification.notificationId}>
-                //       <LensIcon />
                 //       <LensNotificationItem notification={notification} />
                 //     </NotificationItemWraper>
                 //   );
@@ -64,7 +64,6 @@ export default function NotificationModalNoLens() {
                         'hex'
                       )}
                     >
-                      <FarcasterIcon />
                       <FarcasterNotificationItem notification={notification} />
                     </NotificationItemWraper>
                   );
@@ -93,17 +92,22 @@ function FarcasterNotificationItem({
 }: StyledComponentPropsWithRef<'div'> & FarcasterNotificationItemProps) {
   const { farcasterUserData } = useNotificationStore();
   const navigate = useNavigate();
+  const { setOpenNotificationModal } = useNav();
   const userData = useFarcasterUserData({
     fid: String(notification.message_fid),
     farcasterUserData,
   });
-  const id = Buffer.from(notification.message_hash).toString('hex');
   switch (notification.message_type) {
     case MessageType.CAST_ADD:
       return (
         <NotificationItem
           onClick={() => {
-            navigate(`/social/post-detail/fcast/${id}`);
+            navigate(
+              `/social/post-detail/fcast/${Buffer.from(
+                notification.hash
+              ).toString('hex')}`
+            );
+            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={userData.pfp} />
@@ -120,6 +124,7 @@ function FarcasterNotificationItem({
               </DateText>
             </p>
           </div>
+          <FarcasterIcon />
         </NotificationItem>
       );
       break;
@@ -129,7 +134,12 @@ function FarcasterNotificationItem({
           return (
             <NotificationItem
               onClick={() => {
-                navigate(`/social/post-detail/fcast/${id}`);
+                navigate(
+                  `/social/post-detail/fcast/${Buffer.from(
+                    notification.hash
+                  ).toString('hex')}`
+                );
+                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -146,6 +156,7 @@ function FarcasterNotificationItem({
                   </DateText>
                 </p>
               </div>
+              <FarcasterIcon />
             </NotificationItem>
           );
           break;
@@ -153,7 +164,12 @@ function FarcasterNotificationItem({
           return (
             <NotificationItem
               onClick={() => {
-                navigate(`/social/post-detail/fcast/${id}`);
+                navigate(
+                  `/social/post-detail/fcast/${Buffer.from(
+                    notification.hash
+                  ).toString('hex')}`
+                );
+                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -170,6 +186,7 @@ function FarcasterNotificationItem({
                   </DateText>
                 </p>
               </div>
+              <FarcasterIcon />
             </NotificationItem>
           );
           break;
@@ -191,121 +208,10 @@ function FarcasterNotificationItem({
               </DateText>
             </p>
           </div>
+          <FarcasterIcon />
         </NotificationItem>
       );
       break;
-    default:
-      return null;
-  }
-}
-
-interface LensNotificationItemProps {
-  notification: LensNotification;
-}
-
-enum LensNotificationType {
-  NEW_FOLLOWER = 'NewFollowerNotification',
-  NEW_COLLECT = 'NewCollectNotification',
-  NEW_COMMENT = 'NewCommentNotification',
-  NEW_MIRROR = 'NewMirrorNotification',
-  NEW_MENTION = 'NewMentionNotification',
-  NEW_REACTION = 'NewReactionNotification',
-}
-
-function LensNotificationItem({
-  notification,
-}: StyledComponentPropsWithRef<'div'> & LensNotificationItemProps) {
-  const navigate = useNavigate();
-  switch (notification.__typename) {
-    case LensNotificationType.NEW_COMMENT:
-      return (
-        <NotificationItem
-          onClick={() => {
-            navigate(`/social/post-detail/lens/${notification.comment.id}`);
-          }}
-        >
-          <Avatar src={getAvatar(notification.profile)} />
-          <div>
-            <p>
-              <UserName>{notification.profile.name}</UserName> commented on your
-              post
-            </p>
-            <p>
-              <PostText>{notification.comment.metadata.content}</PostText>
-            </p>
-            <p>
-              <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-            </p>
-          </div>
-        </NotificationItem>
-      );
-      break;
-    case LensNotificationType.NEW_REACTION:
-      return (
-        <NotificationItem
-          onClick={() => {
-            navigate(`/social/post-detail/lens/${notification.publication.id}`);
-          }}
-        >
-          <Avatar src={getAvatar(notification.profile)} />
-          <div>
-            <p>
-              <UserName>{notification.profile.name}</UserName> like your cast
-            </p>
-            <p>
-              <PostText>
-                {(notification.publication as Post).metadata.content}
-              </PostText>
-            </p>
-            <p>
-              <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-            </p>
-          </div>
-        </NotificationItem>
-      );
-      break;
-    case LensNotificationType.NEW_MIRROR:
-      return (
-        <NotificationItem
-          onClick={() => {
-            navigate(`/social/post-detail/lens/${notification.publication.id}`);
-          }}
-        >
-          <Avatar src={getAvatar(notification.profile)} />
-          <div>
-            <p>
-              <UserName>{notification.profile.name}</UserName> recast your cast
-            </p>
-            <p>
-              <PostText>{notification.publication.metadata.content}</PostText>
-            </p>
-            <p>
-              <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-            </p>
-          </div>
-        </NotificationItem>
-      );
-      break;
-    case LensNotificationType.NEW_FOLLOWER:
-      return (
-        <NotificationItem>
-          <Avatar src={getAvatar(notification.wallet.defaultProfile)} />
-          <div>
-            <p>
-              <UserName>
-                {notification.wallet.defaultProfile.name ||
-                  notification.wallet.defaultProfile.handle}
-              </UserName>{' '}
-              follows you
-            </p>
-            <p>
-              <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-            </p>
-          </div>
-        </NotificationItem>
-      );
-      break;
-    case LensNotificationType.NEW_COLLECT:
     default:
       return null;
   }
@@ -374,8 +280,24 @@ const NotificationItem = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
+  width: 96%;
+  padding: 10px;
+  &:hover {
+    background-color: #39424c;
+  }
+  cursor: pointer;
   /* line-height: normal; */
+  :first-child {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+  :last-child {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
   div {
+    flex-grow: 1;
+    flex-shrink: 1;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -389,9 +311,7 @@ const NotificationItem = styled.div`
 const Avatar = styled.img`
   width: 24px;
   height: 24px;
-  flex-shrink: 0;
   border-radius: 50%;
-  margin-left: -2px;
   margin-top: 6px;
   object-fit: cover;
 `;
