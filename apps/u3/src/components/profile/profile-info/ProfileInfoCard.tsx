@@ -37,9 +37,13 @@ import { useNav } from '../../../contexts/NavCtx';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
+  clickFollowing?: () => void;
+  clickFollowers?: () => void;
 }
 export default function ProfileInfoCard({
   address,
+  clickFollowing,
+  clickFollowers,
   ...wrapperProps
 }: ProfileInfoCardProps) {
   const session = useSession();
@@ -56,6 +60,15 @@ export default function ProfileInfoCard({
   const { data: lensProfiles } = useProfilesOwnedBy({
     address,
   });
+  /**
+   * // TODO lens 一个钱包地址可以有多个profile, 一般第一个就是主账号，这里先取第一个，后续再考虑是否显示多个账户的数据
+   * 原因：
+   * 之前显示的是多个lens账户基本信息
+   * following , followers的数量也是取所有账户累加起来的
+   * 后来发现用一个账户follow后，其它账户的following, followers 数量都同步增加了，累加起来就不对了
+   * 猜测数量是跟钱包地址绑定的，而不是profile
+   */
+  const lensProfileFirst = lensProfiles?.[0];
 
   const userData = useFarcasterUserData({
     fid: `${currFid}`,
@@ -73,47 +86,41 @@ export default function ProfileInfoCard({
   }, [getFarcasterFollowData]);
 
   const platformAccounts: PlatformAccountsData = useMemo(() => {
-    const lensAccounts =
-      lensProfiles?.map((lensProfile) => ({
+    const accounts = [];
+    if (lensProfileFirst) {
+      accounts.push({
         platform: SocailPlatform.Lens,
-        avatar: getAvatar(lensProfile),
-        name: lensProfile.name,
-        handle: lensProfile.handle,
-      })) || [];
+        avatar: getAvatar(lensProfileFirst),
+        name: lensProfileFirst.name,
+        handle: lensProfileFirst.handle,
+      });
+    }
 
     if (userData) {
-      return [
-        ...lensAccounts,
-        {
-          platform: SocailPlatform.Farcaster,
-          avatar: userData.pfp,
-          name: userData.userName,
-          handle: userData.display,
-        },
-      ];
+      accounts.push({
+        platform: SocailPlatform.Farcaster,
+        avatar: userData.pfp,
+        name: userData.userName,
+        handle: userData.display,
+      });
     }
-    return lensAccounts;
-  }, [lensProfiles, userData]);
+    return accounts;
+  }, [lensProfileFirst, userData]);
 
   const followersCount = useMemo(() => {
-    const lensFollowersCount =
-      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowers, 0) ||
-      0;
+    const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
 
     return lensFollowersCount + farcasterFollowData.followers;
-  }, [lensProfiles, farcasterFollowData]);
+  }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount =
-      lensProfiles?.reduce((acc, cur) => acc + cur.stats.totalFollowing, 0) ||
-      0;
+    const lensFollowersCount = lensProfileFirst?.stats.totalFollowing;
 
     return lensFollowersCount + farcasterFollowData.following;
-  }, [lensProfiles]);
+  }, [lensProfileFirst, farcasterFollowData]);
 
-  // TODO lens 一个address可能有多个profile，需要每个profile都follow吗？
   const { data: activeProfile } = useActiveProfile();
-  const lensProfileFirst = lensProfiles?.[0];
+
   const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
     followee: lensProfileFirst || ({ id: '' } as Profile),
     follower: activeProfile,
@@ -179,11 +186,11 @@ export default function ProfileInfoCard({
       <UserInfo.Bio />
 
       <CountsWrapper>
-        <CountItem>
+        <CountItem onClick={clickFollowers}>
           <Count>{followersCount}</Count>
           <CountText>Followers</CountText>
         </CountItem>
-        <CountItem>
+        <CountItem onClick={clickFollowing}>
           <Count>{followingCount}</Count>
           <CountText>Following</CountText>
         </CountItem>
@@ -387,10 +394,11 @@ const CountsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
 `;
-const CountItem = styled.div`
+const CountItem = styled.div<{ onClick: () => void }>`
   display: flex;
   align-items: center;
   gap: 5px;
+  ${(props) => !!props.onClick && `cursor: pointer;`}
 `;
 const Count = styled.span`
   color: #fff;
