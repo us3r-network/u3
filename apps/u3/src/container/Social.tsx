@@ -15,6 +15,7 @@ import { FeedsType } from '../components/social/SocialPageNav';
 import { SocailPlatform } from '../api';
 import AddPostForm from '../components/social/AddPostForm';
 import FollowingDefault from '../components/social/FollowingDefault';
+import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
 
 export default function Home() {
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
@@ -185,7 +186,10 @@ export default function Home() {
                 </LoadingMoreWrapper>
               ) : null
             }
-            scrollableTarget="social-wrapper"
+            scrollableTarget={getSocialScrollWrapperId(
+              feedsType,
+              socialPlatform
+            )}
           >
             <PostList>
               {feeds.map(({ platform, data }) => {
