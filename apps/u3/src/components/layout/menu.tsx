@@ -30,7 +30,7 @@ import {
 import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
 import useFarcasterCurrFid from '../../hooks/farcaster/useFarcasterCurrFid';
-import { NavProvider, useNav } from '../../contexts/NavCtx';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -50,55 +50,54 @@ export default function Menu() {
       onMouseLeave={() => setIsOpen(false)}
       isOpen={isOpen}
     >
-      <NavProvider>
-        <LogoBox onlyIcon={!isOpen} onClick={() => navigate('/')}>
-          <LogoIconBox onlyIcon={!isOpen}>
-            <LogoIconSvg />
-          </LogoIconBox>
+      <LogoBox onlyIcon={!isOpen} onClick={() => navigate('/')}>
+        <LogoIconBox onlyIcon={!isOpen}>
+          <LogoIconSvg />
+        </LogoIconBox>
 
-          <LogoText>Alpha</LogoText>
-        </LogoBox>
-        <NavListBox>
-          <Nav onlyIcon={!isOpen} />
-        </NavListBox>
-        <FooterBox>
-          {/* TODO: 这里使用了非常不优雅的做法，因为在没有拿到Lens
+        <LogoText>Alpha</LogoText>
+      </LogoBox>
+      <NavListBox>
+        <Nav onlyIcon={!isOpen} />
+      </NavListBox>
+      <FooterBox>
+        {/* TODO: 这里使用了非常不优雅的做法，因为在没有拿到Lens
         Profile的情况下，无法使用Lens的useUnreadLensNotificationCount，所以这里使用了两套Notification组件，
         等Lens Hooks V2这里需要重构 */}
-          <NavWrapper>
-            {lensProfileId ? (
-              <NotificationStoreProvider
+        <NavWrapper>
+          {lensProfileId ? (
+            <NotificationStoreProvider
+              config={{
+                fid,
+                lensProfileId,
+              }}
+            >
+              <NotificationButton />
+            </NotificationStoreProvider>
+          ) : (
+            fid > 0 && (
+              <NotificationStoreProviderNoLens
                 config={{
                   fid,
-                  lensProfileId,
                 }}
               >
-                <NotificationButton />
-              </NotificationStoreProvider>
-            ) : (
-              fid > 0 && (
-                <NotificationStoreProviderNoLens
-                  config={{
-                    fid,
-                  }}
-                >
-                  <NotificationButtonNoLens />
-                </NotificationStoreProviderNoLens>
-              )
-            )}
-            <MessageButton />
-          </NavWrapper>
-          <LoginButtonBox>
-            <LoginButton
-              onlyIcon={!isOpen}
-              // onLogout={() => {
-              //   setOpenLogoutConfirm(true);
-              // }}
-              karmaScore={totalScore}
-            />
-          </LoginButtonBox>
-        </FooterBox>
-        {/* <LogoutConfirmModal
+                <NotificationButtonNoLens />
+              </NotificationStoreProviderNoLens>
+            )
+          )}
+          <MessageButton />
+        </NavWrapper>
+        <LoginButtonBox>
+          <LoginButton
+            onlyIcon={!isOpen}
+            // onLogout={() => {
+            //   setOpenLogoutConfirm(true);
+            // }}
+            karmaScore={totalScore}
+          />
+        </LoginButtonBox>
+      </FooterBox>
+      {/* <LogoutConfirmModal
         isOpen={openLogoutConfirm}
         onClose={() => {
           setOpenLogoutConfirm(false);
@@ -111,7 +110,6 @@ export default function Menu() {
           setIsOpen(false);
         }}
       /> */}
-      </NavProvider>
     </MenuWrapper>
   );
 }
