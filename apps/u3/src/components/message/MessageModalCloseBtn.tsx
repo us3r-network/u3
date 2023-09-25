@@ -1,7 +1,7 @@
-import { useXmtpStore } from 'src/contexts/xmtp/XmtpStoreCtx';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function MessageModalCloseBtn() {
-  const { setOpenMessageModal } = useXmtpStore();
+  const { setOpenMessageModal } = useNav();
   return <ModalCloseBtn onClick={() => setOpenMessageModal(false)} />;
 }

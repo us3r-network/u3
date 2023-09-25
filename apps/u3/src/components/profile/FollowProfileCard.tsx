@@ -6,6 +6,7 @@ import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
 import useCanMessage from '../../hooks/xmtp/useCanMessage';
 import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
+import { useNav } from '../../contexts/NavCtx';
 
 export type FollowProfileData = {
   handle: string;
@@ -35,7 +36,8 @@ export default function FollowProfileCard({
 }: FollowProfileCardProps) {
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
   const canMesssage = useCanMessage(address);
-  const { setOpenMessageModal, setMessageRouteParams } = useXmtpStore();
+  const { setMessageRouteParams } = useXmtpStore();
+  const { setOpenMessageModal } = useNav();
   return (
     <Wrapper {...wrapperProps}>
       <Top>

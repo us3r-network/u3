@@ -29,8 +29,6 @@ interface XmtpStoreCtxValue {
   convoMessages: Map<string, DecodedMessage[]>;
   loadingConversations: boolean;
   loadConversations: () => void;
-  openMessageModal: boolean;
-  setOpenMessageModal: React.Dispatch<React.SetStateAction<boolean>>;
   messageRouteParams: MessageRouteParams;
   setMessageRouteParams: React.Dispatch<
     React.SetStateAction<MessageRouteParams>
@@ -42,8 +40,6 @@ const defaultContextValue: XmtpStoreCtxValue = {
   convoMessages: new Map(),
   loadingConversations: false,
   loadConversations: () => {},
-  openMessageModal: false,
-  setOpenMessageModal: () => {},
   messageRouteParams: { route: MessageRoute.SEARCH },
   setMessageRouteParams: () => {},
 };
@@ -51,7 +47,6 @@ const defaultContextValue: XmtpStoreCtxValue = {
 export const XmtpStoreCtx = createContext(defaultContextValue);
 
 export function XmtpStoreProvider({ children }: PropsWithChildren) {
-  const [openMessageModal, setOpenMessageModal] = useState(false);
   const [messageRouteParams, setMessageRouteParams] =
     useState<MessageRouteParams>({ route: MessageRoute.SEARCH });
 
@@ -206,8 +201,6 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           convoMessages,
           loadingConversations,
           loadConversations,
-          openMessageModal,
-          setOpenMessageModal,
           messageRouteParams,
           setMessageRouteParams,
         }),
@@ -216,8 +209,6 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           convoMessages,
           loadingConversations,
           loadConversations,
-          openMessageModal,
-          setOpenMessageModal,
           messageRouteParams,
           setMessageRouteParams,
         ]

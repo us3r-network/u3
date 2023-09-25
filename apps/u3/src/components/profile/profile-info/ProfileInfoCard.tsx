@@ -33,6 +33,7 @@ import {
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
+import { useNav } from '../../../contexts/NavCtx';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
@@ -151,8 +152,8 @@ export default function ProfileInfoCard({
     return !isLoginUser && canMesssage;
   }, [isLoginUser, canMesssage]);
 
-  const { setOpenMessageModal, setMessageRouteParams } = useXmtpStore();
-
+  const { setMessageRouteParams } = useXmtpStore();
+  const { setOpenMessageModal } = useNav();
   return (
     <ProfileInfoCardWrapper did={did} {...wrapperProps}>
       <ProfileInfoBasicWrapper>
