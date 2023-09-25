@@ -1,5 +1,6 @@
 import {
   Profile,
+  ProfileOwnedByMe,
   useActiveProfile,
   useFollow,
   useUnfollow,
@@ -22,12 +23,12 @@ export default function LensFollowProfileCard({
   const { data: lensActiveProfile } = useActiveProfile();
   const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
     followee: profile,
-    follower: lensActiveProfile,
+    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
   });
   const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
     {
       followee: profile,
-      follower: lensActiveProfile,
+      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
     }
   );
   const viewData = useMemo(

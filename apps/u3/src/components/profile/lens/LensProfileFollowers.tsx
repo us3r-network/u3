@@ -28,7 +28,7 @@ export default function LensProfileFollowers({ address }: { address: string }) {
   } = useProfileFollowers({
     limit: 20,
     observerId: lensActiveProfile?.id,
-    profileId: lensProfile.id,
+    profileId: lensProfile?.id,
   });
 
   const [moreLoading, setMoreLoading] = useState(false);
@@ -56,7 +56,7 @@ export default function LensProfileFollowers({ address }: { address: string }) {
         }
         return (
           <InfiniteScroll
-            dataLength={followersData.length}
+            dataLength={followersData?.length || 0}
             next={() => {
               if (moreLoading) return;
               loadMore();
@@ -72,7 +72,7 @@ export default function LensProfileFollowers({ address }: { address: string }) {
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {followersData.map((item) => (
+              {(followersData || []).map((item) => (
                 <LensFollowProfileCard profile={item.wallet.defaultProfile} />
               ))}
             </FollowList>

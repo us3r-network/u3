@@ -51,7 +51,7 @@ export default function LensProfileFollowing({ address }: { address: string }) {
         }
         return (
           <InfiniteScroll
-            dataLength={followingData.length}
+            dataLength={followingData?.length || 0}
             next={() => {
               if (moreLoading) return;
               loadMore();
@@ -67,7 +67,7 @@ export default function LensProfileFollowing({ address }: { address: string }) {
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {followingData.map((item) => (
+              {(followingData || []).map((item) => (
                 <LensFollowProfileCard profile={item.profile} />
               ))}
             </FollowList>

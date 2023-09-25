@@ -91,6 +91,14 @@ export default function Profile() {
       [SocailPlatform.Farcaster]: 0,
     },
   });
+  const {
+    showFollowNav,
+    followNavType,
+    followingActivePlatform,
+    followersActivePlatform,
+    followingPlatformCount,
+    followersPlatformCount,
+  } = followNavData;
 
   const { data: lensProfiles } = useProfilesOwnedBy({
     address,
@@ -127,14 +135,6 @@ export default function Profile() {
         </ProfileInfoMobileWrapper>
       )}
       {(() => {
-        const {
-          showFollowNav,
-          followNavType,
-          followingActivePlatform,
-          followersActivePlatform,
-          followingPlatformCount,
-          followersPlatformCount,
-        } = followNavData;
         if (showFollowNav) {
           if (followNavType === FollowType.FOLLOWING) {
             return (
@@ -220,8 +220,6 @@ export default function Profile() {
         )}
 
         {(() => {
-          const { showFollowNav, followNavType, followingActivePlatform } =
-            followNavData;
           if (showFollowNav) {
             if (
               followNavType === FollowType.FOLLOWING &&
@@ -231,7 +229,7 @@ export default function Profile() {
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
-              followingActivePlatform === SocailPlatform.Lens
+              followersActivePlatform === SocailPlatform.Lens
             ) {
               return <LensProfileFollowers address={address} />;
             }
@@ -244,7 +242,7 @@ export default function Profile() {
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
-              followingActivePlatform === SocailPlatform.Farcaster
+              followersActivePlatform === SocailPlatform.Farcaster
             ) {
               // TODO farcaster 的 followers 列表，加完后记得把下面的 FollowComingSoon 相关代码删了
               return <FollowComingSoon />;
