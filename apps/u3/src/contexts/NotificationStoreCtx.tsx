@@ -205,7 +205,6 @@ export function NotificationStoreProvider({
   }, [updateNotifications, config]);
 
   useEffect(() => {
-    console.log({ unreadLensCount, unreadFarcasterCount });
     setUnreadCount(unreadLensCount + unreadFarcasterCount);
   }, [unreadLensCount, unreadFarcasterCount, config]);
 

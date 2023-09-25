@@ -42,7 +42,6 @@ export default function Menu() {
   const { data: lensProfile } = useActiveProfile();
   const lensProfileId = lensProfile?.id;
   const fid = Number(useFarcasterCurrFid());
-  console.log({ lensProfileId, fid });
 
   return (
     <MenuWrapper
@@ -163,9 +162,11 @@ function NotificationButton() {
         }}
       >
         <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg fill={unreadCount && 'red'} />
+          <BellSvg fill={unreadCount ? 'red' : 'black'} />
         </PcNavItemIconBox>
-        {renderNavItemText(`Notification(${unreadCount})`)}
+        {renderNavItemText(
+          unreadCount ? `Notification(${unreadCount})` : `Notification`
+        )}
       </PcNavItem>
 
       <NotificationModal />

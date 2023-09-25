@@ -11,6 +11,7 @@ export type FarcasterNotification = {
   message_hash: Buffer;
   reaction_type?: number;
   id?: string;
+  hash?: Buffer;
   text?: string;
   userData: unknown;
 };

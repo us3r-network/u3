@@ -22,7 +22,6 @@ import { useNav } from '../../contexts/NavCtx';
 export default function NotificationModal() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
   const { notifications, loading, hasMore, loadMore } = useNotificationStore();
-
   return (
     <Wrapper open={openNotificationModal}>
       <Header>
@@ -41,18 +40,25 @@ export default function NotificationModal() {
             loader={
               loading ? (
                 <LoadingMoreWrapper>
-                  <Loading />
+                  <Loading scale={0.3} />
                 </LoadingMoreWrapper>
               ) : null
             }
             scrollableTarget="notification-list-wraper"
+            scrollThreshold="200px"
+            endMessage="No More Notifications!"
+            style={{
+              color: '#718096',
+              textAlign: 'center',
+              lineHeight: '32px',
+              fontSize: '14px',
+            }}
           >
             <NotificationList>
               {notifications.map((notification) => {
                 if ('notificationId' in notification) {
                   return (
                     <NotificationItemWraper key={notification.notificationId}>
-                      <LensIcon />
                       <LensNotificationItem notification={notification} />
                     </NotificationItemWraper>
                   );
@@ -64,7 +70,6 @@ export default function NotificationModal() {
                         'hex'
                       )}
                     >
-                      <FarcasterIcon />
                       <FarcasterNotificationItem notification={notification} />
                     </NotificationItemWraper>
                   );
@@ -93,17 +98,22 @@ function FarcasterNotificationItem({
 }: StyledComponentPropsWithRef<'div'> & FarcasterNotificationItemProps) {
   const { farcasterUserData } = useNotificationStore();
   const navigate = useNavigate();
+  const { setOpenNotificationModal } = useNav();
   const userData = useFarcasterUserData({
     fid: String(notification.message_fid),
     farcasterUserData,
   });
-  const id = Buffer.from(notification.message_hash).toString('hex');
   switch (notification.message_type) {
     case MessageType.CAST_ADD:
       return (
         <NotificationItem
           onClick={() => {
-            navigate(`/social/post-detail/fcast/${id}`);
+            navigate(
+              `/social/post-detail/fcast/${Buffer.from(
+                notification.hash
+              ).toString('hex')}`
+            );
+            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={userData.pfp} />
@@ -120,6 +130,7 @@ function FarcasterNotificationItem({
               </DateText>
             </p>
           </div>
+          <FarcasterIcon />
         </NotificationItem>
       );
       break;
@@ -129,7 +140,12 @@ function FarcasterNotificationItem({
           return (
             <NotificationItem
               onClick={() => {
-                navigate(`/social/post-detail/fcast/${id}`);
+                navigate(
+                  `/social/post-detail/fcast/${Buffer.from(
+                    notification.hash
+                  ).toString('hex')}`
+                );
+                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -146,6 +162,7 @@ function FarcasterNotificationItem({
                   </DateText>
                 </p>
               </div>
+              <FarcasterIcon />
             </NotificationItem>
           );
           break;
@@ -153,7 +170,12 @@ function FarcasterNotificationItem({
           return (
             <NotificationItem
               onClick={() => {
-                navigate(`/social/post-detail/fcast/${id}`);
+                navigate(
+                  `/social/post-detail/fcast/${Buffer.from(
+                    notification.hash
+                  ).toString('hex')}`
+                );
+                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -170,6 +192,7 @@ function FarcasterNotificationItem({
                   </DateText>
                 </p>
               </div>
+              <FarcasterIcon />
             </NotificationItem>
           );
           break;
@@ -191,6 +214,7 @@ function FarcasterNotificationItem({
               </DateText>
             </p>
           </div>
+          <FarcasterIcon />
         </NotificationItem>
       );
       break;
@@ -216,12 +240,14 @@ function LensNotificationItem({
   notification,
 }: StyledComponentPropsWithRef<'div'> & LensNotificationItemProps) {
   const navigate = useNavigate();
+  const { setOpenNotificationModal } = useNav();
   switch (notification.__typename) {
     case LensNotificationType.NEW_COMMENT:
       return (
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.comment.id}`);
+            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
@@ -231,12 +257,13 @@ function LensNotificationItem({
               post
             </p>
             <p>
-              <PostText>{notification.comment.metadata.content}</PostText>
+              <PostText>{notification.comment?.metadata?.content}</PostText>
             </p>
             <p>
               <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
             </p>
           </div>
+          <LensIcon />
         </NotificationItem>
       );
       break;
@@ -245,6 +272,7 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.publication.id}`);
+            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
@@ -254,13 +282,14 @@ function LensNotificationItem({
             </p>
             <p>
               <PostText>
-                {(notification.publication as Post).metadata.content}
+                {(notification.publication as Post)?.metadata?.content}
               </PostText>
             </p>
             <p>
               <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
             </p>
           </div>
+          <LensIcon />
         </NotificationItem>
       );
       break;
@@ -269,6 +298,7 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.publication.id}`);
+            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
@@ -277,12 +307,13 @@ function LensNotificationItem({
               <UserName>{notification.profile.name}</UserName> recast your cast
             </p>
             <p>
-              <PostText>{notification.publication.metadata.content}</PostText>
+              <PostText>{notification.publication?.metadata?.content}</PostText>
             </p>
             <p>
               <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
             </p>
           </div>
+          <LensIcon />
         </NotificationItem>
       );
       break;
@@ -302,6 +333,7 @@ function LensNotificationItem({
               <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
             </p>
           </div>
+          <LensIcon />
         </NotificationItem>
       );
       break;
@@ -353,17 +385,13 @@ const NotificationList = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: start;
-  gap: 20px;
+  gap: 0px;
   height: 70%;
   overflow: hidden;
 `;
 const NotificationItemWraper = styled.div`
   display: inline-flex;
-  &:hover {
-    background-color: #39424c;
-  }
-  padding: 10px;
-  cursor: pointer;
+  border-bottom: 1px solid #718096;
 `;
 const NotificationItem = styled.div`
   display: flex;
@@ -374,8 +402,24 @@ const NotificationItem = styled.div`
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
+  width: 96%;
+  padding: 10px;
+  &:hover {
+    background-color: #39424c;
+  }
+  cursor: pointer;
   /* line-height: normal; */
+  :first-child {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+  :last-child {
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
   div {
+    flex-grow: 1;
+    flex-shrink: 1;
     display: flex;
     flex-direction: column;
     justify-content: start;
@@ -389,9 +433,7 @@ const NotificationItem = styled.div`
 const Avatar = styled.img`
   width: 24px;
   height: 24px;
-  flex-shrink: 0;
   border-radius: 50%;
-  margin-left: -2px;
   margin-top: 6px;
   object-fit: cover;
 `;

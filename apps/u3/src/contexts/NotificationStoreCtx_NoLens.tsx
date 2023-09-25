@@ -74,9 +74,7 @@ export function NotificationStoreProvider({
     clear: clearFarcasterUnread,
   } = useUnreadFarcasterNotificationsCount(config.fid);
 
-  console.log('no lens notification store', { notifications });
   const updateNotifications = useCallback(() => {
-    console.log({ farcasterNotifications });
     if (farcasterNotifications) {
       setNotifications(farcasterNotifications);
     }
