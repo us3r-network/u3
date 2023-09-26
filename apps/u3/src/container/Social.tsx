@@ -179,6 +179,7 @@ export default function Home() {
               loadMoreFeeds();
             }}
             hasMore={!firstLoading && pageInfo.hasNextPage}
+            scrollThreshold="1000px"
             loader={
               moreLoading ? (
                 <LoadingMoreWrapper>
