@@ -197,7 +197,9 @@ function NotificationButtonNoLens() {
         <PcNavItemIconBox isActive={openNotificationModal}>
           <BellSvg fill={unreadCount && 'red'} />
         </PcNavItemIconBox>
-        {renderNavItemText(`Notification(${unreadCount})`)}
+        {renderNavItemText(
+          unreadCount ? `Notification(${unreadCount})` : `Notification`
+        )}
       </PcNavItem>
       <NotificationModalNoLens />
     </>
