@@ -37,6 +37,9 @@ import ProfilePageFollowNav, {
 import LensProfileFollowing from '../components/profile/lens/LensProfileFollowing';
 import LensProfileFollowers from '../components/profile/lens/LensProfileFollowers';
 import { SocailPlatform } from '../api';
+import useFarcasterFollowNum from '../hooks/farcaster/useFarcasterFollowNum';
+import FarcasterFollowing from '../components/profile/farcaster/FarcasterFollowing';
+import FarcasterFollowers from '../components/profile/farcaster/FarcasterFollowers';
 
 function ProfileInfo({
   clickFollowing,
@@ -100,6 +103,7 @@ export default function Profile() {
     followersPlatformCount,
   } = followNavData;
 
+  const { farcasterFollowData } = useFarcasterFollowNum();
   const { data: lensProfiles } = useProfilesOwnedBy({
     address,
   });
@@ -110,16 +114,14 @@ export default function Profile() {
       ...prevData,
       followingPlatformCount: {
         [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
-        // TODO: 加上 farcaster 的 following 数量
-        [SocailPlatform.Farcaster]: 0,
+        [SocailPlatform.Farcaster]: farcasterFollowData.following,
       },
       followersPlatformCount: {
         [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
-        // TODO: 加上 farcaster 的 followers 数量
-        [SocailPlatform.Farcaster]: 0,
+        [SocailPlatform.Farcaster]: farcasterFollowData.followers,
       },
     }));
-  }, [lensProfileFirst]);
+  }, [lensProfileFirst, farcasterFollowData]);
 
   return (
     <ProfileWrapper id="profile-wrapper">
@@ -237,15 +239,13 @@ export default function Profile() {
               followNavType === FollowType.FOLLOWING &&
               followingActivePlatform === SocailPlatform.Farcaster
             ) {
-              // TODO farcaster 的 following 列表，加完后记得把下面的 FollowComingSoon 相关代码删了
-              return <FollowComingSoon />;
+              return <FarcasterFollowing />;
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
               followersActivePlatform === SocailPlatform.Farcaster
             ) {
-              // TODO farcaster 的 followers 列表，加完后记得把下面的 FollowComingSoon 相关代码删了
-              return <FollowComingSoon />;
+              return <FarcasterFollowers />;
             }
             return null;
           }
@@ -274,24 +274,6 @@ export default function Profile() {
     </ProfileWrapper>
   );
 }
-
-function FollowComingSoon() {
-  return <FollowComingSoonWrapper>Coming Soon!</FollowComingSoonWrapper>;
-}
-const FollowComingSoonWrapper = styled.div`
-  width: 600px;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  color: #fff;
-  font-family: Rubik;
-  font-size: 24px;
-  font-style: italic;
-  font-weight: 700;
-  line-height: normal;
-`;
 
 function ProfileSocial({
   wallet,
