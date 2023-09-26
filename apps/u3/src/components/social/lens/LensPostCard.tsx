@@ -94,6 +94,14 @@ export default function LensPostCard({ data }: { data: Post }) {
     [updatedPublication]
   );
 
+  const replyDisabled = useMemo(
+    () => isLogin && !publication?.canComment?.result,
+    [isLogin, publication]
+  );
+  const repostDisabled = useMemo(
+    () => isLogin && !publication?.canMirror?.result,
+    [isLogin, publication]
+  );
   return (
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -102,6 +110,8 @@ export default function LensPostCard({ data }: { data: Post }) {
         navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
+      replyDisabled={replyDisabled}
+      repostDisabled={repostDisabled}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {

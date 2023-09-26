@@ -4,11 +4,12 @@ import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
 import NoEnableXmtp from './NoEnableXmtp';
 import ConversationsPage from './ConversationsPage';
 import ConvoMessagesPage from './ConvoMessagesPage';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function MessageModal() {
   const { xmtpClient } = useXmtpClient();
-  const { openMessageModal, messageRouteParams } = useXmtpStore();
-
+  const { messageRouteParams } = useXmtpStore();
+  const { openMessageModal } = useNav();
   return (
     <Wrapper open={openMessageModal}>
       {(() => {

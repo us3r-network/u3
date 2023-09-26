@@ -64,6 +64,14 @@ export default function LensReplyCard({ data }: { data: Comment }) {
     [updatedPublication]
   );
 
+  const replyDisabled = useMemo(
+    () => isLogin && !data?.canComment?.result,
+    [isLogin, data]
+  );
+  const repostDisabled = useMemo(
+    () => isLogin && !data?.canMirror?.result,
+    [isLogin, data]
+  );
   return (
     <ReplyCard
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -74,6 +82,8 @@ export default function LensReplyCard({ data }: { data: Comment }) {
         navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
+      replyDisabled={replyDisabled}
+      repostDisabled={repostDisabled}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {

@@ -45,6 +45,8 @@ export enum ProfileFeedsGroups {
   REPLIES = 'replies',
 }
 
+export const FEEDS_PAGE_SIZE = 30;
+
 export function getFeeds({
   pageSize,
   keyword,
@@ -70,7 +72,7 @@ export function getFeeds({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/feeds`,
     method: 'get',
     params: {
-      pageSize,
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
       keyword,
       endFarcasterCursor,
       endLensCursor,
@@ -109,7 +111,7 @@ export function getFollowingFeeds({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/followingFeeds`,
     method: 'get',
     params: {
-      pageSize,
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
       keyword,
       endFarcasterCursor,
       endLensCursor,
@@ -146,7 +148,7 @@ export function getTrendingFeeds({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/trendingFeeds`,
     method: 'get',
     params: {
-      pageSize,
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
       keyword,
       endFarcasterCursor,
       endLensCursor,
@@ -187,7 +189,7 @@ export function getProfileFeeds({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/profileFeeds`,
     method: 'get',
     params: {
-      pageSize,
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
       keyword,
       group,
       endFarcasterCursor,

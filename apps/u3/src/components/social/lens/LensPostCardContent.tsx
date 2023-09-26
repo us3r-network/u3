@@ -46,7 +46,7 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
   return (
     <>
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
-        <ReactMarkdown>{markdownContent}</ReactMarkdown>
+        <ReactMarkdown linkTarget="_blank">{markdownContent}</ReactMarkdown>
       </PostCardContentWrapper>
       {showMore && (
         <PostCardShowMoreWrapper>

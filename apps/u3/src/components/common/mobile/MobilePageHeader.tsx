@@ -5,29 +5,43 @@
  * @LastEditTime: 2023-03-02 09:39:48
  * @Description: file description
  */
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 export default function MobilePageHeader({
   tabs,
   curTab,
   setTab,
+  options,
 }: {
-  tabs: string[];
+  tabs?: string[];
   curTab: string;
   setTab: React.Dispatch<React.SetStateAction<string>>;
+  options?: Array<{ value: any; label: string }>;
 }) {
   return (
     <PageHeader tab={curTab}>
-      {tabs?.map((key) => (
-        <div
-          key={key}
-          className={curTab === key ? 'tab active' : 'tab'}
-          onClick={() => setTab(key)}
-        >
-          {key}
-        </div>
-      ))}
+      {(() => {
+        if (options) {
+          return options?.map((option) => (
+            <div
+              key={option.value}
+              className={curTab === option.value ? 'tab active' : 'tab'}
+              onClick={() => setTab(option.value)}
+            >
+              {option.label}
+            </div>
+          ));
+        }
+        return tabs?.map((key) => (
+          <div
+            key={key}
+            className={curTab === key ? 'tab active' : 'tab'}
+            onClick={() => setTab(key)}
+          >
+            {key}
+          </div>
+        ));
+      })()}
     </PageHeader>
   );
 }

@@ -68,6 +68,14 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
     [updatedPublication]
   );
 
+  const replyDisabled = useMemo(
+    () => isLogin && !publication?.canComment?.result,
+    [isLogin, publication]
+  );
+  const repostDisabled = useMemo(
+    () => isLogin && !publication?.canMirror?.result,
+    [isLogin, publication]
+  );
   return (
     <PostCard
       isDetail
@@ -76,6 +84,8 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
         <LensPostCardContent publication={updatedPublication} isDetail />
       )}
       data={cardData}
+      replyDisabled={replyDisabled}
+      repostDisabled={repostDisabled}
       liked={hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {

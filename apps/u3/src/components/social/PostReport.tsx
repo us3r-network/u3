@@ -7,26 +7,32 @@ interface PostReportProps {
   reposted?: boolean;
   reposting?: boolean;
   repostAction?: () => void;
+  disabled?: boolean;
 }
 export default function PostReport({
   totalReposts,
   reposted,
   reposting,
   repostAction,
+  disabled,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostReportProps) {
   const [hover, setHover] = useState(false);
   return (
     <PostReportWrapper
+      disabled={disabled}
       reposted={reposted}
       onClick={(e) => {
+        if (disabled) return;
         if (repostAction) e.stopPropagation();
         if (!reposting && repostAction) repostAction();
       }}
       onMouseEnter={() => {
+        if (disabled) return;
         setHover(true);
       }}
       onMouseLeave={() => {
+        if (disabled) return;
         setHover(false);
       }}
       hover={hover}
@@ -34,7 +40,9 @@ export default function PostReport({
     >
       <span>
         <ForwardIcon2
-          stroke={hover ? '#00b171' : reposted ? '#00B171' : '#718096'}
+          stroke={
+            hover && !disabled ? '#00b171' : reposted ? '#00B171' : '#718096'
+          }
         />
       </span>
       {totalReposts} {reposting ? 'Reposting' : 'Reposts'}
@@ -42,11 +50,15 @@ export default function PostReport({
   );
 }
 
-const PostReportWrapper = styled.div<{ hover?: boolean; reposted?: boolean }>`
+const PostReportWrapper = styled.div<{
+  hover?: boolean;
+  reposted?: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   color: ${(props) => (props.reposted ? '#00B171' : '#718096')};
   font-family: Baloo Bhai 2;
@@ -68,6 +80,6 @@ const PostReportWrapper = styled.div<{ hover?: boolean; reposted?: boolean }>`
   }
 
   &:hover {
-    color: #00b171;
+    ${(props) => !props.disabled && 'color: #00B171;'};
   }
 `;

@@ -31,6 +31,7 @@ import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx';
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
 import { AppLensProvider } from './contexts/AppLensCtx';
+import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/FarcasterCtx';
 
 init(AIRSTACK_API_KEY);
@@ -60,7 +61,9 @@ function App() {
                       <GlobalStyle />
                       <BrowserRouter>
                         <AliveScope>
-                          <Layout />
+                          <NavProvider>
+                            <Layout />
+                          </NavProvider>
                         </AliveScope>
                       </BrowserRouter>
                     </ReduxProvider>
