@@ -55,6 +55,7 @@ export default function LensCommentPostForm({
 
   return (
     <ReplyForm
+      disabled={isLoginU3 && !canComment}
       onClick={() => {}}
       avatar={getAvatar(activeProfile)}
       content={content}
