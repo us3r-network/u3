@@ -8,8 +8,9 @@ export default function useCanMessage(peerAddress: string) {
   useEffect(() => {
     (async () => {
       setIsChecking(true);
-      if (!xmtpClient) {
+      if (!xmtpClient || !peerAddress) {
         setCanMessage(false);
+        return;
       }
       try {
         const isOnNetwork = await xmtpClient.canMessage(peerAddress);

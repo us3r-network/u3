@@ -34,6 +34,7 @@ import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 import { useNav } from '../../../contexts/NavCtx';
+import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   address: string;
@@ -49,10 +50,8 @@ export default function ProfileInfoCard({
   const session = useSession();
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const { currFid, farcasterUserData } = useFarcasterCtx();
-  const [farcasterFollowData, setFarcasterFollowData] = useState({
-    followers: 0,
-    following: 0,
-  });
+  const { farcasterFollowData } = useFarcasterFollowNum();
+
   const did = useMemo(() => getDidPkhWithAddress(address), [address]);
 
   const isLoginUser = useMemo(() => session?.id === did, [session, did]);
@@ -74,16 +73,6 @@ export default function ProfileInfoCard({
     fid: `${currFid}`,
     farcasterUserData,
   });
-
-  const getFarcasterFollowData = useCallback(async () => {
-    if (!currFid) return;
-    const resp = await getFarcasterFollow(currFid);
-    setFarcasterFollowData(resp.data.data);
-  }, [currFid]);
-
-  useEffect(() => {
-    getFarcasterFollowData().catch(console.error);
-  }, [getFarcasterFollowData]);
 
   const platformAccounts: PlatformAccountsData = useMemo(() => {
     const accounts = [];
@@ -114,7 +103,7 @@ export default function ProfileInfoCard({
   }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.totalFollowing;
+    const lensFollowersCount = lensProfileFirst?.stats.totalFollowing || 0;
 
     return lensFollowersCount + farcasterFollowData.following;
   }, [lensProfileFirst, farcasterFollowData]);
