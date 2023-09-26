@@ -33,6 +33,9 @@ interface PostCardProps {
   likeAction?: () => void;
   replyAction?: () => void;
   repostAction?: () => void;
+  likeDisabled?: boolean;
+  replyDisabled?: boolean;
+  repostDisabled?: boolean;
   showActions?: boolean;
   isDetail?: boolean;
 }
@@ -48,6 +51,9 @@ export default function PostCard({
   likeAction,
   replyAction,
   repostAction,
+  likeDisabled,
+  replyDisabled,
+  repostDisabled,
   showActions = true,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
@@ -60,6 +66,7 @@ export default function PostCard({
       {showActions && (
         <PostCardActionsWrapper>
           <PostLike
+            disabled={likeDisabled}
             totalLikes={data?.totalLikes || 0}
             likeAvatars={[]}
             liking={liking}
@@ -67,12 +74,14 @@ export default function PostCard({
             likeAction={likeAction}
           />
           <PostReply
+            disabled={replyDisabled}
             totalReplies={data?.totalReplies || 0}
             replying={replying}
             replied={replied}
             replyAction={replyAction}
           />
           <PostReport
+            disabled={repostDisabled}
             totalReposts={data?.totalReposts || 0}
             reposting={reposting}
             reposted={reposted}

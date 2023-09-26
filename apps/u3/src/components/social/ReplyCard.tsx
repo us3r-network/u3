@@ -27,6 +27,9 @@ interface ReplyCardProps {
   likeAction?: () => void;
   replyAction?: () => void;
   repostAction?: () => void;
+  likeDisabled?: boolean;
+  replyDisabled?: boolean;
+  repostDisabled?: boolean;
   showActions?: boolean;
 }
 export default function ReplyCard({
@@ -41,6 +44,9 @@ export default function ReplyCard({
   likeAction,
   replyAction,
   repostAction,
+  likeDisabled,
+  replyDisabled,
+  repostDisabled,
   showActions = true,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & ReplyCardProps) {
@@ -51,6 +57,7 @@ export default function ReplyCard({
         {showActions && (
           <ReplyCardActionsWrapper>
             <PostLike
+              disabled={likeDisabled}
               totalLikes={data?.totalLikes || 0}
               likeAvatars={[]}
               liking={liking}
@@ -58,12 +65,14 @@ export default function ReplyCard({
               likeAction={likeAction}
             />
             <PostReply
+              disabled={replyDisabled}
               totalReplies={data?.totalReplies || 0}
               replying={replying}
               replied={replied}
               replyAction={replyAction}
             />
             <PostReport
+              disabled={repostDisabled}
               totalReposts={data?.totalReposts || 0}
               reposting={reposting}
               reposted={reposted}

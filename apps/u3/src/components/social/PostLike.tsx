@@ -9,6 +9,7 @@ interface PostLikeProps {
   liked?: boolean;
   liking?: boolean;
   likeAction?: () => void;
+  disabled?: boolean;
 }
 export default function PostLike({
   totalLikes,
@@ -16,19 +17,24 @@ export default function PostLike({
   liked,
   liking,
   likeAction,
+  disabled,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostLikeProps) {
   const [hover, setHover] = useState(false);
   return (
     <PostLikeWrapper
+      disabled={disabled}
       liked={liked}
       onMouseEnter={() => {
+        if (disabled) return;
         setHover(true);
       }}
       onMouseLeave={() => {
+        if (disabled) return;
         setHover(false);
       }}
       onClick={(e) => {
+        if (disabled) return;
         if (likeAction) e.stopPropagation();
         if (!liking && likeAction) likeAction();
       }}
@@ -46,11 +52,15 @@ export default function PostLike({
   );
 }
 
-export const PostLikeWrapper = styled.div<{ hover?: boolean; liked?: boolean }>`
+export const PostLikeWrapper = styled.div<{
+  hover?: boolean;
+  liked?: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   color: ${(props) => (props.liked ? '#F81775' : '#718096')};
   font-family: Baloo Bhai 2;
@@ -70,7 +80,7 @@ export const PostLikeWrapper = styled.div<{ hover?: boolean; liked?: boolean }>`
       props.hover ? 'rgba(248, 23, 117, 0.20)' : 'transparent'};
   }
   &:hover {
-    color: #e63734;
+    ${(props) => !props.disabled && `color: #e63734;`}
   }
 `;
 

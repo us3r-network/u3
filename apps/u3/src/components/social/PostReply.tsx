@@ -7,26 +7,32 @@ interface PostReplyProps {
   replied?: boolean;
   replying?: boolean;
   replyAction?: () => void;
+  disabled?: boolean;
 }
 export default function PostReply({
   totalReplies,
   replied,
   replying,
   replyAction,
+  disabled,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostReplyProps) {
   const [hover, setHover] = useState(false);
   return (
     <PostReplyWrapper
+      disabled={disabled}
       replied={replied}
       onClick={(e) => {
+        if (disabled) return;
         if (replyAction) e.stopPropagation();
         if (!replying && replyAction) replyAction();
       }}
       onMouseEnter={() => {
+        if (disabled) return;
         setHover(true);
       }}
       onMouseLeave={() => {
+        if (disabled) return;
         setHover(false);
       }}
       hover={hover}
@@ -38,11 +44,15 @@ export default function PostReply({
   );
 }
 
-const PostReplyWrapper = styled.div<{ hover?: boolean; replied?: boolean }>`
+const PostReplyWrapper = styled.div<{
+  hover?: boolean;
+  replied?: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   color: #718096;
   background: ${(props) =>
@@ -73,9 +83,13 @@ const PostReplyWrapper = styled.div<{ hover?: boolean; replied?: boolean }>`
         : 'transparent'};
   }
   &:hover {
-    background: linear-gradient(78deg, #cd62ff 0%, #62aaff 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    ${(props) =>
+      !props.disabled &&
+      `
+      background: linear-gradient(78deg, #cd62ff 0%, #62aaff 100%);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    `}
   }
 `;
