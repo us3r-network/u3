@@ -35,9 +35,10 @@ export default function FollowProfileCard({
   ...wrapperProps
 }: FollowProfileCardProps) {
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
-  const canMesssage = useCanMessage(address);
+  const { canMessage } = useCanMessage(address);
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
+
   return (
     <Wrapper {...wrapperProps}>
       <Top>
@@ -84,7 +85,7 @@ export default function FollowProfileCard({
               return 'Follow';
             })()}
           </FollowBtn>
-          {canMesssage && (
+          {canMessage && (
             <SocialMessageChatBtn
               onClick={() => {
                 setOpenMessageModal(true);
