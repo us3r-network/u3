@@ -117,7 +117,7 @@ export function FarcasterNotificationItem({
           }}
         >
           <Avatar src={userData.pfp} />
-          <div>
+          <UserActionWraper>
             <UserAction>
               <UserName>{userData.userName}</UserName> commented on your cast
             </UserAction>
@@ -125,7 +125,7 @@ export function FarcasterNotificationItem({
             <DateText>
               {dayjs(notification.message_timestamp).fromNow()}
             </DateText>
-          </div>
+          </UserActionWraper>
           <FarcasterIcon />
         </NotificationItem>
       );
@@ -145,7 +145,7 @@ export function FarcasterNotificationItem({
               }}
             >
               <Avatar src={userData.pfp} />
-              <div>
+              <UserActionWraper>
                 <UserAction>
                   <UserName>{userData.userName}</UserName> liked your cast
                 </UserAction>
@@ -153,7 +153,7 @@ export function FarcasterNotificationItem({
                 <DateText>
                   {dayjs(notification.message_timestamp).fromNow()}
                 </DateText>
-              </div>
+              </UserActionWraper>
               <FarcasterIcon />
             </NotificationItem>
           );
@@ -171,7 +171,7 @@ export function FarcasterNotificationItem({
               }}
             >
               <Avatar src={userData.pfp} />
-              <div>
+              <UserActionWraper>
                 <UserAction>
                   <UserName>{userData.userName}</UserName> recast your cast
                 </UserAction>
@@ -179,7 +179,7 @@ export function FarcasterNotificationItem({
                 <DateText>
                   {dayjs(notification.message_timestamp).fromNow()}
                 </DateText>
-              </div>
+              </UserActionWraper>
               <FarcasterIcon />
             </NotificationItem>
           );
@@ -192,14 +192,14 @@ export function FarcasterNotificationItem({
       return (
         <NotificationItem>
           <Avatar src={userData.pfp} />
-          <div>
+          <UserActionWraper>
             <UserAction>
               <UserName>{userData.userName}</UserName> follows you
             </UserAction>
             <DateText>
               {dayjs(notification.message_timestamp).fromNow()}
             </DateText>
-          </div>
+          </UserActionWraper>
           <FarcasterIcon />
         </NotificationItem>
       );
@@ -237,14 +237,16 @@ function LensNotificationItem({
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
-          <div>
+          <UserActionWraper>
             <UserAction>
-              <UserName>{notification.profile.name}</UserName> commented on your
-              post
+              <UserName>
+                {notification.profile.name || notification.profile.handle}
+              </UserName>{' '}
+              commented on your post
             </UserAction>
             <PostText>{notification.comment?.metadata?.content}</PostText>
             <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-          </div>
+          </UserActionWraper>
           <LensIcon />
         </NotificationItem>
       );
@@ -258,16 +260,18 @@ function LensNotificationItem({
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
-          <div>
+          <UserActionWraper>
             <UserAction>
-              <UserName>{notification.profile.name}</UserName>
-            </UserAction>{' '}
-            like your cast
+              <UserName>
+                {notification.profile.name || notification.profile.handle}
+              </UserName>{' '}
+              like your cast
+            </UserAction>
             <PostText>
               {(notification.publication as Post)?.metadata?.content}
             </PostText>
             <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-          </div>
+          </UserActionWraper>
           <LensIcon />
         </NotificationItem>
       );
@@ -281,13 +285,16 @@ function LensNotificationItem({
           }}
         >
           <Avatar src={getAvatar(notification.profile)} />
-          <div>
+          <UserActionWraper>
             <UserAction>
-              <UserName>{notification.profile.name}</UserName> recast your cast
+              <UserName>
+                {notification.profile.name || notification.profile.handle}
+              </UserName>{' '}
+              recast your cast
             </UserAction>
             <PostText>{notification.publication?.metadata?.content}</PostText>
             <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-          </div>
+          </UserActionWraper>
           <LensIcon />
         </NotificationItem>
       );
@@ -296,7 +303,7 @@ function LensNotificationItem({
       return (
         <NotificationItem>
           <Avatar src={getAvatar(notification.wallet.defaultProfile)} />
-          <div>
+          <UserActionWraper>
             <UserAction>
               <UserName>
                 {notification.wallet.defaultProfile.name ||
@@ -305,7 +312,7 @@ function LensNotificationItem({
               follows you
             </UserAction>
             <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
-          </div>
+          </UserActionWraper>
           <LensIcon />
         </NotificationItem>
       );
@@ -377,24 +384,14 @@ const NotificationItem = styled.div`
   }
   cursor: pointer;
   /* line-height: normal; */
-  :first-child {
+  /* :first-child {
     flex-grow: 0;
     flex-shrink: 0;
   }
   :last-child {
     flex-grow: 0;
     flex-shrink: 0;
-  }
-  div {
-    flex-grow: 1;
-    flex-shrink: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: start;
-    gap: 0px;
-    width: 100%;
-  }
+  } */
 `;
 const Avatar = styled.img`
   width: 24px;
@@ -402,6 +399,16 @@ const Avatar = styled.img`
   border-radius: 50%;
   margin-top: 6px;
   object-fit: cover;
+`;
+const UserActionWraper = styled.div`
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  /* gap: 10px; */
+  width: 100%;
 `;
 const UserName = styled.span`
   text-decoration: underline;
@@ -411,16 +418,16 @@ const UserAction = styled.p`
   line-height: 0px;
 `;
 const PostText = styled.div`
-  max-width: 250px;
+  width: 250px;
   color: #718096;
   font-size: 16px;
   font-weight: 400;
   text-align: start;
   display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  white-space: nowrap;
-  word-wrap: break-word;
-  text-overflow: ellipsis;
+  line-height: 24px;
 `;
 const DateText = styled.div`
   max-width: 100%;
