@@ -5,18 +5,18 @@
  * @LastEditTime: 2023-01-03 18:28:48
  * @Description: file description
  */
-import styled from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import WalletSvg from '../common/icons/svgs/wallet.svg';
 import useLogin from '../../hooks/useLogin';
 import Loading from '../common/loading/Loading';
 
-function NoLogin() {
+function NoLogin({ ...wrapperProps }: StyledComponentPropsWithRef<'div'>) {
   const { login } = useLogin();
   const { ready, status } = useAuthentication();
   return (
-    <NoLoginWrapper>
+    <NoLoginWrapper {...wrapperProps}>
       <NoLoginContainer>
         {(() => {
           if (!ready) {
