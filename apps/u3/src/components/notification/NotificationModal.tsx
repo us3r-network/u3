@@ -21,7 +21,8 @@ import { useNav } from '../../contexts/NavCtx';
 
 export default function NotificationModal() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
-  const { notifications, loading, hasMore, loadMore } = useNotificationStore();
+  const { notifications, loading, hasMore, loadMore, farcasterUserData } =
+    useNotificationStore();
   return (
     <Wrapper open={openNotificationModal}>
       <Header>
@@ -68,6 +69,7 @@ export default function NotificationModal() {
                   return (
                     <FarcasterNotificationItem
                       notification={notification}
+                      farcasterUserData={farcasterUserData}
                       key={Buffer.from(notification.message_hash).toString(
                         'hex'
                       )}
@@ -91,12 +93,13 @@ export default function NotificationModal() {
 
 interface FarcasterNotificationItemProps {
   notification: FarcasterNotification;
+  farcasterUserData: { [key: string]: { type: number; value: string }[] };
 }
 
 export function FarcasterNotificationItem({
   notification,
+  farcasterUserData,
 }: StyledComponentPropsWithRef<'div'> & FarcasterNotificationItemProps) {
-  const { farcasterUserData } = useNotificationStore();
   const navigate = useNavigate();
   const { setOpenNotificationModal } = useNav();
   const userData = useFarcasterUserData({
