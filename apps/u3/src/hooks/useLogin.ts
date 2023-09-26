@@ -13,13 +13,11 @@ import {
 import { useU3Login } from '../contexts/U3LoginContext';
 import { RoleType } from '../services/api/login';
 import { useXmtpClient } from '../contexts/xmtp/XmtpClientCtx';
-import { useLensCtx } from '../contexts/AppLensCtx';
 
 export default () => {
   const session = useSession();
   const { user, u3IsLogin, u3logout } = useU3Login();
   const { disconnectXmtp } = useXmtpClient();
-  const { lensLogout } = useLensCtx();
 
   const { signIn, signOut } = useAuthentication();
   const login = useCallback(async () => {
@@ -30,8 +28,7 @@ export default () => {
     signOut();
     u3logout();
     disconnectXmtp();
-    lensLogout();
-  }, [signOut, u3logout, disconnectXmtp, lensLogout]);
+  }, [signOut, u3logout, disconnectXmtp]);
 
   const isLogin = useMemo(() => !!session && u3IsLogin, [session, u3IsLogin]);
 

@@ -19,7 +19,7 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
     setOpenCommentModal,
   } = useLensCtx();
 
-  const { isLogin: isLoginU3 } = useLogin();
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
 
   const publication = data as unknown as Post;
 
@@ -86,10 +86,14 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
       data={cardData}
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
-      liked={hasUpvote}
+      liked={isLoginU3 && hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -97,7 +101,11 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -110,7 +118,11 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
