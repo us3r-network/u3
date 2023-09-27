@@ -6,14 +6,13 @@ import { TwitterLine } from '../icons/twitter';
 import AddUserIcon from '../icons/AddUserIcon';
 import MoreIcon from '../icons/MoreIcon';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
-import type { PostCardData } from './PostCard';
 
 export type PostCardMenuData = {
   name: string;
   handle: string;
 };
 interface PostCardMenuBtnProps extends StyledComponentPropsWithRef<'button'> {
-  data: PostCardData;
+  data: PostCardMenuData;
   isFollowed?: boolean;
   followPending?: boolean;
   unfollowPending?: boolean;
