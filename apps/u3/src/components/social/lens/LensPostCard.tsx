@@ -1,4 +1,12 @@
-import { Post } from '@lens-protocol/react-web';
+import {
+  Post,
+  ProfileOwnedByMe,
+  useActiveProfile,
+  useFollow,
+  useUnfollow,
+  useProfilesOwnedBy,
+  Profile,
+} from '@lens-protocol/react-web';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +19,8 @@ import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/useLogin';
+import { getSocialDetailShareUrlWithLens } from '../../../utils/share';
+import { tweetShare } from '../../../utils/twitter';
 
 export default function LensPostCard({ data }: { data: Post }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -102,6 +112,22 @@ export default function LensPostCard({ data }: { data: Post }) {
     () => isLogin && !publication?.canMirror?.result,
     [isLogin, publication]
   );
+
+  const { data: lensProfiles } = useProfilesOwnedBy({
+    address: publication?.profile?.ownedBy || '',
+  });
+  const lensProfileFirst = lensProfiles?.[0];
+  const { data: lensActiveProfile } = useActiveProfile();
+  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
+    followee: (lensProfileFirst || { id: '' }) as Profile,
+    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+  });
+  const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
+    {
+      followee: (lensProfileFirst || { id: '' }) as Profile,
+      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+    }
+  );
   return (
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
@@ -157,6 +183,54 @@ export default function LensPostCard({ data }: { data: Post }) {
           return;
         }
         createMirror();
+      }}
+      showMenuBtn
+      isFollowed={lensProfileFirst?.followStatus?.isFollowedByMe}
+      followPending={lensFollowIsPending}
+      unfollowPending={lensUnfollowPending}
+      followAction={() => {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
+          setOpenLensLoginModal(true);
+          return;
+        }
+        if (lensFollowIsPending || lensUnfollowPending) {
+          return;
+        }
+        if (lensProfileFirst?.followStatus?.isFollowedByMe) {
+          lensUnfollow()
+            .then(() => {
+              toast.success('Unfollow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Unfollow failed');
+            });
+        } else {
+          lensFollow()
+            .then(() => {
+              toast.success('Follow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Follow failed');
+            });
+        }
+      }}
+      shareAction={() => {
+        tweetShare(
+          data.metadata.content,
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+      }}
+      copyAction={async () => {
+        await window.navigator.clipboard.writeText(
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+        toast.success('Copy success');
       }}
     />
   );
