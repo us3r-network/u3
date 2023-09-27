@@ -17,7 +17,8 @@ import { LoadingMoreWrapper } from '../profile/FollowListWidgets';
 
 export default function NotificationModalNoLens() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
-  const { notifications, loading, hasMore, loadMore } = useNotificationStore();
+  const { notifications, loading, hasMore, loadMore, farcasterUserData } =
+    useNotificationStore();
 
   return (
     <Wrapper open={openNotificationModal}>
@@ -57,6 +58,7 @@ export default function NotificationModalNoLens() {
                   return (
                     <FarcasterNotificationItem
                       notification={notification}
+                      farcasterUserData={farcasterUserData}
                       key={Buffer.from(notification.message_hash).toString(
                         'hex'
                       )}

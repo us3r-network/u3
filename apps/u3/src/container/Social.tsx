@@ -16,8 +16,11 @@ import { SocailPlatform } from '../api';
 import AddPostForm from '../components/social/AddPostForm';
 import FollowingDefault from '../components/social/FollowingDefault';
 import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
+import useLogin from '../hooks/useLogin';
+import NoLogin from '../components/layout/NoLogin';
 
 export default function Home() {
+  const { isLogin } = useLogin();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const fid = useFarcasterCurrFid();
@@ -146,16 +149,17 @@ export default function Home() {
     loadFirstFeeds();
   }, [activeLensProfileLoading, loadFirstFeeds]);
 
-  if (
-    feedsType === FeedsType.FOLLOWING &&
-    !isConnectedFarcaster &&
-    !lensProfileOwnedByAddress
-  ) {
-    return (
-      <MainCenter>
-        <FollowingDefault />
-      </MainCenter>
-    );
+  if (feedsType === FeedsType.FOLLOWING) {
+    if (!isLogin) {
+      return <NoLoginStyled />;
+    }
+    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+      return (
+        <MainCenter>
+          <FollowingDefault />
+        </MainCenter>
+      );
+    }
   }
   return (
     <MainCenter>
@@ -217,7 +221,10 @@ export default function Home() {
     </MainCenter>
   );
 }
-
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
+`;
 const MainCenter = styled.div`
   width: 100%;
 `;

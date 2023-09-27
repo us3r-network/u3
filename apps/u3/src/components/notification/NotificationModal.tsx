@@ -21,7 +21,8 @@ import { useNav } from '../../contexts/NavCtx';
 
 export default function NotificationModal() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
-  const { notifications, loading, hasMore, loadMore } = useNotificationStore();
+  const { notifications, loading, hasMore, loadMore, farcasterUserData } =
+    useNotificationStore();
   return (
     <Wrapper open={openNotificationModal}>
       <Header>
@@ -68,6 +69,7 @@ export default function NotificationModal() {
                   return (
                     <FarcasterNotificationItem
                       notification={notification}
+                      farcasterUserData={farcasterUserData}
                       key={Buffer.from(notification.message_hash).toString(
                         'hex'
                       )}
@@ -91,12 +93,13 @@ export default function NotificationModal() {
 
 interface FarcasterNotificationItemProps {
   notification: FarcasterNotification;
+  farcasterUserData: { [key: string]: { type: number; value: string }[] };
 }
 
 export function FarcasterNotificationItem({
   notification,
+  farcasterUserData,
 }: StyledComponentPropsWithRef<'div'> & FarcasterNotificationItemProps) {
-  const { farcasterUserData } = useNotificationStore();
   const navigate = useNavigate();
   const { setOpenNotificationModal } = useNav();
   const userData = useFarcasterUserData({
@@ -119,7 +122,7 @@ export function FarcasterNotificationItem({
           <Avatar src={userData.pfp} />
           <UserActionWraper>
             <UserAction>
-              <UserName>{userData.userName}</UserName> commented on your cast
+              <u>{userData.userName}</u> commented on your cast
             </UserAction>
             <PostText>{notification.text}</PostText>
             <DateText>
@@ -147,7 +150,7 @@ export function FarcasterNotificationItem({
               <Avatar src={userData.pfp} />
               <UserActionWraper>
                 <UserAction>
-                  <UserName>{userData.userName}</UserName> liked your cast
+                  <u>{userData.userName}</u> like your cast
                 </UserAction>
                 <PostText>{notification.text}</PostText>
                 <DateText>
@@ -173,7 +176,7 @@ export function FarcasterNotificationItem({
               <Avatar src={userData.pfp} />
               <UserActionWraper>
                 <UserAction>
-                  <UserName>{userData.userName}</UserName> recast your cast
+                  <u>{userData.userName}</u> recast your cast
                 </UserAction>
                 <PostText>{notification.text}</PostText>
                 <DateText>
@@ -194,7 +197,7 @@ export function FarcasterNotificationItem({
           <Avatar src={userData.pfp} />
           <UserActionWraper>
             <UserAction>
-              <UserName>{userData.userName}</UserName> follows you
+              <u>{userData.userName}</u> follows you
             </UserAction>
             <DateText>
               {dayjs(notification.message_timestamp).fromNow()}
@@ -239,9 +242,7 @@ function LensNotificationItem({
           <Avatar src={getAvatar(notification.profile)} />
           <UserActionWraper>
             <UserAction>
-              <UserName>
-                {notification.profile.name || notification.profile.handle}
-              </UserName>{' '}
+              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
               commented on your post
             </UserAction>
             <PostText>{notification.comment?.metadata?.content}</PostText>
@@ -262,9 +263,7 @@ function LensNotificationItem({
           <Avatar src={getAvatar(notification.profile)} />
           <UserActionWraper>
             <UserAction>
-              <UserName>
-                {notification.profile.name || notification.profile.handle}
-              </UserName>{' '}
+              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
               like your cast
             </UserAction>
             <PostText>
@@ -287,9 +286,7 @@ function LensNotificationItem({
           <Avatar src={getAvatar(notification.profile)} />
           <UserActionWraper>
             <UserAction>
-              <UserName>
-                {notification.profile.name || notification.profile.handle}
-              </UserName>{' '}
+              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
               recast your cast
             </UserAction>
             <PostText>{notification.publication?.metadata?.content}</PostText>
@@ -305,10 +302,10 @@ function LensNotificationItem({
           <Avatar src={getAvatar(notification.wallet.defaultProfile)} />
           <UserActionWraper>
             <UserAction>
-              <UserName>
+              <u>
                 {notification.wallet.defaultProfile.name ||
                   notification.wallet.defaultProfile.handle}
-              </UserName>{' '}
+              </u>{' '}
               follows you
             </UserAction>
             <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
@@ -407,15 +404,13 @@ const UserActionWraper = styled.div`
   flex-direction: column;
   justify-content: start;
   align-items: start;
-  /* gap: 10px; */
+  gap: 10px;
   width: 100%;
 `;
-const UserName = styled.span`
-  text-decoration: underline;
-`;
-const UserAction = styled.p`
+const UserAction = styled.div`
   max-width: 100%;
-  line-height: 0px;
+  text-align: start;
+  line-height: 24px;
 `;
 const PostText = styled.div`
   width: 250px;
