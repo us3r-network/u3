@@ -150,7 +150,7 @@ export function FarcasterNotificationItem({
               <Avatar src={userData.pfp} />
               <UserActionWraper>
                 <UserAction>
-                  <u>{userData.userName}</u> your cast
+                  <u>{userData.userName}</u> like your cast
                 </UserAction>
                 <PostText>{notification.text}</PostText>
                 <DateText>
