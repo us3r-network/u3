@@ -193,81 +193,85 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <Wrapper>
       <Header>
-        <PlatformOptions>
-          <PlatformOption>
-            {isLoginLens ? (
-              <PlatformToggleButton
-                isSelected={platforms.has(SocailPlatform.Lens)}
-                platform={SocailPlatform.Lens}
-                onChange={() => {
-                  if (platforms.has(SocailPlatform.Lens)) {
-                    platforms.delete(SocailPlatform.Lens);
-                  } else {
-                    platforms.add(SocailPlatform.Lens);
-                  }
-                  setPlatforms(new Set(platforms));
-                }}
-              >
-                <Avatar src={getAvatar(lensUserInfo)} />
-                <UserName>{lensUserInfo.name}</UserName>
-                <UserHandle>@{lensUserInfo.handle}</UserHandle>
-                <LensIcon />
-              </PlatformToggleButton>
-            ) : (
-              <LoginWraper>
-                <LensIcon />
-                Lens
-                <LoginButton onClick={() => setOpenLensLoginModal(true)}>
-                  login
-                </LoginButton>
-              </LoginWraper>
-            )}
-          </PlatformOption>
-          <PlatformOption>
-            {isLoginFarcaster && farcasterUserInfo ? (
-              <PlatformToggleButton
-                isSelected={platforms.has(SocailPlatform.Farcaster)}
-                platform={SocailPlatform.Farcaster}
-                onChange={() => {
-                  if (platforms.has(SocailPlatform.Farcaster)) {
-                    platforms.delete(SocailPlatform.Farcaster);
-                  } else {
-                    platforms.add(SocailPlatform.Farcaster);
-                  }
-                  setPlatforms(new Set(platforms));
-                }}
-              >
-                <Avatar
-                  src={
-                    farcasterUserInfo[farcasterUserFid].find(
-                      (item) => item.type === UserDataType.PFP
-                    )?.value || ''
-                  }
-                />
-                <UserName>
-                  {farcasterUserInfo[farcasterUserFid].find(
-                    (item) => item.type === UserDataType.DISPLAY
-                  )?.value || ''}
-                </UserName>
-                <UserHandle>
-                  @
-                  {farcasterUserInfo[farcasterUserFid].find(
-                    (item) => item.type === UserDataType.USERNAME
-                  )?.value || ''}
-                </UserHandle>
-                <FarcasterIcon />
-              </PlatformToggleButton>
-            ) : (
-              <LoginWraper>
-                <FarcasterIcon />
-                Farcaster
-                <LoginButton onClick={() => openFarcasterQR()}>
-                  login
-                </LoginButton>
-              </LoginWraper>
-            )}
-          </PlatformOption>
-        </PlatformOptions>
+        {isLoginU3 ? (
+          <PlatformOptions>
+            <PlatformOption>
+              {isLoginLens ? (
+                <PlatformToggleButton
+                  isSelected={platforms.has(SocailPlatform.Lens)}
+                  platform={SocailPlatform.Lens}
+                  onChange={() => {
+                    if (platforms.has(SocailPlatform.Lens)) {
+                      platforms.delete(SocailPlatform.Lens);
+                    } else {
+                      platforms.add(SocailPlatform.Lens);
+                    }
+                    setPlatforms(new Set(platforms));
+                  }}
+                >
+                  <Avatar src={getAvatar(lensUserInfo)} />
+                  <UserName>{lensUserInfo.name}</UserName>
+                  <UserHandle>@{lensUserInfo.handle}</UserHandle>
+                  <LensIcon />
+                </PlatformToggleButton>
+              ) : (
+                <LoginWraper>
+                  <LensIcon />
+                  Lens
+                  <LoginButton onClick={() => setOpenLensLoginModal(true)}>
+                    login
+                  </LoginButton>
+                </LoginWraper>
+              )}
+            </PlatformOption>
+            <PlatformOption>
+              {isLoginFarcaster && farcasterUserInfo ? (
+                <PlatformToggleButton
+                  isSelected={platforms.has(SocailPlatform.Farcaster)}
+                  platform={SocailPlatform.Farcaster}
+                  onChange={() => {
+                    if (platforms.has(SocailPlatform.Farcaster)) {
+                      platforms.delete(SocailPlatform.Farcaster);
+                    } else {
+                      platforms.add(SocailPlatform.Farcaster);
+                    }
+                    setPlatforms(new Set(platforms));
+                  }}
+                >
+                  <Avatar
+                    src={
+                      farcasterUserInfo[farcasterUserFid].find(
+                        (item) => item.type === UserDataType.PFP
+                      )?.value || ''
+                    }
+                  />
+                  <UserName>
+                    {farcasterUserInfo[farcasterUserFid].find(
+                      (item) => item.type === UserDataType.DISPLAY
+                    )?.value || ''}
+                  </UserName>
+                  <UserHandle>
+                    @
+                    {farcasterUserInfo[farcasterUserFid].find(
+                      (item) => item.type === UserDataType.USERNAME
+                    )?.value || ''}
+                  </UserHandle>
+                  <FarcasterIcon />
+                </PlatformToggleButton>
+              ) : (
+                <LoginWraper>
+                  <FarcasterIcon />
+                  Farcaster
+                  <LoginButton onClick={() => openFarcasterQR()}>
+                    login
+                  </LoginButton>
+                </LoginWraper>
+              )}
+            </PlatformOption>
+          </PlatformOptions>
+        ) : (
+          <LoginButton onClick={() => login()}>login</LoginButton>
+        )}
       </Header>
       <PostBox>
         <UserPostWrapepr>
@@ -275,7 +279,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
           <ContentWrapper>
             <ContentInput
               placeholder="Create a post..."
-              disabled={isPending}
+              disabled={!isLoginU3 || isPending}
               value={text}
               onChange={(e) => setText(e.target.value)}
               onPaste={handleImageUpload}
@@ -297,7 +301,10 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
             multiple
             hidden
           />
-          <SendImgBtn onClick={() => inputFileRef.current?.click()}>
+          <SendImgBtn
+            disabled={!isLoginU3}
+            onClick={() => inputFileRef.current?.click()}
+          >
             <ImgIcon />
           </SendImgBtn>
           <SendEmojiBtn disabled>

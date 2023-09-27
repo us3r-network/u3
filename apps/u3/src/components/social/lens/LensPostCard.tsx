@@ -13,7 +13,7 @@ import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/useLogin';
 
 export default function LensPostCard({ data }: { data: Post }) {
-  const { isLogin: isLoginU3 } = useLogin();
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const navigate = useNavigate();
   const {
     isLogin,
@@ -112,10 +112,14 @@ export default function LensPostCard({ data }: { data: Post }) {
       data={cardData}
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
-      liked={hasUpvote}
+      liked={isLoginU3 && hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -123,7 +127,11 @@ export default function LensPostCard({ data }: { data: Post }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -136,7 +144,11 @@ export default function LensPostCard({ data }: { data: Post }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
