@@ -259,6 +259,9 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   a {
     color: #2594ef;
     text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 export const PostCardActionsWrapper = styled.div`
