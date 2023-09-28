@@ -25,15 +25,18 @@ export default function Home() {
     useActiveProfile();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const onSearch = useCallback(
     (value: string) => {
-      const params = new URLSearchParams();
-      params.append('keyword', value);
-      setSearchParams(params);
+      if (value) {
+        searchParams.set('keyword', value);
+      } else {
+        searchParams.delete('keyword');
+      }
+      setSearchParams(searchParams);
     },
-    [setSearchParams]
+    [searchParams, setSearchParams]
   );
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
@@ -119,7 +122,7 @@ export default function Home() {
 
       {!isMobile && (
         <RightWrapper>
-          <SearchInput placeholder="Search" onSearch={onSearch} />
+          <SearchInput placeholder="Search" onlyOnKeyDown onSearch={onSearch} />
           <SocialWhoToFollow />
         </RightWrapper>
       )}
