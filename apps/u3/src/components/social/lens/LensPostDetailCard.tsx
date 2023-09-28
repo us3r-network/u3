@@ -1,4 +1,11 @@
-import { Post } from '@lens-protocol/react-web';
+import {
+  Post,
+  ProfileOwnedByMe,
+  useActiveProfile,
+  useFollow,
+  useUnfollow,
+  Profile,
+} from '@lens-protocol/react-web';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import PostCard, { PostCardData } from '../PostCard';
@@ -10,6 +17,8 @@ import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import { LensPost } from '../../../api/lens';
 import useLogin from '../../../hooks/useLogin';
+import { getSocialDetailShareUrlWithLens } from '../../../utils/share';
+import { tweetShare } from '../../../utils/twitter';
 
 export default function LensPostDetailCard({ data }: { data: LensPost }) {
   const {
@@ -76,6 +85,18 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
     () => isLogin && !publication?.canMirror?.result,
     [isLogin, publication]
   );
+
+  const { data: lensActiveProfile } = useActiveProfile();
+  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
+    followee: (data.profile || { id: '' }) as Profile,
+    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+  });
+  const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
+    {
+      followee: (data.profile || { id: '' }) as Profile,
+      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+    }
+  );
   return (
     <PostCard
       isDetail
@@ -131,6 +152,54 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
           return;
         }
         createMirror();
+      }}
+      showMenuBtn
+      isFollowed={data.profile?.followStatus?.isFollowedByMe}
+      followPending={lensFollowIsPending}
+      unfollowPending={lensUnfollowPending}
+      followAction={() => {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
+          setOpenLensLoginModal(true);
+          return;
+        }
+        if (lensFollowIsPending || lensUnfollowPending) {
+          return;
+        }
+        if (data.profile?.followStatus?.isFollowedByMe) {
+          lensUnfollow()
+            .then(() => {
+              toast.success('Unfollow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Unfollow failed');
+            });
+        } else {
+          lensFollow()
+            .then(() => {
+              toast.success('Follow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Follow failed');
+            });
+        }
+      }}
+      shareAction={() => {
+        tweetShare(
+          data.metadata.content,
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+      }}
+      copyAction={async () => {
+        await window.navigator.clipboard.writeText(
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+        toast.success('Copy success');
       }}
     />
   );

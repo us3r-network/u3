@@ -8,6 +8,7 @@ import FarcasterIcon from '../icons/FarcasterIcon';
 import PostLike from './PostLike';
 import PostReply from './PostReply';
 import PostReport from './PostReport';
+import { PostCardMenuBtn } from './PostCardMenuBtn';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -38,6 +39,13 @@ interface PostCardProps {
   repostDisabled?: boolean;
   showActions?: boolean;
   isDetail?: boolean;
+  showMenuBtn?: boolean;
+  isFollowed?: boolean;
+  followPending?: boolean;
+  unfollowPending?: boolean;
+  followAction?: () => void;
+  shareAction?: () => void;
+  copyAction?: () => void;
 }
 export default function PostCard({
   data,
@@ -55,11 +63,37 @@ export default function PostCard({
   replyDisabled,
   repostDisabled,
   showActions = true,
+  showMenuBtn,
+  isFollowed,
+  followPending,
+  unfollowPending,
+  followAction,
+  shareAction,
+  copyAction,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   return (
     <PostCardWrapper {...wrapperProps}>
-      <PostCardUserInfo data={data} />
+      <PostCardHeaderWrapper>
+        <PostCardUserInfo data={data} />
+        {showMenuBtn && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostCardMenuBtn
+              data={data}
+              isFollowed={isFollowed}
+              followPending={followPending}
+              unfollowPending={unfollowPending}
+              followAction={followAction}
+              shareAction={shareAction}
+              copyAction={copyAction}
+            />
+          </div>
+        )}
+      </PostCardHeaderWrapper>
       <PostCardContentWrapper>
         {contentRender ? contentRender() : data?.content}
       </PostCardContentWrapper>
@@ -105,6 +139,11 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
     background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
   }
 `;
+export const PostCardHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+`;
 
 export type PostCardUserInfoData = {
   platform: SocailPlatform;
@@ -113,10 +152,13 @@ export type PostCardUserInfoData = {
   handle: string;
   createdAt: string | number;
 };
+export type PostCardUserInfoProps = StyledComponentPropsWithRef<'div'> & {
+  data: PostCardUserInfoData;
+};
 export function PostCardUserInfo({
   data,
   ...wrapperProps
-}: StyledComponentPropsWithRef<'div'> & { data: PostCardUserInfoData }) {
+}: PostCardUserInfoProps) {
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
       case SocailPlatform.Lens:
@@ -127,6 +169,7 @@ export function PostCardUserInfo({
         return null;
     }
   }, [data.platform]);
+
   return (
     <PostCardUserInfoWrapper {...wrapperProps}>
       <Avatar src={data.avatar} />
@@ -143,6 +186,7 @@ export function PostCardUserInfo({
 }
 
 const PostCardUserInfoWrapper = styled.div`
+  flex: 1;
   display: flex;
   align-items: flex-start;
   gap: 10px;
