@@ -251,7 +251,9 @@ export default function Profile() {
           }
           return (
             <KeepAlive
-              cacheKey={`${RouteKey.profile}_social_${wallet}_${profilePageFeedsType}`}
+              cacheKey={`${RouteKey.profile}_social_${
+                wallet || '0x'
+              }_${profilePageFeedsType}`}
               saveScrollPosition="#profile-wrapper"
             >
               <ProfileSocial wallet={wallet} feedsType={profilePageFeedsType} />
