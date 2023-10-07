@@ -7,7 +7,7 @@ import {
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import getAvatar from '../../utils/lens/getAvatar';
 import { SocialButtonPrimaryLine } from './button/SocialButton';
 import { useLensCtx } from '../../contexts/AppLensCtx';
@@ -21,24 +21,25 @@ export default function SocialWhoToFollow() {
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens } = useLensCtx();
   const { data: lensProfiles } = useProfilesToFollow();
-  const lensRecommendedProfiles = lensProfiles
-    ?.filter((profile) => profile.name && profile.name !== '')
-    .slice(0, 5);
+  const lensRecommendedProfiles: Profile[] = useMemo(
+    () =>
+      lensProfiles
+        ?.filter((profile) => profile.name && profile.name !== '')
+        .slice(0, 5),
+    [lensProfiles, isLoginLens]
+  );
   const fid = Number(useFarcasterCurrFid());
   const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
     fid,
   });
-
+  console.log({ fid, isLoginLens, lensProfiles });
   return (
     isLoginU3 &&
     (fid || isLoginLens) && (
       <Wrapper>
         <Title>Who to follow?</Title>
-        {fid &&
-          fid > 0 &&
-          farcasterRecommendedProfileData &&
-          farcasterRecommendedProfileData.recommendedFids &&
-          farcasterRecommendedProfileData.recommendedFids.length > 0 && (
+        {fid > 0 &&
+          farcasterRecommendedProfileData?.recommendedFids?.length > 0 && (
             <FollowListWrapper>
               {farcasterRecommendedProfileData.recommendedFids.map(
                 (recommendedFid) => (
