@@ -32,7 +32,6 @@ export default function SocialWhoToFollow() {
   const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
     fid,
   });
-  console.log({ fid, isLoginLens, lensProfiles });
   return (
     isLoginU3 &&
     (fid || isLoginLens) && (
