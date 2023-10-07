@@ -1,5 +1,5 @@
 import { makeLinkAdd, makeLinkRemove } from '@farcaster/hub-web';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   FARCASTER_NETWORK,
@@ -9,6 +9,8 @@ import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import { getCurrFid } from 'src/utils/farsign-utils';
 
 export default function useFarcasterFollowAction() {
+  const [isPending, setIsPending] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false); // todo: check if following
   const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
   const follow = useCallback(async (targetFid: number) => {
     if (!isConnected) {
@@ -16,6 +18,7 @@ export default function useFarcasterFollowAction() {
       return;
     }
     if (!encryptedSigner) return;
+    setIsPending(true);
     const currFid = getCurrFid();
     try {
       // eslint-disable-next-line no-underscore-dangle
@@ -34,10 +37,12 @@ export default function useFarcasterFollowAction() {
         throw new Error(result.error.message);
       }
       toast.success('successfully followed');
-    } catch (error: any) {
+      setIsFollowing(true);
+    } catch (error: unknown) {
       console.error(error);
       toast.error('failed to followed');
     }
+    setIsPending(false);
   }, []);
 
   const unfollow = useCallback(async (targetFid: number) => {
@@ -46,6 +51,7 @@ export default function useFarcasterFollowAction() {
       return;
     }
     if (!encryptedSigner) return;
+    setIsPending(true);
     const currFid = getCurrFid();
     try {
       // eslint-disable-next-line no-underscore-dangle
@@ -63,14 +69,18 @@ export default function useFarcasterFollowAction() {
       if (result.isErr()) {
         throw new Error(result.error.message);
       }
-      toast.success('successfully followed');
-    } catch (error: any) {
+      toast.success('successfully unfollowed');
+      setIsFollowing(false);
+    } catch (error: unknown) {
       console.error(error);
-      toast.error('failed to followed');
+      toast.error('failed to unfollowed');
     }
+    setIsPending(false);
   }, []);
 
   return {
+    isPending,
+    isFollowing,
     followAction: follow,
     unfollowAction: unfollow,
   };
