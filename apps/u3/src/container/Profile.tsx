@@ -5,6 +5,7 @@ import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { useParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
 import ProfilePageNav from '../components/profile/ProfilePageNav';
 import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
 import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
@@ -100,15 +101,31 @@ export default function Profile() {
     }));
   }, [lensProfileFirst, farcasterFollowData]);
 
+  const { getProfileWithDid } = useProfileState();
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfileLoading, setHasProfileLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (user && !profileAddressLoading && profileAddress) {
+        setHasProfileLoading(true);
+        const profile = await getProfileWithDid(profileAddress);
+        if (profile) {
+          setHasProfile(true);
+        }
+        setHasProfileLoading(false);
+      }
+    })();
+  }, [user, profileAddressLoading, profileAddress]);
+
   if (user) {
-    if (profileAddressLoading) {
+    if (profileAddressLoading || hasProfileLoading) {
       return (
         <LoadingWrapper>
           <Loading />
         </LoadingWrapper>
       );
     }
-    if (!profileAddress) {
+    if (!profileAddress || !hasProfile) {
       return <NotU3User />;
     }
   }
