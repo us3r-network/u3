@@ -216,3 +216,22 @@ export function getFarcasterLinks(
     },
   });
 }
+
+export function getFarcasterRecommendedProfile(
+  fid: string | number,
+  num = 5
+): AxiosPromise<
+  ApiResp<{
+    recommendedFids: string[];
+    farcasterUserData: { fid: string; type: number; value: string }[];
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/recommendedProfile`,
+    method: 'get',
+    params: {
+      fid,
+      num,
+    },
+  });
+}
