@@ -41,6 +41,7 @@ export enum RouteKey {
   save = 'save',
   socialLayout = 'socialLayout',
   social = 'social',
+  socialChannel = 'socialChannel',
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
 }
@@ -225,6 +226,11 @@ export const routes: CutomRouteObject[] = [
         path: '',
         element: loadContainerElement('Social'),
         key: RouteKey.social,
+      },
+      {
+        path: 'channel/:channelName',
+        element: loadContainerElement('SocialChannel'),
+        key: RouteKey.socialChannel,
       },
       {
         path: 'post-detail/lens/:publicationId',

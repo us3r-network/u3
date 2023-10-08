@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 import { isMobile } from 'react-device-detect';
 
@@ -26,6 +31,7 @@ export default function Home() {
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { channelName } = useParams();
 
   const onSearch = useCallback(
     (value: string) => {
@@ -60,17 +66,23 @@ export default function Home() {
     activeLensProfileLoading,
   ]);
 
-  const titleElem = location.pathname.includes('post-detail') ? (
-    <SocialBackNav />
-  ) : (
-    <SocialPageNav
-      showFeedsTabs
-      feedsType={feedsType}
-      onChangeFeedsType={(type) => {
-        setFeedsType(type);
-      }}
-    />
-  );
+  const titleElem = useMemo(() => {
+    if (location.pathname.includes('social/channel') && channelName) {
+      return <SocialBackNav title={channelName} />;
+    }
+    if (location.pathname.includes('post-detail')) {
+      return <SocialBackNav />;
+    }
+    return (
+      <SocialPageNav
+        showFeedsTabs
+        feedsType={feedsType}
+        onChangeFeedsType={(type) => {
+          setFeedsType(type);
+        }}
+      />
+    );
+  }, [location.pathname, feedsType, socialPlatform, channelName]);
 
   const keepAliveSocialOutlet = useMemo(() => {
     const socialCacheKey = getSocialScrollWrapperId(feedsType, socialPlatform);

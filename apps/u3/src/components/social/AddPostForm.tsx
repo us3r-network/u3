@@ -41,8 +41,15 @@ import { ImagePreview } from './ImagePreview';
 import { uploadImage } from '../../services/api/upload';
 import useLogin from '../../hooks/useLogin';
 import getAvatar from '../../utils/lens/getAvatar';
+import { Channel } from '../../services/types/farcaster';
 
-export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
+export default function AddPostForm({
+  onSuccess,
+  channel,
+}: {
+  onSuccess?: () => void;
+  channel?: Channel;
+}) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const {
     encryptedSigner,
@@ -140,6 +147,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
+            parentUrl: channel?.parent_url,
           },
           { fid: currFid, network: FARCASTER_NETWORK },
           encryptedSigner
@@ -154,7 +162,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner]);
+  }, [text, encryptedSigner, channel]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
@@ -310,6 +318,13 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
+          {channel && (
+            <ChannelBox>
+              <span>#</span>
+              <img className="channel-img" src={channel.image} alt="" />
+              <span>{channel.name || channel.channel_description}</span>
+            </ChannelBox>
+          )}
           <Description
             hidden={
               !(
@@ -500,4 +515,16 @@ const SubmitBtn = styled(SocialButtonPrimary)`
   width: 100px;
   height: 40px;
   margin-left: auto;
+`;
+
+const ChannelBox = styled.div`
+  color: #718096;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  .channel-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
 `;
