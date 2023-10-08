@@ -108,7 +108,9 @@ export default function Profile() {
     (async () => {
       if (user && !profileAddressLoading && profileAddress) {
         setHasProfileLoading(true);
-        const profile = await getProfileWithDid(profileAddress);
+        const profile = await getProfileWithDid(
+          getDidPkhWithAddress(profileAddress)
+        );
         if (profile) {
           setHasProfile(true);
         }
