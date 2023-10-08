@@ -63,6 +63,7 @@ interface Props extends StyledComponentPropsWithRef<'div'> {
   debounce?: boolean; // 是否开启防抖 default: true
   debounceMs?: number; // 防抖间隔毫秒数 default: 300
   disabled?: boolean;
+  onlyOnKeyDown?: boolean; // 仅在键盘事件触发
 }
 
 export default function SearchInput({
@@ -71,6 +72,7 @@ export default function SearchInput({
   debounce: needDebounce = true,
   debounceMs = 300,
   disabled,
+  onlyOnKeyDown,
   ...otherProps
 }: Props) {
   const [value, setValue] = useState('');
@@ -83,15 +85,14 @@ export default function SearchInput({
   );
 
   const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setValue(e.target.value);
+    (v: string) => {
       if (needDebounce) {
-        handleDebounceSearch(e.target.value);
+        handleDebounceSearch(v);
       } else {
-        onSearch(e.target.value);
+        onSearch(v);
       }
     },
-    [setValue, needDebounce, handleDebounceSearch]
+    [needDebounce, handleDebounceSearch]
   );
 
   return (
@@ -102,8 +103,23 @@ export default function SearchInput({
         type="search"
         placeholder={placeholder}
         value={value}
-        onChange={handleInputChange}
+        onChange={(e) => {
+          const v = e.target.value;
+          setValue(v);
+          if (!v) {
+            onSearch('');
+            return;
+          }
+          if (!onlyOnKeyDown) {
+            handleInputChange(v);
+          }
+        }}
         disabled={disabled}
+        onKeyDown={(e) => {
+          if (onlyOnKeyDown && e.key === 'Enter') {
+            onSearch(value);
+          }
+        }}
       />
     </Wrapper>
   );

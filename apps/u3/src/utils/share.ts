@@ -20,3 +20,11 @@ export const getDappShareUrl = (id: string | number) => {
 export const getContentShareUrl = (id: string | number) => {
   return `${U3_HOST_URI}/contents/${id}`;
 };
+
+export const getSocialDetailShareUrlWithLens = (id: string | number) => {
+  return `${U3_HOST_URI}/social/post-detail/lens/${id}`;
+};
+
+export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
+  return `${U3_HOST_URI}/social/post-detail/fcast/${id}`;
+};

@@ -1,26 +1,14 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useActiveProfile, useProfilesOwnedBy } from '@lens-protocol/react-web';
-import InfiniteScroll from 'react-infinite-scroll-component';
+import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { useParams } from 'react-router-dom';
-import { useAccount } from 'wagmi';
 import KeepAlive from 'react-activation';
-import ProfilePageNav, {
-  FeedsType,
-} from '../components/profile/ProfilePageNav';
-import { useLoadProfileFeeds } from '../hooks/useLoadProfileFeeds';
-import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
+import ProfilePageNav from '../components/profile/ProfilePageNav';
 import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
 import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
-import Loading from '../components/common/loading/Loading';
-import LensPostCard from '../components/social/lens/LensPostCard';
-import FCast from '../components/social/farcaster/FCast';
-import { useFarcasterCtx } from '../contexts/FarcasterCtx';
-import { ProfileFeedsGroups } from '../api/feeds';
-import { LensComment, LensMirror, LensPost } from '../api/lens';
-import Rss3Content from '../components/fren/Rss3Content';
-import { NoActivity } from './Activity';
 import { LogoutButton } from '../components/layout/LoginButton';
 import useLogin from '../hooks/useLogin';
 import LogoutConfirmModal from '../components/layout/LogoutConfirmModal';
@@ -40,43 +28,33 @@ import { SocailPlatform } from '../api';
 import useFarcasterFollowNum from '../hooks/farcaster/useFarcasterFollowNum';
 import FarcasterFollowing from '../components/profile/farcaster/FarcasterFollowing';
 import FarcasterFollowers from '../components/profile/farcaster/FarcasterFollowers';
-
-function ProfileInfo({
-  clickFollowing,
-  clickFollowers,
-  ...props
-}: StyledComponentPropsWithRef<'div'> & {
-  clickFollowing?: () => void;
-  clickFollowers?: () => void;
-}) {
-  const { address } = useAccount();
-  return (
-    <ProfileInfoWrap {...props}>
-      <ProfileInfoCard
-        address={address}
-        clickFollowing={clickFollowing}
-        clickFollowers={clickFollowers}
-      />
-      <UserWalletsStyled />
-      <UserTagsStyled />
-    </ProfileInfoWrap>
-  );
-}
-const ProfileInfoWrap = styled.div`
-  width: 320px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  & > div {
-    width: 100%;
-  }
-`;
+import useProfileWalletAddress from '../hooks/useProfileWalletAddress';
+import { getAddressWithDidPkh, getDidPkhWithAddress } from '../utils/did';
+import ProfileSocial from '../components/profile/ProfileSocial';
+import Loading from '../components/common/loading/Loading';
 
 export default function Profile() {
-  const { address } = useAccount();
+  const { user } = useParams();
+  const session = useSession();
+  const sessionAddress = useMemo(
+    () => getAddressWithDidPkh(session?.id || ''),
+    [session]
+  );
+  const { address: profileAddress, loading: profileAddressLoading } =
+    useProfileWalletAddress(user);
+  const address = useMemo(
+    () => (user ? profileAddress : sessionAddress),
+    [user, profileAddress, sessionAddress]
+  );
+  const isLoginUser = useMemo(
+    () =>
+      !user || profileAddress?.toLowerCase() === sessionAddress?.toLowerCase(),
+    [user, profileAddress, sessionAddress]
+  );
+
   const { logout } = useLogin();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
-  const { wallet } = useParams();
+
   const { profilePageFeedsType } = useAppSelector(selectWebsite);
   const dispatch = useAppDispatch();
 
@@ -123,11 +101,42 @@ export default function Profile() {
     }));
   }, [lensProfileFirst, farcasterFollowData]);
 
+  const { getProfileWithDid } = useProfileState();
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfileLoading, setHasProfileLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (user && !profileAddressLoading && profileAddress) {
+        setHasProfileLoading(true);
+        const profile = await getProfileWithDid(
+          getDidPkhWithAddress(profileAddress)
+        );
+        if (profile) {
+          setHasProfile(true);
+        }
+        setHasProfileLoading(false);
+      }
+    })();
+  }, [user, profileAddressLoading, profileAddress]);
+
+  if (user) {
+    if (profileAddressLoading || hasProfileLoading) {
+      return (
+        <LoadingWrapper>
+          <Loading />
+        </LoadingWrapper>
+      );
+    }
+    if (!profileAddress || !hasProfile) {
+      return <NotU3User />;
+    }
+  }
+
   return (
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
         <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile />
+          <ProfileInfoMobile address={address} />
           <LogoutButton
             className="logout-button"
             onClick={() => {
@@ -197,6 +206,7 @@ export default function Profile() {
         {!isMobile && (
           <MainLeft>
             <ProfileInfo
+              address={address}
               clickFollowing={() => {
                 setFollowNavData((prevData) => ({
                   ...prevData,
@@ -212,12 +222,14 @@ export default function Profile() {
                 }));
               }}
             />
-            <LogoutButton
-              className="logout-button"
-              onClick={() => {
-                setOpenLogoutConfirm(true);
-              }}
-            />
+            {isLoginUser && (
+              <LogoutButton
+                className="logout-button"
+                onClick={() => {
+                  setOpenLogoutConfirm(true);
+                }}
+              />
+            )}
           </MainLeft>
         )}
 
@@ -251,16 +263,22 @@ export default function Profile() {
           }
           return (
             <KeepAlive
-              cacheKey={`${RouteKey.profile}_social_${wallet}_${profilePageFeedsType}`}
+              cacheKey={`${RouteKey.profile}_social_${
+                address || '0x'
+              }_${profilePageFeedsType}`}
               saveScrollPosition="#profile-wrapper"
             >
-              <ProfileSocial wallet={wallet} feedsType={profilePageFeedsType} />
+              <ProfileSocial
+                wallet={address}
+                feedsType={profilePageFeedsType}
+              />
             </KeepAlive>
           );
         })()}
 
         {!isMobile && <MainRight />}
       </MainWrapper>
+
       <LogoutConfirmModal
         isOpen={openLogoutConfirm}
         onClose={() => {
@@ -275,149 +293,61 @@ export default function Profile() {
   );
 }
 
-function ProfileSocial({
-  wallet,
-  feedsType,
-}: {
-  wallet: string;
-  feedsType: FeedsType;
+function ProfileInfo({
+  clickFollowing,
+  clickFollowers,
+  address,
+  ...props
+}: StyledComponentPropsWithRef<'div'> & {
+  clickFollowing?: () => void;
+  clickFollowers?: () => void;
+  address: string;
 }) {
-  const {
-    openFarcasterQR,
-    farcasterUserData,
-    isConnected: isConnectedFarcaster,
-  } = useFarcasterCtx();
-  const { data: activeLensProfile, loading: activeLensProfileLoading } =
-    useActiveProfile();
-
-  const fid = useFarcasterCurrFid();
-  const {
-    firstLoading,
-    moreLoading,
-    feeds,
-    pageInfo,
-    loadFirstFeeds,
-    loadMoreFeeds,
-  } = useLoadProfileFeeds();
-
-  const loadFirstSocialFeeds = useCallback(() => {
-    if (feedsType === FeedsType.ACTIVITIES) return;
-    loadFirstFeeds({
-      activeLensProfileId: activeLensProfile?.id,
-      lensProfileId: activeLensProfile?.id,
-      fid: isConnectedFarcaster ? fid : undefined,
-      group: feedsType as unknown as ProfileFeedsGroups,
-    });
-  }, [
-    loadFirstFeeds,
-    activeLensProfile?.id,
-    fid,
-    feedsType,
-    wallet,
-    isConnectedFarcaster,
-  ]);
-
-  const loadMoreSocialFeeds = useCallback(() => {
-    if (feedsType === FeedsType.ACTIVITIES) return;
-    loadMoreFeeds({
-      activeLensProfileId: activeLensProfile?.id,
-      lensProfileId: activeLensProfile?.id,
-      fid: isConnectedFarcaster ? fid : undefined,
-      group: feedsType as unknown as ProfileFeedsGroups,
-    });
-  }, [
-    loadMoreFeeds,
-    activeLensProfile?.id,
-    fid,
-    feedsType,
-    wallet,
-    isConnectedFarcaster,
-  ]);
-
-  useEffect(() => {
-    if (activeLensProfileLoading) return;
-    loadFirstSocialFeeds();
-  }, [activeLensProfileLoading, loadFirstSocialFeeds]);
+  const did = useMemo(() => getDidPkhWithAddress(address), [address]);
   return (
-    <MainCenter>
-      {(() => {
-        if (feedsType === FeedsType.ACTIVITIES) {
-          return (
-            <Rss3Content
-              empty={
-                <NoActivityWrapper>
-                  <NoActivity />
-                </NoActivityWrapper>
-              }
-            />
-          );
-        }
-
-        if (firstLoading) {
-          return (
-            <LoadingWrapper>
-              <Loading />
-            </LoadingWrapper>
-          );
-        }
-
-        return (
-          <InfiniteScroll
-            dataLength={feeds.length}
-            next={() => {
-              if (moreLoading) return;
-              loadMoreSocialFeeds();
-            }}
-            hasMore={!firstLoading && pageInfo.hasNextPage}
-            loader={
-              moreLoading ? (
-                <LoadingMoreWrapper>
-                  <Loading />
-                </LoadingMoreWrapper>
-              ) : null
-            }
-            scrollableTarget="profile-wrapper"
-          >
-            <PostList>
-              {feeds.map(({ platform, data }) => {
-                if (platform === 'lens') {
-                  let d;
-                  switch (feedsType) {
-                    case FeedsType.POSTS:
-                      d = data as LensPost;
-                      break;
-                    case FeedsType.REPOSTS:
-                      d = (data as LensMirror).mirrorOf;
-                      break;
-                    case FeedsType.REPLIES:
-                      d = (data as LensComment).commentOn;
-                      break;
-                    default:
-                      break;
-                  }
-                  if (!d) return null;
-                  return <LensPostCard key={d.id} data={d} />;
-                }
-                if (platform === 'farcaster') {
-                  const key = Buffer.from(data.hash.data).toString('hex');
-                  return (
-                    <FCast
-                      key={key}
-                      cast={data}
-                      openFarcasterQR={openFarcasterQR}
-                      farcasterUserData={farcasterUserData}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </PostList>
-          </InfiniteScroll>
-        );
-      })()}
-    </MainCenter>
+    <ProfileInfoWrap {...props}>
+      <ProfileInfoCard
+        address={address}
+        clickFollowing={clickFollowing}
+        clickFollowers={clickFollowers}
+      />
+      <UserWalletsStyled did={did} />
+      <UserTagsStyled did={did} />
+    </ProfileInfoWrap>
   );
 }
+const ProfileInfoWrap = styled.div`
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  & > div {
+    width: 100%;
+  }
+`;
+
+function NotU3User() {
+  return (
+    <ProfileWrapper>
+      <NotU3UserText>NOT u3 user</NotU3UserText>
+    </ProfileWrapper>
+  );
+}
+const NotU3UserText = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #718096;
+  text-align: center;
+  font-family: Rubik;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+`;
+
 const ProfileWrapper = styled.div`
   width: 100%;
   height: 100%;
@@ -459,9 +389,6 @@ const MainLeft = styled.div`
   max-height: calc(100vh - 40px);
   overflow-y: auto;
 `;
-const MainCenter = styled.div`
-  width: 600px;
-`;
 const MainRight = styled.div`
   flex: 1;
   display: flex;
@@ -471,40 +398,11 @@ const MainRight = styled.div`
   top: 0;
   height: fit-content;
 `;
+
 const LoadingWrapper = styled.div`
   width: 100%;
   height: 80vh;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-const LoadingMoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  /* border-top-right-radius: 0;
-  border-top-left-radius: 0; */
-  background: #212228;
-  overflow: hidden;
-  /* & > *:not(:first-child) { */
-  /* border-top: 1px solid #718096; */
-  /* } */
-`;
-const NoActivityWrapper = styled.div`
-  .no-item {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
 `;

@@ -1,7 +1,7 @@
 import { UserInfo, UserInfoEditForm } from '@us3r-network/profile';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Profile,
@@ -9,7 +9,6 @@ import {
   useFollow,
   useProfilesOwnedBy,
 } from '@lens-protocol/react-web';
-import { useSession } from '@us3r-network/auth-with-rainbowkit';
 
 import { getFarcasterFollow } from 'src/api/farcaster';
 
@@ -47,14 +46,11 @@ export default function ProfileInfoCard({
   clickFollowers,
   ...wrapperProps
 }: ProfileInfoCardProps) {
-  const session = useSession();
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const { currFid, farcasterUserData } = useFarcasterCtx();
   const { farcasterFollowData } = useFarcasterFollowNum();
 
   const did = useMemo(() => getDidPkhWithAddress(address), [address]);
-
-  const isLoginUser = useMemo(() => session?.id === did, [session, did]);
 
   const { data: lensProfiles } = useProfilesOwnedBy({
     address,
@@ -119,7 +115,7 @@ export default function ProfileInfoCard({
       !lensFollowIsPending &&
       lensProfileFirst &&
       !lensProfileFirst.isFollowedByMe &&
-      lensProfileFirst.followStatus.canFollow
+      lensProfileFirst?.followStatus?.canFollow
     ) {
       try {
         await lensFollow();
@@ -132,100 +128,112 @@ export default function ProfileInfoCard({
     // TODO farcaster平台的follow
   }, [lensProfileFirst, lensFollow, lensFollowIsPending]);
 
-  const showFollowBtn = useMemo(() => {
-    return !isLoginUser;
-  }, [isLoginUser]);
-
   const canMesssage = useCanMessage(address);
-  const showMessageBtn = useMemo(() => {
-    return !isLoginUser && canMesssage;
-  }, [isLoginUser, canMesssage]);
 
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
   return (
     <ProfileInfoCardWrapper did={did} {...wrapperProps}>
-      <ProfileInfoBasicWrapper>
-        <UserAvatar
-          isLoginUser={isLoginUser}
-          onClick={() => {
-            if (!isLoginUser) return;
-            setIsOpenEdit(true);
-          }}
-        />
-        <BasicCenter>
-          <UserInfo.Name />
-          {address && (
-            <AddressWrapper
-              onClick={() => {
-                navigator.clipboard.writeText(address).then(() => {
-                  toast.success('Copied!');
-                });
-              }}
-            >
-              <Address>{shortPubKey(address)}</Address>
-              <Copy />
-            </AddressWrapper>
-          )}
-        </BasicCenter>
-      </ProfileInfoBasicWrapper>
+      {({ isLoginUser }) => {
+        const showFollowBtn = !isLoginUser;
+        const showMessageBtn = !isLoginUser && canMesssage;
+        return (
+          <>
+            <ProfileInfoBasicWrapper>
+              <UserAvatar
+                did={did}
+                isLoginUser={isLoginUser}
+                onClick={() => {
+                  if (!isLoginUser) return;
+                  setIsOpenEdit(true);
+                }}
+              />
+              <BasicCenter>
+                <UserInfo.Name did={did} />
+                {address && (
+                  <AddressWrapper
+                    onClick={() => {
+                      navigator.clipboard.writeText(address).then(() => {
+                        toast.success('Copied!');
+                      });
+                    }}
+                  >
+                    <Address>{shortPubKey(address)}</Address>
+                    <Copy />
+                  </AddressWrapper>
+                )}
+              </BasicCenter>
+            </ProfileInfoBasicWrapper>
 
-      <PlatformAccounts data={platformAccounts} />
+            <PlatformAccounts data={platformAccounts} />
 
-      <UserInfo.Bio />
+            <UserInfo.Bio />
 
-      <CountsWrapper>
-        <CountItem onClick={clickFollowers}>
-          <Count>{followersCount}</Count>
-          <CountText>Followers</CountText>
-        </CountItem>
-        <CountItem onClick={clickFollowing}>
-          <Count>{followingCount}</Count>
-          <CountText>Following</CountText>
-        </CountItem>
-      </CountsWrapper>
+            <CountsWrapper>
+              <CountItem onClick={clickFollowers}>
+                <Count>{followersCount}</Count>
+                <CountText>Followers</CountText>
+              </CountItem>
+              <CountItem onClick={clickFollowing}>
+                <Count>{followingCount}</Count>
+                <CountText>Following</CountText>
+              </CountItem>
+            </CountsWrapper>
 
-      {(showFollowBtn || showMessageBtn) && (
-        <BtnsWrapper>
-          {showFollowBtn && <FollowBtn onClick={onFollow}>Follow</FollowBtn>}
+            {(showFollowBtn || showMessageBtn) && (
+              <BtnsWrapper>
+                {showFollowBtn && (
+                  <FollowBtn onClick={onFollow}>Follow</FollowBtn>
+                )}
 
-          {showMessageBtn && (
-            <MessageBtn
-              onClick={() => {
-                setOpenMessageModal(true);
-                setMessageRouteParams({
-                  route: MessageRoute.DETAIL,
-                  peerAddress: address,
-                });
-              }}
-            >
-              <MessageChatSquareSvg />
-            </MessageBtn>
-          )}
-        </BtnsWrapper>
-      )}
+                {showMessageBtn && (
+                  <MessageBtn
+                    onClick={() => {
+                      setOpenMessageModal(true);
+                      setMessageRouteParams({
+                        route: MessageRoute.DETAIL,
+                        peerAddress: address,
+                      });
+                    }}
+                  >
+                    <MessageChatSquareSvg />
+                  </MessageBtn>
+                )}
+              </BtnsWrapper>
+            )}
 
-      <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
-        <Dialog>
-          <Heading>Edit Info</Heading>
-          <UserInfoEditFormWrapper
-            avatarUploadOpts={getAvatarUploadOpts()}
-            onSuccessfullySubmit={() => {
-              setIsOpenEdit(false);
-            }}
-          >
-            <UserInfoEditForm.AvatarField />
+            {isLoginUser && (
+              <Modal
+                isDismissable
+                isOpen={isOpenEdit}
+                onOpenChange={setIsOpenEdit}
+              >
+                <Dialog>
+                  <Heading>Edit Info</Heading>
+                  <UserInfoEditFormWrapper
+                    avatarUploadOpts={getAvatarUploadOpts()}
+                    onSuccessfullySubmit={() => {
+                      setIsOpenEdit(false);
+                    }}
+                  >
+                    <UserInfoEditForm.AvatarField />
 
-            <UserInfoEditForm.NameInput />
+                    <UserInfoEditForm.NameInput />
 
-            <UserInfoEditForm.BioTextArea />
+                    <UserInfoEditForm.BioTextArea />
 
-            <UserInfoEditForm.SubmitButton>save</UserInfoEditForm.SubmitButton>
+                    <UserInfoEditForm.SubmitButton>
+                      save
+                    </UserInfoEditForm.SubmitButton>
 
-            <UserInfoEditForm.ErrorMessage />
-          </UserInfoEditFormWrapper>
-        </Dialog>
-      </Modal>
+                    <UserInfoEditForm.ErrorMessage />
+                  </UserInfoEditFormWrapper>
+                </Dialog>
+              </Modal>
+            )}
+          </>
+        );
+      }}
     </ProfileInfoCardWrapper>
   );
 }

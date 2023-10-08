@@ -28,7 +28,7 @@ export enum RouteKey {
   favorite = 'favorite',
   frens = 'frens',
   profile = 'profile',
-  profileWallet = 'profileWallet',
+  profileByUser = 'profileByUser',
   noMatch = 'noMatch',
   policy = 'policy',
   web3Today = 'web3Today',
@@ -131,8 +131,13 @@ export const routes: CutomRouteObject[] = [
   {
     path: '/profile',
     element: loadContainerElement('Profile'),
-    key: RouteKey.profileWallet,
+    key: RouteKey.profile,
     permissions: [RoutePermission.login],
+  },
+  {
+    path: '/profile/:user',
+    element: loadContainerElement('Profile'),
+    key: RouteKey.profileByUser,
   },
   {
     path: '/events',
