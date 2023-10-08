@@ -37,7 +37,7 @@ export default function Profile() {
   const { user } = useParams();
   const session = useSession();
   const sessionAddress = useMemo(
-    () => getAddressWithDidPkh(session.id),
+    () => getAddressWithDidPkh(session?.id || ''),
     [session]
   );
   const { address: profileAddress, loading: profileAddressLoading } =
