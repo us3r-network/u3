@@ -235,3 +235,29 @@ export function getFarcasterRecommendedProfile(
     },
   });
 }
+
+export function getFarcasterChannelFeeds({
+  channelName,
+  endFarcasterCursor,
+  pageSize,
+}: {
+  channelName: string;
+  endFarcasterCursor?: string;
+  pageSize?: number;
+}): AxiosPromise<
+  ApiResp<{
+    data: { data: FarCast; platform: 'farcaster' }[];
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel`,
+    method: 'get',
+    params: {
+      name: channelName,
+      endFarcasterCursor,
+      pageSize,
+    },
+  });
+}

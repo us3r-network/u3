@@ -45,7 +45,7 @@ export default function SocialPageNav({
   );
 }
 
-export function SocialBackNav() {
+export function SocialBackNav({ title = 'Post' }: { title?: string }) {
   const navigate = useNavigate();
   return (
     <SocialNavWrapper>
@@ -64,7 +64,7 @@ export function SocialBackNav() {
         >
           <ArrowLeft />
         </button>
-        <span>Post</span>
+        <span>{title}</span>
       </SocialNavCenter>
       {!isMobile && <SocialNavRight />}
     </SocialNavWrapper>
