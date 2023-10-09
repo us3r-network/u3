@@ -14,6 +14,7 @@ export type FarcasterNotification = {
   hash?: Buffer;
   text?: string;
   userData: unknown;
+  parent_hash?: Buffer;
 };
 
 export type FarcasterPageInfo = {

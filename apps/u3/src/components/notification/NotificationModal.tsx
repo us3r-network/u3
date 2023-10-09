@@ -113,7 +113,7 @@ export function FarcasterNotificationItem({
           onClick={() => {
             navigate(
               `/social/post-detail/fcast/${Buffer.from(
-                notification.hash
+                notification.parent_hash
               ).toString('hex')}`
             );
             setOpenNotificationModal(false);
