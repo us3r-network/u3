@@ -318,13 +318,14 @@ export default function AddPostForm({
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
-          {channel && (
-            <ChannelBox>
-              <span>#</span>
-              <img className="channel-img" src={channel.image} alt="" />
-              <span>{channel.name || channel.channel_description}</span>
-            </ChannelBox>
-          )}
+          {channel &&
+            // <ChannelBox>
+            //   <span>#</span>
+            //   <img className="channel-img" src={channel.image} alt="" />
+            //   <span>{channel.name || channel.channel_description}</span>
+            // </ChannelBox>
+            // <ChannelSelect channel={channel} />
+            null}
           <Description
             hidden={
               !(

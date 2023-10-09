@@ -157,6 +157,7 @@ const Title = styled.h1`
 `;
 const FollowListWrapper = styled.div`
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   /* gap: 20px; */
