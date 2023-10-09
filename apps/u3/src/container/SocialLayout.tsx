@@ -22,6 +22,7 @@ import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
+import TrendChannel from '../components/social/farcaster/TrendChannel';
 
 export default function Home() {
   const location = useLocation();
@@ -135,7 +136,11 @@ export default function Home() {
       {!isMobile && (
         <RightWrapper>
           <SearchInput placeholder="Search" onlyOnKeyDown onSearch={onSearch} />
-          <SocialWhoToFollow />
+          <div className="recommend">
+            <SocialWhoToFollow />
+            <TrendChannel />
+            <br />
+          </div>
         </RightWrapper>
       )}
     </HomeWrapper>
@@ -211,4 +216,12 @@ const RightWrapper = styled(MainRight)`
   top: 116px;
   right: 24px;
   height: fit-content;
+
+  > .recommend {
+    overflow: scroll;
+    height: calc(100vh - 96px - 40px - 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
