@@ -13,6 +13,7 @@ import {
 } from '../components/social/PostDetail';
 import Loading from '../components/common/loading/Loading';
 import FarcasterCommentForm from '../components/social/farcaster/FarcasterCommentForm';
+import { scrollToAnchor } from '../utils/scrollToAnchor';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
@@ -69,6 +70,7 @@ export default function FarcasterPostDetail() {
     );
   }
   if (cast) {
+    scrollToAnchor(window.location.hash.split('#')[1]);
     return (
       <DetailBox>
         <PostDetailWrapper isMobile={isMobile}>
