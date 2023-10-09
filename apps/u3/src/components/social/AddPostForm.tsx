@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   ClipboardEvent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -42,6 +43,7 @@ import { uploadImage } from '../../services/api/upload';
 import useLogin from '../../hooks/useLogin';
 import getAvatar from '../../utils/lens/getAvatar';
 import { Channel } from '../../services/types/farcaster';
+import ChannelSelect from './ChannelSelect';
 
 export default function AddPostForm({
   onSuccess,
@@ -62,6 +64,9 @@ export default function AddPostForm({
   const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
+  const [channelValue, setChannelValue] = useState(
+    channel?.name || channel?.channel_description || 'Home'
+  );
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -147,7 +152,8 @@ export default function AddPostForm({
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
-            parentUrl: channel?.parent_url,
+            parentUrl:
+              channelValue === 'Home' ? undefined : channel?.parent_url,
           },
           { fid: currFid, network: FARCASTER_NETWORK },
           encryptedSigner
@@ -162,7 +168,7 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner, channel]);
+  }, [text, encryptedSigner, channel, channelValue]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
@@ -197,6 +203,12 @@ export default function AddPostForm({
     cleanImage();
     if (onSuccess) onSuccess();
   }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
+
+  useEffect(() => {
+    if (channel) {
+      setChannelValue(channel.name || channel.channel_description || 'Home');
+    }
+  }, [channel]);
 
   return (
     <Wrapper>
@@ -318,14 +330,15 @@ export default function AddPostForm({
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
-          {channel &&
-            // <ChannelBox>
-            //   <span>#</span>
-            //   <img className="channel-img" src={channel.image} alt="" />
-            //   <span>{channel.name || channel.channel_description}</span>
-            // </ChannelBox>
-            // <ChannelSelect channel={channel} />
-            null}
+          {channel && (
+            <ChannelSelect
+              channel={channel}
+              selectChannelName={channelValue}
+              setSelectChannelName={(v) => {
+                setChannelValue(v);
+              }}
+            />
+          )}
           <Description
             hidden={
               !(

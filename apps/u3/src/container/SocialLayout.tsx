@@ -139,6 +139,7 @@ export default function Home() {
           <div className="recommend">
             <SocialWhoToFollow />
             <TrendChannel />
+            <br />
           </div>
         </RightWrapper>
       )}
@@ -218,7 +219,7 @@ const RightWrapper = styled(MainRight)`
 
   > .recommend {
     overflow: scroll;
-    height: calc(100vh - 96px - 40px - 40px - 10px);
+    height: calc(100vh - 96px - 40px - 40px);
     display: flex;
     flex-direction: column;
     gap: 20px;

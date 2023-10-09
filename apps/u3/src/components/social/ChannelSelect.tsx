@@ -10,9 +10,18 @@ import {
   SelectValue,
 } from 'react-aria-components';
 import ArrowDown from '../icons/ArrowDown';
+import ChannelHome from '../icons/ChannelHome';
 
-export default function ChannelSelect({ channel }: { channel: Channel }) {
-  const [value, setValue] = useState('Home');
+export default function ChannelSelect({
+  channel,
+  selectChannelName,
+  setSelectChannelName,
+}: {
+  channel: Channel;
+  selectChannelName: string;
+  setSelectChannelName: (name: string) => void;
+}) {
+  // const [value, setValue] = useState('Home');
   const options = useMemo(() => {
     return [
       {
@@ -27,10 +36,9 @@ export default function ChannelSelect({ channel }: { channel: Channel }) {
   }, [channel]);
   return (
     <SelectStyled
-      selectedKey={value}
+      selectedKey={selectChannelName}
       onSelectionChange={(k) => {
-        console.log(k);
-        setValue(k as string);
+        setSelectChannelName(k as string);
       }}
       aria-label="Select a channel"
     >
@@ -40,7 +48,22 @@ export default function ChannelSelect({ channel }: { channel: Channel }) {
       </ButtonStyled>
       <PopoverStyled>
         <ListBox items={options}>
-          {(item) => <ItemStyled id={item.name}>{item.name}</ItemStyled>}
+          {(item) => (
+            <ItemStyled id={item.name} textValue={item.name}>
+              <div className="item">
+                {(item.image && (
+                  <span>
+                    <img src={item.image} alt={item.name} />
+                  </span>
+                )) || (
+                  <span>
+                    <ChannelHome />
+                  </span>
+                )}
+                <span>{item.name}</span>
+              </div>
+            </ItemStyled>
+          )}
         </ListBox>
       </PopoverStyled>
     </SelectStyled>
@@ -55,6 +78,7 @@ const SelectStyled = styled(Select)`
   font-size: 16px;
   line-height: 24px;
   position: relative;
+  width: 100px;
   > span {
     font-weight: 500;
     font-size: 16px;
@@ -66,38 +90,58 @@ const SelectStyled = styled(Select)`
 const ButtonStyled = styled(Button)`
   background: #1a1e23;
   cursor: pointer;
-  border: 1px solid #39424c;
-  border-radius: 12px;
-  padding: 0px 14px 0px 16px;
-  height: 48px;
+  border: none;
+  padding: 5px;
+  width: 100px;
+  border-radius: 4px;
+  height: 20px;
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
   outline: none;
   > span {
-    font-weight: 400;
-    font-size: 16px;
-    line-height: 24px;
-
-    color: #ffffff;
+    color: #fff;
+    font-family: Rubik;
+    font-size: 10px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
   }
   &:disabled {
     cursor: not-allowed;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    > span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 5px;
+      > svg {
+        width: 12px;
+        height: 12px;
+      }
+      > img {
+        width: 12px;
+        height: 12px;
+      }
+    }
   }
 `;
 
 const PopoverStyled = styled(Popover)`
   background: #1b1e23;
-  border: 1px solid #39424c;
+  border: none;
   width: 100px;
   border-radius: 10px;
 
   &[data-placement='top'] {
-    --origin: translateY(8px);
+    --origin: translateY(4px);
   }
 
   &[data-placement='bottom'] {
-    --origin: translateY(-8px);
+    --origin: translateY(-4px);
   }
 
   &[data-entering] {
@@ -123,7 +167,7 @@ const PopoverStyled = styled(Popover)`
 
 const ItemStyled = styled(Item)`
   margin: 0px;
-  padding: 15px 20px;
+  color: #fff;
   border-radius: 6px;
   outline: none;
   cursor: default;
@@ -143,10 +187,36 @@ const ItemStyled = styled(Item)`
   }
 
   [slot='label'] {
-    font-weight: bold;
+    font-weight: normal;
   }
 
   [slot='description'] {
     font-size: small;
+  }
+
+  .item {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    > span {
+      display: flex;
+      align-items: center;
+      color: #fff;
+      font-family: Rubik;
+      font-size: 10px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+      margin-right: 5px;
+      > svg {
+        width: 12px;
+        height: 12px;
+      }
+      > img {
+        width: 10px;
+        height: 10px;
+        margin: 1px;
+      }
+    }
   }
 `;
