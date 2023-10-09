@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { debounce } from 'lodash';
+import { debounce, uniqBy } from 'lodash';
 
 import {
   FarcasterNotification,
@@ -44,7 +44,9 @@ export default function useFarcasterNotifications(
           temp[item.fid] = [item];
         }
       });
-      setFarcasterNotifications([...farcasterNotifications, ...notifications]);
+      setFarcasterNotifications(
+        uniqBy([...farcasterNotifications, ...notifications], 'id')
+      );
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
         setHasMore(pageInfo.hasNextPage);
@@ -81,7 +83,7 @@ export default function useFarcasterNotifications(
           temp[item.fid] = [item];
         }
       });
-      setFarcasterNotifications(notifications);
+      setFarcasterNotifications(uniqBy(notifications, 'id'));
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
         setHasMore(pageInfo.hasNextPage);
