@@ -85,6 +85,7 @@ export default function FCast({
 
   return (
     <PostCardWrapper
+      id={Buffer.from(cast.hash.data).toString('hex')}
       isDetail={isDetail}
       onClick={() => {
         if (isDetail) return;

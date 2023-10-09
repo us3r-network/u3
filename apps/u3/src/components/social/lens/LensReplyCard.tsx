@@ -74,6 +74,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
   );
   return (
     <ReplyCard
+      id={updatedPublication?.id}
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => (
         <LensPostCardContent publication={updatedPublication} />

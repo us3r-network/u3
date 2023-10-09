@@ -23,6 +23,7 @@ import {
 } from '../components/social/PostDetail';
 import Loading from '../components/common/loading/Loading';
 import getAvatar from '../utils/lens/getAvatar';
+import { scrollToAnchor } from '../utils/scrollToAnchor';
 
 export default function LensPostDetail() {
   const { publicationId: pid } = useParams();
@@ -70,6 +71,7 @@ export default function LensPostDetail() {
   }
 
   if (publication) {
+    scrollToAnchor(window.location.hash.split('#')[1]);
     return (
       <PostDetailWrapper isMobile={isMobile}>
         <LensPostDetailCard data={publication} />
