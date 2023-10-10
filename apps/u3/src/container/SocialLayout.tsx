@@ -128,14 +128,14 @@ export default function Home() {
           <MainLeft />
           <MainCenter>
             <MainOutletWrapper>
-              <Outlet />
+              <Outlet context={{ socialPlatform }} />
             </MainOutletWrapper>
           </MainCenter>
           <MainRight />
         </MainWrapper>
       </DetailMainWrapper>
     );
-  }, [socialPlatform, feedsType]);
+  }, [socialPlatform]);
 
   const isPostDetail = location.pathname.includes('post-detail');
   const isSuggestFollow = location.pathname.includes('suggest-follow');

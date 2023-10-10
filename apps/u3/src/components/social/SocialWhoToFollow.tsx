@@ -10,7 +10,6 @@ import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowActi
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import getAvatar from '../../utils/lens/getAvatar';
-import { SocialButtonPrimaryLine } from './button/SocialButton';
 import { useLensCtx } from '../../contexts/AppLensCtx';
 import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
@@ -91,7 +90,10 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
     <FollowItemWrapper>
       <Avatar src={getAvatar(profile)} />
       <NameHandleWraper>
-        <NameText>{name}</NameText>
+        <NameText>
+          {name}
+          <LensIcon />
+        </NameText>
         <HandleText>@{handle}</HandleText>
       </NameHandleWraper>
       {!isFollowing ? (
@@ -103,7 +105,6 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
           }}
           disabled={isPending}
         >
-          <LensIcon />
           {isPending ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
@@ -135,12 +136,14 @@ function FarcasterFollowItem({
     <FollowItemWrapper>
       <Avatar src={userData.pfp} />
       <NameHandleWraper>
-        <NameText>{userData.display}</NameText>
+        <NameText>
+          {userData.display}
+          <FarcasterIcon />
+        </NameText>
         <HandleText>@{userData.userName}</HandleText>
       </NameHandleWraper>
       {!isFollowing ? (
         <FollowBtn onClick={() => follow(fid)} disabled={isPending}>
-          <FarcasterIcon />
           {isPending ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
@@ -185,7 +188,6 @@ const FollowListWrapper = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  /* gap: 20px; */
   border: 1px solid #718096;
   border-radius: 20px;
   background-color: #212228;
@@ -206,7 +208,6 @@ const Avatar = styled.img`
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  margin-top: 6px;
   object-fit: cover;
 `;
 const NameHandleWraper = styled.div`
@@ -221,6 +222,10 @@ const NameText = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
 `;
 const HandleText = styled.div`
   font-size: 12px;
@@ -229,10 +234,24 @@ const HandleText = styled.div`
   font-weight: 500;
   line-height: 0;
 `;
-const FollowBtn = styled(SocialButtonPrimaryLine)`
+const FollowBtn = styled.button`
   width: 80px;
   height: 40px;
   gap: 4px;
+  background-color: #14171a;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
 `;
 const FollowedText = styled.div`
   font-size: 12px;
