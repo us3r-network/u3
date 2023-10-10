@@ -44,6 +44,7 @@ export enum RouteKey {
   socialChannel = 'socialChannel',
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
+  socialSuggestFollow = 'socialSuggestFollow',
 }
 export enum RoutePermission {
   login = 'login',
@@ -246,6 +247,11 @@ export const routes: CutomRouteObject[] = [
         path: 'post-detail/fcast/:castId',
         element: loadContainerElement('FarcasterPostDetail'),
         key: RouteKey.socialPostDetailFcast,
+      },
+      {
+        path: 'suggest-follow',
+        element: loadContainerElement('SocialSuggestFollow'),
+        key: RouteKey.socialSuggestFollow,
       },
     ],
   },

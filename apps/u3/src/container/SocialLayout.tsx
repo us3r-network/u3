@@ -74,6 +74,9 @@ export default function Home() {
     if (location.pathname.includes('post-detail')) {
       return <SocialBackNav />;
     }
+    if (location.pathname.includes('suggest-follow')) {
+      return <SocialBackNav title="Suggest Profiles" />;
+    }
     return (
       <SocialPageNav
         showFeedsTabs
@@ -117,7 +120,26 @@ export default function Home() {
       </DetailMainWrapper>
     );
   }, [socialPlatform, feedsType]);
+
+  const SuggestFollowOutlet = useMemo(() => {
+    return (
+      <DetailMainWrapper>
+        <MainWrapper>
+          <MainLeft />
+          <MainCenter>
+            <MainOutletWrapper>
+              <Outlet />
+            </MainOutletWrapper>
+          </MainCenter>
+          <MainRight />
+        </MainWrapper>
+      </DetailMainWrapper>
+    );
+  }, [socialPlatform, feedsType]);
+
   const isPostDetail = location.pathname.includes('post-detail');
+  const isSuggestFollow = location.pathname.includes('suggest-follow');
+
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
@@ -131,7 +153,11 @@ export default function Home() {
         </LeftWrapper>
       )}
 
-      {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
+      {isPostDetail
+        ? PostDetailOutlet
+        : isSuggestFollow
+        ? SuggestFollowOutlet
+        : keepAliveSocialOutlet}
 
       {!isMobile && (
         <RightWrapper>
