@@ -286,6 +286,16 @@ export const PostCardImgWrapper = styled.div<{ len: number }>`
     cursor: pointer;
   }
 `;
+export const PostCardAudioWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
+`;
+
+export const PostCardVideoWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
+  height: 120px;
+`;
 
 export const PostCardCastWrapper = styled.div`
   border-radius: 10px;
