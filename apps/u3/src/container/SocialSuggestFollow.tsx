@@ -7,20 +7,26 @@ import {
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import getAvatar from '../../utils/lens/getAvatar';
-import { SocialButtonPrimaryLine } from './button/SocialButton';
-import { useLensCtx } from '../../contexts/AppLensCtx';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import useFarcasterRecommendedProfile from '../../hooks/farcaster/useFarcasterRecommendedProfile';
-import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
-import useLogin from '../../hooks/useLogin';
+import { useMemo, useState, useEffect } from 'react';
+import getAvatar from '../utils/lens/getAvatar';
+import { SocialButtonPrimary } from '../components/social/button/SocialButton';
+import { useLensCtx } from '../contexts/AppLensCtx';
+import LensIcon from '../components/icons/LensIcon';
+import FarcasterIcon from '../components/icons/FarcasterIcon';
+import useFarcasterRecommendedProfile from '../hooks/farcaster/useFarcasterRecommendedProfile';
+import useFarcasterUserData from '../hooks/farcaster/useFarcasterUserData';
+import useLogin from '../hooks/useLogin';
 
-const SUGGEST_NUM = 3;
-export default function SocialWhoToFollow() {
-  const navigate = useNavigate();
+import Loading from '../components/common/loading/Loading';
+
+const SUGGEST_NUM = 10;
+export default function SocialSuggestFollow() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens } = useLensCtx();
   const { data: lensProfiles } = useProfilesToFollow();
@@ -36,20 +42,17 @@ export default function SocialWhoToFollow() {
     fid,
     num: SUGGEST_NUM,
   });
+  if (loading) {
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
   return (
     isLoginU3 &&
     (fid || isLoginLens) && (
       <Wrapper>
-        <Header>
-          <Title>Who to follow?</Title>
-          <MoreButton
-            onClick={() => {
-              navigate(`/social/suggest-follow`);
-            }}
-          >
-            View All
-          </MoreButton>
-        </Header>
         <FollowListWrapper>
           {fid > 0 &&
             farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
@@ -229,7 +232,7 @@ const HandleText = styled.div`
   font-weight: 500;
   line-height: 0;
 `;
-const FollowBtn = styled(SocialButtonPrimaryLine)`
+const FollowBtn = styled(SocialButtonPrimary)`
   width: 80px;
   height: 40px;
   gap: 4px;
@@ -238,4 +241,16 @@ const FollowedText = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: grey;
+`;
+
+const DetailBox = styled.div`
+  width: 600px;
+`;
+
+const LoadingWrapper = styled.div`
+  width: 600px;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
