@@ -42,6 +42,7 @@ export enum RouteKey {
   socialLayout = 'socialLayout',
   social = 'social',
   socialChannel = 'socialChannel',
+  socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
   socialSuggestFollow = 'socialSuggestFollow',
@@ -232,6 +233,11 @@ export const routes: CutomRouteObject[] = [
         path: '',
         element: loadContainerElement('Social'),
         key: RouteKey.social,
+      },
+      {
+        path: 'trends',
+        element: loadContainerElement('SocialTrends'),
+        key: RouteKey.socialTrendsChannel,
       },
       {
         path: 'channel/:channelName',

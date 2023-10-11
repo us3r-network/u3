@@ -37,10 +37,11 @@ const ChannelBox = styled.div`
     align-items: center;
     text-decoration: none;
     gap: 5px;
+    font-weight: 700;
     .channel-img {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      border-radius: 2px;
     }
     &:hover {
       text-decoration: underline;
