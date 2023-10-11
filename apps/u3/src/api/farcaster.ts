@@ -264,7 +264,7 @@ export function getFarcasterChannelFeeds({
 }
 
 export function getFarcasterChannelTrends(
-  limit = 5
+  limit = 500
 ): AxiosPromise<ApiResp<{ parent_url: string; count: string }[]>> {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel/trends`,

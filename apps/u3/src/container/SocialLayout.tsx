@@ -68,8 +68,11 @@ export default function Home() {
   ]);
 
   const titleElem = useMemo(() => {
+    if (location.pathname.includes('social/trends')) {
+      return <SocialBackNav title="Trends" />;
+    }
     if (location.pathname.includes('social/channel') && channelName) {
-      return <SocialBackNav title={channelName} />;
+      return <SocialBackNav title={channelName} isChannel />;
     }
     if (location.pathname.includes('post-detail')) {
       return <SocialBackNav />;

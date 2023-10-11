@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import MobilePageHeader from '../common/mobile/MobilePageHeader';
 import { ArrowLeft } from '../icons/ArrowLeft';
+import { getChannelFormName } from '../../utils/social/getChannel';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -45,8 +46,15 @@ export default function SocialPageNav({
   );
 }
 
-export function SocialBackNav({ title = 'Post' }: { title?: string }) {
+export function SocialBackNav({
+  title = 'Post',
+  isChannel,
+}: {
+  title?: string;
+  isChannel?: boolean;
+}) {
   const navigate = useNavigate();
+  const channel = isChannel ? getChannelFormName(title) : null;
   return (
     <SocialNavWrapper>
       {!isMobile && (
@@ -64,7 +72,15 @@ export function SocialBackNav({ title = 'Post' }: { title?: string }) {
         >
           <ArrowLeft />
         </button>
-        <span>{title}</span>
+        <div className="channels">
+          {channel && (
+            <>
+              <span>#</span>
+              <img src={channel.image} alt="" />
+            </>
+          )}
+          <span>{title}</span>
+        </div>
       </SocialNavCenter>
       {!isMobile && <SocialNavRight />}
     </SocialNavWrapper>
@@ -159,15 +175,26 @@ const SocialNavCenter = styled.div`
     background: var(--neutral-100, #1a1e23);
     cursor: pointer;
   }
-  > span {
-    overflow: hidden;
-    color: #fff;
-    text-overflow: ellipsis;
-    font-family: Rubik;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: normal;
+  > div.channels {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    > span {
+      overflow: hidden;
+      color: #fff;
+      text-overflow: ellipsis;
+      font-family: Rubik;
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+    }
+  }
+  img {
+    width: 18px;
+    height: 18px;
+    object-fit: cover;
+    border-radius: 2px;
   }
 `;
 const SocialNavRight = styled.div`

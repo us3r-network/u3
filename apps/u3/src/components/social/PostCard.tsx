@@ -133,7 +133,7 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
   &:hover {
     background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
