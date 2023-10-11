@@ -36,7 +36,7 @@ export default function Audio({
             hideControls: true,
             controls: ['play', 'current-time', 'mute', 'volume'],
             tooltips: { controls: false },
-            volume: 0.1,
+            volume: 1,
           }}
         />
       </PlyrWrapper>
