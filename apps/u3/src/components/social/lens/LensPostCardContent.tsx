@@ -44,19 +44,18 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
     };
   }, [isDetail]);
 
-  const embedImgs = metadata?.media?.filter(
-    (m) => m.original && m.original.mimeType.includes('image')
-  );
-  const embedAudios = metadata?.media?.filter(
-    (m) => m.original && m.original.mimeType.includes('audio')
-  );
-  const embedVideos = metadata?.media?.filter(
-    (m) => m.original && m.original.mimeType.includes('video')
-  );
-
-  const coverImg = sanitizeDStorageUrl(
-    (metadata as any)?.cover?.original?.url || ''
-  );
+  const embedImgs =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('image')
+    ) || [];
+  const embedAudios =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('audio')
+    ) || [];
+  const embedVideos =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('video')
+    ) || [];
 
   return (
     <>
@@ -71,12 +70,10 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
       {embedImgs.length > 0 && <EmbedImgs embedImgs={embedImgs} />}
 
       {embedAudios.length > 0 && (
-        <EmbedAudio coverImg={coverImg} embedAudio={embedAudios[0]} />
+        <EmbedAudio media={embedAudios[0]} publication={publication} />
       )}
 
-      {embedVideos.length > 0 && (
-        <EmbedVideo coverImg={coverImg} embedVideo={embedVideos[0]} />
-      )}
+      {embedVideos.length > 0 && <EmbedVideo media={embedVideos[0]} />}
     </>
   );
 }
@@ -109,35 +106,40 @@ function EmbedImgs({ embedImgs }: { embedImgs: PublicationMediaSet[] }) {
 }
 
 function EmbedAudio({
-  coverImg = '',
-  embedAudio,
+  media,
+  publication,
 }: {
-  coverImg?: string;
-  embedAudio: PublicationMediaSet;
+  media: PublicationMediaSet;
+  publication: Post | Comment;
 }) {
-  console.log({ embedAudio });
+  const { metadata } = publication || {};
+  const name = metadata?.name || '';
+  const author =
+    metadata?.attributes.find((attr) => attr.traitType === 'author')?.value ||
+    '';
+  const coverImg = sanitizeDStorageUrl(
+    (metadata as any)?.cover?.original?.url ||
+      (metadata as any)?.image ||
+      media.original?.cover ||
+      ''
+  );
   return (
     <PostCardAudioWrapper onClick={(e) => e.stopPropagation()}>
       <Audio
-        src={embedAudio.original.url}
-        cover={embedAudio.original?.cover || coverImg}
+        src={media.original.url}
+        cover={coverImg}
+        name={name}
+        author={author}
       />
     </PostCardAudioWrapper>
   );
 }
 
-function EmbedVideo({
-  coverImg = '',
-  embedVideo,
-}: {
-  coverImg?: string;
-  embedVideo: PublicationMediaSet;
-}) {
+function EmbedVideo({ media }: { media: PublicationMediaSet }) {
   return (
     <PostCardVideoWrapper onClick={(e) => e.stopPropagation()}>
       <Player
-        poster={embedVideo.original?.cover || coverImg}
-        src={embedVideo.original.url}
+        src={media.original.url}
         objectFit="contain"
         showLoadingSpinner
         showPipButton={false}
