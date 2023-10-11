@@ -1,20 +1,26 @@
 import styled from 'styled-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Post, Comment } from '@lens-protocol/react-web';
-import getMetadataImg from '../../../utils/lens/getMetadataImg';
-import { PostCardContentWrapper, PostCardShowMoreWrapper } from '../PostCard';
+import { Post, Comment, PublicationMediaSet } from '@lens-protocol/react-web';
+import { Player } from '@livepeer/react';
+import {
+  PostCardAudioWrapper,
+  PostCardContentWrapper,
+  PostCardImgWrapper,
+  PostCardShowMoreWrapper,
+  PostCardVideoWrapper,
+} from '../PostCard';
 import Markup from './Markup';
+import ModalImg from '../ModalImg';
+import Audio from '../Audio';
+import sanitizeDStorageUrl from '../../../utils/lens/sanitizeDStorageUrl';
 
 type Props = {
   publication: Post | Comment;
   isDetail?: boolean;
 };
 export default function LensPostCardContent({ publication, isDetail }: Props) {
-  const img = useMemo(() => getMetadataImg(publication), [publication]);
-  const markdownContent = useMemo(
-    () => publication?.metadata?.content || '',
-    [publication]
-  );
+  const { metadata } = publication || {};
+  const markdownContent = useMemo(() => metadata?.content || '', [metadata]);
 
   const viewRef = useRef<HTMLDivElement>(null);
   const [showMore, setShowMore] = useState(false);
@@ -38,6 +44,19 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
     };
   }, [isDetail]);
 
+  const embedImgs =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('image')
+    ) || [];
+  const embedAudios =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('audio')
+    ) || [];
+  const embedVideos =
+    metadata?.media?.filter(
+      (m) => m.original && m.original.mimeType.includes('video')
+    ) || [];
+
   return (
     <>
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
@@ -48,12 +67,85 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
           <button type="button">Show more</button>
         </PostCardShowMoreWrapper>
       )}
-      {!!img && <Image src={img} />}
+      {embedImgs.length > 0 && <EmbedImgs embedImgs={embedImgs} />}
+
+      {embedAudios.length > 0 && (
+        <EmbedAudio media={embedAudios[0]} publication={publication} />
+      )}
+
+      {embedVideos.length > 0 && <EmbedVideo media={embedVideos[0]} />}
     </>
   );
 }
 
-const Image = styled.img`
-  width: 60%;
-  object-fit: cover;
-`;
+function EmbedImgs({ embedImgs }: { embedImgs: PublicationMediaSet[] }) {
+  const [modalImgIdx, setModalImgIdx] = useState(-1);
+  return (
+    <>
+      <PostCardImgWrapper len={embedImgs.length}>
+        {embedImgs.map((img, idx) => (
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+          <img
+            src={img.original.url}
+            alt=""
+            key={img.original.url}
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalImgIdx(idx);
+            }}
+          />
+        ))}
+      </PostCardImgWrapper>
+      <ModalImg
+        currIdx={modalImgIdx}
+        urls={embedImgs.map((item) => item.original.url)}
+        onAfterClose={() => setModalImgIdx(-1)}
+      />
+    </>
+  );
+}
+
+function EmbedAudio({
+  media,
+  publication,
+}: {
+  media: PublicationMediaSet;
+  publication: Post | Comment;
+}) {
+  const { metadata } = publication || {};
+  const name = metadata?.name || '';
+  const author =
+    metadata?.attributes.find((attr) => attr.traitType === 'author')?.value ||
+    '';
+  const coverImg = sanitizeDStorageUrl(
+    (metadata as any)?.cover?.original?.url ||
+      (metadata as any)?.image ||
+      media.original?.cover ||
+      ''
+  );
+  return (
+    <PostCardAudioWrapper onClick={(e) => e.stopPropagation()}>
+      <Audio
+        src={media.original.url}
+        cover={coverImg}
+        name={name}
+        author={author}
+      />
+    </PostCardAudioWrapper>
+  );
+}
+
+function EmbedVideo({ media }: { media: PublicationMediaSet }) {
+  return (
+    <PostCardVideoWrapper onClick={(e) => e.stopPropagation()}>
+      <Player
+        src={media.original.url}
+        objectFit="contain"
+        showLoadingSpinner
+        showPipButton={false}
+        showUploadingIndicator={false}
+        controls={{ defaultVolume: 1 }}
+      />
+    </PostCardVideoWrapper>
+  );
+}
