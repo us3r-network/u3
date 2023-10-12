@@ -102,7 +102,6 @@ export default function ProfileInfoCard({
       }
     }
 
-    // TODO 用bioLinkList 里的 farcasterUserData 数据
     if (userData) {
       accounts.push({
         platform: SocailPlatform.Farcaster,
