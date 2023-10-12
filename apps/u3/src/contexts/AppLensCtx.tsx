@@ -23,12 +23,19 @@ import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { isMobile } from 'react-device-detect';
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
+import {
+  BIOLINK_LENS_NETWORK,
+  BIOLINK_PLATFORMS,
+} from '../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
 
 import LensLoginModal from '../components/social/lens/LensLoginModal';
 import LensCommentPostModal from '../components/social/lens/LensCommentPostModal';
 
 import { LensPost, LensComment } from '../api/lens';
+import useBioLinkActions from '../hooks/useBioLinkActions';
 
 type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
@@ -129,6 +136,25 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   }, [isConnected, openConnectModal, activeConnector, lensLoginAdpater]);
 
   const isLogin = useMemo(() => !!wallet, [wallet]);
+
+  // 每次lens登录成功后，更新lens biolink
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    if (!!session?.id && !!profile?.id && !isLoginPending && !!wallet) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.lens,
+          network: BIOLINK_LENS_NETWORK,
+          handle: wallet.handle,
+          data: JSON.stringify(wallet),
+        },
+      });
+    }
+  }, [session, profile, isLoginPending, wallet]);
 
   return (
     <LensAuthContext.Provider

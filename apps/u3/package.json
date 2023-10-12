@@ -15,7 +15,7 @@
     "@reduxjs/toolkit": "^1.8.3",
     "@us3r-network/auth-with-rainbowkit": "^0.1.11",
     "@us3r-network/link": "0.2.4",
-    "@us3r-network/profile": "^0.5.7",
+    "@us3r-network/profile": "^0.5.8",
     "@xmtp/content-type-remote-attachment": "^1.1.2",
     "@xmtp/xmtp-js": "^11.1.1",
     "@livepeer/react": "^2.8.8",

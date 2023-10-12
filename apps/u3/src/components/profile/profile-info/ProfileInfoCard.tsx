@@ -18,7 +18,7 @@ import { TextareaBaseCss } from '../../common/input/TextareaBase';
 import { getAvatarUploadOpts } from '../../../utils/uploadAvatar';
 import EditSvg from '../../common/icons/svgs/edit.svg';
 import PlatformAccounts, { PlatformAccountsData } from './PlatformAccounts';
-import { getDidPkhWithAddress } from '../../../utils/did';
+import { getAddressWithDidPkh } from '../../../utils/did';
 import { Copy } from '../../icons/copy';
 import { shortPubKey } from '../../../utils/shortPubKey';
 import getAvatar from '../../../utils/lens/getAvatar';
@@ -34,37 +34,56 @@ import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 import { useNav } from '../../../contexts/NavCtx';
 import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
+import useBioLinkListWithDid from '../../../hooks/useBioLinkListWithDid';
+import { BIOLINK_PLATFORMS } from '../../../utils/profile/biolink';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
-  address: string;
+  did: string;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
 }
 export default function ProfileInfoCard({
-  address,
+  did,
   clickFollowing,
   clickFollowers,
   ...wrapperProps
 }: ProfileInfoCardProps) {
+  const { bioLinkList } = useBioLinkListWithDid(did);
+
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const { currFid, farcasterUserData } = useFarcasterCtx();
   const { farcasterFollowData } = useFarcasterFollowNum();
 
-  const did = useMemo(() => getDidPkhWithAddress(address), [address]);
+  const address = getAddressWithDidPkh(did);
+  const canMesssage = useCanMessage(address);
 
+  const lensBioLinkProfiles = bioLinkList
+    .filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
+    .map((item) => {
+      try {
+        return JSON.parse(item.data) as Profile;
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((item) => !!item);
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address,
+    address: lensBioLinkProfiles[0]?.ownedBy || '',
   });
-  /**
-   * // TODO lens 一个钱包地址可以有多个profile, 一般第一个就是主账号，这里先取第一个，后续再考虑是否显示多个账户的数据
-   * 原因：
-   * 之前显示的是多个lens账户基本信息
-   * following , followers的数量也是取所有账户累加起来的
-   * 后来发现用一个账户follow后，其它账户的following, followers 数量都同步增加了，累加起来就不对了
-   * 猜测数量是跟钱包地址绑定的，而不是profile
-   */
   const lensProfileFirst = lensProfiles?.[0];
 
+  // TODO 用bioLinkList 里的data字段中的 fid 获取 userData
+  // const fcastBioLinkProfiles = bioLinkList
+  //   .filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
+  //   .map((item) => {
+  //     try {
+  //       return JSON.parse(item.data) as { fid: string };
+  //     } catch (error) {
+  //       return null;
+  //     }
+  //   })
+  //   .filter((item) => !!item);
+  // const fid = fcastBioLinkProfiles[0]?.fid;
   const userData = useFarcasterUserData({
     fid: `${currFid}`,
     farcasterUserData,
@@ -72,15 +91,18 @@ export default function ProfileInfoCard({
 
   const platformAccounts: PlatformAccountsData = useMemo(() => {
     const accounts = [];
-    if (lensProfileFirst) {
-      accounts.push({
-        platform: SocailPlatform.Lens,
-        avatar: getAvatar(lensProfileFirst),
-        name: lensProfileFirst.name,
-        handle: lensProfileFirst.handle,
-      });
+    if (lensProfiles?.length > 0) {
+      for (const lensProfile of lensProfiles) {
+        accounts.push({
+          platform: SocailPlatform.Lens,
+          avatar: getAvatar(lensProfile),
+          name: lensProfile.name,
+          handle: lensProfile.handle,
+        });
+      }
     }
 
+    // TODO 用bioLinkList 里的 farcasterUserData 数据
     if (userData) {
       accounts.push({
         platform: SocailPlatform.Farcaster,
@@ -90,7 +112,7 @@ export default function ProfileInfoCard({
       });
     }
     return accounts;
-  }, [lensProfileFirst, userData]);
+  }, [lensProfiles, userData]);
 
   const followersCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
@@ -127,8 +149,6 @@ export default function ProfileInfoCard({
 
     // TODO farcaster平台的follow
   }, [lensProfileFirst, lensFollow, lensFollowIsPending]);
-
-  const canMesssage = useCanMessage(address);
 
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
