@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import MobilePageHeader from '../common/mobile/MobilePageHeader';
 import { ArrowLeft } from '../icons/ArrowLeft';
-import { getChannelFormName } from '../../utils/social/getChannel';
+import { getChannelFromName } from '../../utils/social/getChannel';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -54,7 +54,7 @@ export function SocialBackNav({
   isChannel?: boolean;
 }) {
   const navigate = useNavigate();
-  const channel = isChannel ? getChannelFormName(title) : null;
+  const channel = isChannel ? getChannelFromName(title) : null;
   return (
     <SocialNavWrapper>
       {!isMobile && (

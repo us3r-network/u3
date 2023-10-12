@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from 'react-aria-components';
 import ArrowDown from '../icons/ArrowDown';
-import ChannelHome from '../icons/ChannelHome';
+import { getChannel } from '../../utils/social/getChannel';
 
 export default function ChannelSelect({
   channel,
@@ -21,24 +21,28 @@ export default function ChannelSelect({
   selectChannelName: string;
   setSelectChannelName: (name: string) => void;
 }) {
-  // const [value, setValue] = useState('Home');
+  const [value, setValue] = useState('');
   const options = useMemo(() => {
     return [
       {
         name: 'Home',
-        image: '',
+        image: '/social/imgs/channel-home.png',
       },
-      {
-        name: channel.name || channel.channel_description,
-        image: channel.image,
-      },
-    ];
-  }, [channel]);
+      ...getChannel().map((c) => ({
+        name: c.name || c.channel_description,
+        image: c.image,
+      })),
+    ].filter((c) => {
+      return c.name.toLowerCase().includes(value.toLowerCase());
+    });
+  }, [channel, value]);
+
   return (
     <SelectStyled
       selectedKey={selectChannelName}
       onSelectionChange={(k) => {
         setSelectChannelName(k as string);
+        setValue('');
       }}
       aria-label="Select a channel"
     >
@@ -47,19 +51,22 @@ export default function ChannelSelect({
         <ArrowDown />
       </ButtonStyled>
       <PopoverStyled>
+        <input
+          type="text"
+          placeholder="search for trends"
+          value={value}
+          onChange={(e) => {
+            setValue(e.target.value);
+          }}
+        />
         <ListBox items={options}>
           {(item) => (
             <ItemStyled id={item.name} textValue={item.name}>
               <div className="item">
-                {(item.image && (
-                  <span>
-                    <img src={item.image} alt={item.name} />
-                  </span>
-                )) || (
-                  <span>
-                    <ChannelHome />
-                  </span>
-                )}
+                <span>#</span>
+                <span>
+                  <img src={item.image} alt={item.name} />
+                </span>
                 <span>{item.name}</span>
               </div>
             </ItemStyled>
@@ -78,7 +85,7 @@ const SelectStyled = styled(Select)`
   font-size: 16px;
   line-height: 24px;
   position: relative;
-  width: 100px;
+  width: 130px;
   > span {
     font-weight: 500;
     font-size: 16px;
@@ -92,7 +99,7 @@ const ButtonStyled = styled(Button)`
   cursor: pointer;
   border: none;
   padding: 5px;
-  width: 100px;
+  width: 130px;
   border-radius: 4px;
   height: 20px;
   display: inline-flex;
@@ -125,6 +132,7 @@ const ButtonStyled = styled(Button)`
       > img {
         width: 12px;
         height: 12px;
+        border-radius: 2px;
       }
     }
   }
@@ -133,9 +141,10 @@ const ButtonStyled = styled(Button)`
 const PopoverStyled = styled(Popover)`
   background: #1b1e23;
   border: none;
-  width: 100px;
+  width: 130px;
   border-radius: 10px;
-
+  overflow: scroll;
+  margin-top: 3px;
   &[data-placement='top'] {
     --origin: translateY(4px);
   }
@@ -162,6 +171,18 @@ const PopoverStyled = styled(Popover)`
       transform: translateY(0);
       opacity: 1;
     }
+  }
+
+  input {
+    background-color: inherit;
+    border: none;
+    outline: none;
+    font-size: 13px;
+    padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    caret-color: #fff;
+    color: #fff;
   }
 `;
 
@@ -216,6 +237,7 @@ const ItemStyled = styled(Item)`
         width: 10px;
         height: 10px;
         margin: 1px;
+        border-radius: 2px;
       }
     }
   }
