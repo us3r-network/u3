@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { NobleEd25519Signer } from '@farcaster/hub-web';
+import { NobleEd25519Signer, UserDataType } from '@farcaster/hub-web';
 import { createPublicClient, http } from 'viem';
 import {
   ReactNode,
@@ -16,6 +16,8 @@ import axios from 'axios';
 import { goerli } from 'viem/chains';
 import { toast } from 'react-toastify';
 
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
@@ -28,6 +30,12 @@ import {
 import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
 import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
+import useBioLinkActions from '../hooks/useBioLinkActions';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+  farcasterHandleToBioLinkHandle,
+} from '../utils/profile/biolink';
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -246,6 +254,29 @@ export default function FarcasterProvider({
       });
     }
   }, []);
+
+  // 每次farcaster登录成功后，更新farcaster biolink
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    const findUserInfo = currUserInfo?.[currFid]?.find(
+      (item) => item.type === UserDataType.USERNAME
+    );
+    const handle = findUserInfo?.value || '';
+    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: farcasterHandleToBioLinkHandle(handle),
+          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+        },
+      });
+    }
+  }, [session, profile, signer, currFid, currUserInfo]);
 
   return (
     <FarcasterContext.Provider
