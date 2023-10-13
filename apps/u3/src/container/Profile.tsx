@@ -87,8 +87,8 @@ export default function Profile() {
 
   const { bioLinkList } = useBioLinkListWithDid(did);
   const lensBioLinkProfiles = bioLinkList
-    .filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
-    .map((item) => {
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
+    ?.map((item) => {
       try {
         return JSON.parse(item.data) as LensProfile;
       } catch (error) {
@@ -101,19 +101,19 @@ export default function Profile() {
   });
   const lensProfileFirst = lensProfiles?.[0];
 
-  // TODO 用bioLinkList 里的data字段中的 fid 获取 farcasterFollowData
-  // const fcastBioLinkProfiles = bioLinkList
-  //   .filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
-  //   .map((item) => {
-  //     try {
-  //       return JSON.parse(item.data) as { fid: string };
-  //     } catch (error) {
-  //       return null;
-  //     }
-  //   })
-  //   .filter((item) => !!item);
-  // const fid = fcastBioLinkProfiles[0]?.fid;
-  const { farcasterFollowData } = useFarcasterFollowNum();
+  const fcastBioLinkProfiles = bioLinkList
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
+    ?.map((item) => {
+      try {
+        return JSON.parse(item.data) as { fid: string };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((item) => !!item);
+  const fid = fcastBioLinkProfiles[0]?.fid;
+
+  const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
   useEffect(() => {
     setFollowNavData((prevData) => ({
@@ -290,12 +290,13 @@ export default function Profile() {
           return (
             <KeepAlive
               cacheKey={`${RouteKey.profile}_social_${
-                address || '0x'
-              }_${profilePageFeedsType}`}
+                lensProfileFirst?.id || '0'
+              }_${fid || '0'}_${profilePageFeedsType}`}
               saveScrollPosition="#profile-wrapper"
             >
               <ProfileSocial
-                wallet={address}
+                lensProfileId={lensProfileFirst?.id}
+                fid={fid}
                 feedsType={profilePageFeedsType}
               />
             </KeepAlive>

@@ -1,7 +1,7 @@
 import { UserInfo, UserInfoEditForm } from '@us3r-network/profile';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
   Profile,
@@ -32,6 +32,7 @@ import {
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
+import useUpsertFarcasterUserData from '../../../hooks/farcaster/useUpsertFarcasterUserData';
 import { useNav } from '../../../contexts/NavCtx';
 import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
 import useBioLinkListWithDid from '../../../hooks/useBioLinkListWithDid';
@@ -51,15 +52,14 @@ export default function ProfileInfoCard({
   const { bioLinkList } = useBioLinkListWithDid(did);
 
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-  const { currFid, farcasterUserData } = useFarcasterCtx();
-  const { farcasterFollowData } = useFarcasterFollowNum();
+  const { farcasterUserData } = useFarcasterCtx();
 
   const address = getAddressWithDidPkh(did);
   const canMesssage = useCanMessage(address);
 
   const lensBioLinkProfiles = bioLinkList
-    .filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
-    .map((item) => {
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
+    ?.map((item) => {
       try {
         return JSON.parse(item.data) as Profile;
       } catch (error) {
@@ -72,20 +72,28 @@ export default function ProfileInfoCard({
   });
   const lensProfileFirst = lensProfiles?.[0];
 
-  // TODO 用bioLinkList 里的data字段中的 fid 获取 userData
-  // const fcastBioLinkProfiles = bioLinkList
-  //   .filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
-  //   .map((item) => {
-  //     try {
-  //       return JSON.parse(item.data) as { fid: string };
-  //     } catch (error) {
-  //       return null;
-  //     }
-  //   })
-  //   .filter((item) => !!item);
-  // const fid = fcastBioLinkProfiles[0]?.fid;
+  const fcastBioLinkProfiles = bioLinkList
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
+    ?.map((item) => {
+      try {
+        return JSON.parse(item.data) as { fid: string };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((item) => !!item);
+  const fid = fcastBioLinkProfiles[0]?.fid;
+  const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
+  useEffect(() => {
+    if (fid && !farcasterUserData[fid]) {
+      upsertFarcasterUserData({ fid });
+    }
+  }, [fid, farcasterUserData]);
+
+  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+
   const userData = useFarcasterUserData({
-    fid: `${currFid}`,
+    fid: `${fid}`,
     farcasterUserData,
   });
 
