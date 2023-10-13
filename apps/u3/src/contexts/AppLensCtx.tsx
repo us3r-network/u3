@@ -28,6 +28,7 @@ import { useProfileState } from '@us3r-network/profile';
 import {
   BIOLINK_LENS_NETWORK,
   BIOLINK_PLATFORMS,
+  lensHandleToBioLinkHandle,
 } from '../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
 
@@ -149,7 +150,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
           profileID: profile.id,
           platform: BIOLINK_PLATFORMS.lens,
           network: BIOLINK_LENS_NETWORK,
-          handle: wallet.handle,
+          handle: lensHandleToBioLinkHandle(wallet.handle),
           data: JSON.stringify(wallet),
         },
       });

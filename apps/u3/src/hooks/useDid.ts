@@ -6,6 +6,8 @@ import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_LENS_NETWORK,
   BIOLINK_PLATFORMS,
+  isFarcasterHandle,
+  isLensHandle,
 } from '../utils/profile/biolink';
 
 // 0x...
@@ -16,14 +18,7 @@ const isWalletAddress = (str: string) => {
 const isEnsAddress = (str: string) => {
   return /^[a-zA-Z0-9-]+\.eth$/.test(str);
 };
-// xxx.text | xxx.lens
-const isLensHandle = (str: string) => {
-  return /(\.test|\.lens)$/.test(str);
-};
-// xxx.fcast
-const isFarcasterHandle = (str: string) => {
-  return /(\.fcast)$/.test(str);
-};
+
 export type BioLinksEqualToFilters = {
   platform?: string;
   network?: string;
