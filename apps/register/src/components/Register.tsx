@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import FidRegister from "./FidRegister";
 import { useAccount } from "wagmi";
+import FnameRegister from "./FnameRegister";
 
 export default function Register() {
   const { address, isConnected } = useAccount();
@@ -13,6 +14,7 @@ export default function Register() {
       <p>{`Register Farcaster with ${shortPubKey(address!)} `}</p>
       <div>
         <FidRegister />
+        <FnameRegister />
       </div>
     </RegisterContainer>
   );
@@ -31,7 +33,7 @@ const RegisterContainer = styled.main`
   color: #ffffff;
 
   > div {
-    border: 1px solid gray;
+    border: 1px solid #39424c;
     border-radius: 10px;
     width: 500px;
     padding: 20px;

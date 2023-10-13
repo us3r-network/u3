@@ -8,10 +8,10 @@ import styled from "styled-components";
 import { IdRegistryABI } from "../abi/IdRegistryABI";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { useFid } from "../providers/FarcasterProvider";
+import { useFarcaster } from "../providers/FarcasterProvider";
 
 export default function FidRegister() {
-  const { fid, setFid } = useFid();
+  const { fid, setFid } = useFarcaster();
   const { address, isConnected } = useAccount();
 
   const { config, isError, error } = usePrepareContractWrite({
