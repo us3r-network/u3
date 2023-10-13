@@ -5,10 +5,10 @@ import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from "./client";
 import { toast } from "sonner";
 
 export default function MakeFnamePrimary() {
-  const { fid, fname, signer } = useFarcaster();
+  const { fid, fname, signer, hasStorage } = useFarcaster();
 
   const makePrimaryName = useCallback(async () => {
-    if (!fname || !signer || !fname) return;
+    if (!fname || !signer || !fname || !hasStorage) return;
     try {
       // eslint-disable-next-line no-underscore-dangle
       const cast = (
@@ -30,9 +30,9 @@ export default function MakeFnamePrimary() {
       console.error(error);
       toast.error("failed to primary name");
     }
-  }, [fid, fname, signer]);
+  }, [fid, fname, signer, hasStorage]);
 
-  if (!fid || !fname || !signer) return null;
+  if (!fid || !fname || !signer || !hasStorage) return null;
 
   return (
     <button
