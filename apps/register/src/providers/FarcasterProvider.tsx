@@ -6,6 +6,7 @@ import {
   useEffect,
   useCallback,
 } from "react";
+import { NobleEd25519Signer } from "@farcaster/hub-web";
 import { IdRegistryABI } from "../abi/IdRegistryABI";
 import { useAccount, useContractRead, useNetwork } from "wagmi";
 import axios from "axios";
@@ -15,6 +16,10 @@ type FcasterContextType = {
   setFid: React.Dispatch<React.SetStateAction<number>>;
   fname: string;
   setFname: React.Dispatch<React.SetStateAction<string>>;
+  signer: NobleEd25519Signer | null;
+  setSigner: React.Dispatch<React.SetStateAction<NobleEd25519Signer | null>>;
+  hasStorage: boolean;
+  setHasStorage: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const FarcasterContext = createContext<FcasterContextType | null>(null);
@@ -24,6 +29,7 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [fid, setFid] = useState<number>(0);
   const [fname, setFname] = useState<string>("");
+  const [signer, setSigner] = useState<NobleEd25519Signer | null>(null);
   const [hasStorage, setHasStorage] = useState<boolean>(false);
   const { address } = useAccount();
   const { chain } = useNetwork();
@@ -39,6 +45,14 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
 
   const signerCheck = useCallback(async () => {
     if (!fid) return;
+    console.log("checking signer");
+    const privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
+    if (privateKey !== null) {
+      const ed25519Signer = new NobleEd25519Signer(
+        Buffer.from(privateKey, "hex")
+      );
+      setSigner(ed25519Signer);
+    }
   }, [fid]);
 
   const fnameCheck = useCallback(async () => {
@@ -63,8 +77,8 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
         `http://nemes.farcaster.xyz:2281/v1/storageLimitsByFid?fid=${fid}`
       );
       // console.log(resp.data);
-      if (resp.data.limit.length > 0) {
-        setHasStorage(Boolean(resp.data.limits[0].limit)); // mainnet
+      if (resp.data.limit?.length > 0) {
+        setHasStorage(Boolean(resp.data.limits?.[0].limit)); // mainnet
       }
     } catch (error) {
       console.log(error);
@@ -87,7 +101,18 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
   }, [chain?.id, idOf]);
 
   return (
-    <FarcasterContext.Provider value={{ fid, setFid, fname, setFname }}>
+    <FarcasterContext.Provider
+      value={{
+        fid,
+        setFid,
+        fname,
+        setFname,
+        signer,
+        setSigner,
+        hasStorage,
+        setHasStorage,
+      }}
+    >
       {children}
     </FarcasterContext.Provider>
   );

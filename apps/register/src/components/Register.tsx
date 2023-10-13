@@ -2,6 +2,8 @@ import styled from "styled-components";
 import FidRegister from "./FidRegister";
 import { useAccount } from "wagmi";
 import FnameRegister from "./FnameRegister";
+import SignerAdd from "./SignerAdd";
+import RentStorageUnitButton from "./RentStorageUnitButton";
 
 export default function Register() {
   const { address, isConnected } = useAccount();
@@ -15,6 +17,8 @@ export default function Register() {
       <div>
         <FidRegister />
         <FnameRegister />
+        <SignerAdd />
+        <RentStorageUnitButton />
       </div>
     </RegisterContainer>
   );
