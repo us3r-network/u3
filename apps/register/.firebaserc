@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "us3r-network"
+  },
+  "targets": {
+    "us3r-network": {
+      "hosting": {
+        "u3-register": [
+          "us3r-u3-register"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
