@@ -121,6 +121,7 @@ export default function FCast({
         </PostCardShowMoreWrapper>
       )}
       <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
+      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
@@ -142,7 +143,6 @@ export default function FCast({
           farcasterUserData={farcasterUserData}
         />
       </PostCardActionsWrapper>
-      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
     </PostCardWrapper>
   );
 }

@@ -44,6 +44,7 @@ import useLogin from '../../hooks/useLogin';
 import getAvatar from '../../utils/lens/getAvatar';
 import { Channel } from '../../services/types/farcaster';
 import ChannelSelect from './ChannelSelect';
+import { getChannelFromName } from '../../utils/social/getChannel';
 
 export default function AddPostForm({
   onSuccess,
@@ -141,6 +142,11 @@ export default function AddPostForm({
   const handleSubmitToFarcaster = useCallback(async () => {
     if (!text || !encryptedSigner) return;
     const currFid = getCurrFid();
+    let parentUrl;
+    if (channelValue !== 'Home') {
+      const ch = getChannelFromName(channelValue);
+      parentUrl = ch?.parent_url;
+    }
     try {
       const uploadedLinks = await uploadSelectedImages();
       // eslint-disable-next-line no-underscore-dangle
@@ -152,8 +158,7 @@ export default function AddPostForm({
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
-            parentUrl:
-              channelValue === 'Home' ? undefined : channel?.parent_url,
+            parentUrl,
           },
           { fid: currFid, network: FARCASTER_NETWORK },
           encryptedSigner
@@ -330,15 +335,14 @@ export default function AddPostForm({
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
-          {channel && (
-            <ChannelSelect
-              channel={channel}
-              selectChannelName={channelValue}
-              setSelectChannelName={(v) => {
-                setChannelValue(v);
-              }}
-            />
-          )}
+
+          <ChannelSelect
+            channel={channel}
+            selectChannelName={channelValue}
+            setSelectChannelName={(v) => {
+              setChannelValue(v);
+            }}
+          />
           <Description
             hidden={
               !(

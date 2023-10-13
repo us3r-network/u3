@@ -68,11 +68,17 @@ export default function Home() {
   ]);
 
   const titleElem = useMemo(() => {
+    if (location.pathname.includes('social/trends')) {
+      return <SocialBackNav title="Trends" />;
+    }
     if (location.pathname.includes('social/channel') && channelName) {
-      return <SocialBackNav title={channelName} />;
+      return <SocialBackNav title={channelName} isChannel />;
     }
     if (location.pathname.includes('post-detail')) {
       return <SocialBackNav />;
+    }
+    if (location.pathname.includes('suggest-follow')) {
+      return <SocialBackNav title="Suggest Profiles" />;
     }
     return (
       <SocialPageNav
@@ -117,7 +123,26 @@ export default function Home() {
       </DetailMainWrapper>
     );
   }, [socialPlatform, feedsType]);
+
+  const SuggestFollowOutlet = useMemo(() => {
+    return (
+      <DetailMainWrapper>
+        <MainWrapper>
+          <MainLeft />
+          <MainCenter>
+            <MainOutletWrapper>
+              <Outlet context={{ socialPlatform }} />
+            </MainOutletWrapper>
+          </MainCenter>
+          <MainRight />
+        </MainWrapper>
+      </DetailMainWrapper>
+    );
+  }, [socialPlatform]);
+
   const isPostDetail = location.pathname.includes('post-detail');
+  const isSuggestFollow = location.pathname.includes('suggest-follow');
+
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
@@ -131,7 +156,11 @@ export default function Home() {
         </LeftWrapper>
       )}
 
-      {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
+      {isPostDetail
+        ? PostDetailOutlet
+        : isSuggestFollow
+        ? SuggestFollowOutlet
+        : keepAliveSocialOutlet}
 
       {!isMobile && (
         <RightWrapper>

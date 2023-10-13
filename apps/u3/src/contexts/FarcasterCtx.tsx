@@ -27,7 +27,11 @@ import {
   setPrivateKey,
   setSignedKeyRequest,
 } from '../utils/farsign-utils';
-import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
+import {
+  getFarcasterChannelTrends,
+  getFarcasterSignature,
+  getFarcasterUserInfo,
+} from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
 import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
 import useBioLinkActions from '../hooks/useBioLinkActions';
@@ -36,6 +40,7 @@ import {
   BIOLINK_PLATFORMS,
   farcasterHandleToBioLinkHandle,
 } from '../utils/profile/biolink';
+import FarcasterChannelData from '../constants/warpcast.json';
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -69,6 +74,15 @@ export type Signer = {
 export type FarcasterUserData = {
   [key: string]: { type: number; value: string }[];
 };
+
+export type FarcasterChannel = {
+  name?: string;
+  channel_description?: string;
+  parent_url: string;
+  image: string;
+  channel_id: string;
+  count: string;
+};
 export interface FarcasterContextData {
   currFid: number | undefined;
   currUserInfo:
@@ -83,6 +97,7 @@ export interface FarcasterContextData {
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
   setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
+  channels: FarcasterChannel[];
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -124,6 +139,39 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
+
+  const [trendChannel, setTrendChannel] = useState<
+    {
+      parent_url: string;
+      count: string;
+    }[]
+  >([]);
+  const loadTrendChannel = async () => {
+    const resp = await getFarcasterChannelTrends();
+    if (resp.data.code !== 0) {
+      console.error(resp.data.msg);
+      return;
+    }
+    setTrendChannel(resp.data.data);
+  };
+  useEffect(() => {
+    loadTrendChannel();
+  }, []);
+
+  const channels = useMemo(() => {
+    return FarcasterChannelData.map((c) => {
+      const trend = trendChannel.find((t) => t.parent_url === c.parent_url);
+      if (!trend) return null;
+      return {
+        ...trend,
+        ...c,
+      };
+    })
+      .filter((c) => c !== null)
+      .sort((a, b) => {
+        return Number(b.count) - Number(a.count);
+      });
+  }, [trendChannel]);
 
   const openQRModal = useMemo(() => {
     if (signer.isConnected) {
@@ -292,6 +340,7 @@ export default function FarcasterProvider({
         farcasterUserData,
         setFarcasterUserData,
         setIframeUrl,
+        channels,
       }}
     >
       {children}
