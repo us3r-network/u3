@@ -4,6 +4,7 @@ import { useAccount } from "wagmi";
 import FnameRegister from "./FnameRegister";
 import SignerAdd from "./SignerAdd";
 import RentStorageUnitButton from "./RentStorageUnitButton";
+import MakeCast from "./MakeCast";
 
 export default function Register() {
   const { address, isConnected } = useAccount();
@@ -19,6 +20,7 @@ export default function Register() {
         <FnameRegister />
         <SignerAdd />
         <RentStorageUnitButton />
+        <MakeCast />
       </div>
     </RegisterContainer>
   );

@@ -3,8 +3,8 @@ import { useFarcaster } from "../providers/FarcasterProvider";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAccount, useSignTypedData, useSwitchNetwork } from "wagmi";
-import { signTypedData } from "@wagmi/core";
 import axios from "axios";
+import MakeFnamePrimary from "./MakeFnamePrimary";
 
 const MESSAGE_DOMAIN = {
   name: "Farcaster name verification",
@@ -105,7 +105,12 @@ export default function FnameRegister() {
   }, [isSuccessSwitch]);
 
   if (fname) {
-    return <p>Your Fname is: {fname}</p>;
+    return (
+      <RegisterContainer>
+        <p>Your Fname is: {fname}</p>
+        <MakeFnamePrimary />
+      </RegisterContainer>
+    );
   }
   return (
     <RegisterContainer>

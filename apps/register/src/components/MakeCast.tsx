@@ -1,20 +1,15 @@
 import styled from "styled-components";
 import { useFarcaster } from "../providers/FarcasterProvider";
 import { useCallback, useState } from "react";
-import { FarcasterNetwork, makeCastAdd } from "@farcaster/core";
-import { getHubRpcClient } from "@farcaster/hub-web";
+import { makeCastAdd } from "@farcaster/core";
 import { toast } from "sonner";
-
-export const FARCASTER_HUB_URL = "https://farcaster.u3.xyz";
-export const FARCASTER_NETWORK = FarcasterNetwork.MAINNET;
-
-export const FARCASTER_WEB_CLIENT = getHubRpcClient(FARCASTER_HUB_URL, {});
+import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from "./client";
 
 export default function MakeCast() {
   const { fid, signer, hasStorage } = useFarcaster();
   const [text, setText] = useState("");
   const makeCast = useCallback(async () => {
-    if (!test || !signer) return;
+    if (!text || !signer) return;
     try {
       // eslint-disable-next-line no-underscore-dangle
       const cast = (
@@ -41,7 +36,7 @@ export default function MakeCast() {
     }
   }, [fid, signer, text]);
 
-  if (!fid || !signer || hasStorage) return null;
+  if (!fid || !signer || !hasStorage) return null;
 
   return (
     <Container>

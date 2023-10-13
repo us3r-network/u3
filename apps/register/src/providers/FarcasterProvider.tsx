@@ -77,7 +77,7 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
         `http://nemes.farcaster.xyz:2281/v1/storageLimitsByFid?fid=${fid}`
       );
       // console.log(resp.data);
-      if (resp.data.limit?.length > 0) {
+      if (resp.data.limits?.length > 0) {
         setHasStorage(Boolean(resp.data.limits?.[0].limit)); // mainnet
       }
     } catch (error) {
