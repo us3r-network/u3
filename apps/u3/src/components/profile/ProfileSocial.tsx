@@ -14,10 +14,12 @@ import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
 
 export default function ProfileSocial({
+  address,
   lensProfileId,
   fid,
   feedsType,
 }: {
+  address: string;
   lensProfileId: string;
   fid: string;
   feedsType: FeedsType;
@@ -66,6 +68,7 @@ export default function ProfileSocial({
         if (feedsType === FeedsType.ACTIVITIES) {
           return (
             <Rss3Content
+              address={[address]}
               empty={
                 <NoActivityWrapper>
                   <NoActivity />

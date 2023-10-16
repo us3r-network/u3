@@ -1,4 +1,3 @@
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import useFarcasterFollowData from 'src/hooks/farcaster/useFarcasterFollowData';
 import Loading from 'src/components/common/loading/Loading';
 
@@ -10,10 +9,9 @@ import {
 
 import FarcasterFollowProfileCard from './FarcasterFollowProfileCard';
 
-export default function FarcasterFollowers({ fid }: { fid?: string | number }) {
-  const { currFid } = useFarcasterCtx();
+export default function FarcasterFollowers({ fid }: { fid: string | number }) {
   const { farcasterFollowData, loading } = useFarcasterFollowData({
-    fid: fid || currFid,
+    fid,
   });
   const followers = farcasterFollowData.followerData;
   const following = farcasterFollowData.followingData;
