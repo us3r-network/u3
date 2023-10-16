@@ -24,6 +24,7 @@ jobs:
           yarn build
         env:
           CI: false
+          NODE_OPTIONS: "--max_old_space_size=4096"
           REACT_APP_NAME: "U3 Register"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
