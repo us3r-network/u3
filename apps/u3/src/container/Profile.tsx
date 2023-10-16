@@ -277,13 +277,13 @@ export default function Profile() {
               followNavType === FollowType.FOLLOWING &&
               followingActivePlatform === SocailPlatform.Farcaster
             ) {
-              return <FarcasterFollowing />;
+              return <FarcasterFollowing fid={fid} />;
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
               followersActivePlatform === SocailPlatform.Farcaster
             ) {
-              return <FarcasterFollowers />;
+              return <FarcasterFollowers fid={fid} />;
             }
             return null;
           }
@@ -291,10 +291,11 @@ export default function Profile() {
             <KeepAlive
               cacheKey={`${RouteKey.profile}_social_${
                 lensProfileFirst?.id || '0'
-              }_${fid || '0'}_${profilePageFeedsType}`}
+              }_${fid || '0'}_${address || '0x'}_${profilePageFeedsType}`}
               saveScrollPosition="#profile-wrapper"
             >
               <ProfileSocial
+                address={address}
                 lensProfileId={lensProfileFirst?.id}
                 fid={fid}
                 feedsType={profilePageFeedsType}
