@@ -4,7 +4,6 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { FeedsType } from './ProfilePageNav';
 import { useLoadProfileFeeds } from '../../hooks/useLoadProfileFeeds';
-import useFarcasterCurrFid from '../../hooks/farcaster/useFarcasterCurrFid';
 import Loading from '../common/loading/Loading';
 import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
@@ -15,21 +14,20 @@ import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
 
 export default function ProfileSocial({
-  wallet,
+  address,
+  lensProfileId,
+  fid,
   feedsType,
 }: {
-  wallet: string;
+  address: string;
+  lensProfileId: string;
+  fid: string;
   feedsType: FeedsType;
 }) {
-  const {
-    openFarcasterQR,
-    farcasterUserData,
-    isConnected: isConnectedFarcaster,
-  } = useFarcasterCtx();
+  const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
 
-  const fid = useFarcasterCurrFid();
   const {
     firstLoading,
     moreLoading,
@@ -43,35 +41,21 @@ export default function ProfileSocial({
     if (feedsType === FeedsType.ACTIVITIES) return;
     loadFirstFeeds({
       activeLensProfileId: activeLensProfile?.id,
-      lensProfileId: activeLensProfile?.id,
-      fid: isConnectedFarcaster ? fid : undefined,
+      lensProfileId,
+      fid,
       group: feedsType as unknown as ProfileFeedsGroups,
     });
-  }, [
-    loadFirstFeeds,
-    activeLensProfile?.id,
-    fid,
-    feedsType,
-    wallet,
-    isConnectedFarcaster,
-  ]);
+  }, [loadFirstFeeds, activeLensProfile?.id, fid, feedsType, lensProfileId]);
 
   const loadMoreSocialFeeds = useCallback(() => {
     if (feedsType === FeedsType.ACTIVITIES) return;
     loadMoreFeeds({
       activeLensProfileId: activeLensProfile?.id,
-      lensProfileId: activeLensProfile?.id,
-      fid: isConnectedFarcaster ? fid : undefined,
+      lensProfileId,
+      fid,
       group: feedsType as unknown as ProfileFeedsGroups,
     });
-  }, [
-    loadMoreFeeds,
-    activeLensProfile?.id,
-    fid,
-    feedsType,
-    wallet,
-    isConnectedFarcaster,
-  ]);
+  }, [loadMoreFeeds, activeLensProfile?.id, fid, feedsType, lensProfileId]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;
@@ -84,6 +68,7 @@ export default function ProfileSocial({
         if (feedsType === FeedsType.ACTIVITIES) {
           return (
             <Rss3Content
+              address={[address]}
               empty={
                 <NoActivityWrapper>
                   <NoActivity />

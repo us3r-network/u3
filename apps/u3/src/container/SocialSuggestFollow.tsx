@@ -7,22 +7,29 @@ import {
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
-import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import getAvatar from '../../utils/lens/getAvatar';
-import { useLensCtx } from '../../contexts/AppLensCtx';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import useFarcasterRecommendedProfile from '../../hooks/farcaster/useFarcasterRecommendedProfile';
-import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
-import useLogin from '../../hooks/useLogin';
+import { useMemo, useState, useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import getAvatar from '../utils/lens/getAvatar';
+import { SocialButtonPrimary } from '../components/social/button/SocialButton';
+import { useLensCtx } from '../contexts/AppLensCtx';
+import LensIcon from '../components/icons/LensIcon';
+import FarcasterIcon from '../components/icons/FarcasterIcon';
+import useFarcasterRecommendedProfile from '../hooks/farcaster/useFarcasterRecommendedProfile';
+import useFarcasterUserData from '../hooks/farcaster/useFarcasterUserData';
+import useLogin from '../hooks/useLogin';
+import { SocailPlatform } from '../api';
+import Loading from '../components/common/loading/Loading';
 
-const SUGGEST_NUM = 3;
-export default function SocialWhoToFollow() {
-  const navigate = useNavigate();
+const SUGGEST_NUM = 20;
+export default function SocialSuggestFollow() {
+  const [loading, setLoading] = useState(false);
+
+  const { socialPlatform } = useOutletContext<{
+    socialPlatform: SocailPlatform | '';
+  }>();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens } = useLensCtx();
-  const { data: lensProfiles } = useProfilesToFollow();
+  const { data: lensProfiles, loading: loadingLens } = useProfilesToFollow();
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
       lensProfiles
@@ -31,26 +38,31 @@ export default function SocialWhoToFollow() {
     [lensProfiles, isLoginLens]
   );
   const fid = Number(useFarcasterCurrFid());
-  const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
-    fid,
-    num: SUGGEST_NUM,
-  });
+  const { farcasterRecommendedProfileData, loading: loadingFarcaster } =
+    useFarcasterRecommendedProfile({
+      fid,
+      num: SUGGEST_NUM,
+    });
+  if (loading) {
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
+
+  useEffect(() => {
+    setLoading(loadingLens && loadingFarcaster);
+  }, [loadingLens, loadingFarcaster]);
+
   return (
     isLoginU3 &&
     (fid || isLoginLens) && (
       <Wrapper>
-        <Header>
-          <Title>Who to follow?</Title>
-          <MoreButton
-            onClick={() => {
-              navigate(`/social/suggest-follow`);
-            }}
-          >
-            View All
-          </MoreButton>
-        </Header>
         <FollowListWrapper>
           {fid > 0 &&
+            (socialPlatform === SocailPlatform.Farcaster ||
+              socialPlatform === '') &&
             farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
             farcasterRecommendedProfileData.recommendedFids.map(
               (recommendedFid) => (
@@ -64,6 +76,7 @@ export default function SocialWhoToFollow() {
               )
             )}
           {isLoginLens &&
+            (socialPlatform === SocailPlatform.Lens || socialPlatform === '') &&
             lensRecommendedProfiles &&
             lensRecommendedProfiles.map((profile) => (
               <LensFollowItem key={profile.id} profile={profile} />
@@ -85,17 +98,18 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
     followee: profile,
     follower: lensActiveProfile,
   });
-  const { name, handle } = profile;
+  const { name, handle, bio } = profile;
   return (
     <FollowItemWrapper>
       <Avatar src={getAvatar(profile)} />
-      <NameHandleWraper>
-        <NameText>
-          {name}
+      <NameBioWraper>
+        <NameHandleWraper>
+          <NameText>{name}</NameText>
+          <HandleText>@{handle}</HandleText>
           <LensIcon />
-        </NameText>
-        <HandleText>@{handle}</HandleText>
-      </NameHandleWraper>
+        </NameHandleWraper>
+        <BioText>{bio}</BioText>
+      </NameBioWraper>
       {!isFollowing ? (
         <FollowBtn
           onClick={() => {
@@ -135,13 +149,14 @@ function FarcasterFollowItem({
   return (
     <FollowItemWrapper>
       <Avatar src={userData.pfp} />
-      <NameHandleWraper>
-        <NameText>
-          {userData.display}
+      <NameBioWraper>
+        <NameHandleWraper>
+          <NameText>{userData.display}</NameText>
+          <HandleText>@{userData.userName}</HandleText>
           <FarcasterIcon />
-        </NameText>
-        <HandleText>@{userData.userName}</HandleText>
-      </NameHandleWraper>
+        </NameHandleWraper>
+        <BioText>{userData.bio}</BioText>
+      </NameBioWraper>
       {!isFollowing ? (
         <FollowBtn onClick={() => follow(fid)} disabled={isPending}>
           {isPending ? 'Following...' : 'Follow'}
@@ -159,35 +174,12 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: 20px;
 `;
-const Header = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-`;
-const Title = styled.h1`
-  color: #718096;
-  font-family: Rubik;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  margin: 0;
-`;
-const MoreButton = styled.button`
-  cursor: pointer;
-  color: #718096;
-  font-size: 16px;
-  font-weight: 500;
-  border: none;
-  outline: none;
-  background: inherit;
-`;
 const FollowListWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  /* gap: 20px; */
   border: 1px solid #718096;
   border-radius: 20px;
   background-color: #212228;
@@ -213,8 +205,15 @@ const Avatar = styled.img`
 const NameHandleWraper = styled.div`
   width: 100%;
   display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+`;
+const NameBioWraper = styled.div`
+  width: 100%;
+  display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
 const NameText = styled.div`
   font-size: 16px;
@@ -222,10 +221,6 @@ const NameText = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  align-items: center;
 `;
 const HandleText = styled.div`
   font-size: 12px;
@@ -234,27 +229,31 @@ const HandleText = styled.div`
   font-weight: 500;
   line-height: 0;
 `;
-const FollowBtn = styled.button`
+const BioText = styled.div`
+  font-size: 14px;
+  font-style: normal;
+  color: #718096;
+  text-align: start;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+`;
+const FollowBtn = styled(SocialButtonPrimary)`
   width: 80px;
   height: 40px;
   gap: 4px;
-  background-color: #14171a;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  outline: none;
-  cursor: pointer;
-  padding: 10px 20px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
   font-size: 12px;
-  font-weight: 700;
 `;
 const FollowedText = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: grey;
+`;
+const LoadingWrapper = styled.div`
+  width: 600px;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

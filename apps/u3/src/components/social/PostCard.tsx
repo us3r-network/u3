@@ -133,7 +133,7 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
   cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
   &:hover {
     background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
@@ -285,6 +285,15 @@ export const PostCardImgWrapper = styled.div<{ len: number }>`
     overflow: hidden;
     cursor: pointer;
   }
+`;
+export const PostCardAudioWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
+`;
+
+export const PostCardVideoWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
 `;
 
 export const PostCardCastWrapper = styled.div`

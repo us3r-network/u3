@@ -1,6 +1,11 @@
 import styled from 'styled-components';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import {
+  Outlet,
+  useLocation,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 import { isMobile } from 'react-device-detect';
 
@@ -17,6 +22,7 @@ import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
 import SearchInput from '../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
+import TrendChannel from '../components/social/farcaster/TrendChannel';
 
 export default function Home() {
   const location = useLocation();
@@ -26,6 +32,7 @@ export default function Home() {
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
   const [searchParams, setSearchParams] = useSearchParams();
+  const { channelName } = useParams();
 
   const onSearch = useCallback(
     (value: string) => {
@@ -60,17 +67,29 @@ export default function Home() {
     activeLensProfileLoading,
   ]);
 
-  const titleElem = location.pathname.includes('post-detail') ? (
-    <SocialBackNav />
-  ) : (
-    <SocialPageNav
-      showFeedsTabs
-      feedsType={feedsType}
-      onChangeFeedsType={(type) => {
-        setFeedsType(type);
-      }}
-    />
-  );
+  const titleElem = useMemo(() => {
+    if (location.pathname.includes('social/trends')) {
+      return <SocialBackNav title="Trends" />;
+    }
+    if (location.pathname.includes('social/channel') && channelName) {
+      return <SocialBackNav title={channelName} isChannel />;
+    }
+    if (location.pathname.includes('post-detail')) {
+      return <SocialBackNav />;
+    }
+    if (location.pathname.includes('suggest-follow')) {
+      return <SocialBackNav title="Suggest Profiles" />;
+    }
+    return (
+      <SocialPageNav
+        showFeedsTabs
+        feedsType={feedsType}
+        onChangeFeedsType={(type) => {
+          setFeedsType(type);
+        }}
+      />
+    );
+  }, [location.pathname, feedsType, socialPlatform, channelName]);
 
   const keepAliveSocialOutlet = useMemo(() => {
     const socialCacheKey = getSocialScrollWrapperId(feedsType, socialPlatform);
@@ -104,7 +123,26 @@ export default function Home() {
       </DetailMainWrapper>
     );
   }, [socialPlatform, feedsType]);
+
+  const SuggestFollowOutlet = useMemo(() => {
+    return (
+      <DetailMainWrapper>
+        <MainWrapper>
+          <MainLeft />
+          <MainCenter>
+            <MainOutletWrapper>
+              <Outlet context={{ socialPlatform }} />
+            </MainOutletWrapper>
+          </MainCenter>
+          <MainRight />
+        </MainWrapper>
+      </DetailMainWrapper>
+    );
+  }, [socialPlatform]);
+
   const isPostDetail = location.pathname.includes('post-detail');
+  const isSuggestFollow = location.pathname.includes('suggest-follow');
+
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
@@ -118,12 +156,20 @@ export default function Home() {
         </LeftWrapper>
       )}
 
-      {isPostDetail ? PostDetailOutlet : keepAliveSocialOutlet}
+      {isPostDetail
+        ? PostDetailOutlet
+        : isSuggestFollow
+        ? SuggestFollowOutlet
+        : keepAliveSocialOutlet}
 
       {!isMobile && (
         <RightWrapper>
           <SearchInput placeholder="Search" onlyOnKeyDown onSearch={onSearch} />
-          <SocialWhoToFollow />
+          <div className="recommend">
+            <SocialWhoToFollow />
+            <TrendChannel />
+            <br />
+          </div>
         </RightWrapper>
       )}
     </HomeWrapper>
@@ -199,4 +245,12 @@ const RightWrapper = styled(MainRight)`
   top: 116px;
   right: 24px;
   height: fit-content;
+
+  > .recommend {
+    overflow: scroll;
+    height: calc(100vh - 96px - 40px - 40px);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 `;

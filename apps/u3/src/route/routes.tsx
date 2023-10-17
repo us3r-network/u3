@@ -41,8 +41,11 @@ export enum RouteKey {
   save = 'save',
   socialLayout = 'socialLayout',
   social = 'social',
+  socialChannel = 'socialChannel',
+  socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
+  socialSuggestFollow = 'socialSuggestFollow',
 }
 export enum RoutePermission {
   login = 'login',
@@ -232,6 +235,16 @@ export const routes: CutomRouteObject[] = [
         key: RouteKey.social,
       },
       {
+        path: 'trends',
+        element: loadContainerElement('SocialTrends'),
+        key: RouteKey.socialTrendsChannel,
+      },
+      {
+        path: 'channel/:channelName',
+        element: loadContainerElement('SocialChannel'),
+        key: RouteKey.socialChannel,
+      },
+      {
         path: 'post-detail/lens/:publicationId',
         element: loadContainerElement('LensPostDetail'),
         key: RouteKey.socialPostDetailLens,
@@ -240,6 +253,11 @@ export const routes: CutomRouteObject[] = [
         path: 'post-detail/fcast/:castId',
         element: loadContainerElement('FarcasterPostDetail'),
         key: RouteKey.socialPostDetailFcast,
+      },
+      {
+        path: 'suggest-follow',
+        element: loadContainerElement('SocialSuggestFollow'),
+        key: RouteKey.socialSuggestFollow,
       },
     ],
   },

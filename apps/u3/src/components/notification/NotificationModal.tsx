@@ -113,8 +113,10 @@ export function FarcasterNotificationItem({
           onClick={() => {
             navigate(
               `/social/post-detail/fcast/${Buffer.from(
-                notification.hash
-              ).toString('hex')}`
+                notification.parent_hash
+              ).toString('hex')}#${Buffer.from(notification.hash).toString(
+                'hex'
+              )}`
             );
             setOpenNotificationModal(false);
           }}
@@ -235,7 +237,9 @@ function LensNotificationItem({
       return (
         <NotificationItem
           onClick={() => {
-            navigate(`/social/post-detail/lens/${notification.comment.id}`);
+            navigate(
+              `/social/post-detail/lens/${notification?.comment?.commentOn?.id}#${notification?.comment?.id}`
+            );
             setOpenNotificationModal(false);
           }}
         >

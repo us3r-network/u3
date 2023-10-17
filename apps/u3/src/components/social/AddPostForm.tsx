@@ -2,6 +2,7 @@ import {
   ChangeEvent,
   ClipboardEvent,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from 'react';
@@ -41,8 +42,17 @@ import { ImagePreview } from './ImagePreview';
 import { uploadImage } from '../../services/api/upload';
 import useLogin from '../../hooks/useLogin';
 import getAvatar from '../../utils/lens/getAvatar';
+import { Channel } from '../../services/types/farcaster';
+import ChannelSelect from './ChannelSelect';
+import { getChannelFromName } from '../../utils/social/getChannel';
 
-export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
+export default function AddPostForm({
+  onSuccess,
+  channel,
+}: {
+  onSuccess?: () => void;
+  channel?: Channel;
+}) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const {
     encryptedSigner,
@@ -55,6 +65,9 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
+  const [channelValue, setChannelValue] = useState(
+    channel?.name || channel?.channel_description || 'Home'
+  );
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -129,6 +142,11 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
   const handleSubmitToFarcaster = useCallback(async () => {
     if (!text || !encryptedSigner) return;
     const currFid = getCurrFid();
+    let parentUrl;
+    if (channelValue !== 'Home') {
+      const ch = getChannelFromName(channelValue);
+      parentUrl = ch?.parent_url;
+    }
     try {
       const uploadedLinks = await uploadSelectedImages();
       // eslint-disable-next-line no-underscore-dangle
@@ -140,6 +158,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
+            parentUrl,
           },
           { fid: currFid, network: FARCASTER_NETWORK },
           encryptedSigner
@@ -154,7 +173,7 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner]);
+  }, [text, encryptedSigner, channel, channelValue]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
@@ -189,6 +208,12 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
     cleanImage();
     if (onSuccess) onSuccess();
   }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
+
+  useEffect(() => {
+    if (channel) {
+      setChannelValue(channel.name || channel.channel_description || 'Home');
+    }
+  }, [channel]);
 
   return (
     <Wrapper>
@@ -310,6 +335,14 @@ export default function AddPostForm({ onSuccess }: { onSuccess?: () => void }) {
           <SendEmojiBtn disabled>
             <EmojiIcon />
           </SendEmojiBtn>
+
+          <ChannelSelect
+            channel={channel}
+            selectChannelName={channelValue}
+            setSelectChannelName={(v) => {
+              setChannelValue(v);
+            }}
+          />
           <Description
             hidden={
               !(
@@ -500,4 +533,16 @@ const SubmitBtn = styled(SocialButtonPrimary)`
   width: 100px;
   height: 40px;
   margin-left: auto;
+`;
+
+const ChannelBox = styled.div`
+  color: #718096;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  .channel-img {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+  }
 `;

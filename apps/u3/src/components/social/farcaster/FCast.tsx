@@ -85,6 +85,7 @@ export default function FCast({
 
   return (
     <PostCardWrapper
+      id={Buffer.from(cast.hash.data).toString('hex')}
       isDetail={isDetail}
       onClick={() => {
         if (isDetail) return;
@@ -120,6 +121,7 @@ export default function FCast({
         </PostCardShowMoreWrapper>
       )}
       <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
+      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
@@ -141,7 +143,6 @@ export default function FCast({
           farcasterUserData={farcasterUserData}
         />
       </PostCardActionsWrapper>
-      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
     </PostCardWrapper>
   );
 }

@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { NobleEd25519Signer } from '@farcaster/hub-web';
+import { NobleEd25519Signer, UserDataType } from '@farcaster/hub-web';
 import { createPublicClient, http } from 'viem';
 import {
   ReactNode,
@@ -16,6 +16,8 @@ import axios from 'axios';
 import { goerli } from 'viem/chains';
 import { toast } from 'react-toastify';
 
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
@@ -25,9 +27,20 @@ import {
   setPrivateKey,
   setSignedKeyRequest,
 } from '../utils/farsign-utils';
-import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
+import {
+  getFarcasterChannelTrends,
+  getFarcasterSignature,
+  getFarcasterUserInfo,
+} from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
 import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
+import useBioLinkActions from '../hooks/useBioLinkActions';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+  farcasterHandleToBioLinkHandle,
+} from '../utils/profile/biolink';
+import FarcasterChannelData from '../constants/warpcast.json';
 
 export const publicClient = createPublicClient({
   chain: goerli,
@@ -61,6 +74,15 @@ export type Signer = {
 export type FarcasterUserData = {
   [key: string]: { type: number; value: string }[];
 };
+
+export type FarcasterChannel = {
+  name?: string;
+  channel_description?: string;
+  parent_url: string;
+  image: string;
+  channel_id: string;
+  count: string;
+};
 export interface FarcasterContextData {
   currFid: number | undefined;
   currUserInfo:
@@ -75,6 +97,7 @@ export interface FarcasterContextData {
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
   setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
+  channels: FarcasterChannel[];
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -116,6 +139,39 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
+
+  const [trendChannel, setTrendChannel] = useState<
+    {
+      parent_url: string;
+      count: string;
+    }[]
+  >([]);
+  const loadTrendChannel = async () => {
+    const resp = await getFarcasterChannelTrends();
+    if (resp.data.code !== 0) {
+      console.error(resp.data.msg);
+      return;
+    }
+    setTrendChannel(resp.data.data);
+  };
+  useEffect(() => {
+    loadTrendChannel();
+  }, []);
+
+  const channels = useMemo(() => {
+    return FarcasterChannelData.map((c) => {
+      const trend = trendChannel.find((t) => t.parent_url === c.parent_url);
+      if (!trend) return null;
+      return {
+        ...trend,
+        ...c,
+      };
+    })
+      .filter((c) => c !== null)
+      .sort((a, b) => {
+        return Number(b.count) - Number(a.count);
+      });
+  }, [trendChannel]);
 
   const openQRModal = useMemo(() => {
     if (signer.isConnected) {
@@ -247,6 +303,29 @@ export default function FarcasterProvider({
     }
   }, []);
 
+  // 每次farcaster登录成功后，更新farcaster biolink
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    const findUserInfo = currUserInfo?.[currFid]?.find(
+      (item) => item.type === UserDataType.USERNAME
+    );
+    const handle = findUserInfo?.value || '';
+    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: farcasterHandleToBioLinkHandle(handle),
+          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+        },
+      });
+    }
+  }, [session, profile, signer, currFid, currUserInfo]);
+
   return (
     <FarcasterContext.Provider
       // TODO: fix this
@@ -261,6 +340,7 @@ export default function FarcasterProvider({
         farcasterUserData,
         setFarcasterUserData,
         setIframeUrl,
+        channels,
       }}
     >
       {children}

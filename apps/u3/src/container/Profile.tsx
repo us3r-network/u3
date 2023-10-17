@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useProfilesOwnedBy } from '@lens-protocol/react-web';
+import {
+  Profile as LensProfile,
+  useProfilesOwnedBy,
+} from '@lens-protocol/react-web';
 import { useParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
@@ -28,28 +31,27 @@ import { SocailPlatform } from '../api';
 import useFarcasterFollowNum from '../hooks/farcaster/useFarcasterFollowNum';
 import FarcasterFollowing from '../components/profile/farcaster/FarcasterFollowing';
 import FarcasterFollowers from '../components/profile/farcaster/FarcasterFollowers';
-import useProfileWalletAddress from '../hooks/useProfileWalletAddress';
-import { getAddressWithDidPkh, getDidPkhWithAddress } from '../utils/did';
+import { getAddressWithDidPkh } from '../utils/did';
 import ProfileSocial from '../components/profile/ProfileSocial';
 import Loading from '../components/common/loading/Loading';
+import useDid from '../hooks/useDid';
+import useBioLinkListWithDid from '../hooks/useBioLinkListWithDid';
+import { BIOLINK_PLATFORMS } from '../utils/profile/biolink';
 
 export default function Profile() {
   const { user } = useParams();
   const session = useSession();
-  const sessionAddress = useMemo(
-    () => getAddressWithDidPkh(session?.id || ''),
-    [session]
-  );
-  const { address: profileAddress, loading: profileAddressLoading } =
-    useProfileWalletAddress(user);
-  const address = useMemo(
-    () => (user ? profileAddress : sessionAddress),
-    [user, profileAddress, sessionAddress]
-  );
+
+  const { did, loading: didLoading } = useDid(user);
+
   const isLoginUser = useMemo(
-    () =>
-      !user || profileAddress?.toLowerCase() === sessionAddress?.toLowerCase(),
-    [user, profileAddress, sessionAddress]
+    () => !user || did === session?.id,
+    [user, did, session]
+  );
+
+  const currProfileDid = useMemo(
+    () => (user ? did : session?.id),
+    [user, did, session]
   );
 
   const { logout } = useLogin();
@@ -81,11 +83,37 @@ export default function Profile() {
     followersPlatformCount,
   } = followNavData;
 
-  const { farcasterFollowData } = useFarcasterFollowNum();
+  const address = getAddressWithDidPkh(currProfileDid || '');
+
+  const { bioLinkList } = useBioLinkListWithDid(did);
+  const lensBioLinkProfiles = bioLinkList
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
+    ?.map((item) => {
+      try {
+        return JSON.parse(item.data) as LensProfile;
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((item) => !!item);
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address,
+    address: lensBioLinkProfiles?.[0]?.ownedBy || '',
   });
   const lensProfileFirst = lensProfiles?.[0];
+
+  const fcastBioLinkProfiles = bioLinkList
+    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
+    ?.map((item) => {
+      try {
+        return JSON.parse(item.data) as { fid: string };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter((item) => !!item);
+  const fid = fcastBioLinkProfiles[0]?.fid;
+
+  const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
   useEffect(() => {
     setFollowNavData((prevData) => ({
@@ -106,28 +134,26 @@ export default function Profile() {
   const [hasProfileLoading, setHasProfileLoading] = useState(false);
   useEffect(() => {
     (async () => {
-      if (user && !profileAddressLoading && profileAddress) {
+      if (user && !didLoading && did) {
         setHasProfileLoading(true);
-        const profile = await getProfileWithDid(
-          getDidPkhWithAddress(profileAddress)
-        );
+        const profile = await getProfileWithDid(did);
         if (profile) {
           setHasProfile(true);
         }
         setHasProfileLoading(false);
       }
     })();
-  }, [user, profileAddressLoading, profileAddress]);
+  }, [user, didLoading, did]);
 
   if (user) {
-    if (profileAddressLoading || hasProfileLoading) {
+    if (didLoading || hasProfileLoading) {
       return (
         <LoadingWrapper>
           <Loading />
         </LoadingWrapper>
       );
     }
-    if (!profileAddress || !hasProfile) {
+    if (!did || !hasProfile) {
       return <NotU3User />;
     }
   }
@@ -136,7 +162,7 @@ export default function Profile() {
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
         <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile address={address} />
+          <ProfileInfoMobile did={currProfileDid} />
           <LogoutButton
             className="logout-button"
             onClick={() => {
@@ -206,7 +232,7 @@ export default function Profile() {
         {!isMobile && (
           <MainLeft>
             <ProfileInfo
-              address={address}
+              did={currProfileDid}
               clickFollowing={() => {
                 setFollowNavData((prevData) => ({
                   ...prevData,
@@ -251,25 +277,27 @@ export default function Profile() {
               followNavType === FollowType.FOLLOWING &&
               followingActivePlatform === SocailPlatform.Farcaster
             ) {
-              return <FarcasterFollowing />;
+              return <FarcasterFollowing fid={fid} />;
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
               followersActivePlatform === SocailPlatform.Farcaster
             ) {
-              return <FarcasterFollowers />;
+              return <FarcasterFollowers fid={fid} />;
             }
             return null;
           }
           return (
             <KeepAlive
               cacheKey={`${RouteKey.profile}_social_${
-                address || '0x'
-              }_${profilePageFeedsType}`}
+                lensProfileFirst?.id || '0'
+              }_${fid || '0'}_${address || '0x'}_${profilePageFeedsType}`}
               saveScrollPosition="#profile-wrapper"
             >
               <ProfileSocial
-                wallet={address}
+                address={address}
+                lensProfileId={lensProfileFirst?.id}
+                fid={fid}
                 feedsType={profilePageFeedsType}
               />
             </KeepAlive>
@@ -296,18 +324,17 @@ export default function Profile() {
 function ProfileInfo({
   clickFollowing,
   clickFollowers,
-  address,
+  did,
   ...props
 }: StyledComponentPropsWithRef<'div'> & {
   clickFollowing?: () => void;
   clickFollowers?: () => void;
-  address: string;
+  did: string;
 }) {
-  const did = useMemo(() => getDidPkhWithAddress(address), [address]);
   return (
     <ProfileInfoWrap {...props}>
       <ProfileInfoCard
-        address={address}
+        did={did}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
       />
