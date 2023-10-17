@@ -24,7 +24,6 @@ import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
-  getCurrFid,
   getPrivateKey,
   getSignedKeyRequest,
   setPrivateKey,
@@ -184,18 +183,18 @@ export default function FarcasterProvider({
     return openQR;
   }, [signer.isConnected, openQR]);
 
-  const getCurrUserInfo = async () => {
-    const cFid = getCurrFid();
-    const resp = await getFarcasterUserInfo([cFid]);
+  const getCurrUserInfo = useCallback(async () => {
+    if (!currFid) return;
+    const resp = await getFarcasterUserInfo([currFid]);
     if (resp.data.code === 0) {
       const data: {
         [key: string]: { type: number; value: string }[];
       } = {};
-      data[cFid] = resp.data.data;
+      data[currFid] = resp.data.data;
       setCurrUserInfo(data);
-      setCurrFid(cFid);
+      setCurrFid(currFid);
     }
-  };
+  }, [currFid]);
 
   const pollForSigner = useCallback(async (token: string) => {
     let tries = 0;
@@ -294,8 +293,26 @@ export default function FarcasterProvider({
 
   useEffect(() => {
     if (walletCheckStatus !== 'done') return;
-    if (walletFid && walletSigner && hasStorage) return;
-    console.log('use qr');
+    if (walletFid && walletSigner && hasStorage) {
+      setCurrFid(walletFid);
+      setToken({
+        token: 'already connected',
+        deepLink: 'already connected',
+      });
+      setSigner({
+        SignedKeyRequest: {
+          deeplinkUrl: '',
+          key: '',
+          requestFid: 0,
+          state: 'completed',
+          token: '',
+          userFid: walletFid,
+        },
+        isConnected: true,
+      });
+      return;
+    }
+    console.log('use qr check', { walletFid, walletSigner, hasStorage });
     const signer = getSignedKeyRequest();
 
     if (signer != null) {
@@ -342,7 +359,7 @@ export default function FarcasterProvider({
         currUserInfo,
         isConnected: signer.isConnected,
         token,
-        encryptedSigner,
+        encryptedSigner: walletSigner || encryptedSigner,
         openFarcasterQR,
         farcasterUserData,
         setFarcasterUserData,

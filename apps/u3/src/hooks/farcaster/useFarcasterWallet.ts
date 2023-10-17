@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
@@ -26,25 +27,23 @@ export default function useFarcasterWallet() {
 
   const signerCheck = useCallback(() => {
     if (!walletFid) return;
-    console.log('checking signer');
     const privateKey = localStorage.getItem(`signerPrivateKey-${walletFid}`);
     if (privateKey !== null) {
       const ed25519Signer = new NobleEd25519Signer(
         Buffer.from(privateKey, 'hex')
       );
-      setWalletSigner(ed25519Signer);
+      return ed25519Signer;
     }
   }, [walletFid]);
 
   const fnameCheck = useCallback(async () => {
     if (!walletFid) return;
-    console.log('checking fname');
     try {
       const resp = await axios.get(
         `https://fnames.farcaster.xyz/transfers?fid=${walletFid}`
       );
       if (resp.data.transfers.length > 0) {
-        setFname(resp.data.transfers[0].username);
+        return resp.data.transfers[0].username;
       }
     } catch (error) {
       console.log(error);
@@ -53,14 +52,12 @@ export default function useFarcasterWallet() {
 
   const storageCheck = useCallback(async () => {
     if (!walletFid) return;
-    console.log('checking storage');
     try {
       const resp = await axios.get(
         `https://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${walletFid}`
       );
-      // console.log(resp.data);
       if (resp.data.limits?.length > 0) {
-        setHasStorage(Boolean(resp.data.limits?.[0].limit)); // mainnet
+        return Boolean(resp.data.limits?.[0].limit); // mainnet
       }
     } catch (error) {
       console.log(error);
@@ -68,11 +65,21 @@ export default function useFarcasterWallet() {
   }, [walletFid]);
 
   useEffect(() => {
+    if (status !== 'success') return;
     setWalletCheckStatus('loading');
-    Promise.all([signerCheck(), fnameCheck(), storageCheck()]).finally(() => {
-      setWalletCheckStatus('done');
-    });
-  }, [signerCheck, fnameCheck, storageCheck]);
+    Promise.all([signerCheck(), fnameCheck(), storageCheck()])
+      .then((data) => {
+        setWalletSigner(data[0]);
+        setFname(data[1]);
+        setHasStorage(data[2]);
+      })
+      .finally(() => {
+        // TODO: timeout is wait for state to update
+        setTimeout(() => {
+          setWalletCheckStatus('done');
+        }, 100);
+      });
+  }, [signerCheck, fnameCheck, storageCheck, status]);
 
   useEffect(() => {
     // eslint-disable-next-line  @typescript-eslint/no-base-to-string
