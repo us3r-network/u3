@@ -18,6 +18,8 @@ import { toast } from 'react-toastify';
 
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
+import { useAccount, useContractRead } from 'wagmi';
+import { IdRegistryABI } from 'src/abi/IdRegistryABI';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
@@ -33,7 +35,7 @@ import {
   getFarcasterUserInfo,
 } from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
-import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
+
 import useBioLinkActions from '../hooks/useBioLinkActions';
 import {
   BIOLINK_FARCASTER_NETWORK,
@@ -96,7 +98,6 @@ export interface FarcasterContextData {
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
-  setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
   channels: FarcasterChannel[];
 }
 
@@ -114,7 +115,6 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
-  const [iframeUrl, setIframeUrl] = useState('');
 
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
@@ -139,6 +139,16 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
+  const { address, isConnected } = useAccount();
+
+  const { data: idOf } = useContractRead({
+    address: '0x00000000FcAf86937e41bA038B4fA40BAA4B780A',
+    abi: IdRegistryABI,
+    functionName: 'idOf',
+    args: [address],
+    enabled: Boolean(address),
+    chainId: 10,
+  });
 
   const [trendChannel, setTrendChannel] = useState<
     {
@@ -339,7 +349,6 @@ export default function FarcasterProvider({
         openFarcasterQR,
         farcasterUserData,
         setFarcasterUserData,
-        setIframeUrl,
         channels,
       }}
     >
@@ -356,14 +365,6 @@ export default function FarcasterProvider({
         afterCloseAction={() => {
           setShowQR(false);
           stopSign.stop = true;
-        }}
-      />
-      <FarcasterIframeModal
-        iframeUrl={iframeUrl}
-        open={!!iframeUrl}
-        closeModal={() => {}}
-        afterCloseAction={() => {
-          setIframeUrl('');
         }}
       />
     </FarcasterContext.Provider>
