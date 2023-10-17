@@ -97,7 +97,7 @@ export default function Profile() {
     })
     .filter((item) => !!item);
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address: lensBioLinkProfiles[0]?.ownedBy || '',
+    address: lensBioLinkProfiles?.[0]?.ownedBy || '',
   });
   const lensProfileFirst = lensProfiles?.[0];
 

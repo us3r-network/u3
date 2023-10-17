@@ -27,7 +27,7 @@ module.exports = {
   rules: {
     /** js语法 **/
     // 允许使用console
-    "no-console": "off",
+    'no-console': 'off',
     // 不限制js的语法 （如：不禁止使用for of语法）
     'no-restricted-syntax': 'off',
     // 允许在for循环中使用一元运算符 ++,-- (其它位置仍给出警告)
@@ -47,6 +47,9 @@ module.exports = {
     'import/prefer-default-export': 'off',
 
     /** typescript **/
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unsafe-enum-comparison': 'off',
     //解决 styled 结构顺序问题
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/no-unsafe-member-access': 'off',
