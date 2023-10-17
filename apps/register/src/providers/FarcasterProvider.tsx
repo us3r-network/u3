@@ -73,7 +73,7 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
     if (!fid) return;
     try {
       const resp = await axios.get(
-        `http://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${fid}`
+        `https://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${fid}`
       );
       // console.log(resp.data);
       if (resp.data.limits?.length > 0) {
