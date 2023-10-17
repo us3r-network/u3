@@ -25,7 +25,7 @@ export default function FarcasterChannel({ url }: { url: string }) {
       </ChannelBox>
     );
   }
-  console.log('channel not found', channel, url);
+  // console.log('channel not found', channel, url);
   return null;
 }
 

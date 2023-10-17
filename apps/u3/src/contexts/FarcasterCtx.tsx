@@ -18,8 +18,9 @@ import { toast } from 'react-toastify';
 
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
-import { useAccount, useContractRead } from 'wagmi';
+import { useAccount, useContractRead, useNetwork } from 'wagmi';
 import { IdRegistryABI } from 'src/abi/IdRegistryABI';
+import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
@@ -139,16 +140,9 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
-  const { address, isConnected } = useAccount();
 
-  const { data: idOf } = useContractRead({
-    address: '0x00000000FcAf86937e41bA038B4fA40BAA4B780A',
-    abi: IdRegistryABI,
-    functionName: 'idOf',
-    args: [address],
-    enabled: Boolean(address),
-    chainId: 10,
-  });
+  const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
+    useFarcasterWallet();
 
   const [trendChannel, setTrendChannel] = useState<
     {
@@ -299,6 +293,9 @@ export default function FarcasterProvider({
   }, [signer.isConnected]);
 
   useEffect(() => {
+    if (walletCheckStatus !== 'done') return;
+    if (walletFid && walletSigner && hasStorage) return;
+    console.log('use qr');
     const signer = getSignedKeyRequest();
 
     if (signer != null) {
@@ -311,7 +308,7 @@ export default function FarcasterProvider({
         isConnected: true,
       });
     }
-  }, []);
+  }, [walletFid, hasStorage, walletSigner]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
   const session = useSession();
