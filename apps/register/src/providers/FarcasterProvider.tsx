@@ -72,9 +72,8 @@ export const FarcasterProvider: React.FC<{ children: ReactNode }> = ({
   const storageCheck = useCallback(async () => {
     if (!fid) return;
     try {
-      // TODO: self hosted hub
       const resp = await axios.get(
-        `http://nemes.farcaster.xyz:2281/v1/storageLimitsByFid?fid=${fid}`
+        `http://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${fid}`
       );
       // console.log(resp.data);
       if (resp.data.limits?.length > 0) {

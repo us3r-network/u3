@@ -104,6 +104,8 @@ export default function FnameRegister() {
     }
   }, [isSuccessSwitch]);
 
+  if (!fid) return null;
+
   if (fname) {
     return (
       <RegisterContainer>
