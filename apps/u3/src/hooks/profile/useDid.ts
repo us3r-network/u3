@@ -6,6 +6,7 @@ import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_LENS_NETWORK,
   BIOLINK_PLATFORMS,
+  farcasterHandleToBioLinkHandle,
   isFarcasterHandle,
   isLensHandle,
 } from '../../utils/profile/biolink';
@@ -131,7 +132,7 @@ export default function useDid(identity: string) {
           const biolink = await queryBioLinkWithFilters({
             platform: BIOLINK_PLATFORMS.farcaster,
             network: String(BIOLINK_FARCASTER_NETWORK),
-            handle: identity,
+            handle: farcasterHandleToBioLinkHandle(identity),
           });
           if (biolink) {
             setDid(biolink.creator.id);
