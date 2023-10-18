@@ -233,7 +233,7 @@ export default function SignerAdd() {
               <iframe
                 id="wallet-iframe"
                 title="wallet"
-                src="http://deev.u3.xyz/wallet.html"
+                src={`${U3_ORIGIN}/wallet.html`}
                 frameBorder="0"
                 width={0}
                 height={0}
