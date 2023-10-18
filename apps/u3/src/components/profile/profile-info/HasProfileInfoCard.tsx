@@ -64,7 +64,7 @@ export default function HasU3ProfileInfoCard({
       }
     }
 
-    if (userData?.fid) {
+    if (userData?.fid && userData?.display) {
       accounts.push({
         platform: SocailPlatform.Farcaster,
         avatar: userData.pfp,
