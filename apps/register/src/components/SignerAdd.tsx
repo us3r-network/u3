@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NobleEd25519Signer } from "@farcaster/hub-web";
 
 import { SignedKeyRequestMetadataABI } from "../abi/SignedKeyRequestMetadataABI";
@@ -17,6 +17,8 @@ import styled from "styled-components";
 // import * as viem from "viem";
 
 const { encodeAbiParameters } = require("viem");
+
+const U3_ORIGIN = process.env.REACT_APP_U3_ORIGIN || "https://dev.u3.xyz";
 
 const SIGNED_KEY_REQUEST_VALIDATOR_EIP_712_DOMAIN = {
   name: "Farcaster SignedKeyRequestValidator",
@@ -52,8 +54,9 @@ function encodeMetadata(
 }
 
 export default function SignerAdd() {
-  const { fid, signer, setSigner } = useFarcaster();
+  const { fid, signer, setSigner, hasStorage } = useFarcaster();
   const { address } = useAccount();
+  const iRef = useRef<HTMLIFrameElement | null>(null);
 
   const [addSignerTxHash, setAddSignerTxHash] = useState<string>("");
   const [privateKey, setPrivateKey] = useState<Uint8Array | undefined>();
@@ -195,6 +198,22 @@ export default function SignerAdd() {
   }, [isLoadingTx, isSuccessTx]);
 
   useEffect(() => {
+    const messageHandler = (e: MessageEvent<any>) => {
+      if (e.data?.type !== "FARCATER_WALLET_SIGNER_RESULT") return;
+      if (e.data?.success)
+        toast.success(
+          `signer add success to ${U3_ORIGIN}, now you can post cast in ${U3_ORIGIN}`
+        );
+      else toast.success(`signer add fail to ${U3_ORIGIN}`);
+    };
+
+    window.addEventListener("message", messageHandler);
+    return () => {
+      window.removeEventListener("message", messageHandler);
+    };
+  }, []);
+
+  useEffect(() => {
     if (!!txData) {
       setAddSignerTxHash(txData.hash);
     }
@@ -204,7 +223,43 @@ export default function SignerAdd() {
     return null;
   }
   if (signer) {
-    return <p>Signer added (Signer manage coming soon)</p>;
+    return (
+      <RegisterSignerContainer>
+        <div>
+          <p>Signer added (Signer manage coming soon)</p>
+
+          {hasStorage && (
+            <>
+              <iframe
+                id="wallet-iframe"
+                title="wallet"
+                src="http://deev.u3.xyz/wallet.html"
+                frameBorder="0"
+                width={0}
+                height={0}
+                ref={iRef}
+              ></iframe>
+
+              <button
+                onClick={() => {
+                  iRef.current?.contentWindow?.postMessage(
+                    {
+                      fid: fid,
+                      privateKey: ed.etc.bytesToHex(privateKey as Uint8Array),
+                      publicKey,
+                      type: "SET_FARCATER_WALLET_SIGNER",
+                    },
+                    U3_ORIGIN || "http://localhost"
+                  );
+                }}
+              >
+                make signer valid in {U3_ORIGIN}
+              </button>
+            </>
+          )}
+        </div>
+      </RegisterSignerContainer>
+    );
   }
   return (
     <RegisterSignerContainer>
