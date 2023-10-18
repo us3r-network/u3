@@ -4,6 +4,11 @@ import {
   Web3BioProfilePlatform,
   getProfilesWithWeb3Bio,
 } from '../../api/web3bio';
+import { isFarcasterHandle } from '../../utils/profile/biolink';
+
+export const farcasterHandleToWeb3BioHandle = (handle: string) => {
+  return handle.replace(/\.[^.]+$/, `.farcaster`);
+};
 
 export default function useBioLinkListWithWeb3Bio(identity: string) {
   const [bioLinkList, setBioLinkList] = useState<Array<Web3BioProfile>>([]);
@@ -13,7 +18,11 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
       if (!identity) return;
       setLoading(true);
       try {
-        const res = await getProfilesWithWeb3Bio(identity);
+        const res = await getProfilesWithWeb3Bio(
+          isFarcasterHandle(identity)
+            ? farcasterHandleToWeb3BioHandle(identity)
+            : identity
+        );
         const { data } = res;
         setBioLinkList(data);
       } catch (error) {
