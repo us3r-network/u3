@@ -192,7 +192,6 @@ export default function FarcasterProvider({
       } = {};
       data[currFid] = resp.data.data;
       setCurrUserInfo(data);
-      setCurrFid(currFid);
     }
   }, [currFid]);
 
@@ -278,18 +277,28 @@ export default function FarcasterProvider({
     setOpenQR(true);
   };
 
-  const encryptedSigner = useMemo(() => {
-    if (!signer.isConnected) return undefined;
-    const privateKey = getPrivateKey();
-
-    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
-  }, [signer.isConnected]);
-
   useEffect(() => {
     if (signer.isConnected) {
       getCurrUserInfo();
     }
   }, [signer.isConnected]);
+
+  const encryptedSigner = useMemo(() => {
+    if (walletCheckStatus !== 'done') return undefined;
+    if (!signer.isConnected) return undefined;
+    if (walletFid && walletSigner && hasStorage) {
+      return walletSigner;
+    }
+    const privateKey = getPrivateKey();
+
+    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
+  }, [
+    signer.isConnected,
+    walletCheckStatus,
+    walletFid,
+    walletSigner,
+    hasStorage,
+  ]);
 
   useEffect(() => {
     if (walletCheckStatus !== 'done') return;
@@ -314,18 +323,21 @@ export default function FarcasterProvider({
     }
     console.log('use qr check', { walletFid, walletSigner, hasStorage });
     const signer = getSignedKeyRequest();
+    console.log(JSON.parse(signer));
 
     if (signer != null) {
+      const signedKeyRequest = JSON.parse(signer);
       setToken({
         token: 'already connected',
         deepLink: 'already connected',
       });
       setSigner({
-        SignedKeyRequest: JSON.parse(signer),
+        SignedKeyRequest: signedKeyRequest,
         isConnected: true,
       });
+      setCurrFid(signedKeyRequest.userFid);
     }
-  }, [walletFid, hasStorage, walletSigner]);
+  }, [walletFid, hasStorage, walletSigner, walletCheckStatus]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
   const session = useSession();
@@ -359,7 +371,7 @@ export default function FarcasterProvider({
         currUserInfo,
         isConnected: signer.isConnected,
         token,
-        encryptedSigner: walletSigner || encryptedSigner,
+        encryptedSigner,
         openFarcasterQR,
         farcasterUserData,
         setFarcasterUserData,

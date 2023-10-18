@@ -265,19 +265,19 @@ export default function AddPostForm({
                 >
                   <Avatar
                     src={
-                      farcasterUserInfo[farcasterUserFid].find(
+                      farcasterUserInfo[farcasterUserFid]?.find(
                         (item) => item.type === UserDataType.PFP
                       )?.value || ''
                     }
                   />
                   <UserName>
-                    {farcasterUserInfo[farcasterUserFid].find(
+                    {farcasterUserInfo[farcasterUserFid]?.find(
                       (item) => item.type === UserDataType.DISPLAY
                     )?.value || ''}
                   </UserName>
                   <UserHandle>
                     @
-                    {farcasterUserInfo[farcasterUserFid].find(
+                    {farcasterUserInfo[farcasterUserFid]?.find(
                       (item) => item.type === UserDataType.USERNAME
                     )?.value || ''}
                   </UserHandle>
