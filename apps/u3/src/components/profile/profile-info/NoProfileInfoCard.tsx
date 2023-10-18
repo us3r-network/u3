@@ -10,6 +10,7 @@ import useBioLinkListWithWeb3Bio from '../../../hooks/profile/useBioLinkListWith
 import { getDidPkhWithAddress } from '../../../utils/did';
 import ProfileInfoBaseCard from './ProfileInfoBaseCard';
 import getAvatar from '../../../utils/lens/getAvatar';
+import useLazyQueryFidWithAddress from '../../../hooks/farcaster/useLazyQueryFidWithAddress';
 
 interface NoU3ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   identity: string;
@@ -34,8 +35,13 @@ export default function NoU3ProfileInfoCard({
   });
   const lensProfileFirst = lensProfiles?.[0];
 
-  // TODO 根据 address 获取fid
-  const fid = '';
+  const { fetch: fetchFid, fid } = useLazyQueryFidWithAddress(
+    fcastBioLinks?.[0]?.address || ''
+  );
+  useEffect(() => {
+    fetchFid();
+  }, [fcastBioLinks]);
+
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
     if (fid && !farcasterUserData[fid]) {

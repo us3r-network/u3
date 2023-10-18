@@ -34,6 +34,7 @@ import Loading from '../components/common/loading/Loading';
 import useDid from '../hooks/profile/useDid';
 import useBioLinkListWithDid from '../hooks/profile/useBioLinkListWithDid';
 import useBioLinkListWithWeb3Bio from '../hooks/profile/useBioLinkListWithWeb3Bio';
+import useLazyQueryFidWithAddress from '../hooks/farcaster/useLazyQueryFidWithAddress';
 
 export default function Profile() {
   const { user } = useParams();
@@ -75,6 +76,7 @@ export default function Profile() {
   const {
     bioLinkList: web3BioProfiles,
     lensBioLinks: lensWeb3BioProfiles,
+    fcastBioLinks: fcastWeb3BioProfiles,
     loading: web3BioLoading,
   } = useBioLinkListWithWeb3Bio(user);
 
@@ -126,8 +128,14 @@ export default function Profile() {
 
   const lensProfileFirst = lensProfiles?.[0];
 
-  // TODO 通过address 获取fid
-  const fid = useWeb3BioProfile ? '' : fcastBioLinkProfiles[0]?.fid;
+  const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
+    fcastWeb3BioProfiles?.[0]?.address || ''
+  );
+  useEffect(() => {
+    fetchFid();
+  }, [fcastWeb3BioProfiles]);
+
+  const fid = useWeb3BioProfile ? fetchedFid : fcastBioLinkProfiles[0]?.fid;
 
   const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
