@@ -334,7 +334,7 @@ function ProfileInfo({
   return (
     <ProfileInfoWrap {...props}>
       <ProfileInfoCard
-        identity={identity}
+        identity={identity || did}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
       />

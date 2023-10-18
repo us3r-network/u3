@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { Profile, useActiveProfile, useFollow } from '@lens-protocol/react-web';
 
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
@@ -43,6 +44,8 @@ export default function ProfileInfoBaseCard({
   clickFollowers,
   ...wrapperProps
 }: ProfileInfoBaseCardProps) {
+  const session = useSession();
+
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const canMesssage = useCanMessage(address);
 
@@ -107,7 +110,10 @@ export default function ProfileInfoBaseCard({
               </BasicCenter>
             </ProfileInfoBasicWrapper>
 
-            <PlatformAccounts data={platformAccounts} />
+            <PlatformAccounts
+              data={platformAccounts}
+              isLoginUser={isLoginUser}
+            />
 
             <UserInfo.Bio />
 
@@ -122,7 +128,7 @@ export default function ProfileInfoBaseCard({
               </CountItem>
             </CountsWrapper>
 
-            {(showFollowBtn || showMessageBtn) && (
+            {session?.id && (showFollowBtn || showMessageBtn) && (
               <BtnsWrapper>
                 {showFollowBtn && (
                   <FollowBtn onClick={onFollow}>Follow</FollowBtn>
