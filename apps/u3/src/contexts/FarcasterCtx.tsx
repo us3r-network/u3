@@ -34,7 +34,7 @@ import {
 } from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
 import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
-import useBioLinkActions from '../hooks/useBioLinkActions';
+import useBioLinkActions from '../hooks/profile/useBioLinkActions';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
