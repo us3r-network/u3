@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>wallet</title>
+</head>
+<body>
+    <script>
+        window.addEventListener('message', function(e) {  
+            if (e.source != window.parent) return;
+            if(e.data?.type !== 'SET_FARCATER_WALLET_SIGNER') return;
+
+            const { fid, privateKey, publicKey } = e.data
+        
+            const signerPublicKeyLocalStorageKey = `signerPublicKey-${fid}`;
+            const signerPrivateKeyLocalStorageKey = `signerPrivateKey-${fid}`;
+            
+            localStorage.setItem(signerPublicKeyLocalStorageKey,publicKey);
+            localStorage.setItem(signerPrivateKeyLocalStorageKey,privateKey);
+
+            window.parent.postMessage({
+                type: 'FARCATER_WALLET_SIGNER_RESULT',
+                success: true,
+            }, '*');  
+        }, false);
+    </script>
+</body>
+</html>
