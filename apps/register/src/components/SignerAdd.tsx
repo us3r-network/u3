@@ -253,7 +253,7 @@ export default function SignerAdd() {
                   );
                 }}
               >
-                make signer valid in {U3_ORIGIN}
+                Make Signer Valid in {U3_ORIGIN}
               </button>
 
               <button
