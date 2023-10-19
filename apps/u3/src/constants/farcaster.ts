@@ -340,3 +340,6 @@ export const FARCASTER_ABI = [
     type: 'function',
   },
 ];
+
+export const IdRegistryContract = '0x00000000FcAf86937e41bA038B4fA40BAA4B780A';
+export const OP_CHAIN_ID = 10;

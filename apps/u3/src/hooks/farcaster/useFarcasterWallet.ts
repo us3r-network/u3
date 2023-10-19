@@ -2,7 +2,8 @@
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import axios from 'axios';
 import { useCallback, useEffect, useState } from 'react';
-import { IdRegistryABI } from 'src/abi/IdRegistryABI';
+import { IdRegistryABI } from 'src/abi/farcaster/IdRegistryABI';
+import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
 
 export default function useFarcasterWallet() {
@@ -17,12 +18,12 @@ export default function useFarcasterWallet() {
   const { chain } = useNetwork();
 
   const { data: idOf, status } = useContractRead({
-    address: '0x00000000FcAf86937e41bA038B4fA40BAA4B780A',
+    address: IdRegistryContract,
     abi: IdRegistryABI,
     functionName: 'idOf',
     args: [address],
     enabled: Boolean(address),
-    chainId: 10,
+    chainId: OP_CHAIN_ID,
   });
 
   const signerCheck = useCallback(() => {
