@@ -4,10 +4,13 @@ import {
   Web3BioProfilePlatform,
   getProfilesWithWeb3Bio,
 } from '../../api/web3bio';
-import { isFarcasterHandle } from '../../utils/profile/biolink';
+import { isFarcasterHandle, isLensHandle } from '../../utils/profile/biolink';
 
 export const farcasterHandleToWeb3BioHandle = (handle: string) => {
   return handle.replace(/\.[^.]+$/, `.farcaster`);
+};
+export const lensHandleToWeb3BioHandle = (handle: string) => {
+  return handle.replace(/\.[^.]+$/, `.lens`);
 };
 
 export default function useBioLinkListWithWeb3Bio(identity: string) {
@@ -18,11 +21,13 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
       if (!identity) return;
       setLoading(true);
       try {
-        const res = await getProfilesWithWeb3Bio(
-          isFarcasterHandle(identity)
-            ? farcasterHandleToWeb3BioHandle(identity)
-            : identity
-        );
+        let web3BioIdentity = identity;
+        if (isFarcasterHandle(identity)) {
+          web3BioIdentity = farcasterHandleToWeb3BioHandle(identity);
+        } else if (isLensHandle(identity)) {
+          web3BioIdentity = lensHandleToWeb3BioHandle(identity);
+        }
+        const res = await getProfilesWithWeb3Bio(web3BioIdentity);
         const { data } = res;
         setBioLinkList(data);
       } catch (error) {

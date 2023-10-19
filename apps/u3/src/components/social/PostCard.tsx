@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { SocailPlatform } from '../../api';
 import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
@@ -9,6 +10,10 @@ import PostLike from './PostLike';
 import PostReply from './PostReply';
 import PostReport from './PostReport';
 import { PostCardMenuBtn } from './PostCardMenuBtn';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../../utils/profile/biolink';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -159,6 +164,7 @@ export function PostCardUserInfo({
   data,
   ...wrapperProps
 }: PostCardUserInfoProps) {
+  const navigate = useNavigate();
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
       case SocailPlatform.Lens:
@@ -170,12 +176,41 @@ export function PostCardUserInfo({
     }
   }, [data.platform]);
 
+  const profileUrl = useMemo(() => {
+    switch (data.platform) {
+      case SocailPlatform.Lens:
+        return `/profile/${lensHandleToBioLinkHandle(data.handle)}`;
+      case SocailPlatform.Farcaster:
+        return `/profile/${farcasterHandleToBioLinkHandle(data.handle)}`;
+      default:
+        return '';
+    }
+  }, [data]);
   return (
     <PostCardUserInfoWrapper {...wrapperProps}>
-      <Avatar src={data.avatar} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          if (profileUrl) navigate(profileUrl);
+        }}
+      >
+        <Avatar src={data.avatar} />
+      </a>
       <PostCardUserInfoCenter>
         <Name>
-          {data.name} {PlatFormIcon}
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (profileUrl) navigate(profileUrl);
+            }}
+          >
+            {data.name}
+          </a>{' '}
+          {PlatFormIcon}
         </Name>
         <Handle>
           @{data.handle} . {dayjs(data.createdAt).fromNow()}
@@ -216,6 +251,13 @@ const Name = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  & > a {
+    color: #fff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const Handle = styled.div`
   display: flex;

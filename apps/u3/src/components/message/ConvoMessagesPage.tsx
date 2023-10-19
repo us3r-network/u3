@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import BackIcon from '../icons/BackIcon';
 import Avatar from './Avatar';
@@ -6,9 +8,14 @@ import Name from './Name';
 import SendMessageForm from './SendMessageForm';
 import MessageList from './MessageList';
 import MessageModalCloseBtn from './MessageModalCloseBtn';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function ConvoMessagesPage() {
+  const navigate = useNavigate();
+  const { setOpenMessageModal } = useNav();
   const { messageRouteParams, setMessageRouteParams } = useXmtpStore();
+  const { peerAddress } = messageRouteParams;
+  const profileUrl = useMemo(() => `/profile/${peerAddress}`, [peerAddress]);
   return (
     <Wrapper>
       <Header>
@@ -20,8 +27,29 @@ export default function ConvoMessagesPage() {
           }}
         />
         <HeaderCenter>
-          <AvatarStyled address={messageRouteParams.peerAddress || ''} />
-          <NameStyled address={messageRouteParams.peerAddress || ''} />
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              navigate(profileUrl);
+              setOpenMessageModal(false);
+            }}
+          >
+            <AvatarStyled address={peerAddress || ''} />
+          </a>
+
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              navigate(profileUrl);
+              setOpenMessageModal(false);
+            }}
+          >
+            <NameStyled address={peerAddress || ''} />
+          </a>
         </HeaderCenter>
         <HeaderRight>
           <MessageModalCloseBtn />
