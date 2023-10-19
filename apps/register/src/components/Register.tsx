@@ -5,6 +5,7 @@ import FnameRegister from "./FnameRegister";
 import SignerAdd from "./SignerAdd";
 import RentStorageUnitButton from "./RentStorageUnitButton";
 import MakeCast from "./MakeCast";
+import BaseInfo from "./BaseInfo";
 
 export default function Register() {
   const { address, isConnected } = useAccount();
@@ -22,6 +23,8 @@ export default function Register() {
         <RentStorageUnitButton />
         <MakeCast />
       </div>
+      <br />
+      <BaseInfo />
     </RegisterContainer>
   );
 }
@@ -34,10 +37,11 @@ const RegisterContainer = styled.main`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   height: 100vh;
+  padding-top: 100px;
   color: #ffffff;
-
+  /* overflow: scroll; */
   > div {
     border: 1px solid #39424c;
     border-radius: 10px;

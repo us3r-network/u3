@@ -27,6 +27,8 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
           REACT_APP_NAME: "U3 Register"
           REACT_APP_U3_ORIGIN: "${{ vars.REACT_APP_U3_ORIGIN }}"
+          REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
+          REACT_APP_API_SOCIAL_URL: "${{ vars.REACT_APP_API_SOCIAL_URL }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
