@@ -21,8 +21,13 @@ export default function useLazyQueryFidWithAddress(address) {
   `;
   const [fetch, { data, loading, error }] = useLazyQuery(query);
   const { Social } = data?.Socials || {};
+  // TODO 先对比userId 取最小的那个，后续返回fids
   const fid = useMemo(
-    () => Social?.find((item) => item.userAddress === address)?.userId,
+    () =>
+      Social?.reduce(
+        (acc, cur) => (Number(acc.userId) < Number(cur.userId) ? acc : cur),
+        {}
+      )?.userId,
     [Social]
   );
 
