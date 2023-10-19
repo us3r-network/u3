@@ -255,6 +255,14 @@ export default function SignerAdd() {
               >
                 make signer valid in {U3_ORIGIN}
               </button>
+
+              <button
+                onClick={() => {
+                  window.open(`${U3_ORIGIN}`, "_blank");
+                }}
+              >
+                Start Exploring from U3
+              </button>
             </>
           )}
         </div>
