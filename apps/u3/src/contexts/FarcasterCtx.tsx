@@ -19,7 +19,7 @@ import { toast } from 'react-toastify';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
-import { IdRegistryABI } from 'src/abi/IdRegistryABI';
+import { IdRegistryABI } from 'src/abi/farcaster/IdRegistryABI';
 import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
