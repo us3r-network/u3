@@ -11,6 +11,7 @@ import {
   useIsAuthenticated,
   useSession,
 } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
 import { u3login, User } from '../services/api/login';
 import {
   removeU3ExtensionCookie,
@@ -18,6 +19,7 @@ import {
   UserAdaptationCookie,
 } from '../utils/cookie';
 import { removeHomeBannerHiddenFromStore } from '../utils/homeStore';
+import { getAddressWithDidPkh } from '../utils/did';
 
 interface U3LoginContextValue {
   user: User | null;
@@ -73,6 +75,33 @@ export default function U3LoginProvider({
     removeU3ExtensionCookie();
     needU3Login = true;
   }, []);
+
+  // us3r 登录后，验证是否有profile，如果没有，则创建profile
+  const { getProfileWithDid, updateProfile, s3ProfileModalAuthed } =
+    useProfileState();
+  useEffect(() => {
+    (async () => {
+      if (session?.id && s3ProfileModalAuthed) {
+        const profile = await getProfileWithDid(session.id);
+        if (!profile) {
+          const walletAddress = getAddressWithDidPkh(session.id);
+          try {
+            await updateProfile({
+              wallets: [
+                {
+                  address: walletAddress,
+                  chain: 'EVM',
+                  primary: false,
+                },
+              ],
+            });
+          } catch (error) {
+            console.error('First updateProfile error', error);
+          }
+        }
+      }
+    })();
+  }, [session, s3ProfileModalAuthed, getProfileWithDid, updateProfile]);
 
   return (
     <U3LoginContext.Provider
