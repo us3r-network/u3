@@ -9,7 +9,7 @@ import {
 } from '../../../constants/farcaster';
 import { FarCast, SocailPlatform } from '../../../api';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
-import { getCurrFid } from '../../../utils/farsign-utils';
+
 import ReplyModal from '../ReplyModal';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 
@@ -34,7 +34,6 @@ export default function FCastCommentPostModal({
   const commentCast = useCallback(
     async (castId: CastId) => {
       if (!text || !encryptedSigner) return;
-      const currFid = getCurrFid();
       setIsPending(true);
       try {
         const cast = (
@@ -64,7 +63,7 @@ export default function FCastCommentPostModal({
         setIsPending(false);
       }
     },
-    [text, encryptedSigner, closeModal]
+    [text, encryptedSigner, closeModal, currFid]
   );
 
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });

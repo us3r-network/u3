@@ -19,7 +19,6 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster';
-import { getCurrFid } from '../../utils/farsign-utils';
 
 import { SocailPlatform } from '../../api';
 import { useLensCtx } from '../../contexts/AppLensCtx';
@@ -141,7 +140,8 @@ export default function AddPostForm({
 
   const handleSubmitToFarcaster = useCallback(async () => {
     if (!text || !encryptedSigner) return;
-    const currFid = getCurrFid();
+    // const currFid = getCurrFid();
+    if (!farcasterUserFid) return;
     let parentUrl;
     if (channelValue !== 'Home') {
       const ch = getChannelFromName(channelValue);
@@ -160,7 +160,7 @@ export default function AddPostForm({
             mentionsPositions: [],
             parentUrl,
           },
-          { fid: currFid, network: FARCASTER_NETWORK },
+          { fid: farcasterUserFid, network: FARCASTER_NETWORK },
           encryptedSigner
         )
       )._unsafeUnwrap();
@@ -173,7 +173,7 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner, channel, channelValue]);
+  }, [text, encryptedSigner, channel, channelValue, farcasterUserFid]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
@@ -265,19 +265,19 @@ export default function AddPostForm({
                 >
                   <Avatar
                     src={
-                      farcasterUserInfo[farcasterUserFid].find(
+                      farcasterUserInfo[farcasterUserFid]?.find(
                         (item) => item.type === UserDataType.PFP
                       )?.value || ''
                     }
                   />
                   <UserName>
-                    {farcasterUserInfo[farcasterUserFid].find(
+                    {farcasterUserInfo[farcasterUserFid]?.find(
                       (item) => item.type === UserDataType.DISPLAY
                     )?.value || ''}
                   </UserName>
                   <UserHandle>
                     @
-                    {farcasterUserInfo[farcasterUserFid].find(
+                    {farcasterUserInfo[farcasterUserFid]?.find(
                       (item) => item.type === UserDataType.USERNAME
                     )?.value || ''}
                   </UserHandle>

@@ -18,10 +18,12 @@ import { toast } from 'react-toastify';
 
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
+import { useAccount, useContractRead, useNetwork } from 'wagmi';
+import { IdRegistryABI } from 'src/abi/IdRegistryABI';
+import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import { WARPCAST_API } from '../constants/farcaster';
 import {
   generateKeyPair,
-  getCurrFid,
   getPrivateKey,
   getSignedKeyRequest,
   setPrivateKey,
@@ -96,7 +98,6 @@ export interface FarcasterContextData {
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
-  setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
   channels: FarcasterChannel[];
 }
 
@@ -114,7 +115,6 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
-  const [iframeUrl, setIframeUrl] = useState('');
 
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
@@ -139,6 +139,9 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
+
+  const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
+    useFarcasterWallet();
 
   const [trendChannel, setTrendChannel] = useState<
     {
@@ -180,18 +183,17 @@ export default function FarcasterProvider({
     return openQR;
   }, [signer.isConnected, openQR]);
 
-  const getCurrUserInfo = async () => {
-    const cFid = getCurrFid();
-    const resp = await getFarcasterUserInfo([cFid]);
+  const getCurrUserInfo = useCallback(async () => {
+    if (!currFid) return;
+    const resp = await getFarcasterUserInfo([currFid]);
     if (resp.data.code === 0) {
       const data: {
         [key: string]: { type: number; value: string }[];
       } = {};
-      data[cFid] = resp.data.data;
+      data[currFid] = resp.data.data;
       setCurrUserInfo(data);
-      setCurrFid(cFid);
     }
-  };
+  }, [currFid]);
 
   const pollForSigner = useCallback(async (token: string) => {
     let tries = 0;
@@ -275,33 +277,66 @@ export default function FarcasterProvider({
     setOpenQR(true);
   };
 
-  const encryptedSigner = useMemo(() => {
-    if (!signer.isConnected) return undefined;
-    const privateKey = getPrivateKey();
-
-    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
-  }, [signer.isConnected]);
-
   useEffect(() => {
     if (signer.isConnected) {
       getCurrUserInfo();
     }
   }, [signer.isConnected]);
 
-  useEffect(() => {
-    const signer = getSignedKeyRequest();
+  const encryptedSigner = useMemo(() => {
+    if (walletCheckStatus !== 'done') return undefined;
+    if (!signer.isConnected) return undefined;
+    if (walletFid && walletSigner && hasStorage) {
+      return walletSigner;
+    }
+    const privateKey = getPrivateKey();
 
-    if (signer != null) {
+    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
+  }, [
+    signer.isConnected,
+    walletCheckStatus,
+    walletFid,
+    walletSigner,
+    hasStorage,
+  ]);
+
+  useEffect(() => {
+    if (walletCheckStatus !== 'done') return;
+    if (walletFid && walletSigner && hasStorage) {
+      setCurrFid(walletFid);
       setToken({
         token: 'already connected',
         deepLink: 'already connected',
       });
       setSigner({
-        SignedKeyRequest: JSON.parse(signer),
+        SignedKeyRequest: {
+          deeplinkUrl: '',
+          key: '',
+          requestFid: 0,
+          state: 'completed',
+          token: '',
+          userFid: walletFid,
+        },
         isConnected: true,
       });
+      return;
     }
-  }, []);
+    console.log('use qr check', { walletFid, walletSigner, hasStorage });
+    const signer = getSignedKeyRequest();
+
+    if (signer != null) {
+      const signedKeyRequest = JSON.parse(signer);
+      setToken({
+        token: 'already connected',
+        deepLink: 'already connected',
+      });
+      setSigner({
+        SignedKeyRequest: signedKeyRequest,
+        isConnected: true,
+      });
+      setCurrFid(signedKeyRequest.userFid);
+    }
+  }, [walletFid, hasStorage, walletSigner, walletCheckStatus]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
   const session = useSession();
@@ -326,6 +361,8 @@ export default function FarcasterProvider({
     }
   }, [session, profile, signer, currFid, currUserInfo]);
 
+  console.log('signer.isConnected', signer.isConnected);
+
   return (
     <FarcasterContext.Provider
       // TODO: fix this
@@ -339,7 +376,6 @@ export default function FarcasterProvider({
         openFarcasterQR,
         farcasterUserData,
         setFarcasterUserData,
-        setIframeUrl,
         channels,
       }}
     >
@@ -356,14 +392,6 @@ export default function FarcasterProvider({
         afterCloseAction={() => {
           setShowQR(false);
           stopSign.stop = true;
-        }}
-      />
-      <FarcasterIframeModal
-        iframeUrl={iframeUrl}
-        open={!!iframeUrl}
-        closeModal={() => {}}
-        afterCloseAction={() => {
-          setIframeUrl('');
         }}
       />
     </FarcasterContext.Provider>

@@ -14,7 +14,7 @@ import {
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
-import { getCurrFid } from '../../../utils/farsign-utils';
+// import { getCurrFid } from '../../../utils/farsign-utils';
 import PostLike, {
   PostLikeAvatar,
   PostLikeAvatarWrapper,
@@ -35,7 +35,7 @@ export default function FCastLike({
   openFarcasterQR: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
-  const { encryptedSigner, isConnected } = useFarcasterCtx();
+  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
   const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
   const [likeCount, setLikeCount] = useState<number>(
     Number(cast.like_count || 0)
@@ -48,7 +48,6 @@ export default function FCastLike({
         return;
       }
       if (!encryptedSigner) return;
-      const currFid = getCurrFid();
       try {
         const cast = await makeReactionAdd(
           {
@@ -81,7 +80,7 @@ export default function FCastLike({
         toast.error('error like');
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR]
+    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR, currFid]
   );
 
   const removeLikeCast = useCallback(
@@ -91,7 +90,7 @@ export default function FCastLike({
         return;
       }
       if (!encryptedSigner) return;
-      const currFid = getCurrFid();
+      // const currFid = getCurrFid();
       try {
         const cast = await makeReactionRemove(
           {
@@ -123,10 +122,9 @@ export default function FCastLike({
         toast.error('error like');
       }
     },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR]
+    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR, currFid]
   );
 
-  const currFid: string = useFarcasterCurrFid();
   const castId: CastId = useFarcasterCastId({ cast });
 
   return (
@@ -149,13 +147,13 @@ export default function FCastLike({
       )}
       <PostLike
         totalLikes={likeCount}
-        liked={likes.includes(currFid)}
+        liked={likes.includes(`${currFid}`)}
         likeAction={() => {
           if (!isLoginU3) {
             loginU3();
             return;
           }
-          if (likes.includes(currFid)) {
+          if (likes.includes(`${currFid}`)) {
             removeLikeCast(castId);
           } else {
             likeCast(castId);

@@ -18,7 +18,7 @@ import {
 } from '../../../constants/farcaster';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
-import { getCurrFid } from '../../../utils/farsign-utils';
+// import { getCurrFid } from '../../../utils/farsign-utils';
 import PostReport from '../PostReport';
 import useLogin from '../../../hooks/useLogin';
 
@@ -32,7 +32,7 @@ export default function FCastRecast({
   openFarcasterQR: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
-  const { encryptedSigner, isConnected } = useFarcasterCtx();
+  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
   const [recasts, setRecasts] = useState<string[]>(
     Array.from(new Set(cast.recasts))
   );
@@ -42,12 +42,13 @@ export default function FCastRecast({
 
   const recast = useCallback(
     async (castId: CastId) => {
+      if (!currFid) return;
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
       if (!encryptedSigner) return;
-      const currFid = getCurrFid();
+      // const currFid = getCurrFid();
       try {
         const cast = await makeReactionAdd(
           {
@@ -79,17 +80,25 @@ export default function FCastRecast({
         toast.error('error recast');
       }
     },
-    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts]
+    [
+      encryptedSigner,
+      isConnected,
+      openFarcasterQR,
+      recastCount,
+      recasts,
+      currFid,
+    ]
   );
 
   const removeRecast = useCallback(
     async (castId: CastId) => {
+      if (!currFid) return;
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
       if (!encryptedSigner) return;
-      const currFid = getCurrFid();
+      // const currFid = getCurrFid();
       try {
         const cast = await makeReactionRemove(
           {
@@ -121,22 +130,29 @@ export default function FCastRecast({
         toast.error('error recast');
       }
     },
-    [encryptedSigner, isConnected, openFarcasterQR, recastCount, recasts]
+    [
+      encryptedSigner,
+      isConnected,
+      openFarcasterQR,
+      recastCount,
+      recasts,
+      currFid,
+    ]
   );
 
-  const currFid: string = useFarcasterCurrFid();
+  // const currFid: string = useFarcasterCurrFid();
   const castId: CastId = useFarcasterCastId({ cast });
 
   return (
     <PostReport
-      reposted={recasts.includes(currFid)}
+      reposted={recasts.includes(`${currFid}`)}
       totalReposts={recastCount}
       repostAction={() => {
         if (!isLoginU3) {
           loginU3();
           return;
         }
-        if (recasts.includes(currFid)) {
+        if (recasts.includes(`${currFid}`)) {
           removeRecast(castId);
         } else {
           recast(castId);

@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import ReplyForm from '../ReplyForm';
 import useLogin from '../../../hooks/useLogin';
 import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
-import { getCurrFid } from '../../../utils/farsign-utils';
+
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
@@ -22,8 +22,13 @@ export default function FarcasterCommentForm({
 }) {
   const { isLogin: isLoginU3, login } = useLogin();
   const [content, setContent] = useState('');
-  const { currUserInfo, openFarcasterQR, isConnected, encryptedSigner } =
-    useFarcasterCtx();
+  const {
+    currUserInfo,
+    currFid,
+    openFarcasterQR,
+    isConnected,
+    encryptedSigner,
+  } = useFarcasterCtx();
   const [isPending, setIsPending] = useState(false);
 
   const onSubmit = useCallback(async () => {
@@ -39,7 +44,7 @@ export default function FarcasterCommentForm({
       toast.warn('Please input comment content.');
       return;
     }
-    const currFid = getCurrFid();
+
     setIsPending(true);
     try {
       const cast = (
@@ -69,7 +74,15 @@ export default function FarcasterCommentForm({
     } finally {
       setIsPending(false);
     }
-  }, [castId, content, isConnected, isLoginU3, login, openFarcasterQR]);
+  }, [
+    castId,
+    content,
+    isConnected,
+    isLoginU3,
+    login,
+    openFarcasterQR,
+    currFid,
+  ]);
 
   const avatar = useMemo(() => {
     if (currUserInfo) {
