@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import { getS3ProfileModel, useProfileState } from '@us3r-network/profile';
-import { getDidPkhWithAddress } from '../utils/did';
+import { getDidPkhWithAddress, isDidPkh } from '../../utils/did';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_LENS_NETWORK,
   BIOLINK_PLATFORMS,
+  farcasterHandleToBioLinkHandle,
   isFarcasterHandle,
   isLensHandle,
-} from '../utils/profile/biolink';
+} from '../../utils/profile/biolink';
 
 // 0x...
 const isWalletAddress = (str: string) => {
@@ -67,7 +68,7 @@ const queryBioLinkWithFilters = async ({
   }
 };
 
-export default function useDid(user: string) {
+export default function useDid(identity: string) {
   const [did, setDid] = useState('');
   const [loading, setLoading] = useState(false);
   const publicClient = usePublicClient({
@@ -77,18 +78,23 @@ export default function useDid(user: string) {
 
   useEffect(() => {
     (async () => {
-      if (!user) return;
+      if (!identity) return;
 
-      if (isWalletAddress(user)) {
-        setDid(getDidPkhWithAddress(user));
+      if (isDidPkh(identity)) {
+        setDid(identity);
         return;
       }
 
-      if (isEnsAddress(user)) {
+      if (isWalletAddress(identity)) {
+        setDid(getDidPkhWithAddress(identity));
+        return;
+      }
+
+      if (isEnsAddress(identity)) {
         setLoading(true);
         try {
           const res = await publicClient.getEnsAddress({
-            name: user,
+            name: identity,
           });
           setDid(getDidPkhWithAddress(res));
         } catch (error) {
@@ -99,14 +105,14 @@ export default function useDid(user: string) {
         return;
       }
 
-      if (isLensHandle(user)) {
+      if (isLensHandle(identity)) {
         if (!s3ProfileModalInitialed || !s3ProfileModel) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
             platform: BIOLINK_PLATFORMS.lens,
             network: BIOLINK_LENS_NETWORK,
-            handle: user,
+            handle: identity,
           });
           if (biolink) {
             setDid(biolink.creator.id);
@@ -119,14 +125,14 @@ export default function useDid(user: string) {
         return;
       }
 
-      if (isFarcasterHandle(user)) {
+      if (isFarcasterHandle(identity)) {
         if (!s3ProfileModalInitialed || !s3ProfileModel) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
             platform: BIOLINK_PLATFORMS.farcaster,
             network: String(BIOLINK_FARCASTER_NETWORK),
-            handle: user,
+            handle: farcasterHandleToBioLinkHandle(identity),
           });
           if (biolink) {
             setDid(biolink.creator.id);
@@ -138,7 +144,7 @@ export default function useDid(user: string) {
         }
       }
     })();
-  }, [user, publicClient, s3ProfileModalInitialed]);
+  }, [identity, publicClient, s3ProfileModalInitialed]);
 
   return {
     did,
