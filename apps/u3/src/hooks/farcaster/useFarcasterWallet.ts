@@ -65,7 +65,7 @@ export default function useFarcasterWallet() {
   }, [walletFid]);
 
   useEffect(() => {
-    if (status !== 'success') return;
+    if (status === 'loading') return;
     setWalletCheckStatus('loading');
     Promise.all([signerCheck(), fnameCheck(), storageCheck()])
       .then((data) => {

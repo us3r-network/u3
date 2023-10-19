@@ -323,7 +323,6 @@ export default function FarcasterProvider({
     }
     console.log('use qr check', { walletFid, walletSigner, hasStorage });
     const signer = getSignedKeyRequest();
-    console.log(JSON.parse(signer));
 
     if (signer != null) {
       const signedKeyRequest = JSON.parse(signer);
@@ -361,6 +360,8 @@ export default function FarcasterProvider({
       });
     }
   }, [session, profile, signer, currFid, currUserInfo]);
+
+  console.log('signer.isConnected', signer.isConnected);
 
   return (
     <FarcasterContext.Provider
