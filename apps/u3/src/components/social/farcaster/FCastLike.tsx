@@ -47,7 +47,10 @@ export default function FCastLike({
         openFarcasterQR();
         return;
       }
-      if (!encryptedSigner) return;
+      if (!encryptedSigner) {
+        console.error('no encryptedSigner');
+        return;
+      }
       try {
         const cast = await makeReactionAdd(
           {
