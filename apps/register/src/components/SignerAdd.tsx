@@ -242,14 +242,26 @@ export default function SignerAdd() {
 
               <button
                 onClick={() => {
+                  const signerPublicKeyLocalStorageKey = `signerPublicKey-${fid}`;
+                  const signerPrivateKeyLocalStorageKey = `signerPrivateKey-${fid}`;
+                  const pubkeyData = localStorage.getItem(
+                    signerPublicKeyLocalStorageKey
+                  );
+                  const privatekeyData = localStorage.getItem(
+                    signerPrivateKeyLocalStorageKey
+                  );
+                  if (!pubkeyData || !privatekeyData) {
+                    toast.error("no signer in local storage");
+                    return;
+                  }
                   iRef.current?.contentWindow?.postMessage(
                     {
                       fid: fid,
-                      privateKey: ed.etc.bytesToHex(privateKey as Uint8Array),
-                      publicKey,
+                      privateKey: privatekeyData,
+                      publicKey: pubkeyData,
                       type: "SET_FARCATER_WALLET_SIGNER",
                     },
-                    U3_ORIGIN || "http://localhost"
+                    "*"
                   );
                 }}
               >
