@@ -6,6 +6,7 @@ name: Deploy u3 register to Firebase Hosting on merge
   push:
     branches:
       - register
+      - register-dev
 jobs:
   prod_build_and_deploy:
     if: github.ref == 'refs/heads/register'
