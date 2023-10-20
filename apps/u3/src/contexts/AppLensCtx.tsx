@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 import {
   PropsWithChildren,
   createContext,
@@ -22,7 +21,6 @@ import {
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { isMobile } from 'react-device-detect';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import {
@@ -31,9 +29,6 @@ import {
   lensHandleToBioLinkHandle,
 } from '../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
-
-import LensLoginModal from '../components/social/lens/LensLoginModal';
-import LensCommentPostModal from '../components/social/lens/LensCommentPostModal';
 
 import { LensPost, LensComment } from '../api/lens';
 import useBioLinkActions from '../hooks/profile/useBioLinkActions';
@@ -174,14 +169,6 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-      <LensLoginModal
-        open={openLensLoginModal}
-        closeModal={() => setOpenLensLoginModal(false)}
-      />
-      <LensCommentPostModal
-        open={openCommentModal}
-        closeModal={() => setOpenCommentModal(false)}
-      />
     </LensAuthContext.Provider>
   );
 }

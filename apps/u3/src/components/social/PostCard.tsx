@@ -14,6 +14,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
+import TooltipProfileNavigateLink from './TooltipProfileNavigateLink';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -175,29 +176,30 @@ export function PostCardUserInfo({
         return null;
     }
   }, [data.platform]);
-
-  const profileUrl = useMemo(() => {
+  const profileIdentity = useMemo(() => {
+    if (data.handle.endsWith('.eth')) return data.handle;
     switch (data.platform) {
       case SocailPlatform.Lens:
-        return `/profile/${lensHandleToBioLinkHandle(data.handle)}`;
+        return lensHandleToBioLinkHandle(data.handle);
       case SocailPlatform.Farcaster:
-        return `/profile/${farcasterHandleToBioLinkHandle(data.handle)}`;
+        return farcasterHandleToBioLinkHandle(data.handle);
       default:
         return '';
     }
   }, [data]);
+
+  const profileUrl = useMemo(() => {
+    if (profileIdentity) {
+      return `/profile/${profileIdentity}`;
+    }
+    return '';
+  }, [profileIdentity]);
   return (
     <PostCardUserInfoWrapper {...wrapperProps}>
-      <a
-        href={profileUrl}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          if (profileUrl) navigate(profileUrl);
-        }}
-      >
+      <TooltipProfileNavigateLink identity={profileIdentity}>
         <Avatar src={data.avatar} />
-      </a>
+      </TooltipProfileNavigateLink>
+
       <PostCardUserInfoCenter>
         <Name>
           <a

@@ -39,6 +39,7 @@ import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
 import { AppLensProvider } from './contexts/AppLensCtx';
 import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/FarcasterCtx';
+import LensGlobalModals from './components/social/lens/LensGlobalModals';
 
 const livepeerClient = createReactClient({
   provider: studioProvider({ apiKey: '' }),
@@ -66,6 +67,7 @@ function App() {
             <XmtpClientProvider>
               <XmtpStoreProvider>
                 <AppLensProvider>
+                  <LensGlobalModals />
                   <FarcasterProvider>
                     <ReduxProvider store={store}>
                       <GlobalStyle />

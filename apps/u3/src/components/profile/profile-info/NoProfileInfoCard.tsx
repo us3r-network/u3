@@ -23,8 +23,12 @@ export default function NoU3ProfileInfoCard({
   clickFollowers,
   ...wrapperProps
 }: NoU3ProfileInfoCardProps) {
-  const { bioLinkList, lensBioLinks, fcastBioLinks } =
-    useBioLinkListWithWeb3Bio(identity);
+  const {
+    bioLinkList,
+    lensBioLinks,
+    fcastBioLinks,
+    loading: bioLinkLoading,
+  } = useBioLinkListWithWeb3Bio(identity);
   const { farcasterUserData } = useFarcasterCtx();
 
   const address = bioLinkList.find((item) => !!item.address)?.address;
@@ -89,6 +93,7 @@ export default function NoU3ProfileInfoCard({
 
   return (
     <ProfileInfoBaseCard
+      loading={bioLinkLoading}
       did={did}
       address={address}
       platformAccounts={platformAccounts}
