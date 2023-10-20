@@ -92,4 +92,20 @@ export default css`
   ${Modal}
   ${UseAvatar}
   ${LoadingSpokes}
+
+  .react-aria-Button,.react-aria-Link {
+    outline: none;
+
+    &[data-hovered] {
+      outline: none;
+    }
+
+    &[data-pressed] {
+      outline: none;
+    }
+
+    &[data-focus-visible] {
+      outline: none;
+    }
+  }
 `;

@@ -1,5 +1,5 @@
 import { UserInfo, UserInfoEditForm } from '@us3r-network/profile';
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -22,6 +22,7 @@ import {
 } from '../../../contexts/xmtp/XmtpStoreCtx';
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 import { useNav } from '../../../contexts/NavCtx';
+import Loading from '../../common/loading/Loading';
 
 interface ProfileInfoBaseCardProps extends StyledComponentPropsWithRef<'div'> {
   did: string;
@@ -32,6 +33,7 @@ interface ProfileInfoBaseCardProps extends StyledComponentPropsWithRef<'div'> {
   lensProfiles: Profile[];
   clickFollowing?: () => void;
   clickFollowers?: () => void;
+  loading?: boolean;
 }
 export default function ProfileInfoBaseCard({
   did,
@@ -42,12 +44,13 @@ export default function ProfileInfoBaseCard({
   lensProfiles,
   clickFollowing,
   clickFollowers,
+  loading,
   ...wrapperProps
 }: ProfileInfoBaseCardProps) {
   const session = useSession();
 
   const [isOpenEdit, setIsOpenEdit] = useState(false);
-  const canMesssage = useCanMessage(address);
+  const { canMessage } = useCanMessage(address);
 
   const lensProfileFirst = lensProfiles?.[0];
 
@@ -77,11 +80,25 @@ export default function ProfileInfoBaseCard({
 
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
+
+  if (loading) {
+    return (
+      <LoadingWrapper {...wrapperProps}>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
   return (
-    <ProfileInfoCardWrapper did={did} {...wrapperProps}>
+    <ProfileInfoCardWrapper
+      did={did}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+      {...wrapperProps}
+    >
       {({ isLoginUser }) => {
         const showFollowBtn = !isLoginUser;
-        const showMessageBtn = !isLoginUser && canMesssage;
+        const showMessageBtn = !isLoginUser && canMessage;
         return (
           <>
             <ProfileInfoBasicWrapper>
@@ -185,12 +202,23 @@ export default function ProfileInfoBaseCard({
     </ProfileInfoCardWrapper>
   );
 }
-const ProfileInfoCardWrapper = styled(UserInfo)`
+const BaseWrapperCss = css`
   padding: 20px;
   width: 360px;
   box-sizing: border-box;
   background: #1b1e23;
   border-radius: 20px;
+  border: 1px solid #39424c;
+`;
+const LoadingWrapper = styled.div`
+  ${BaseWrapperCss}
+  height: 230px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const ProfileInfoCardWrapper = styled(UserInfo)`
+  ${BaseWrapperCss}
 
   [data-state-element='Name'] {
     font-weight: 500;

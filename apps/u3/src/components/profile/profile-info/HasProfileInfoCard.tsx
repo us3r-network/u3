@@ -24,8 +24,11 @@ export default function HasU3ProfileInfoCard({
   clickFollowers,
   ...wrapperProps
 }: HasU3ProfileInfoCardProps) {
-  const { lensBioLinkProfiles, fcastBioLinkProfiles } =
-    useBioLinkListWithDid(did);
+  const {
+    lensBioLinkProfiles,
+    fcastBioLinkProfiles,
+    loading: bioLinkLoading,
+  } = useBioLinkListWithDid(did);
 
   const { farcasterUserData } = useFarcasterCtx();
 
@@ -89,6 +92,7 @@ export default function HasU3ProfileInfoCard({
 
   return (
     <ProfileInfoBaseCard
+      loading={bioLinkLoading}
       did={did}
       address={address}
       platformAccounts={platformAccounts}

@@ -70,6 +70,7 @@ const UserTagsWrapper = styled(UserTags)`
   box-sizing: border-box;
   background: #1b1e23;
   border-radius: 20px;
+  border: 1px solid #39424c;
 
   .header {
     width: 100%;
