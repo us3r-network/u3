@@ -16,6 +16,10 @@ import FarcasterIcon from '../icons/FarcasterIcon';
 import useFarcasterRecommendedProfile from '../../hooks/farcaster/useFarcasterRecommendedProfile';
 import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
 import useLogin from '../../hooks/useLogin';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../../utils/profile/biolink';
 
 const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {
@@ -79,6 +83,8 @@ type LensFollowItemProps = {
 };
 
 function LensFollowItem({ profile }: LensFollowItemProps) {
+  const navigate = useNavigate();
+
   const [isFollowing, setIsFollowing] = useState(false);
   const { data: lensActiveProfile } = useActiveProfile();
   const { execute: follow, isPending } = useFollow({
@@ -86,12 +92,36 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
     follower: lensActiveProfile,
   });
   const { name, handle } = profile;
+
+  const profileUrl = useMemo(
+    () => `/profile/${lensHandleToBioLinkHandle(handle)}`,
+    [handle]
+  );
   return (
     <FollowItemWrapper>
-      <Avatar src={getAvatar(profile)} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate(profileUrl);
+        }}
+      >
+        <Avatar src={getAvatar(profile)} />
+      </a>
+
       <NameHandleWraper>
         <NameText>
-          {name}
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              navigate(profileUrl);
+            }}
+          >
+            {name}
+          </a>
           <LensIcon />
         </NameText>
         <HandleText>@{handle}</HandleText>
@@ -123,6 +153,8 @@ function FarcasterFollowItem({
   fid,
   farcasterUserData,
 }: FarcasterFollowItemProps) {
+  const navigate = useNavigate();
+
   const userData = useFarcasterUserData({
     farcasterUserData,
     fid: String(fid),
@@ -132,12 +164,37 @@ function FarcasterFollowItem({
     isPending,
     isFollowing,
   } = useFarcasterFollowAction();
+
+  const profileUrl = useMemo(
+    () => `/profile/${farcasterHandleToBioLinkHandle(userData.userName)}`,
+    [userData]
+  );
   return (
     <FollowItemWrapper>
-      <Avatar src={userData.pfp} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate(profileUrl);
+        }}
+      >
+        <Avatar src={userData.pfp} />
+      </a>
+
       <NameHandleWraper>
         <NameText>
-          {userData.display}
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              navigate(profileUrl);
+            }}
+          >
+            {userData.display}
+          </a>
+
           <FarcasterIcon />
         </NameText>
         <HandleText>@{userData.userName}</HandleText>
@@ -226,6 +283,13 @@ const NameText = styled.div`
   flex-direction: row;
   gap: 10px;
   align-items: center;
+  & > a {
+    color: white;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const HandleText = styled.div`
   font-size: 12px;

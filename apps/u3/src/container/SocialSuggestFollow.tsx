@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
 import { useMemo, useState, useEffect } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import getAvatar from '../utils/lens/getAvatar';
 import { SocialButtonPrimary } from '../components/social/button/SocialButton';
 import { useLensCtx } from '../contexts/AppLensCtx';
@@ -19,6 +19,10 @@ import useFarcasterUserData from '../hooks/farcaster/useFarcasterUserData';
 import useLogin from '../hooks/useLogin';
 import { SocailPlatform } from '../api';
 import Loading from '../components/common/loading/Loading';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../utils/profile/biolink';
 
 const SUGGEST_NUM = 20;
 export default function SocialSuggestFollow() {
@@ -92,6 +96,8 @@ type LensFollowItemProps = {
 };
 
 function LensFollowItem({ profile }: LensFollowItemProps) {
+  const navigate = useNavigate();
+
   const [isFollowing, setIsFollowing] = useState(false);
   const { data: lensActiveProfile } = useActiveProfile();
   const { execute: follow, isPending } = useFollow({
@@ -99,12 +105,38 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
     follower: lensActiveProfile,
   });
   const { name, handle, bio } = profile;
+
+  const profileUrl = useMemo(
+    () => `/profile/${lensHandleToBioLinkHandle(handle)}`,
+    [handle]
+  );
   return (
     <FollowItemWrapper>
-      <Avatar src={getAvatar(profile)} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate(profileUrl);
+        }}
+      >
+        <Avatar src={getAvatar(profile)} />
+      </a>
+
       <NameBioWraper>
         <NameHandleWraper>
-          <NameText>{name}</NameText>
+          <NameText>
+            <a
+              href={profileUrl}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                navigate(profileUrl);
+              }}
+            >
+              {name}
+            </a>
+          </NameText>
           <HandleText>@{handle}</HandleText>
           <LensIcon />
         </NameHandleWraper>
@@ -137,6 +169,8 @@ function FarcasterFollowItem({
   fid,
   farcasterUserData,
 }: FarcasterFollowItemProps) {
+  const navigate = useNavigate();
+
   const userData = useFarcasterUserData({
     farcasterUserData,
     fid: String(fid),
@@ -146,12 +180,37 @@ function FarcasterFollowItem({
     isPending,
     isFollowing,
   } = useFarcasterFollowAction();
+
+  const profileUrl = useMemo(
+    () => `/profile/${farcasterHandleToBioLinkHandle(userData.userName)}`,
+    [userData]
+  );
   return (
     <FollowItemWrapper>
-      <Avatar src={userData.pfp} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate(profileUrl);
+        }}
+      >
+        <Avatar src={userData.pfp} />
+      </a>
       <NameBioWraper>
         <NameHandleWraper>
-          <NameText>{userData.display}</NameText>
+          <NameText>
+            <a
+              href={profileUrl}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                navigate(profileUrl);
+              }}
+            >
+              {userData.display}
+            </a>
+          </NameText>
           <HandleText>@{userData.userName}</HandleText>
           <FarcasterIcon />
         </NameHandleWraper>
@@ -221,6 +280,13 @@ const NameText = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: 0;
+  & > a {
+    color: white;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const HandleText = styled.div`
   font-size: 12px;

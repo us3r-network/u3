@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import {
-  Profile as LensProfile,
-  useProfilesOwnedBy,
-} from '@lens-protocol/react-web';
+import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { useParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
@@ -34,15 +31,37 @@ import FarcasterFollowers from '../components/profile/farcaster/FarcasterFollowe
 import { getAddressWithDidPkh } from '../utils/did';
 import ProfileSocial from '../components/profile/ProfileSocial';
 import Loading from '../components/common/loading/Loading';
-import useDid from '../hooks/useDid';
-import useBioLinkListWithDid from '../hooks/useBioLinkListWithDid';
-import { BIOLINK_PLATFORMS } from '../utils/profile/biolink';
+import useDid from '../hooks/profile/useDid';
+import useBioLinkListWithDid from '../hooks/profile/useBioLinkListWithDid';
+import useBioLinkListWithWeb3Bio from '../hooks/profile/useBioLinkListWithWeb3Bio';
+import useLazyQueryFidWithAddress from '../hooks/farcaster/useLazyQueryFidWithAddress';
 
 export default function Profile() {
   const { user } = useParams();
   const session = useSession();
 
   const { did, loading: didLoading } = useDid(user);
+
+  const { getProfileWithDid } = useProfileState();
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfileLoading, setHasProfileLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (user && !didLoading && did) {
+        setHasProfileLoading(true);
+        const profile = await getProfileWithDid(did);
+        if (profile) {
+          setHasProfile(true);
+        }
+        setHasProfileLoading(false);
+      }
+    })();
+  }, [user, didLoading, did]);
+
+  const useWeb3BioProfile = useMemo(
+    () => user && (!did || !hasProfile),
+    [user, did, hasProfile]
+  );
 
   const isLoginUser = useMemo(
     () => !user || did === session?.id,
@@ -53,6 +72,20 @@ export default function Profile() {
     () => (user ? did : session?.id),
     [user, did, session]
   );
+
+  const {
+    bioLinkList: web3BioProfiles,
+    lensBioLinks: lensWeb3BioProfiles,
+    fcastBioLinks: fcastWeb3BioProfiles,
+    loading: web3BioLoading,
+  } = useBioLinkListWithWeb3Bio(user);
+
+  const web3BioAddress = web3BioProfiles.find(
+    (item) => !!item.address
+  )?.address;
+  const address = useWeb3BioProfile
+    ? web3BioAddress
+    : getAddressWithDidPkh(currProfileDid || '');
 
   const { logout } = useLogin();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
@@ -83,35 +116,26 @@ export default function Profile() {
     followersPlatformCount,
   } = followNavData;
 
-  const address = getAddressWithDidPkh(currProfileDid || '');
+  const { lensBioLinkProfiles, fcastBioLinkProfiles } =
+    useBioLinkListWithDid(currProfileDid);
 
-  const { bioLinkList } = useBioLinkListWithDid(did);
-  const lensBioLinkProfiles = bioLinkList
-    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.lens)
-    ?.map((item) => {
-      try {
-        return JSON.parse(item.data) as LensProfile;
-      } catch (error) {
-        return null;
-      }
-    })
-    .filter((item) => !!item);
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address: lensBioLinkProfiles?.[0]?.ownedBy || '',
+    address:
+      (useWeb3BioProfile
+        ? lensWeb3BioProfiles?.[0]?.address
+        : lensBioLinkProfiles?.[0]?.ownedBy) || '',
   });
+
   const lensProfileFirst = lensProfiles?.[0];
 
-  const fcastBioLinkProfiles = bioLinkList
-    ?.filter((link) => link.platform === BIOLINK_PLATFORMS.farcaster)
-    ?.map((item) => {
-      try {
-        return JSON.parse(item.data) as { fid: string };
-      } catch (error) {
-        return null;
-      }
-    })
-    .filter((item) => !!item);
-  const fid = fcastBioLinkProfiles[0]?.fid;
+  const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
+    fcastWeb3BioProfiles?.[0]?.address || ''
+  );
+  useEffect(() => {
+    fetchFid();
+  }, [fcastWeb3BioProfiles]);
+
+  const fid = useWeb3BioProfile ? fetchedFid : fcastBioLinkProfiles[0]?.fid;
 
   const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
@@ -129,32 +153,13 @@ export default function Profile() {
     }));
   }, [lensProfileFirst, farcasterFollowData]);
 
-  const { getProfileWithDid } = useProfileState();
-  const [hasProfile, setHasProfile] = useState(false);
-  const [hasProfileLoading, setHasProfileLoading] = useState(false);
-  useEffect(() => {
-    (async () => {
-      if (user && !didLoading && did) {
-        setHasProfileLoading(true);
-        const profile = await getProfileWithDid(did);
-        if (profile) {
-          setHasProfile(true);
-        }
-        setHasProfileLoading(false);
-      }
-    })();
-  }, [user, didLoading, did]);
-
   if (user) {
-    if (didLoading || hasProfileLoading) {
+    if (didLoading || hasProfileLoading || (!hasProfile && web3BioLoading)) {
       return (
         <LoadingWrapper>
           <Loading />
         </LoadingWrapper>
       );
-    }
-    if (!did || !hasProfile) {
-      return <NotU3User />;
     }
   }
 
@@ -162,7 +167,7 @@ export default function Profile() {
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
         <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile did={currProfileDid} />
+          <ProfileInfoMobile did={currProfileDid} identity={user} />
           <LogoutButton
             className="logout-button"
             onClick={() => {
@@ -233,6 +238,7 @@ export default function Profile() {
           <MainLeft>
             <ProfileInfo
               did={currProfileDid}
+              identity={user}
               clickFollowing={() => {
                 setFollowNavData((prevData) => ({
                   ...prevData,
@@ -325,16 +331,18 @@ function ProfileInfo({
   clickFollowing,
   clickFollowers,
   did,
+  identity,
   ...props
 }: StyledComponentPropsWithRef<'div'> & {
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   did: string;
+  identity: string;
 }) {
   return (
     <ProfileInfoWrap {...props}>
       <ProfileInfoCard
-        did={did}
+        identity={identity || did}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
       />
@@ -351,28 +359,6 @@ const ProfileInfoWrap = styled.div`
   & > div {
     width: 100%;
   }
-`;
-
-function NotU3User() {
-  return (
-    <ProfileWrapper>
-      <NotU3UserText>NOT u3 user</NotU3UserText>
-    </ProfileWrapper>
-  );
-}
-const NotU3UserText = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #718096;
-  text-align: center;
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
 `;
 
 const ProfileWrapper = styled.div`

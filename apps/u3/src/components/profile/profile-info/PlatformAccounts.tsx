@@ -2,6 +2,9 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { SocailPlatform } from '../../../api';
 import LensIcon from '../../icons/LensIcon';
 import FarcasterIcon from '../../icons/FarcasterIcon';
+import { SocialButtonPrimary } from '../../social/button/SocialButton';
+import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 
 export type PlatformAccountsData = Array<{
   platform: SocailPlatform;
@@ -11,13 +14,46 @@ export type PlatformAccountsData = Array<{
 }>;
 interface PlatformAccountsProps extends StyledComponentPropsWithRef<'div'> {
   data: PlatformAccountsData;
+  isLoginUser?: boolean;
 }
 export default function PlatformAccounts({
   data,
+  isLoginUser,
   ...wrapperProps
 }: PlatformAccountsProps) {
+  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
+  const { isConnected: isLoginFarcaster, openFarcasterQR } = useFarcasterCtx();
+  const findLensAccount = data?.find(
+    (item) => item.platform === SocailPlatform.Lens
+  );
+  const findFarcasterAccount = data?.find(
+    (item) => item.platform === SocailPlatform.Farcaster
+  );
   return (
     <Wrapper {...wrapperProps}>
+      {isLoginUser && !findLensAccount && (
+        <Row>
+          <Line />
+          <LensIcon width="40px" height="40px" />
+          <Center>
+            <LoginButton onClick={() => setOpenLensLoginModal(true)}>
+              {isLoginLens ? 'bind' : 'login'}
+            </LoginButton>
+          </Center>
+        </Row>
+      )}
+      {isLoginUser && !findFarcasterAccount && (
+        <Row>
+          <Line />
+          <FarcasterIcon width="40px" height="40px" />
+          <Center>
+            <LoginButton onClick={() => openFarcasterQR()}>
+              {isLoginFarcaster ? 'bind' : 'login'}
+            </LoginButton>
+          </Center>
+        </Row>
+      )}
+
       {data.map((item) => (
         <Row key={item.handle}>
           <Line />
@@ -97,4 +133,11 @@ const Handle = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
+`;
+
+const LoginButton = styled(SocialButtonPrimary)`
+  width: 60px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 400;
 `;

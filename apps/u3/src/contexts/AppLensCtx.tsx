@@ -36,7 +36,7 @@ import LensLoginModal from '../components/social/lens/LensLoginModal';
 import LensCommentPostModal from '../components/social/lens/LensCommentPostModal';
 
 import { LensPost, LensComment } from '../api/lens';
-import useBioLinkActions from '../hooks/useBioLinkActions';
+import useBioLinkActions from '../hooks/profile/useBioLinkActions';
 
 type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
