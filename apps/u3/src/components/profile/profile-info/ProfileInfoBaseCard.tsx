@@ -23,6 +23,7 @@ import {
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
 import { useNav } from '../../../contexts/NavCtx';
 import Loading from '../../common/loading/Loading';
+import useFarcasterFollowAction from '../../../hooks/farcaster/useFarcasterFollowAction';
 
 interface ProfileInfoBaseCardProps extends StyledComponentPropsWithRef<'div'> {
   did: string;
@@ -31,6 +32,7 @@ interface ProfileInfoBaseCardProps extends StyledComponentPropsWithRef<'div'> {
   followersCount: number;
   followingCount: number;
   lensProfiles: Profile[];
+  fid?: number;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   loading?: boolean;
@@ -42,6 +44,7 @@ export default function ProfileInfoBaseCard({
   followersCount,
   followingCount,
   lensProfiles,
+  fid,
   clickFollowing,
   clickFollowers,
   loading,
@@ -60,6 +63,13 @@ export default function ProfileInfoBaseCard({
     followee: lensProfileFirst || ({ id: '' } as Profile),
     follower: activeProfile,
   });
+
+  const {
+    followAction: fcastFollow,
+    isPending: fcastFollowIsPending,
+    isFollowing: fcastIsFollowing,
+  } = useFarcasterFollowAction();
+
   const onFollow = useCallback(async () => {
     if (
       !lensFollowIsPending &&
@@ -75,8 +85,18 @@ export default function ProfileInfoBaseCard({
       }
     }
 
-    // TODO farcaster平台的follow
-  }, [lensProfileFirst, lensFollow, lensFollowIsPending]);
+    if (fid && !fcastFollowIsPending && !fcastIsFollowing) {
+      fcastFollow(fid);
+    }
+  }, [
+    lensProfileFirst,
+    lensFollow,
+    lensFollowIsPending,
+    fid,
+    fcastFollow,
+    fcastFollowIsPending,
+    fcastIsFollowing,
+  ]);
 
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
