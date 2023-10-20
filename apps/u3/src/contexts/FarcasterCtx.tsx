@@ -184,6 +184,7 @@ export default function FarcasterProvider({
   }, [signer.isConnected, openQR]);
 
   const getCurrUserInfo = useCallback(async () => {
+    console.log('getCurrentUserInfo', { currFid });
     if (!currFid) return;
     const resp = await getFarcasterUserInfo([currFid]);
     if (resp.data.code === 0) {
@@ -281,16 +282,21 @@ export default function FarcasterProvider({
     if (signer.isConnected) {
       getCurrUserInfo();
     }
-  }, [signer.isConnected]);
+  }, [signer.isConnected, getCurrUserInfo]);
 
   const encryptedSigner = useMemo(() => {
+    if (!walletCheckStatus) return undefined;
+    if (walletCheckStatus === 'idle') {
+      const privateKey = getPrivateKey();
+      return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
+    }
     if (walletCheckStatus !== 'done') return undefined;
     if (!signer.isConnected) return undefined;
     if (walletFid && walletSigner && hasStorage) {
       return walletSigner;
     }
-    const privateKey = getPrivateKey();
 
+    const privateKey = getPrivateKey();
     return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
   }, [
     signer.isConnected,
@@ -300,7 +306,30 @@ export default function FarcasterProvider({
     hasStorage,
   ]);
 
+  const restoreFromQRcode = useCallback(() => {
+    const signer = getSignedKeyRequest();
+
+    if (signer != null) {
+      const signedKeyRequest = JSON.parse(signer);
+      setToken({
+        token: 'already connected',
+        deepLink: 'already connected',
+      });
+      setSigner({
+        SignedKeyRequest: signedKeyRequest,
+        isConnected: true,
+      });
+      setCurrFid(signedKeyRequest.userFid);
+    }
+  }, []);
+
   useEffect(() => {
+    // console.log('walletCheckStatus', { walletCheckStatus });
+    if (!walletCheckStatus) return;
+    if (walletCheckStatus === 'idle') {
+      restoreFromQRcode();
+      return;
+    }
     if (walletCheckStatus !== 'done') return;
     if (walletFid && walletSigner && hasStorage) {
       setCurrFid(walletFid);
@@ -322,20 +351,7 @@ export default function FarcasterProvider({
       return;
     }
     console.log('use qr check', { walletFid, walletSigner, hasStorage });
-    const signer = getSignedKeyRequest();
-
-    if (signer != null) {
-      const signedKeyRequest = JSON.parse(signer);
-      setToken({
-        token: 'already connected',
-        deepLink: 'already connected',
-      });
-      setSigner({
-        SignedKeyRequest: signedKeyRequest,
-        isConnected: true,
-      });
-      setCurrFid(signedKeyRequest.userFid);
-    }
+    restoreFromQRcode();
   }, [walletFid, hasStorage, walletSigner, walletCheckStatus]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
@@ -360,8 +376,6 @@ export default function FarcasterProvider({
       });
     }
   }, [session, profile, signer, currFid, currUserInfo]);
-
-  console.log('signer.isConnected', signer.isConnected);
 
   return (
     <FarcasterContext.Provider
