@@ -221,35 +221,6 @@ export default function AddPostForm({
         {isLoginU3 ? (
           <PlatformOptions>
             <PlatformOption>
-              {isLoginLens ? (
-                <PlatformToggleButton
-                  isSelected={platforms.has(SocailPlatform.Lens)}
-                  platform={SocailPlatform.Lens}
-                  onChange={() => {
-                    if (platforms.has(SocailPlatform.Lens)) {
-                      platforms.delete(SocailPlatform.Lens);
-                    } else {
-                      platforms.add(SocailPlatform.Lens);
-                    }
-                    setPlatforms(new Set(platforms));
-                  }}
-                >
-                  <Avatar src={getAvatar(lensUserInfo)} />
-                  <UserName>{lensUserInfo.name}</UserName>
-                  <UserHandle>@{lensUserInfo.handle}</UserHandle>
-                  <LensIcon />
-                </PlatformToggleButton>
-              ) : (
-                <LoginWraper>
-                  <LensIcon />
-                  Lens
-                  <LoginButton onClick={() => setOpenLensLoginModal(true)}>
-                    login
-                  </LoginButton>
-                </LoginWraper>
-              )}
-            </PlatformOption>
-            <PlatformOption>
               {isLoginFarcaster && farcasterUserInfo ? (
                 <PlatformToggleButton
                   isSelected={platforms.has(SocailPlatform.Farcaster)}
@@ -288,6 +259,35 @@ export default function AddPostForm({
                   <FarcasterIcon />
                   Farcaster
                   <LoginButton onClick={() => openFarcasterQR()}>
+                    login
+                  </LoginButton>
+                </LoginWraper>
+              )}
+            </PlatformOption>
+            <PlatformOption>
+              {isLoginLens ? (
+                <PlatformToggleButton
+                  isSelected={platforms.has(SocailPlatform.Lens)}
+                  platform={SocailPlatform.Lens}
+                  onChange={() => {
+                    if (platforms.has(SocailPlatform.Lens)) {
+                      platforms.delete(SocailPlatform.Lens);
+                    } else {
+                      platforms.add(SocailPlatform.Lens);
+                    }
+                    setPlatforms(new Set(platforms));
+                  }}
+                >
+                  <Avatar src={getAvatar(lensUserInfo)} />
+                  <UserName>{lensUserInfo.name}</UserName>
+                  <UserHandle>@{lensUserInfo.handle}</UserHandle>
+                  <LensIcon />
+                </PlatformToggleButton>
+              ) : (
+                <LoginWraper>
+                  <LensIcon />
+                  Lens
+                  <LoginButton onClick={() => setOpenLensLoginModal(true)}>
                     login
                   </LoginButton>
                 </LoginWraper>
