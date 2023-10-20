@@ -99,6 +99,7 @@ export default function HasU3ProfileInfoCard({
       followersCount={followersCount}
       followingCount={followingCount}
       lensProfiles={lensProfiles}
+      fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
       {...wrapperProps}
