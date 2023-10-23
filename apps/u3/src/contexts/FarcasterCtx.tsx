@@ -288,6 +288,7 @@ export default function FarcasterProvider({
     if (!walletCheckStatus) return undefined;
     if (walletCheckStatus === 'idle') {
       const privateKey = getPrivateKey();
+      if (!privateKey) return undefined;
       return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
     }
     if (walletCheckStatus !== 'done') return undefined;
@@ -297,6 +298,7 @@ export default function FarcasterProvider({
     }
 
     const privateKey = getPrivateKey();
+    if (!privateKey) return undefined;
     return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
   }, [
     signer.isConnected,
