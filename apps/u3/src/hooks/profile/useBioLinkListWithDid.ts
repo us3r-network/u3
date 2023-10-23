@@ -68,7 +68,11 @@ export default function useBioLinkListWithDid(did: string) {
       fcastBioLinks
         .map((item) => {
           try {
-            return JSON.parse(item.data) as { fid: string };
+            return JSON.parse(item.data) as {
+              fid: string;
+              type: number;
+              value: string;
+            };
           } catch (error) {
             return null;
           }
