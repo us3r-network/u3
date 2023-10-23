@@ -20,8 +20,12 @@ export const isFarcasterHandle = (handle: string) => {
   return FARCASTER_SUFFIXS.some((suffix) => handle.endsWith(`.${suffix}`));
 };
 export const lensHandleToBioLinkHandle = (handle: string) => {
-  return `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_LENS_SUFFIX}`;
+  return handle
+    ? `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_LENS_SUFFIX}`
+    : '';
 };
 export const farcasterHandleToBioLinkHandle = (handle: string) => {
-  return `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_FARCASTER_SUFFIX}`;
+  return handle
+    ? `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_FARCASTER_SUFFIX}`
+    : '';
 };

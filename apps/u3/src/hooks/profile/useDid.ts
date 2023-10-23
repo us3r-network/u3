@@ -26,7 +26,6 @@ export type BioLinksEqualToFilters = {
   network?: string;
   handle?: string;
 };
-const s3ProfileModel = getS3ProfileModel();
 
 const getEqualToFilters = (filters: BioLinksEqualToFilters) => {
   const inputAnd = [];
@@ -59,6 +58,7 @@ const queryBioLinkWithFilters = async ({
     handle,
   });
   try {
+    const s3ProfileModel = getS3ProfileModel();
     const res = await s3ProfileModel.queryBioLinksWithFilters({
       filters,
     });
@@ -110,6 +110,7 @@ export default function useDid(identity: string) {
       }
 
       if (isLensHandle(identity)) {
+        if (!s3ProfileModalInitialed) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
@@ -117,6 +118,13 @@ export default function useDid(identity: string) {
             network: BIOLINK_LENS_NETWORK,
             handle: lensHandleToBioLinkHandle(identity),
           });
+          console.log({
+            biolink,
+            platform: BIOLINK_PLATFORMS.lens,
+            network: BIOLINK_LENS_NETWORK,
+            handle: lensHandleToBioLinkHandle(identity),
+          });
+
           if (biolink) {
             setDid(biolink.creator.id);
           }
@@ -129,6 +137,7 @@ export default function useDid(identity: string) {
       }
 
       if (isFarcasterHandle(identity)) {
+        if (!s3ProfileModalInitialed) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
