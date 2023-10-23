@@ -7,6 +7,9 @@
       "hosting": {
         "u3-register": [
           "us3r-u3-register"
+        ],
+        "u3-register-dev": [
+          "us3r-u3-register-dev"
         ]
       }
     }
