@@ -39,6 +39,7 @@ export enum RouteKey {
   gallery = 'gallery',
   notification = 'notification',
   save = 'save',
+  farcasterSignup = 'farcasterSignup',
   socialLayout = 'socialLayout',
   social = 'social',
   socialChannel = 'socialChannel',
@@ -223,6 +224,11 @@ export const routes: CutomRouteObject[] = [
     path: '/policy',
     element: loadContainerElement('Policy'),
     key: RouteKey.policy,
+  },
+  {
+    path: '/farcaster/signup',
+    element: loadContainerElement('FarcasterSignup'),
+    key: RouteKey.farcasterSignup,
   },
   {
     path: '/social',

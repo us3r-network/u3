@@ -1,7 +1,14 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
+    "biolink",
+    "deeplink",
     "Farcaster",
+    "farsign",
+    "Keypair",
+    "Signup",
+    "upsert",
+    "viem",
     "Warpcast"
   ],
 }

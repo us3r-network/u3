@@ -82,7 +82,7 @@ export default function useFarcasterQR() {
 
       let { signedKeyRequest } = result;
 
-      if (tries === 10) {
+      if (tries === 100) {
         signedKeyRequest = {
           token: '0x4280568e493745700a7fb8a1',
           deeplinkUrl:

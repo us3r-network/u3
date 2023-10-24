@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { NobleEd25519Signer, UserDataType } from '@farcaster/hub-web';
-import { createPublicClient, http } from 'viem';
 import {
   ReactNode,
   createContext,
@@ -11,11 +10,12 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { goerli } from 'viem/chains';
+import { useNavigate } from 'react-router-dom';
 
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
+import FarcasterVerifyModal from 'src/components/social/farcaster/FarcasterVerifyModal';
 import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/farcaster/useFarcasterTrendChannel';
@@ -29,11 +29,6 @@ import {
   BIOLINK_PLATFORMS,
   farcasterHandleToBioLinkHandle,
 } from '../utils/profile/biolink';
-
-export const publicClient = createPublicClient({
-  chain: goerli,
-  transport: http(),
-});
 
 export type Token = {
   token: string;
@@ -98,10 +93,10 @@ export default function FarcasterProvider({
 }: {
   children: ReactNode;
 }) {
+  const navigate = useNavigate();
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
-
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
       deeplinkUrl: '',
@@ -118,6 +113,7 @@ export default function FarcasterProvider({
     [key: string]: { type: number; value: string }[];
   }>();
   const [currFid, setCurrFid] = useState<number>();
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
   const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
     useFarcasterWallet();
@@ -180,6 +176,11 @@ export default function FarcasterProvider({
     walletSigner,
     hasStorage,
   ]);
+
+  const openFarcasterVerifyModal = useCallback(() => {
+    if (signer.isConnected) return;
+    setVerifyModalOpen(true);
+  }, [signer.isConnected]);
 
   useEffect(() => {
     // console.log('walletCheckStatus', { walletCheckStatus });
@@ -246,7 +247,7 @@ export default function FarcasterProvider({
         isConnected: signer.isConnected,
         token,
         encryptedSigner,
-        openFarcasterQR,
+        openFarcasterQR: openFarcasterVerifyModal,
         farcasterUserData,
         setFarcasterUserData,
         channels,
@@ -265,6 +266,21 @@ export default function FarcasterProvider({
         afterCloseAction={() => {
           setShowQR(false);
           stopSign.stop = true;
+        }}
+      />
+      <FarcasterVerifyModal
+        open={verifyModalOpen}
+        closeAction={() => {
+          setVerifyModalOpen(false);
+        }}
+        addCountAction={() => {
+          setVerifyModalOpen(false);
+          openFarcasterQR();
+        }}
+        registerAction={() => {
+          setVerifyModalOpen(false);
+          navigate('/farcaster/signup');
+          // setOpenQR(true);
         }}
       />
     </FarcasterContext.Provider>
