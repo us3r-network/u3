@@ -169,7 +169,6 @@ export default function FarcasterProvider({
 
     const privateKey = getPrivateKey();
     if (!privateKey) return undefined;
-
     return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
   }, [
     signer.isConnected,

@@ -16,8 +16,10 @@ export default function useUnreadFarcasterNotificationsCount(fid: number) {
     setLoading(true);
     try {
       const resp = await getFarcasterUnreadNotificationCount({ fid });
-      setUnreadNotificationCount(resp.data.data.count);
-      setLastTime(resp.data.data.lastTime);
+      setUnreadNotificationCount(resp?.data?.data?.count || 0);
+      if (resp?.data?.data?.lastTime) {
+        setLastTime(resp.data.data.lastTime);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -34,7 +36,9 @@ export default function useUnreadFarcasterNotificationsCount(fid: number) {
     unreadNotificationCount,
     clear: async (): Promise<void> => {
       const resp = await clearFarcasterUnreadNotification({ fid });
-      setLastTime(resp.data.data.lastTime);
+      if (resp?.data?.data?.lastTime) {
+        setLastTime(resp.data.data.lastTime);
+      }
     },
   };
 }
