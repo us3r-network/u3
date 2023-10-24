@@ -1,6 +1,17 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
   "cSpell.words": [
-    "Farcaster"
+    "biolink",
+    "deeplink",
+    "Farcaster",
+    "Farcster",
+    "farsign",
+    "Fname",
+    "Keypair",
+    "offchain",
+    "Signup",
+    "upsert",
+    "viem",
+    "Warpcast"
   ],
 }

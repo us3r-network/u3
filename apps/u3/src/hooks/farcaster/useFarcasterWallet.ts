@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IdRegistryABI } from 'src/abi/farcaster/IdRegistryABI';
 import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
