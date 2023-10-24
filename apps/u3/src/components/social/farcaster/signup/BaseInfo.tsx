@@ -15,7 +15,7 @@ import { getFarcasterUserInfo } from 'src/api/farcaster';
 import { uploadImage } from 'src/services/api/upload';
 import { toast } from 'react-toastify';
 import { Edit } from 'src/components/icons/edit';
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
+// import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import { StyledOps } from './Steps';
 
 export default function BaseInfo({

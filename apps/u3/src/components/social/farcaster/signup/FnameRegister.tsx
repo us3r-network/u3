@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import { useCallback, useEffect, useState } from 'react';
-
+import { NobleEd25519Signer } from '@farcaster/hub-web';
 import { useAccount, useSignTypedData, useSwitchNetwork } from 'wagmi';
 import axios from 'axios';
 import { NameVerifyContract, OP_CHAIN_ID } from 'src/constants/farcaster';
@@ -32,11 +32,15 @@ const MESSAGE_TYPE = {
 export default function FnameRegister({
   fid,
   fname,
+  signer,
+  hasStorage,
   setFname,
   makePrimaryName,
 }: {
   fid: number;
   fname: string;
+  signer?: NobleEd25519Signer;
+  hasStorage?: boolean;
   setFname: (n: string) => void;
   makePrimaryName: (n: string) => Promise<void>;
 }) {
@@ -135,26 +139,31 @@ export default function FnameRegister({
         <StyledData>
           <p>Acquire a free offchain ENS username issued by Farcster.</p>
           <StyledOps className="register">
-            <input
-              type="text"
-              placeholder="fname"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-            />
-            {isLoading ? (
-              <button type="button">Registering...</button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  registerFname();
-                }}
-              >
-                Register
-              </button>
-            )}
+            {(fid && signer && hasStorage && (
+              <>
+                <input
+                  type="text"
+                  placeholder="fname"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                />
+                {isLoading ? (
+                  <button type="button">Registering...</button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      registerFname();
+                    }}
+                  >
+                    Register
+                  </button>
+                )}
+              </>
+            )) ||
+              null}
           </StyledOps>
         </StyledData>
       )}

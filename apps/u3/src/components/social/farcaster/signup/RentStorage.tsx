@@ -2,7 +2,6 @@ import {
   usePrepareContractWrite,
   useContractWrite,
   useContractRead,
-  useAccount,
   useWaitForTransaction,
 } from 'wagmi';
 
@@ -28,7 +27,6 @@ export default function RentStorage({
   hasStorage: boolean;
   setHasStorage: (h: boolean) => void;
 }) {
-  const { isConnected } = useAccount();
   const [price, setPrice] = useState<number>(0);
 
   const {
@@ -57,7 +55,7 @@ export default function RentStorage({
   });
   const { data: rentTxHash, write } = useContractWrite(config);
 
-  const { isError, isLoading, isSuccess } = useWaitForTransaction({
+  const { isLoading, isSuccess } = useWaitForTransaction({
     // chainId: 420, // testnet
     hash: rentTxHash?.hash,
   });
@@ -102,18 +100,20 @@ export default function RentStorage({
           <p>Renting to store casts</p>
           <StyledOps>
             <span />
-            {isLoading ? (
-              <button type="button">Registering...</button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  rentStorageUnit();
-                }}
-              >
-                Rent
-              </button>
-            )}
+            {(fid &&
+              (isLoading ? (
+                <button type="button">Registering...</button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    rentStorageUnit();
+                  }}
+                >
+                  Rent
+                </button>
+              ))) ||
+              null}
           </StyledOps>
         </StyledData>
       )}
