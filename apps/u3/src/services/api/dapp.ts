@@ -1,10 +1,11 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-01 10:28:53
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-27 11:07:10
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-24 10:29:30
  * @Description: file description
  */
+import { zora1155ToMintAddress } from 'src/constants/zora';
 import {
   FetchOneDappResponse,
   DappExploreListParams,
@@ -81,6 +82,32 @@ export function createDapp(
     url: `/dapps`,
     method: 'post',
     data,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function updateDappTokenId(
+  id: string | number,
+  tokenId: number
+): RequestPromise<UpdateDappResponse> {
+  // console.log('updateDappTokenId', id, tokenId);
+  return request({
+    url: `/dapps/${id}/tokens`,
+    method: 'post',
+    data: { tokenId },
+    headers: {
+      needToken: true,
+    },
+  });
+}
+export function fetchDappByTokenId(
+  tokenId: number
+): RequestPromise<FetchOneDappResponse> {
+  return request({
+    url: `/dapps/${zora1155ToMintAddress}/${tokenId}`,
+    method: 'get',
     headers: {
       needToken: true,
     },
