@@ -3,6 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useAccount, useSignTypedData, useSwitchNetwork } from 'wagmi';
 import axios from 'axios';
+import { NameVerifyContract, OP_CHAIN_ID } from 'src/constants/farcaster';
+
 import {
   StepsBox,
   StyledData,
@@ -12,13 +14,11 @@ import {
   StyledTitle,
 } from './Steps';
 
-// import MakeFnamePrimary from "./MakeFnamePrimary";
-
 const MESSAGE_DOMAIN = {
   name: 'Farcaster name verification',
   version: '1',
   chainId: 1,
-  verifyingContract: '0xe3be01d99baa8db9905b33a3ca391238234b79d1',
+  verifyingContract: NameVerifyContract,
 } as const;
 
 const MESSAGE_TYPE = {
@@ -33,15 +33,17 @@ export default function FnameRegister({
   fid,
   fname,
   setFname,
+  makePrimaryName,
 }: {
   fid: number;
   fname: string;
   setFname: (n: string) => void;
+  makePrimaryName: (n: string) => Promise<void>;
 }) {
   //   const { fid, fname, setFname } = useFarcaster();
   const [name, setName] = useState('');
 
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [timestamp, setTimestamp] = useState<number>(0);
   const {
@@ -95,19 +97,17 @@ export default function FnameRegister({
           signature, // EIP-712 signature signed by the custody address of the fid
         })
         .then((response) => {
-          //   toast.success('Fname registered!');
+          toast.success('Fname registered!');
           console.log(response.data);
-          // setFnameAsPrimary();
+          makePrimaryName(name);
           setFname(name);
         })
         .catch((error) => {
-          //   toast.error('Failed to register fname', {
-          //     description: error.response.data.code,
-          //   });
+          toast.error(`Failed to register fname: ${error.message}`);
         })
         .finally(() => {
           setIsLoading(false);
-          switchNetwork?.(10); // mainnet
+          switchNetwork?.(OP_CHAIN_ID); // mainnet
         });
     }
   }, [isSuccessSign, name]);

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 
 import { SignedKeyRequestMetadataABI } from 'src/abi/farcaster/SignedKeyRequestMetadataABI';
-// import { useFarcaster } from "../providers/FarcasterProvider";
+
 import {
   useAccount,
   useContractWrite,
@@ -15,19 +15,24 @@ import * as ed from '@noble/ed25519';
 import { encodeAbiParameters } from 'viem';
 import { toast } from 'react-toastify';
 import {
+  OP_CHAIN_ID,
+  SignerAddContract,
+  SignerVerifyContract,
+} from 'src/constants/farcaster';
+
+import {
   StepsBox,
   StyledData,
   StyledDescription,
   StyledOps,
   StyledTitle,
 } from './Steps';
-// import * as viem from "viem";
 
 const SIGNED_KEY_REQUEST_VALIDATOR_EIP_712_DOMAIN = {
   name: 'Farcaster SignedKeyRequestValidator',
   version: '1',
-  chainId: 10, // mainnet
-  verifyingContract: '0x00000000fc700472606ed4fa22623acf62c60553', // mainnet
+  chainId: OP_CHAIN_ID,
+  verifyingContract: SignerVerifyContract,
 } as const;
 
 const SIGNED_KEY_REQUEST_TYPE = [
@@ -63,7 +68,6 @@ export default function SignerAdd({
   signer: NobleEd25519Signer | null;
   setSigner: (s: NobleEd25519Signer | null) => void;
 }) {
-  //   const { fid, signer, setSigner } = useFarcaster();
   const { address } = useAccount();
 
   const [addSignerTxHash, setAddSignerTxHash] = useState<string>('');
@@ -96,8 +100,7 @@ export default function SignerAdd({
     isError: isErrorPrepareContractWrite,
     error: errorPrepareContractWrite,
   } = usePrepareContractWrite({
-    address: '0x00000000fC9e66f1c6d86D750B4af47fF0Cc343d', // mainnet
-    // address: '0x34A6F04B474eB64d9a82017a01acbe5A58A0F541', // testnet
+    address: SignerAddContract,
     abi: KeyRegistryABI,
     functionName: 'add',
     args: [1, publicKey, 1, metadata],

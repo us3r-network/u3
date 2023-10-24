@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   NobleEd25519Signer,
   UserDataType,
@@ -14,6 +15,7 @@ import { getFarcasterUserInfo } from 'src/api/farcaster';
 import { uploadImage } from 'src/services/api/upload';
 import { toast } from 'react-toastify';
 import { Edit } from 'src/components/icons/edit';
+import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import { StyledOps } from './Steps';
 
 export default function BaseInfo({
@@ -31,6 +33,8 @@ export default function BaseInfo({
   const [bio, setBio] = useState('');
   const [avatar, setAvatar] = useState('');
   const [website, setWebsite] = useState('');
+  // const { setCurrFid, setSigner } = useFarcasterCtx();
+  const navigation = useNavigate();
 
   const dataAdd = useCallback(
     async (type: UserDataType, value: string) => {
@@ -64,6 +68,7 @@ export default function BaseInfo({
       if (website) await dataAdd(UserDataType.URL, website);
 
       toast.success('successfully set profile to farcaster');
+      navigation('/farcaster');
     } catch (error: unknown) {
       console.error(error);
       toast.error('failed to set profile');
@@ -151,7 +156,7 @@ export default function BaseInfo({
               updateInfo();
             }}
           >
-            Update Info
+            Save
           </button>
         </StyledOps>
       </div>

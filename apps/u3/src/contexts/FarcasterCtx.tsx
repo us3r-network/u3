@@ -68,6 +68,7 @@ export type FarcasterChannel = {
 };
 export interface FarcasterContextData {
   currFid: number | undefined;
+  setCurrFid: React.Dispatch<React.SetStateAction<number | undefined>>;
   currUserInfo:
     | {
         [key: string]: { type: number; value: string }[];
@@ -76,6 +77,7 @@ export interface FarcasterContextData {
   isConnected: boolean;
   token: Token;
   encryptedSigner: NobleEd25519Signer | undefined;
+  setSigner: React.Dispatch<React.SetStateAction<Signer>>;
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
@@ -243,6 +245,8 @@ export default function FarcasterProvider({
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         currFid,
+        setCurrFid,
+        setSigner,
         currUserInfo,
         isConnected: signer.isConnected,
         token,
