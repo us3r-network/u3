@@ -80,7 +80,7 @@
     "three": "^0.147.0",
     "tslib": "^2.3.0",
     "typescript": "^5.2.2",
-    "viem": "1.16.5",
+    "viem": "1.16.6",
     "wagmi": "1.4.3",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",

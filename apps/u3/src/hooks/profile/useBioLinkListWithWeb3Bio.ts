@@ -28,7 +28,7 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
           web3BioIdentity = lensHandleToWeb3BioHandle(identity);
         }
         const res = await getProfilesWithWeb3Bio(web3BioIdentity);
-        const { data } = res;
+        const { data } = res || {};
         setBioLinkList(data);
       } catch (error) {
         setBioLinkList([]);

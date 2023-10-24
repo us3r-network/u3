@@ -5,7 +5,7 @@ export type UploadImageResult = {
 };
 export function uploadImage(
   file: File,
-  token: string
+  token?: string
 ): RequestPromise<UploadImageResult> {
   const form = new FormData();
   form.append('file', file);

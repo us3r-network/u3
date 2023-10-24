@@ -12,6 +12,12 @@ import useUpsertFarcasterUserData from '../../../hooks/farcaster/useUpsertFarcas
 import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
 import useBioLinkListWithDid from '../../../hooks/profile/useBioLinkListWithDid';
 import ProfileInfoBaseCard from './ProfileInfoBaseCard';
+import useBioLinkListWithWeb3Bio from '../../../hooks/profile/useBioLinkListWithWeb3Bio';
+import useLazyQueryFidWithAddress from '../../../hooks/farcaster/useLazyQueryFidWithAddress';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../../../utils/profile/biolink';
 
 interface HasU3ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   did: string;
@@ -30,16 +36,47 @@ export default function HasU3ProfileInfoCard({
     loading: bioLinkLoading,
   } = useBioLinkListWithDid(did);
 
+  const identity = useMemo(() => {
+    // 如果绑定了 lens，但没绑定 farcaster，则取 lens 的 identity(address/handle) 去web3.bio查询其它平台信息
+    if (lensBioLinkProfiles.length > 0 && fcastBioLinkProfiles.length === 0) {
+      return (
+        lensBioLinkProfiles[0]?.ownedBy ||
+        lensHandleToBioLinkHandle(lensBioLinkProfiles[0]?.handle) ||
+        ''
+      );
+    }
+    // 如果绑定了 farcaster，但没绑定 lens，则取 farcaster 的 identity(handle) 去 web3.bio 查询其它平台信息
+    if (fcastBioLinkProfiles.length > 0 && lensBioLinkProfiles.length === 0) {
+      return farcasterHandleToBioLinkHandle(fcastBioLinkProfiles[0]?.value);
+    }
+
+    return '';
+  }, [lensBioLinkProfiles, fcastBioLinkProfiles]);
+
+  const { lensBioLinks: web3LensBioLinks, fcastBioLinks: web3FcastBioLinks } =
+    useBioLinkListWithWeb3Bio(identity);
+
+  const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
+    web3FcastBioLinks?.[0]?.address || ''
+  );
+  useEffect(() => {
+    fetchFid();
+  }, [web3FcastBioLinks]);
+
   const { farcasterUserData } = useFarcasterCtx();
 
   const address = getAddressWithDidPkh(did);
 
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address: lensBioLinkProfiles?.[0]?.ownedBy || '',
+    address:
+      lensBioLinkProfiles?.[0]?.ownedBy ||
+      web3LensBioLinks?.[0]?.address ||
+      address ||
+      '',
   });
   const lensProfileFirst = lensProfiles?.[0];
 
-  const fid = fcastBioLinkProfiles?.[0]?.fid;
+  const fid = fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
     if (fid && !farcasterUserData[fid]) {
