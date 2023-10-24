@@ -24,7 +24,7 @@ export default function FidRegister({
   fid: number;
   setFid: (fid: number) => void;
 }) {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
 
   const { config, isError, error } = usePrepareContractWrite({
     address: '0x00000000FcAf86937e41bA038B4fA40BAA4B780A',

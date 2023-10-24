@@ -70,7 +70,7 @@ export default function SignerAdd({
 }) {
   const { address } = useAccount();
 
-  const [addSignerTxHash, setAddSignerTxHash] = useState<string>('');
+  // const [setAddSignerTxHash] = useState<string>('');
   const [privateKey, setPrivateKey] = useState<Uint8Array | undefined>();
   const [publicKey, setPublicKey] = useState<`0x${string}` | undefined>();
   const [metadata, setMetadata] = useState<`0x${string}` | undefined>();
@@ -205,11 +205,11 @@ export default function SignerAdd({
     }
   }, [isLoadingTx, isSuccessTx]);
 
-  useEffect(() => {
-    if (txData) {
-      setAddSignerTxHash(txData.hash);
-    }
-  }, [txData]);
+  // useEffect(() => {
+  //   if (txData) {
+  //     setAddSignerTxHash(txData.hash);
+  //   }
+  // }, [txData]);
 
   return (
     <StepsBox>
@@ -227,18 +227,20 @@ export default function SignerAdd({
           </p>
           <StyledOps>
             <span />
-            {isLoading ? (
-              <button type="button">Registering...</button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  addSigner();
-                }}
-              >
-                Add
-              </button>
-            )}
+            {(fid &&
+              (isLoading ? (
+                <button type="button">Registering...</button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    addSigner();
+                  }}
+                >
+                  Add
+                </button>
+              ))) ||
+              null}
           </StyledOps>
         </StyledData>
       )}

@@ -4,7 +4,7 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import { getFarcasterUserInfo } from 'src/api/farcaster';
 import Checked from 'src/components/icons/checked';
 import { ChevronRightDouble } from 'src/components/icons/chevon-right-double';
-import { Edit, Edit3 } from 'src/components/icons/edit';
+import { Edit3 } from 'src/components/icons/edit';
 import Unchecked from 'src/components/icons/unchecked';
 import styled from 'styled-components';
 

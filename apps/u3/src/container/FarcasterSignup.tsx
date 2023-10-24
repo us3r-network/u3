@@ -68,6 +68,8 @@ export default function FarcasterSignup() {
         <FnameRegister
           fid={fid}
           fname={fname}
+          hasStorage={hasStorage}
+          signer={signer}
           setFname={setFname}
           makePrimaryName={makePrimaryName}
         />
