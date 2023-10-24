@@ -80,19 +80,7 @@ export default function useFarcasterQR() {
         })
         .then((response) => response.data.result);
 
-      let { signedKeyRequest } = result;
-
-      if (tries === 100) {
-        signedKeyRequest = {
-          token: '0x4280568e493745700a7fb8a1',
-          deeplinkUrl:
-            'farcaster://signed-key-request?token=0x4280568e493745700a7fb8a1',
-          key: '0xcbfb9de6cad1b93a74c7395178bf399c8f5b0e9e1dda3422e6529dffdeae467a',
-          requestFid: 10332,
-          state: 'completed',
-          userFid: 17137,
-        };
-      }
+      const { signedKeyRequest } = result;
 
       if (signedKeyRequest.state === 'completed') {
         setSignedKeyRequest(signedKeyRequest);
