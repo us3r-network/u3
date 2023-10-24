@@ -1,7 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useState } from 'react';
 
-import HeartIcon from '../icons/HeartIcon';
+import HeartIcon, { HeartIcon2 } from '../icons/HeartIcon';
 
 interface PostLikeProps {
   totalLikes: number;
@@ -9,6 +9,7 @@ interface PostLikeProps {
   liked?: boolean;
   liking?: boolean;
   likeAction?: () => void;
+  disabled?: boolean;
 }
 export default function PostLike({
   totalLikes,
@@ -16,18 +17,24 @@ export default function PostLike({
   liked,
   liking,
   likeAction,
+  disabled,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostLikeProps) {
   const [hover, setHover] = useState(false);
   return (
     <PostLikeWrapper
+      disabled={disabled}
+      liked={liked}
       onMouseEnter={() => {
+        if (disabled) return;
         setHover(true);
       }}
       onMouseLeave={() => {
+        if (disabled) return;
         setHover(false);
       }}
       onClick={(e) => {
+        if (disabled) return;
         if (likeAction) e.stopPropagation();
         if (!liking && likeAction) likeAction();
       }}
@@ -38,31 +45,32 @@ export default function PostLike({
         <PostLikeAvatars likeAvatars={likeAvatars} />
       )}
       <span>
-        <HeartIcon
-          fill={hover ? '#E63734' : liked ? '#E63734' : 'none'}
-          stroke={hover ? '#E63734' : liked ? '#E63734' : 'white'}
-        />
+        <HeartIcon2 fill={hover ? '#F81775' : liked ? '#F81775' : ''} />
       </span>
       {totalLikes} {liking ? 'Liking' : 'Likes'}
     </PostLikeWrapper>
   );
 }
 
-export const PostLikeWrapper = styled.div<{ hover?: boolean }>`
+export const PostLikeWrapper = styled.div<{
+  hover?: boolean;
+  liked?: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   align-items: center;
-  gap: 5px;
-  cursor: pointer;
+  gap: 7px;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
-  color: #718096;
+  color: ${(props) => (props.liked ? '#F81775' : '#718096')};
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: 30px; /* 250% */
   > span {
-    height: 24px;
-    width: 24px;
+    height: 20px;
+    width: 20px;
     display: flex;
     box-sizing: border-box;
     align-items: center;
@@ -72,7 +80,7 @@ export const PostLikeWrapper = styled.div<{ hover?: boolean }>`
       props.hover ? 'rgba(248, 23, 117, 0.20)' : 'transparent'};
   }
   &:hover {
-    color: #e63734;
+    ${(props) => !props.disabled && `color: #e63734;`}
   }
 `;
 
@@ -117,4 +125,5 @@ export const PostLikeAvatar = styled.img`
   height: 100%;
   flex-shrink: 0;
   border-radius: 50%;
+  object-fit: cover;
 `;

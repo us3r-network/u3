@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { NobleEd25519Signer } from '@farcaster/hub-web';
-import { createPublicClient, http } from 'viem';
+import { NobleEd25519Signer, UserDataType } from '@farcaster/hub-web';
 import {
   ReactNode,
   createContext,
@@ -11,26 +10,25 @@ import {
   useMemo,
   useState,
 } from 'react';
-import axios from 'axios';
-import { goerli } from 'viem/chains';
-import { WARPCAST_API } from '../constants/farcaster';
-import {
-  generateKeyPair,
-  getCurrFid,
-  getPrivateKey,
-  getSignedKeyRequest,
-  setPrivateKey,
-  setSignedKeyRequest,
-} from '../utils/farsign-utils';
-import { getFarcasterSignature, getFarcasterUserInfo } from '../api/farcaster';
+import { useNavigate } from 'react-router-dom';
 
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
+
+import FarcasterVerifyModal from 'src/components/social/farcaster/FarcasterVerifyModal';
+import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
+import useFarcasterQR from 'src/hooks/farcaster/useFarcasterQR';
+import useFarcasterTrendChannel from 'src/hooks/farcaster/useFarcasterTrendChannel';
+
+import { getPrivateKey } from '../utils/farsign-utils';
+import { getFarcasterUserInfo } from '../api/farcaster';
 import FarcasterQRModal from '../components/social/farcaster/FarcasterQRModal';
-import FarcasterIframeModal from '../components/social/farcaster/FarcasterIframeModal';
-
-export const publicClient = createPublicClient({
-  chain: goerli,
-  transport: http(),
-});
+import useBioLinkActions from '../hooks/profile/useBioLinkActions';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+  farcasterHandleToBioLinkHandle,
+} from '../utils/profile/biolink';
 
 export type Token = {
   token: string;
@@ -59,8 +57,18 @@ export type Signer = {
 export type FarcasterUserData = {
   [key: string]: { type: number; value: string }[];
 };
+
+export type FarcasterChannel = {
+  name?: string;
+  channel_description?: string;
+  parent_url: string;
+  image: string;
+  channel_id: string;
+  count: string;
+};
 export interface FarcasterContextData {
   currFid: number | undefined;
+  setCurrFid: React.Dispatch<React.SetStateAction<number | undefined>>;
   currUserInfo:
     | {
         [key: string]: { type: number; value: string }[];
@@ -69,10 +77,11 @@ export interface FarcasterContextData {
   isConnected: boolean;
   token: Token;
   encryptedSigner: NobleEd25519Signer | undefined;
+  setSigner: React.Dispatch<React.SetStateAction<Signer>>;
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
-  setIframeUrl: React.Dispatch<React.SetStateAction<string>>;
+  channels: FarcasterChannel[];
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -86,11 +95,10 @@ export default function FarcasterProvider({
 }: {
   children: ReactNode;
 }) {
+  const navigate = useNavigate();
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
-  const [iframeUrl, setIframeUrl] = useState('');
-
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
       deeplinkUrl: '',
@@ -102,133 +110,133 @@ export default function FarcasterProvider({
     },
     isConnected: false,
   });
-  const [showQR, setShowQR] = useState(false);
-  const [token, setToken] = useState<Token>({
-    token: '',
-    deepLink: '',
-  });
-  const [warpcastErr, setWarpcastErr] = useState<string>('');
 
   const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[];
   }>();
   const [currFid, setCurrFid] = useState<number>();
-  const [openQR, setOpenQR] = useState(false);
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
-  const openQRModal = useMemo(() => {
-    if (signer.isConnected) {
-      return false;
-    }
-    return openQR;
-  }, [signer.isConnected, openQR]);
+  const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
+    useFarcasterWallet();
+  const {
+    qrFid,
+    qrSigner,
+    openFarcasterQR,
+    openQRModal,
+    setOpenQR,
+    showQR,
+    setShowQR,
+    token,
+    warpcastErr,
+    setWarpcastErr,
+  } = useFarcasterQR();
 
-  const getCurrUserInfo = async () => {
-    const cFid = getCurrFid();
-    const resp = await getFarcasterUserInfo([cFid]);
+  const { channels } = useFarcasterTrendChannel();
+
+  const getCurrUserInfo = useCallback(async () => {
+    console.log('getCurrentUserInfo', { currFid });
+    if (!currFid) return;
+    const resp = await getFarcasterUserInfo([currFid]);
     if (resp.data.code === 0) {
       const data: {
         [key: string]: { type: number; value: string }[];
       } = {};
-      data[cFid] = resp.data.data;
+      data[currFid] = resp.data.data;
       setCurrUserInfo(data);
-      setCurrFid(cFid);
     }
-  };
-
-  const pollForSigner = useCallback(async (token: string) => {
-    let tries = 0;
-
-    while (tries < 40) {
-      if (stopSign.stop) {
-        break;
-      }
-      tries += 1;
-      // eslint-disable-next-line no-promise-executor-return
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      const { signedKeyRequest } = await axios
-        .get(`${WARPCAST_API}/v2/signed-key-request`, {
-          params: {
-            token,
-          },
-        })
-        .then((response) => response.data.result);
-
-      if (signedKeyRequest.state === 'completed') {
-        setSignedKeyRequest(signedKeyRequest);
-
-        setSigner({
-          SignedKeyRequest: signedKeyRequest,
-          isConnected: true,
-        });
-        break;
-      }
-    }
-
-    setTimeout(() => {
-      setOpenQR(false);
-    }, 500);
-  }, []);
-
-  const initWarpcastAuth = useCallback(async () => {
-    const keyPair = await generateKeyPair();
-    const convertedKey = `0x${keyPair.publicKey}`;
-
-    const resp = await getFarcasterSignature(convertedKey);
-    if (resp.status !== 200) {
-      setWarpcastErr('Internal server error');
-      return;
-    }
-    const { signature, appFid, deadline } = resp.data.data;
-
-    const { token, deeplinkUrl } = await axios
-      .post(`${WARPCAST_API}/v2/signed-key-requests`, {
-        key: convertedKey,
-        requestFid: appFid,
-        signature,
-        deadline,
-      })
-      .then((response) => response.data.result.signedKeyRequest);
-
-    setPrivateKey(keyPair.privateKey);
-    pollForSigner(token);
-    setShowQR(true);
-    setToken({ token, deepLink: deeplinkUrl });
-  }, [pollForSigner]);
-
-  const openFarcasterQR = () => {
-    stopSign.stop = false;
-    initWarpcastAuth();
-    setOpenQR(true);
-  };
-
-  const encryptedSigner = useMemo(() => {
-    if (!signer.isConnected) return undefined;
-    const privateKey = getPrivateKey();
-
-    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
-  }, [signer.isConnected]);
+  }, [currFid]);
 
   useEffect(() => {
     if (signer.isConnected) {
       getCurrUserInfo();
     }
+  }, [signer.isConnected, getCurrUserInfo]);
+
+  const encryptedSigner = useMemo(() => {
+    if (!walletCheckStatus) return undefined;
+    if (walletCheckStatus === 'idle') {
+      const privateKey = getPrivateKey();
+      if (!privateKey) return undefined;
+      return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
+    }
+
+    if (walletCheckStatus !== 'done') return undefined;
+    if (!signer.isConnected) return undefined;
+    if (walletFid && walletSigner && hasStorage) {
+      return walletSigner;
+    }
+
+    const privateKey = getPrivateKey();
+    if (!privateKey) return undefined;
+    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
+  }, [
+    signer.isConnected,
+    walletCheckStatus,
+    walletFid,
+    walletSigner,
+    hasStorage,
+  ]);
+
+  const openFarcasterVerifyModal = useCallback(() => {
+    if (signer.isConnected) return;
+    setVerifyModalOpen(true);
   }, [signer.isConnected]);
 
   useEffect(() => {
-    const signer = getSignedKeyRequest();
-
-    if (signer != null) {
-      setToken({
-        token: 'already connected',
-        deepLink: 'already connected',
-      });
+    // console.log('walletCheckStatus', { walletCheckStatus });
+    if (!walletCheckStatus) return;
+    if (walletCheckStatus === 'idle') {
+      setCurrFid(qrFid);
+      setSigner(qrSigner);
+      return;
+    }
+    if (walletCheckStatus !== 'done') return;
+    if (walletFid && walletSigner && hasStorage) {
+      setCurrFid(walletFid);
       setSigner({
-        SignedKeyRequest: JSON.parse(signer),
+        SignedKeyRequest: {
+          deeplinkUrl: '',
+          key: '',
+          requestFid: 0,
+          state: 'completed',
+          token: '',
+          userFid: walletFid,
+        },
         isConnected: true,
       });
+      return;
     }
-  }, []);
+    console.log('use qr check', { walletFid, walletSigner, hasStorage });
+    setCurrFid(qrFid);
+    setSigner(qrSigner);
+  }, [walletFid, hasStorage, walletSigner, walletCheckStatus, qrFid, qrSigner]);
+
+  // 每次farcaster登录成功后，更新farcaster biolink
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    const findUserInfo = currUserInfo?.[currFid]?.find(
+      (item) => item.type === UserDataType.USERNAME
+    );
+    const handle = findUserInfo?.value || '';
+    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: farcasterHandleToBioLinkHandle(handle),
+          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+        },
+      });
+    }
+  }, [session, profile, signer, currFid, currUserInfo]);
+
+  // console.log({ qrFid, qrSigner });
+  // console.log({ walletFid, walletSigner });
 
   return (
     <FarcasterContext.Provider
@@ -236,14 +244,16 @@ export default function FarcasterProvider({
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         currFid,
+        setCurrFid,
+        setSigner,
         currUserInfo,
         isConnected: signer.isConnected,
         token,
         encryptedSigner,
-        openFarcasterQR,
+        openFarcasterQR: openFarcasterVerifyModal,
         farcasterUserData,
         setFarcasterUserData,
-        setIframeUrl,
+        channels,
       }}
     >
       {children}
@@ -261,12 +271,19 @@ export default function FarcasterProvider({
           stopSign.stop = true;
         }}
       />
-      <FarcasterIframeModal
-        iframeUrl={iframeUrl}
-        open={!!iframeUrl}
-        closeModal={() => {}}
-        afterCloseAction={() => {
-          setIframeUrl('');
+      <FarcasterVerifyModal
+        open={verifyModalOpen}
+        closeAction={() => {
+          setVerifyModalOpen(false);
+        }}
+        addCountAction={() => {
+          setVerifyModalOpen(false);
+          openFarcasterQR();
+        }}
+        registerAction={() => {
+          setVerifyModalOpen(false);
+          navigate('/farcaster/signup');
+          // setOpenQR(true);
         }}
       />
     </FarcasterContext.Provider>

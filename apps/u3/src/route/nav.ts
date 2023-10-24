@@ -18,18 +18,23 @@ import { ReactComponent as HomeSvg } from './svgs/home.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
 
-export type CutomNavObject = {
+export type CustomNavObject = {
   name: string;
-  activeRouteKeys: RouteKey[];
+  activeRouteKeys: RouteKey[]; // 指定哪些路由key下，该nav被激活（可用来高亮显示,有子菜单展开子菜单等...）
   icon?: ReactNode;
-  children?: CutomNavObject[];
+  children?: CustomNavObject[];
   key?: string;
   route?: CutomRouteObject;
 };
-export const navs: CutomNavObject[] = [
+export const navs: CustomNavObject[] = [
   {
     name: 'social',
-    activeRouteKeys: [RouteKey.social],
+    activeRouteKeys: [
+      RouteKey.social,
+      RouteKey.socialLayout,
+      RouteKey.socialPostDetailFcast,
+      RouteKey.socialPostDetailLens,
+    ],
     icon: React.createElement(HomeSvg),
     route: getRoute(RouteKey.social),
   },
@@ -45,18 +50,18 @@ export const navs: CutomNavObject[] = [
   //   icon: React.createElement(UserCircleSvg),
   //   route: getRoute(RouteKey.profile),
   // },
-  {
-    name: 'activity',
-    activeRouteKeys: [RouteKey.activity],
-    icon: React.createElement(LineChartUpSvg),
-    route: getRoute(RouteKey.activity),
-  },
-  {
-    name: 'save',
-    activeRouteKeys: [RouteKey.save],
-    icon: React.createElement(HeartSvg),
-    route: getRoute(RouteKey.save),
-  },
+  // {
+  //   name: 'activity',
+  //   activeRouteKeys: [RouteKey.activity],
+  //   icon: React.createElement(LineChartUpSvg),
+  //   route: getRoute(RouteKey.activity),
+  // },
+  // {
+  //   name: 'save',
+  //   activeRouteKeys: [RouteKey.save],
+  //   icon: React.createElement(HeartSvg),
+  //   route: getRoute(RouteKey.save),
+  // },
   {
     name: 'asset',
     activeRouteKeys: [RouteKey.asset],

@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-02 11:14:15
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-24 11:35:47
  * @Description:
  */
 import styled from 'styled-components';
@@ -86,7 +86,7 @@ export default function DappPage({
       <Header
         data={data}
         hiddenEdit={isStreamId}
-        onOpen={() => openDappModal(data?.linkStreamId || data?.id)}
+        onOpen={() => openDappModal(data?.id)}
         onEdit={() => setOpenEdit(true)}
       />
       <ContentLayout>

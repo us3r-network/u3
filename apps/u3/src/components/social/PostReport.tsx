@@ -1,39 +1,48 @@
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import ForwardIcon from '../icons/ForwardIcon';
+import { ForwardIcon2 } from '../icons/ForwardIcon';
 
 interface PostReportProps {
   totalReposts: number;
   reposted?: boolean;
   reposting?: boolean;
   repostAction?: () => void;
+  disabled?: boolean;
 }
 export default function PostReport({
   totalReposts,
   reposted,
   reposting,
   repostAction,
+  disabled,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostReportProps) {
   const [hover, setHover] = useState(false);
   return (
     <PostReportWrapper
+      disabled={disabled}
+      reposted={reposted}
       onClick={(e) => {
+        if (disabled) return;
         if (repostAction) e.stopPropagation();
         if (!reposting && repostAction) repostAction();
       }}
       onMouseEnter={() => {
+        if (disabled) return;
         setHover(true);
       }}
       onMouseLeave={() => {
+        if (disabled) return;
         setHover(false);
       }}
       hover={hover}
       {...wrapperProps}
     >
       <span>
-        <ForwardIcon
-          stroke={hover ? '#00b171' : reposted ? '#9C9C9C' : 'white'}
+        <ForwardIcon2
+          stroke={
+            hover && !disabled ? '#00b171' : reposted ? '#00B171' : '#718096'
+          }
         />
       </span>
       {totalReposts} {reposting ? 'Reposting' : 'Reposts'}
@@ -41,13 +50,17 @@ export default function PostReport({
   );
 }
 
-const PostReportWrapper = styled.div<{ hover?: boolean }>`
+const PostReportWrapper = styled.div<{
+  hover?: boolean;
+  reposted?: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   align-items: center;
-  gap: 5px;
-  cursor: pointer;
+  gap: 7px;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
-  color: #718096;
+  color: ${(props) => (props.reposted ? '#00B171' : '#718096')};
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
@@ -55,8 +68,8 @@ const PostReportWrapper = styled.div<{ hover?: boolean }>`
   line-height: 30px; /* 250% */
 
   > span {
-    height: 24px;
-    width: 24px;
+    height: 20px;
+    width: 20px;
     display: flex;
     box-sizing: border-box;
     align-items: center;
@@ -67,6 +80,6 @@ const PostReportWrapper = styled.div<{ hover?: boolean }>`
   }
 
   &:hover {
-    color: #00b171;
+    ${(props) => !props.disabled && 'color: #00B171;'};
   }
 `;

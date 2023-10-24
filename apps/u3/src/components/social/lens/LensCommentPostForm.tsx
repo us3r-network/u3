@@ -14,7 +14,7 @@ export default function LensCommentPostForm({
   publicationId: string;
   canComment?: boolean;
 }) {
-  const { isLogin: isLoginU3 } = useLogin();
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const [content, setContent] = useState('');
 
   const { isLogin, setOpenLensLoginModal } = useLensCtx();
@@ -27,7 +27,11 @@ export default function LensCommentPostForm({
   });
 
   const onSubmit = useCallback(async () => {
-    if (!isLoginU3 || !isLogin) {
+    if (!isLoginU3) {
+      loginU3();
+      return;
+    }
+    if (!isLogin) {
       setOpenLensLoginModal(true);
       return;
     }
@@ -45,6 +49,7 @@ export default function LensCommentPostForm({
     });
   }, [
     isLoginU3,
+    loginU3,
     isLogin,
     canComment,
     publicationId,
@@ -55,6 +60,7 @@ export default function LensCommentPostForm({
 
   return (
     <ReplyForm
+      disabled={!canComment}
       onClick={() => {}}
       avatar={getAvatar(activeProfile)}
       content={content}

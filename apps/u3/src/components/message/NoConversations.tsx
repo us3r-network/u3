@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import { ButtonPrimary } from '../common/button/ButtonBase';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function NoConversations() {
   const navigate = useNavigate();
-  const { setOpenMessageModal } = useXmtpStore();
+  const { setOpenMessageModal } = useNav();
   return (
     <Wrapper>
       <NoConvosImg src="/message/imgs/no-convos.png" />

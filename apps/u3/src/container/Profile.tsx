@@ -1,265 +1,421 @@
-/*
- * @Author: shixuewen friendlysxw@163.com
- * @Date: 2022-11-29 17:59:06
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2022-11-30 15:18:30
- * @Description: file description
- */
-import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
+import { useEffect, useMemo, useState } from 'react';
+import { isMobile } from 'react-device-detect';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { useParams } from 'react-router-dom';
-import Info from '../components/info';
-import DailyDigest from '../components/info/DailyDigest';
-import Credential from '../components/profile/Credential';
-import OnChainInterest, {
-  OnChainNoItem,
-} from '../components/profile/OnChainInterest';
-import {
-  addOrDelWallet,
-  fetchU3Profiles,
-  fetchU3ProfileWithWallet,
-  fetchU3Wallets,
-  ProfileDefault,
-} from '../services/api/profile';
-import { ProfileEntity, ProfileWallet } from '../services/types/profile';
-import Loading from '../components/common/loading/Loading';
-import { mergeProfilesData } from '../utils/mergeProfilesData';
-import Activities from '../components/profile/Activities';
+import KeepAlive from 'react-activation';
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
+import ProfilePageNav from '../components/profile/ProfilePageNav';
+import UserWalletsStyled from '../components/s3/profile/UserWalletsStyled';
+import UserTagsStyled from '../components/s3/profile/UserTagsStyled';
+import { LogoutButton } from '../components/layout/LoginButton';
 import useLogin from '../hooks/useLogin';
+import LogoutConfirmModal from '../components/layout/LogoutConfirmModal';
+import ProfileInfoCard from '../components/profile/profile-info/ProfileInfoCard';
+import { RouteKey } from '../route/routes';
+import {
+  selectWebsite,
+  setProfilePageFeedsType,
+} from '../features/website/websiteSlice';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import ProfilePageFollowNav, {
+  FollowType,
+} from '../components/profile/ProfilePageFollowNav';
+import LensProfileFollowing from '../components/profile/lens/LensProfileFollowing';
+import LensProfileFollowers from '../components/profile/lens/LensProfileFollowers';
+import { SocailPlatform } from '../api';
+import useFarcasterFollowNum from '../hooks/farcaster/useFarcasterFollowNum';
+import FarcasterFollowing from '../components/profile/farcaster/FarcasterFollowing';
+import FarcasterFollowers from '../components/profile/farcaster/FarcasterFollowers';
+import { getAddressWithDidPkh } from '../utils/did';
+import ProfileSocial from '../components/profile/ProfileSocial';
+import Loading from '../components/common/loading/Loading';
+import useDid from '../hooks/profile/useDid';
+import useBioLinkListWithDid from '../hooks/profile/useBioLinkListWithDid';
+import useBioLinkListWithWeb3Bio from '../hooks/profile/useBioLinkListWithWeb3Bio';
+import useLazyQueryFidWithAddress from '../hooks/farcaster/useLazyQueryFidWithAddress';
 
-function Profile() {
-  const { wallet } = useParams();
-  const { user } = useLogin();
-  const [tab, setTab] = useState<
-    'Credential' | 'OnChain' | 'OffChain' | 'Activities'
-  >('Credential');
-  const [loading, setLoading] = useState(true);
-  const [profileData, setProfileData] = useState<ProfileEntity>();
-  const [wallets, setWallets] = useState<ProfileWallet[]>([]);
+export default function Profile() {
+  const { user } = useParams();
+  const session = useSession();
 
-  const fetchData = useCallback(async () => {
-    if (!user?.token) return;
-    try {
-      const { data } = await fetchU3Profiles(user?.token);
-      const r = mergeProfilesData(data.data);
-      setProfileData(r);
-      // setProfileData(data.data);
-    } catch (error) {
-      setProfileData(ProfileDefault);
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.token]);
+  const { did, loading: didLoading } = useDid(user);
 
-  const fetchWallets = useCallback(async () => {
-    if (!user?.token) return;
-    try {
-      const { data } = await fetchU3Wallets(user?.token);
-      setWallets(data.data);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }, [user?.token]);
-
-  const fetchDataWithWallet = useCallback(async () => {
-    try {
-      const { data } = await fetchU3ProfileWithWallet(wallet);
-      setProfileData(data.data);
-    } catch (error) {
-      setProfileData(ProfileDefault);
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [wallet]);
-
-  const addOrRemoveWallet = useCallback(
-    async (addr: string, add: boolean) => {
-      if (!user?.token) return;
-      try {
-        await addOrDelWallet(addr, add, user?.token);
-      } catch (error) {
-        toast.error(error.message);
+  const { getProfileWithDid } = useProfileState();
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfileLoading, setHasProfileLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (user && !didLoading && did) {
+        setHasProfileLoading(true);
+        const profile = await getProfileWithDid(did);
+        if (profile) {
+          setHasProfile(true);
+        }
+        setHasProfileLoading(false);
       }
-    },
-    [user?.token]
+    })();
+  }, [user, didLoading, did]);
+
+  const useWeb3BioProfile = useMemo(
+    () => user && (!did || !hasProfile),
+    [user, did, hasProfile]
   );
 
-  const addWallet = useCallback(
-    async (addr: string) => {
-      await addOrRemoveWallet(addr, true);
-      await fetchWallets();
-      return true;
-    },
-    [user?.token]
+  const isLoginUser = useMemo(
+    () => !user || did === session?.id,
+    [user, did, session]
   );
-  const delWallet = useCallback(
-    async (addr: string) => {
-      if (!user?.token) return;
-      await addOrRemoveWallet(addr, false);
-      await fetchWallets();
-    },
-    [user?.token]
+
+  const currProfileDid = useMemo(
+    () => (user ? did : session?.id),
+    [user, did, session]
   );
+
+  const {
+    bioLinkList: web3BioProfiles,
+    lensBioLinks: lensWeb3BioProfiles,
+    fcastBioLinks: fcastWeb3BioProfiles,
+    loading: web3BioLoading,
+  } = useBioLinkListWithWeb3Bio(user);
+
+  const web3BioAddress = web3BioProfiles.find(
+    (item) => !!item.address
+  )?.address;
+  const address = useWeb3BioProfile
+    ? web3BioAddress
+    : getAddressWithDidPkh(currProfileDid || '');
+
+  const { logout } = useLogin();
+  const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
+
+  const { profilePageFeedsType } = useAppSelector(selectWebsite);
+  const dispatch = useAppDispatch();
+
+  const [followNavData, setFollowNavData] = useState({
+    showFollowNav: false,
+    followNavType: FollowType.FOLLOWING,
+    followingActivePlatform: SocailPlatform.Lens,
+    followersActivePlatform: SocailPlatform.Lens,
+    followingPlatformCount: {
+      [SocailPlatform.Lens]: 0,
+      [SocailPlatform.Farcaster]: 0,
+    },
+    followersPlatformCount: {
+      [SocailPlatform.Lens]: 0,
+      [SocailPlatform.Farcaster]: 0,
+    },
+  });
+  const {
+    showFollowNav,
+    followNavType,
+    followingActivePlatform,
+    followersActivePlatform,
+    followingPlatformCount,
+    followersPlatformCount,
+  } = followNavData;
+
+  const { lensBioLinkProfiles, fcastBioLinkProfiles } =
+    useBioLinkListWithDid(currProfileDid);
+
+  const { data: lensProfiles } = useProfilesOwnedBy({
+    address:
+      (useWeb3BioProfile
+        ? lensWeb3BioProfiles?.[0]?.address
+        : lensBioLinkProfiles?.[0]?.ownedBy) || '',
+  });
+
+  const lensProfileFirst = lensProfiles?.[0];
+
+  const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
+    fcastWeb3BioProfiles?.[0]?.address || ''
+  );
+  useEffect(() => {
+    fetchFid();
+  }, [fcastWeb3BioProfiles]);
+
+  const fid = useWeb3BioProfile ? fetchedFid : fcastBioLinkProfiles[0]?.fid;
+
+  const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
   useEffect(() => {
-    if (wallet) {
-      fetchDataWithWallet();
-    } else {
-      fetchData();
+    setFollowNavData((prevData) => ({
+      ...prevData,
+      followingPlatformCount: {
+        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
+        [SocailPlatform.Farcaster]: farcasterFollowData.following,
+      },
+      followersPlatformCount: {
+        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
+        [SocailPlatform.Farcaster]: farcasterFollowData.followers,
+      },
+    }));
+  }, [lensProfileFirst, farcasterFollowData]);
+
+  if (user) {
+    if (didLoading || hasProfileLoading || (!hasProfile && web3BioLoading)) {
+      return (
+        <LoadingWrapper>
+          <Loading />
+        </LoadingWrapper>
+      );
     }
-    fetchWallets();
-  }, [fetchData, fetchDataWithWallet, wallet]);
+  }
 
   return (
     <ProfileWrapper id="profile-wrapper">
-      <div>
-        {!wallet && user && (
-          <div className="infos">
-            <Info
-              {...{
-                // User defined in package
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                date: (user as any).createdAt,
-                nickname: user.name,
-                avatar: user.avatar,
-                wallets,
-                walletAddr:
-                  user.accounts[0]?.thirdpartyName ||
-                  user.accounts[0]?.thirdpartyId,
+      {isMobile && (
+        <ProfileInfoMobileWrapper>
+          <ProfileInfoMobile did={currProfileDid} identity={user} />
+          <LogoutButton
+            className="logout-button"
+            onClick={() => {
+              setOpenLogoutConfirm(true);
+            }}
+          />
+        </ProfileInfoMobileWrapper>
+      )}
+      {(() => {
+        if (showFollowNav) {
+          if (followNavType === FollowType.FOLLOWING) {
+            return (
+              <ProfilePageFollowNav
+                followType={FollowType.FOLLOWING}
+                activePlatform={followingActivePlatform}
+                platformCount={followingPlatformCount}
+                onChangePlatform={(platform) => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    followingActivePlatform: platform,
+                  }));
+                }}
+                goBack={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: false,
+                  }));
+                }}
+              />
+            );
+          }
+          if (followNavType === FollowType.FOLLOWERS) {
+            return (
+              <ProfilePageFollowNav
+                followType={FollowType.FOLLOWERS}
+                activePlatform={followersActivePlatform}
+                platformCount={followersPlatformCount}
+                onChangePlatform={(platform) => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    followersActivePlatform: platform,
+                  }));
+                }}
+                goBack={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: false,
+                  }));
+                }}
+              />
+            );
+          }
+          return null;
+        }
+
+        return (
+          <ProfilePageNav
+            feedsType={profilePageFeedsType}
+            onChangeFeedsType={(type) => {
+              dispatch(setProfilePageFeedsType(type));
+            }}
+          />
+        );
+      })()}
+
+      <MainWrapper>
+        {!isMobile && (
+          <MainLeft>
+            <ProfileInfo
+              did={currProfileDid}
+              identity={user}
+              clickFollowing={() => {
+                setFollowNavData((prevData) => ({
+                  ...prevData,
+                  showFollowNav: true,
+                  followNavType: FollowType.FOLLOWING,
+                }));
               }}
-              addWallet={addWallet}
-              delWallet={delWallet}
+              clickFollowers={() => {
+                setFollowNavData((prevData) => ({
+                  ...prevData,
+                  showFollowNav: true,
+                  followNavType: FollowType.FOLLOWERS,
+                }));
+              }}
             />
-            {/* <DailyDigest /> */}
-          </div>
-        )}
-
-        {(loading && (
-          <div className="loading">
-            <Loading />
-          </div>
-        )) || (
-          <div className="content">
-            <div className="tab">
-              <div
-                onClick={() => setTab('Credential')}
-                className={tab === 'Credential' ? 'active' : ''}
-              >
-                Credential Data
-              </div>
-              <div
-                onClick={() => setTab('OnChain')}
-                className={tab === 'OnChain' ? 'active' : ''}
-              >
-                On-Chain Interest
-              </div>
-              <div
-                onClick={() => setTab('Activities')}
-                className={tab === 'Activities' ? 'active' : ''}
-              >
-                Activities
-              </div>
-            </div>
-
-            {tab === 'Credential' && profileData && (
-              <Credential
-                {...{
-                  poap: profileData.poap,
-                  noox: profileData.noox,
-                  galxe: profileData.galxe,
+            {isLoginUser && (
+              <LogoutButton
+                className="logout-button"
+                onClick={() => {
+                  setOpenLogoutConfirm(true);
                 }}
               />
             )}
-            {tab === 'OnChain' &&
-              ((profileData.nfts.result.length > 0 && (
-                <OnChainInterest
-                  data={profileData.nfts}
-                  wallet={profileData.erc20Balances}
-                  ethBalance={profileData.ethBalance}
-                />
-              )) || <OnChainNoItem />)}
-            {tab === 'Activities' && <Activities />}
-          </div>
+          </MainLeft>
         )}
-      </div>
+
+        {(() => {
+          if (showFollowNav) {
+            if (
+              followNavType === FollowType.FOLLOWING &&
+              followingActivePlatform === SocailPlatform.Lens
+            ) {
+              return <LensProfileFollowing address={address} />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWERS &&
+              followersActivePlatform === SocailPlatform.Lens
+            ) {
+              return <LensProfileFollowers address={address} />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWING &&
+              followingActivePlatform === SocailPlatform.Farcaster
+            ) {
+              return <FarcasterFollowing fid={fid} />;
+            }
+            if (
+              followNavType === FollowType.FOLLOWERS &&
+              followersActivePlatform === SocailPlatform.Farcaster
+            ) {
+              return <FarcasterFollowers fid={fid} />;
+            }
+            return null;
+          }
+          return (
+            <KeepAlive
+              cacheKey={`${RouteKey.profile}_social_${
+                lensProfileFirst?.id || '0'
+              }_${fid || '0'}_${address || '0x'}_${profilePageFeedsType}`}
+              saveScrollPosition="#profile-wrapper"
+            >
+              <ProfileSocial
+                address={address}
+                lensProfileId={lensProfileFirst?.id}
+                fid={fid}
+                feedsType={profilePageFeedsType}
+              />
+            </KeepAlive>
+          );
+        })()}
+
+        {!isMobile && <MainRight />}
+      </MainWrapper>
+
+      <LogoutConfirmModal
+        isOpen={openLogoutConfirm}
+        onClose={() => {
+          setOpenLogoutConfirm(false);
+        }}
+        onConfirm={() => {
+          logout();
+          setOpenLogoutConfirm(false);
+        }}
+      />
     </ProfileWrapper>
   );
 }
-export default Profile;
+
+function ProfileInfo({
+  clickFollowing,
+  clickFollowers,
+  did,
+  identity,
+  ...props
+}: StyledComponentPropsWithRef<'div'> & {
+  clickFollowing?: () => void;
+  clickFollowers?: () => void;
+  did: string;
+  identity: string;
+}) {
+  return (
+    <ProfileInfoWrap {...props}>
+      <ProfileInfoCard
+        identity={identity || did}
+        clickFollowing={clickFollowing}
+        clickFollowers={clickFollowers}
+      />
+      <UserWalletsStyled did={did} />
+      <UserTagsStyled did={did} />
+    </ProfileInfoWrap>
+  );
+}
+const ProfileInfoWrap = styled.div`
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  & > div {
+    width: 100%;
+  }
+`;
+
 const ProfileWrapper = styled.div`
+  width: 100%;
   height: 100%;
   overflow: scroll;
-  & div.loading {
-    display: flex;
-    justify-content: center;
-    height: calc(100% - 210px);
-    align-items: center;
-  }
-  > div {
-    margin: 0 auto;
-    padding: 24px;
-    height: 100%;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 24px;
+  margin-bottom: 20px;
+  ${isMobile &&
+  `
+  height: 100vh;
+  padding: 10px;
+  padding-bottom: 60px;
+  `}
+`;
+const ProfileInfoMobileWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+`;
+const ProfileInfoMobile = styled(ProfileInfo)`
+  width: 100%;
+`;
+const MainWrapper = styled.div`
+  margin-top: 20px;
+  display: flex;
+  gap: 40px;
+`;
+const MainLeft = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+`;
+const MainRight = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  height: fit-content;
+`;
 
-    .infos {
-      display: flex;
-      gap: 40px;
-      margin-bottom: 24px;
-    }
-
-    .content {
-      .tab {
-        display: flex;
-        flex-direction: row;
-        align-items: flex-start;
-        padding: 0px;
-        gap: 24px;
-
-        height: 72px;
-
-        border-bottom: 1px solid #39424c;
-        color: white;
-
-        > div {
-          cursor: pointer;
-          align-items: center;
-          display: flex;
-          position: relative;
-          height: inherit;
-          font-weight: 700;
-          font-size: 18px;
-          line-height: 24px;
-          color: #ffffff;
-          > span {
-            margin-left: 3px;
-            padding: 3px;
-            background: #718096;
-            border-radius: 4px;
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 14px;
-            color: #14171a;
-          }
-          &.active {
-            &::after {
-              content: ' ';
-              height: 3px;
-              position: absolute;
-              width: 100%;
-              background: #ffffff;
-              border-radius: 100px 100px 0px 0px;
-              bottom: 0;
-            }
-          }
-        }
-      }
-
-      & .placeholder {
-        min-height: 100px;
-      }
-    }
-  }
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

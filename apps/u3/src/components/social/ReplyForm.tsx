@@ -23,6 +23,7 @@ export default function ReplyForm({
     <ReplyFormWrapper {...wrapperProps}>
       <Avatar src={avatar} />
       <Input
+        value={content}
         placeholder="Post your reply..."
         disabled={disabled || submitting}
         onChange={(e) => {
@@ -51,6 +52,7 @@ const Avatar = styled.img`
   height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
+  object-fit: cover;
 `;
 
 const Input = styled(InputBase)`

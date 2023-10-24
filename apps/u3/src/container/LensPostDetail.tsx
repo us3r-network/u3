@@ -8,14 +8,14 @@ import {
   useActiveProfile,
   CreateCommentArgs,
 } from '@lens-protocol/react-web';
+import { isMobile } from 'react-device-detect';
 
-import { LensPublication } from '../api/lens';
+import { LensPost } from '../api/lens';
 import LensCommentPostForm from '../components/social/lens/LensCommentPostForm';
 import { useCreateLensComment } from '../hooks/lens/useCreateLensComment';
 import LensReplyCard from '../components/social/lens/LensReplyCard';
 import LensPostDetailCard from '../components/social/lens/LensPostDetailCard';
 import ReplyCard from '../components/social/ReplyCard';
-import GoBack from '../components/GoBack';
 import {
   LoadMoreBtn,
   PostDetailCommentsWrapper,
@@ -23,6 +23,7 @@ import {
 } from '../components/social/PostDetail';
 import Loading from '../components/common/loading/Loading';
 import getAvatar from '../utils/lens/getAvatar';
+import { scrollToAnchor } from '../utils/scrollToAnchor';
 
 export default function LensPostDetail() {
   const { publicationId: pid } = useParams();
@@ -34,7 +35,7 @@ export default function LensPostDetail() {
     observerId: activeProfile?.id,
   });
 
-  const publication = { ...data } as unknown as LensPublication;
+  const publication = { ...data } as unknown as LensPost;
 
   const {
     data: comments,
@@ -63,72 +64,70 @@ export default function LensPostDetail() {
 
   if (loading) {
     return (
-      <LoadingWrapper>
+      <LoadingWrapper isMobile={isMobile}>
         <Loading />
       </LoadingWrapper>
     );
   }
 
   if (publication) {
+    scrollToAnchor(window.location.hash.split('#')[1]);
     return (
-      <>
-        <GoBack />
-        <PostDetailWrapper>
-          <LensPostDetailCard data={publication} />
-          <LensCommentPostForm
-            publicationId={publication.id}
-            canComment={!!publication?.canComment?.result}
-          />
-          {createdComments && createdComments?.length > 0 && (
-            <PostDetailCommentsWrapper>
-              {createdComments.map((comment, i) => {
-                return (
-                  <ReplyCard
-                    data={{
-                      avatar: getAvatar(activeProfile),
-                      name: activeProfile?.name || '',
-                      handle: activeProfile?.handle || '',
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      createdAt: new Date() as any,
-                      content: comment.content,
-                    }}
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={i}
-                    showActions={false}
-                  />
-                );
-              })}
-            </PostDetailCommentsWrapper>
-          )}
-          {comments && comments?.length > 0 && (
-            <PostDetailCommentsWrapper>
-              {comments.map((comment) => {
-                return <LensReplyCard data={comment} key={comment.id} />;
-              })}
-            </PostDetailCommentsWrapper>
-          )}
+      <PostDetailWrapper isMobile={isMobile}>
+        <LensPostDetailCard data={publication} />
+        <LensCommentPostForm
+          publicationId={publication.id}
+          canComment={!!publication?.canComment?.result}
+        />
+        {createdComments && createdComments?.length > 0 && (
+          <PostDetailCommentsWrapper>
+            {createdComments.map((comment, i) => {
+              return (
+                <ReplyCard
+                  data={{
+                    avatar: getAvatar(activeProfile),
+                    name: activeProfile?.name || '',
+                    handle: activeProfile?.handle || '',
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    createdAt: new Date() as any,
+                    content: comment.content,
+                  }}
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={i}
+                  showActions={false}
+                />
+              );
+            })}
+          </PostDetailCommentsWrapper>
+        )}
+        {comments && comments?.length > 0 && (
+          <PostDetailCommentsWrapper>
+            {comments.map((comment) => {
+              return <LensReplyCard data={comment} key={comment.id} />;
+            })}
+          </PostDetailCommentsWrapper>
+        )}
 
-          {!loading && hasMoreComments && (
-            <p>
-              <LoadMoreBtn
-                onClick={() => {
-                  if (commentsLoading) return;
-                  loadMoreComments();
-                }}
-              >
-                {commentsLoading ? 'Loading ...' : 'Load more'}
-              </LoadMoreBtn>
-            </p>
-          )}
-        </PostDetailWrapper>
-      </>
+        {!loading && hasMoreComments && (
+          <p>
+            <LoadMoreBtn
+              onClick={() => {
+                if (commentsLoading) return;
+                loadMoreComments();
+              }}
+            >
+              {commentsLoading ? 'Loading ...' : 'Load more'}
+            </LoadMoreBtn>
+          </p>
+        )}
+      </PostDetailWrapper>
     );
   }
   return null;
 }
 
-const LoadingWrapper = styled.div`
-  width: 100%;
+const LoadingWrapper = styled.div<{ isMobile: boolean }>`
+  width: ${(props) => (props.isMobile ? '100%' : '600px')};
   height: 80vh;
   display: flex;
   justify-content: center;

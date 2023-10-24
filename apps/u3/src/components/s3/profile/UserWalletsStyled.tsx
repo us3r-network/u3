@@ -1,4 +1,8 @@
-import { UserWallets, UserWalletAddForm } from '@us3r-network/profile';
+import {
+  UserWallets,
+  UserWalletAddForm,
+  UserWalletsProps,
+} from '@us3r-network/profile';
 import styled from 'styled-components';
 import { useState } from 'react';
 import { Dialog, Heading, Modal } from 'react-aria-components';
@@ -9,62 +13,78 @@ import { Add } from '../../icons/add';
 import { Copy } from '../../icons/copy';
 import { Trash } from '../../icons/trash';
 
-export default function UserWalletsStyled() {
+export default function UserWalletsStyled(props: UserWalletsProps) {
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   return (
-    <UserWalletsWrapper>
-      <div className="header">
-        <h3>
-          Wallets (<UserWallets.Count />)
-        </h3>
-        <span
-          onClick={() => {
-            setIsOpenEdit(true);
-          }}
-        >
-          <Add />
-        </span>
-      </div>
-      <UserWallets.List>
-        {(item) => (
-          <UserWallets.Item value={item} key={item.address}>
-            <div className="text">
-              <UserWallets.Address />
-              <UserWallets.Network />
+    <UserWalletsWrapper {...props}>
+      {({ isLoginUser }) => {
+        return (
+          <>
+            <div className="header">
+              <h3>
+                Wallets (<UserWallets.Count />)
+              </h3>
+              {isLoginUser && (
+                <span
+                  onClick={() => {
+                    setIsOpenEdit(true);
+                  }}
+                >
+                  <Add />
+                </span>
+              )}
             </div>
-            <div className="btns">
-              <UserWallets.Delete>
-                <Trash />
-              </UserWallets.Delete>
-              <UserWallets.Copy
-                onCopied={() => {
-                  toast.success('Copied');
-                }}
+            <UserWallets.List>
+              {(item) => (
+                <UserWallets.Item value={item} key={item.address}>
+                  <div className="text">
+                    <UserWallets.Address />
+                    <UserWallets.Network />
+                  </div>
+                  <div className="btns">
+                    {isLoginUser && (
+                      <UserWallets.Delete>
+                        <Trash />
+                      </UserWallets.Delete>
+                    )}
+                    <UserWallets.Copy
+                      onCopied={() => {
+                        toast.success('Copied');
+                      }}
+                    >
+                      <Copy />
+                    </UserWallets.Copy>
+                  </div>
+                </UserWallets.Item>
+              )}
+            </UserWallets.List>
+            {isLoginUser && (
+              <Modal
+                isDismissable
+                isOpen={isOpenEdit}
+                onOpenChange={setIsOpenEdit}
               >
-                <Copy />
-              </UserWallets.Copy>
-            </div>
-          </UserWallets.Item>
-        )}
-      </UserWallets.List>
-      <Modal isDismissable isOpen={isOpenEdit} onOpenChange={setIsOpenEdit}>
-        <Dialog>
-          <Heading>Add New Wallet</Heading>
-          <UserWalletAddFormWrapper
-            onSuccessfullySubmit={() => {
-              setIsOpenEdit(false);
-            }}
-          >
-            <UserWalletAddForm.AddressInput />
+                <Dialog>
+                  <Heading>Add New Wallet</Heading>
+                  <UserWalletAddFormWrapper
+                    onSuccessfullySubmit={() => {
+                      setIsOpenEdit(false);
+                    }}
+                  >
+                    <UserWalletAddForm.AddressInput />
 
-            <UserWalletAddForm.SubmitButton>
-              Save
-            </UserWalletAddForm.SubmitButton>
+                    <UserWalletAddForm.SubmitButton>
+                      Save
+                    </UserWalletAddForm.SubmitButton>
 
-            <UserWalletAddForm.ErrorMessage />
-          </UserWalletAddFormWrapper>
-        </Dialog>
-      </Modal>
+                    <UserWalletAddForm.ErrorMessage />
+                  </UserWalletAddFormWrapper>
+                </Dialog>
+              </Modal>
+            )}
+          </>
+        );
+      }}
     </UserWalletsWrapper>
   );
 }
@@ -78,6 +98,7 @@ const UserWalletsWrapper = styled(UserWallets)`
   box-sizing: border-box;
   background: #1b1e23;
   border-radius: 20px;
+  border: 1px solid #39424c;
 
   .header {
     width: 100%;

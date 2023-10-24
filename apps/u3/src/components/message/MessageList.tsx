@@ -1,10 +1,12 @@
 import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
 import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
 import { getAttachmentUrl, isAttachment } from '../../utils/xmtp';
 import Avatar from './Avatar';
+import { useNav } from '../../contexts/NavCtx';
 
 export default function MessageList() {
   const { xmtpClient } = useXmtpClient();
@@ -35,6 +37,8 @@ const MessageListWrap = styled.div`
 `;
 
 function MessageRow({ msg }: { msg: DecodedMessage }) {
+  const navigate = useNavigate();
+  const { setOpenMessageModal } = useNav();
   const { xmtpClient } = useXmtpClient();
   const [attachmentUrl, setAttachmentUrl] = useState<string>('');
   useEffect(() => {
@@ -45,9 +49,24 @@ function MessageRow({ msg }: { msg: DecodedMessage }) {
       }
     })();
   }, [msg, xmtpClient]);
+  const profileUrl = useMemo(
+    () => `/profile/${msg.senderAddress}`,
+    [msg.senderAddress]
+  );
   return (
     <MessageRowWrapper>
-      <AvatarStyled address={msg.senderAddress} />
+      <a
+        href={profileUrl}
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          navigate(profileUrl);
+          setOpenMessageModal(false);
+        }}
+      >
+        <AvatarStyled address={msg.senderAddress} />
+      </a>
+
       <MessageWrapper>
         {(() => {
           if (isAttachment(msg)) {

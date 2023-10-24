@@ -2,12 +2,19 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { SocailPlatform } from '../../api';
 import LensIcon from '../icons/LensIcon';
 import FarcasterIcon from '../icons/FarcasterIcon';
 import PostLike from './PostLike';
 import PostReply from './PostReply';
 import PostReport from './PostReport';
+import { PostCardMenuBtn } from './PostCardMenuBtn';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../../utils/profile/biolink';
+import TooltipProfileNavigateLink from './TooltipProfileNavigateLink';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -33,7 +40,18 @@ interface PostCardProps {
   likeAction?: () => void;
   replyAction?: () => void;
   repostAction?: () => void;
+  likeDisabled?: boolean;
+  replyDisabled?: boolean;
+  repostDisabled?: boolean;
   showActions?: boolean;
+  isDetail?: boolean;
+  showMenuBtn?: boolean;
+  isFollowed?: boolean;
+  followPending?: boolean;
+  unfollowPending?: boolean;
+  followAction?: () => void;
+  shareAction?: () => void;
+  copyAction?: () => void;
 }
 export default function PostCard({
   data,
@@ -47,18 +65,48 @@ export default function PostCard({
   likeAction,
   replyAction,
   repostAction,
+  likeDisabled,
+  replyDisabled,
+  repostDisabled,
   showActions = true,
+  showMenuBtn,
+  isFollowed,
+  followPending,
+  unfollowPending,
+  followAction,
+  shareAction,
+  copyAction,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   return (
     <PostCardWrapper {...wrapperProps}>
-      <PostCardUserInfo data={data} />
+      <PostCardHeaderWrapper>
+        <PostCardUserInfo data={data} />
+        {showMenuBtn && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostCardMenuBtn
+              data={data}
+              isFollowed={isFollowed}
+              followPending={followPending}
+              unfollowPending={unfollowPending}
+              followAction={followAction}
+              shareAction={shareAction}
+              copyAction={copyAction}
+            />
+          </div>
+        )}
+      </PostCardHeaderWrapper>
       <PostCardContentWrapper>
         {contentRender ? contentRender() : data?.content}
       </PostCardContentWrapper>
       {showActions && (
         <PostCardActionsWrapper>
           <PostLike
+            disabled={likeDisabled}
             totalLikes={data?.totalLikes || 0}
             likeAvatars={[]}
             liking={liking}
@@ -66,12 +114,14 @@ export default function PostCard({
             likeAction={likeAction}
           />
           <PostReply
+            disabled={replyDisabled}
             totalReplies={data?.totalReplies || 0}
             replying={replying}
             replied={replied}
             replyAction={replyAction}
           />
           <PostReport
+            disabled={repostDisabled}
             totalReposts={data?.totalReposts || 0}
             reposting={reposting}
             reposted={reposted}
@@ -83,16 +133,22 @@ export default function PostCard({
   );
 }
 
-export const PostCardWrapper = styled.div`
+export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   background: #212228;
   padding: 20px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 15px;
+  cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
   &:hover {
-    background: #39424c;
+    background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
   }
+`;
+export const PostCardHeaderWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
 `;
 
 export type PostCardUserInfoData = {
@@ -102,10 +158,14 @@ export type PostCardUserInfoData = {
   handle: string;
   createdAt: string | number;
 };
+export type PostCardUserInfoProps = StyledComponentPropsWithRef<'div'> & {
+  data: PostCardUserInfoData;
+};
 export function PostCardUserInfo({
   data,
   ...wrapperProps
-}: StyledComponentPropsWithRef<'div'> & { data: PostCardUserInfoData }) {
+}: PostCardUserInfoProps) {
+  const navigate = useNavigate();
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
       case SocailPlatform.Lens:
@@ -116,12 +176,43 @@ export function PostCardUserInfo({
         return null;
     }
   }, [data.platform]);
+  const profileIdentity = useMemo(() => {
+    if (data.handle.endsWith('.eth')) return data.handle;
+    switch (data.platform) {
+      case SocailPlatform.Lens:
+        return lensHandleToBioLinkHandle(data.handle);
+      case SocailPlatform.Farcaster:
+        return farcasterHandleToBioLinkHandle(data.handle);
+      default:
+        return '';
+    }
+  }, [data]);
+
+  const profileUrl = useMemo(() => {
+    if (profileIdentity) {
+      return `/profile/${profileIdentity}`;
+    }
+    return '';
+  }, [profileIdentity]);
   return (
     <PostCardUserInfoWrapper {...wrapperProps}>
-      <Avatar src={data.avatar} />
+      <TooltipProfileNavigateLink identity={profileIdentity}>
+        <Avatar src={data.avatar} />
+      </TooltipProfileNavigateLink>
+
       <PostCardUserInfoCenter>
         <Name>
-          {data.name} {PlatFormIcon}
+          <a
+            href={profileUrl}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              if (profileUrl) navigate(profileUrl);
+            }}
+          >
+            {data.name}
+          </a>{' '}
+          {PlatFormIcon}
         </Name>
         <Handle>
           @{data.handle} . {dayjs(data.createdAt).fromNow()}
@@ -132,6 +223,7 @@ export function PostCardUserInfo({
 }
 
 const PostCardUserInfoWrapper = styled.div`
+  flex: 1;
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -161,6 +253,13 @@ const Name = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  & > a {
+    color: #fff;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 const Handle = styled.div`
   display: flex;
@@ -200,40 +299,87 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: ${(props) => (props.showMore ? 5 : 'initial')};
   overflow: hidden;
+
+  a {
+    color: #2594ef;
+    text-decoration: none;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 export const PostCardActionsWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 15px;
 `;
 
-export const PostCardImgWrapper = styled.div`
+export const PostCardImgWrapper = styled.div<{ len: number }>`
   display: flex;
-  gap: 10px;
-  flex-direction: column;
+  gap: 20px;
+  flex-wrap: wrap;
   img {
-    max-width: 60%;
+    width: ${(props) =>
+      props.len >= 3
+        ? 'calc(33% - 12px)'
+        : props.len === 2
+        ? 'calc(50% - 10px)'
+        : '70%'};
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
   }
+`;
+export const PostCardAudioWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
+`;
+
+export const PostCardVideoWrapper = styled.div`
+  width: 373px;
+  max-width: 100%;
 `;
 
 export const PostCardCastWrapper = styled.div`
   border-radius: 10px;
-  border: 1px solid #9c9c9c;
   color: #fff;
-  padding: 10px;
+  padding: 20px;
   cursor: pointer;
   display: flex;
   gap: 10px;
   justify-content: space-between;
+  background-color: #14171a;
   > div {
     > div {
       display: flex;
       align-items: center;
       gap: 10px;
       > img {
-        width: 25px;
-        height: 25px;
+        width: 21px;
+        height: 21px;
         border-radius: 50%;
+      }
+      > div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .username {
+        color: #fff;
+        font-family: Rubik;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        margin-right: 5px;
+      }
+      .uname {
+        color: #718096;
+        font-family: Rubik;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: normal;
       }
     }
     > p {
@@ -260,10 +406,11 @@ export const PostCardCastWrapper = styled.div`
 
 export const PostCardNftWrapper = styled.div`
   color: #fff;
-  width: 300px;
-  border: 1px solid #9c9c9c;
+  width: 70%;
   border-radius: 10px;
   overflow: hidden;
+  background-color: #14171a;
+  cursor: initial;
   > img {
     width: 100%;
   }
@@ -271,41 +418,87 @@ export const PostCardNftWrapper = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 10px;
+    padding: 20px;
     > h4 {
-      margin: 10px 0;
+      margin: 0;
+      color: #fff;
+      font-family: Rubik;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 187.5% */
     }
     > button {
-      background: inherit;
-      border: 1px solid #9c9c9c;
-      padding: 5px 10px;
+      cursor: pointer;
       border-radius: 10px;
+      background: linear-gradient(81deg, #cd62ff 0%, #62aaff 100%);
+      padding: 10px 20px;
+      border: none;
       outline: none;
       color: inherit;
+      color: #000;
+      font-family: Rubik;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
     }
   }
 `;
 
 export const PostCardEmbedWrapper = styled.a`
   color: #fff;
-  border: 1px solid #9c9c9c;
   border-radius: 10px;
-  padding: 10px;
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  overflow: hidden;
+  background-color: #14171a;
   text-decoration: none;
+  width: 70%;
+  min-height: 373px;
+  display: flex;
+  flex-direction: column;
+
   > .img {
+    flex-grow: 1;
     flex-shrink: 0;
-    width: 110px;
-    height: 110px;
+    width: 100%;
+    /* min-height: 373px; */
     overflow: hidden;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     > img {
       width: 100%;
+    }
+  }
+
+  > .intro {
+    padding: 20px;
+
+    > h4 {
+      color: #fff;
+      font-family: Rubik;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: 30px; /* 214.286% */
+      margin: 0;
+    }
+    > p {
+      color: #fff;
+      font-family: Rubik;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 250% */
+    }
+
+    > span {
+      color: #718096;
+      font-family: Rubik;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 30px; /* 250% */
     }
   }
 

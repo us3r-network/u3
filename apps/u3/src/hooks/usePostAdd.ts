@@ -10,7 +10,7 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../constants/farcaster';
-import { getCurrFid } from '../utils/farsign-utils';
+// import { getCurrFid } from '../utils/farsign-utils';
 
 import { SocailPlatform } from '../api';
 import { useLensCtx } from '../contexts/AppLensCtx';
@@ -21,7 +21,8 @@ export default function usePostAdd({
 }: {
   closeModal?: () => void;
 }) {
-  const { encryptedSigner, isConnected, openFarcasterQR } = useFarcasterCtx();
+  const { encryptedSigner, isConnected, openFarcasterQR, currFid } =
+    useFarcasterCtx();
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
   const { createText: createTextToLens } = useCreateLensPost();
 
@@ -30,8 +31,8 @@ export default function usePostAdd({
   const [isPending, setIsPending] = useState(false);
 
   const handleSubmitToFarcaster = useCallback(async () => {
-    if (!text || !encryptedSigner) return;
-    const currFid = getCurrFid();
+    if (!text || !encryptedSigner || !currFid) return;
+    // const currFid = getCurrFid();
     try {
       // eslint-disable-next-line no-underscore-dangle
       const cast = (
@@ -56,7 +57,7 @@ export default function usePostAdd({
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner]);
+  }, [text, encryptedSigner, currFid]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;

@@ -1,15 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CastId, UserDataType } from '@farcaster/hub-web';
-import styled from 'styled-components';
+import { CastId } from '@farcaster/hub-web';
 
-import {
-  FarCast,
-  FarCastEmbedMeta,
-  FarCastEmbedMetaCast,
-  SocailPlatform,
-} from '../../../api';
+import { FarCast, SocailPlatform } from '../../../api';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 import FCastLike from './FCastLike';
@@ -17,27 +12,24 @@ import FCastRecast from './FCastRecast';
 import FCastComment from './FCastComment';
 import {
   PostCardActionsWrapper,
-  PostCardCastWrapper,
   PostCardContentWrapper,
-  PostCardEmbedWrapper,
-  PostCardImgWrapper,
-  PostCardNftWrapper,
   PostCardShowMoreWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../PostCard';
-import { getFarcasterEmbedMetadata } from '../../../api/farcaster';
+import Embed, { isImg } from '../Embed';
+import FarcasterChannel from './FarcasterChannel';
 
 export default function FCast({
   cast,
   farcasterUserData,
   openFarcasterQR,
-  openImgModal,
+  isDetail,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
-  openImgModal: (url: string) => void;
+  isDetail?: boolean;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -72,10 +64,10 @@ export default function FCast({
   }, [cast]);
 
   useEffect(() => {
+    if (isDetail) return;
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        console.log(entry.target, entry.target.clientHeight);
         if (entry.target.clientHeight > 125) {
           setShowMore(true);
         }
@@ -93,10 +85,12 @@ export default function FCast({
 
   return (
     <PostCardWrapper
+      id={Buffer.from(cast.hash.data).toString('hex')}
+      isDetail={isDetail}
       onClick={() => {
-        if (showMore) return;
+        if (isDetail) return;
         const id = Buffer.from(castId.hash).toString('hex');
-        navigate(`/post-detail/fcast/${id}`);
+        navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
       <PostCardUserInfo
@@ -108,8 +102,9 @@ export default function FCast({
           createdAt: cast.created_at,
         }}
       />
+
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
-        {cast.text}
+        <CardText text={cast.text} />
       </PostCardContentWrapper>
       {showMore && (
         <PostCardShowMoreWrapper>
@@ -118,18 +113,15 @@ export default function FCast({
             onClick={(e) => {
               e.stopPropagation();
               const id = Buffer.from(castId.hash).toString('hex');
-              navigate(`/post-detail/fcast/${id}`);
+              navigate(`/social/post-detail/fcast/${id}`);
             }}
           >
             Show more
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed
-        embedImgs={embeds.imgs}
-        embedWebpages={embeds.webpages}
-        openImgModal={openImgModal}
-      />
+      <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
+      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
       <PostCardActionsWrapper
         onClick={(e) => {
           e.stopPropagation();
@@ -155,194 +147,23 @@ export default function FCast({
   );
 }
 
-function Embed({
-  embedImgs,
-  embedWebpages,
-  openImgModal,
-}: {
-  embedImgs: { url: string }[];
-  embedWebpages: { url: string }[];
-  openImgModal: (url: string) => void;
-}) {
-  const viewRef = useRef<HTMLDivElement>(null);
-  const [metadata, setMetadata] = useState<
-    (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
-  >([]);
-
-  const getEmbedWebpagesMetadata = async () => {
-    const urls = embedWebpages.map((embed) => embed.url);
-    if (urls.length === 0) return;
-    try {
-      const res = await getFarcasterEmbedMetadata(urls);
-      const { metadata: respMetadata } = res.data.data;
-      const data = respMetadata.flatMap((m) => (m ? [m] : []));
-      setMetadata(data);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    if (!viewRef.current) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        getEmbedWebpagesMetadata();
-        observer.disconnect();
-      }
+function CardText({ text }: { text: string }) {
+  const t = useMemo(() => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlRegex, function a(url) {
+      return `<a href="${url}" target="_blank">${url}</a>`;
     });
-
-    observer.observe(viewRef.current);
-    // eslint-disable-next-line consistent-return
-    return () => {
-      observer.disconnect();
-    };
-  }, [viewRef]);
-
-  if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
+  }, [text]);
 
   return (
-    <EmbedBox ref={viewRef} onClick={(e) => e.stopPropagation()}>
-      {embedImgs.length > 0 && (
-        <PostCardImgWrapper>
-          {embedImgs.map((img) => (
-            <span
-              key={img.url}
-              onClick={() => {
-                openImgModal(img.url);
-              }}
-            >
-              <img src={img.url} alt="" />
-            </span>
-          ))}
-        </PostCardImgWrapper>
-      )}
-      {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-        if ((item as any).type === 'cast') {
-          const { cast } = item as FarCastEmbedMetaCast;
-          return (
-            <EmbedCast
-              data={item as FarCastEmbedMetaCast}
-              key={Buffer.from(cast.hash.data).toString('hex')}
-            />
-          );
-        }
-        if ((item as any).collection) {
-          return (
-            <EmbedNFT item={item as FarCastEmbedMeta} key={(item as any).url} />
-          );
-        }
-        return (
-          <EmbedImg item={item as FarCastEmbedMeta} key={(item as any).url} />
-        );
-      })}
-    </EmbedBox>
-  );
-}
-
-function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
-  const navigate = useNavigate();
-
-  const userData = useMemo(() => {
-    const img = data.user.find((u) => u.type === UserDataType.PFP)?.value;
-    const username = data.user.find(
-      (u) => u.type === UserDataType.DISPLAY
-    )?.value;
-
-    return {
-      img,
-      username,
-    };
-  }, [data.user]);
-
-  const castImg = useMemo(() => {
-    const img = data.cast.embeds.find((item) => isImg(item?.url))?.url;
-    return img;
-  }, [data.cast]);
-
-  return (
-    <PostCardCastWrapper
+    <div
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: t }}
       onClick={(e) => {
-        e.stopPropagation();
-        navigate(
-          `/post-detail/fcast/${Buffer.from(data.cast.hash.data).toString(
-            'hex'
-          )}`
-        );
+        if (e.target instanceof HTMLAnchorElement) {
+          e.stopPropagation();
+        }
       }}
-    >
-      <div>
-        <div>
-          <img src={userData.img} alt="" />
-          <span>{userData.username}</span>
-        </div>
-        <p>{data.cast.text}</p>
-      </div>
-      {castImg && <img src={castImg} alt="" />}
-    </PostCardCastWrapper>
+    />
   );
 }
-
-function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
-  // const { setIframeUrl } = useFarcasterCtx();
-  return (
-    <PostCardNftWrapper key={item.url}>
-      <img src={item.image} alt="" />
-      <div>
-        <h4>{item.collection}</h4>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            // if (item.url.includes('zora.co')) {
-            //   setIframeUrl(item.url);
-            // } else {
-            window.open(item.url, '_blank');
-            // }
-          }}
-        >
-          Mint
-        </button>
-      </div>
-    </PostCardNftWrapper>
-  );
-}
-
-function EmbedImg({ item }: { item: FarCastEmbedMeta }) {
-  return (
-    <PostCardEmbedWrapper href={item.url} target="_blank">
-      <div>
-        <h4>{item.title}</h4>
-        <p>{item.description}</p>
-      </div>
-      {(isImg(item.image || '') && (
-        <div
-          className="img"
-          style={{
-            backgroundImage: `url(${item.image})`,
-          }}
-        />
-      )) || (
-        <div className="img">
-          <img src={item.image} alt="" />
-        </div>
-      )}
-    </PostCardEmbedWrapper>
-  );
-}
-
-function isImg(url?: string) {
-  if (!url) return false;
-  return (
-    url.endsWith('.png') ||
-    url.endsWith('.jpg') ||
-    url.endsWith('.jpeg') ||
-    url.endsWith('.gif')
-  );
-}
-
-const EmbedBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;

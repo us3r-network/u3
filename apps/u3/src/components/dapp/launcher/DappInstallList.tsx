@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-17 11:54:26
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-24 17:55:55
  * @Description: file description
  */
 import {
@@ -13,7 +13,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { animated, useSprings } from '@react-spring/web';
 import { useNavigate } from 'react-router-dom';
 import { useDrag } from 'react-use-gesture';
@@ -22,12 +22,15 @@ import swap from 'lodash-move';
 import { useFavorAction } from '@us3r-network/link';
 import DappSideBarListItem from './DappInstallListItem';
 import useDappWebsite from '../../../hooks/useDappWebsite';
+import useDappCollection from '../../../hooks/dapp/useDappCollection';
+import useLogin from '../../../hooks/useLogin';
 import InfoCircleSvgUrl from '../../common/icons/svgs/info-circle.svg';
 import TrashSvgUrl from '../../common/icons/svgs/trash.svg';
 import {
   getDappSideBarOrderForStore,
   setDappSideBarOrderToStore,
 } from '../../../utils/dapp';
+import { fetchDappByTokenId } from '../../../services/api/dapp';
 
 const dragFn =
   (orders: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) =>
@@ -49,13 +52,15 @@ const dragFn =
 type Props = StyledComponentPropsWithRef<'div'>;
 export default forwardRef(function DappInstallList(props: Props, ref) {
   const navigate = useNavigate();
-  const { personalDapps, openDappModal } = useDappWebsite();
+  const { walletAddress } = useLogin();
+  const { dappCollection } = useDappCollection(walletAddress);
+  const { openDappModalByToken } = useDappWebsite();
 
   const [handlesItemId, setHandlesItemId] = useState<string | number | null>(
     null
   );
-  const handlesItem = personalDapps.find(
-    (item) => handlesItemId && item.id === handlesItemId
+  const handlesItem = dappCollection.find(
+    (item) => handlesItemId && item.tokenId === handlesItemId
   );
 
   /**
@@ -116,22 +121,23 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
   const order = useRef<Array<number>>([]);
 
   const [springs, api] = useSprings(
-    personalDapps.length,
+    dappCollection.length,
     dragFn(order.current)
   ); // Create springs, each corresponds to an item, controlling its transform, scale, etc.
   useEffect(() => {
-    const newOrder = personalDapps
+    const newOrder = dappCollection
       .map((item, i) => ({ ...item, originIndex: i }))
       .sort(
         (a, b) =>
-          orderStore.current.indexOf(a.id) - orderStore.current.indexOf(b.id)
+          orderStore.current.indexOf(a.tokenId) -
+          orderStore.current.indexOf(b.tokenId)
       )
       .map((item) => item.originIndex);
     if (newOrder.length !== order.current.length) {
       api.start(dragFn(newOrder));
     }
     order.current = [...newOrder];
-  }, [personalDapps]);
+  }, [dappCollection]);
 
   const bind = useDrag(
     ({ args: [originalIndex], active, movement: [, y] }) => {
@@ -139,7 +145,7 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
       const curRow = clamp(
         Math.round((curIndex * 76 + y) / 76),
         0,
-        personalDapps.length - 1
+        dappCollection.length - 1
       );
       const newOrder = swap(order.current, curIndex, curRow);
       api.start(dragFn(newOrder, active, originalIndex, curIndex, y)); // Feed springs new style data, they'll animate the view without causing a single render
@@ -148,7 +154,9 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
         order.current = newOrder;
         const newOrderStore = [
           ...new Set(
-            order.current?.map((i: string | number) => personalDapps[i]?.id)
+            order.current?.map(
+              (i: string | number) => dappCollection[i]?.tokenId
+            )
           ),
         ];
         orderStore.current = newOrderStore;
@@ -163,11 +171,11 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
 
   return (
     <Wrapper {...props}>
-      <DappList style={{ height: personalDapps.length * 76 }}>
+      <DappList style={{ height: dappCollection.length * 76 }}>
         {springs.map(({ zIndex, y, scale }, i) => (
           <animated.div
             {...bind(i)}
-            key={personalDapps[i].id}
+            key={dappCollection[i].tokenId}
             style={{
               zIndex,
               y,
@@ -175,12 +183,12 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
             }}
           >
             <DappSideBarListItem
-              data={personalDapps[i]}
-              onOpen={() => openDappModal(personalDapps[i].id)}
-              onOpenHandles={() => setHandlesItemId(personalDapps[i].id)}
+              data={dappCollection[i]}
+              onOpen={() => openDappModalByToken(dappCollection[i].tokenId)}
+              onOpenHandles={() => setHandlesItemId(dappCollection[i].tokenId)}
               ref={(el) => {
                 if (el) {
-                  itemElsWeakMap.current.set(personalDapps[i], el);
+                  itemElsWeakMap.current.set(dappCollection[i], el);
                 }
               }}
             />
@@ -200,8 +208,8 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
           <OptionItem
             onClick={() => {
               if (handlesItem) {
-                const originIndex = personalDapps.findIndex(
-                  (item) => item.id === handlesItem.id
+                const originIndex = dappCollection.findIndex(
+                  (item) => item.tokenId === handlesItem.tokenId
                 );
                 if (originIndex !== -1) {
                   order.current = [...new Set([originIndex, ...order.current])];
@@ -222,27 +230,30 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
           <OptionItem
             onClick={() => {
               if (handlesItem) {
-                navigate(`/dapp-store/${handlesItem.id}`);
-                setHandlesItemId(null);
+                fetchDappByTokenId(handlesItem.tokenId).then((r) => {
+                  const { id } = r.data.data;
+                  navigate(`/dapp-store/${id}`);
+                  setHandlesItemId(null);
+                });
               }
             }}
           >
             <OptionIcon src={InfoCircleSvgUrl} />
             <OptionLabel>Dapp Info</OptionLabel>
           </OptionItem>
-          <UninstallOptionItem
-            linkId={handlesItem?.id}
+          {/* <UninstallOptionItem
+            linkId={handlesItem?.tokenId}
             onSuccessfullyFavor={() => {
               if (handlesItem) {
                 setHandlesItemId(null);
                 const newOrderStore = orderStore.current.filter(
-                  (id) => handlesItem.id !== id
+                  (id) => handlesItem.tokenId !== id
                 );
                 orderStore.current = [...newOrderStore];
                 setDappSideBarOrderToStore(newOrderStore);
               }
             }}
-          />
+          /> */}
         </HandlesPopperInner>
         <HandlesPopperArrow />
       </HandlesPopperBox>

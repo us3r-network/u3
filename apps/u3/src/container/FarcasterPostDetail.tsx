@@ -1,20 +1,23 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { isMobile } from 'react-device-detect';
+
 import { getFarcasterCastInfo } from '../api/farcaster';
 import { FarCast } from '../api';
 import FCast from '../components/social/farcaster/FCast';
 import { useFarcasterCtx } from '../contexts/FarcasterCtx';
-import GoBack from '../components/GoBack';
 import {
   PostDetailCommentsWrapper,
   PostDetailWrapper,
 } from '../components/social/PostDetail';
 import Loading from '../components/common/loading/Loading';
+import FarcasterCommentForm from '../components/social/farcaster/FarcasterCommentForm';
+import { scrollToAnchor } from '../utils/scrollToAnchor';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [cast, setCast] = useState<FarCast>();
   const { openFarcasterQR } = useFarcasterCtx();
   const [comments, setComments] =
@@ -26,7 +29,6 @@ export default function FarcasterPostDetail() {
   const loadCastInfo = useCallback(async () => {
     if (!castId) return;
     try {
-      setLoading(true);
       const resp = await getFarcasterCastInfo(castId, {});
       if (resp.data.code !== 0) {
         throw new Error(resp.data.msg);
@@ -50,13 +52,14 @@ export default function FarcasterPostDetail() {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error(error);
-    } finally {
-      setLoading(false);
     }
   }, [castId]);
 
   useEffect(() => {
-    loadCastInfo();
+    setLoading(true);
+    loadCastInfo().finally(() => {
+      setLoading(false);
+    });
   }, [loadCastInfo]);
 
   if (loading) {
@@ -67,15 +70,22 @@ export default function FarcasterPostDetail() {
     );
   }
   if (cast) {
+    scrollToAnchor(window.location.hash.split('#')[1]);
     return (
       <DetailBox>
-        <GoBack />
-        <PostDetailWrapper>
+        <PostDetailWrapper isMobile={isMobile}>
           <FCast
             cast={cast}
             openFarcasterQR={openFarcasterQR}
             farcasterUserData={farcasterUserData}
-            openImgModal={(url) => {}}
+            isDetail
+          />
+          <FarcasterCommentForm
+            castId={{
+              hash: Buffer.from(cast.hash.data),
+              fid: Number(cast.fid),
+            }}
+            successAction={loadCastInfo}
           />
           <PostDetailCommentsWrapper>
             {(comments || []).map((item) => {
@@ -86,7 +96,6 @@ export default function FarcasterPostDetail() {
                   cast={item.data}
                   openFarcasterQR={openFarcasterQR}
                   farcasterUserData={farcasterUserData}
-                  openImgModal={(url) => {}}
                 />
               );
             })}
@@ -95,15 +104,15 @@ export default function FarcasterPostDetail() {
       </DetailBox>
     );
   }
-  return null;
+  return <LoadingWrapper />;
 }
 
 const DetailBox = styled.div`
-  padding: 24px;
+  width: 600px;
 `;
 
 const LoadingWrapper = styled.div`
-  width: 100%;
+  width: 600px;
   height: 80vh;
   display: flex;
   justify-content: center;

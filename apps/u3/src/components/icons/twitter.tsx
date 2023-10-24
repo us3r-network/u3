@@ -1,3 +1,6 @@
+import { StyledComponentPropsWithRef } from 'styled-components';
+import TwitterLineImg from './pngs/twitter.png';
+
 export function Twitter() {
   return (
     <svg
@@ -13,4 +16,7 @@ export function Twitter() {
       />
     </svg>
   );
+}
+export function TwitterLine(props: StyledComponentPropsWithRef<'img'>) {
+  return <img src={TwitterLineImg} alt="twitter" {...props} />;
 }

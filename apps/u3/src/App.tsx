@@ -13,9 +13,16 @@ import { ProfileStateProvider } from '@us3r-network/profile';
 import { LinkStateProvider } from '@us3r-network/link';
 import { init } from '@airstack/airstack-react';
 
+import {
+  createReactClient,
+  LivepeerConfig,
+  studioProvider,
+} from '@livepeer/react';
+
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
+import { AliveScope } from 'react-activation';
 import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './GlobalStyle';
@@ -30,7 +37,13 @@ import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx';
 import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
 import { AppLensProvider } from './contexts/AppLensCtx';
+import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/FarcasterCtx';
+import LensGlobalModals from './components/social/lens/LensGlobalModals';
+
+const livepeerClient = createReactClient({
+  provider: studioProvider({ apiKey: '' }),
+});
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -54,14 +67,21 @@ function App() {
             <XmtpClientProvider>
               <XmtpStoreProvider>
                 <AppLensProvider>
-                  <FarcasterProvider>
-                    <ReduxProvider store={store}>
-                      <GlobalStyle />
-                      <BrowserRouter>
-                        <Layout />
-                      </BrowserRouter>
-                    </ReduxProvider>
-                  </FarcasterProvider>
+                  <LensGlobalModals />
+                  <ReduxProvider store={store}>
+                    <GlobalStyle />
+                    <BrowserRouter>
+                      <FarcasterProvider>
+                        <LivepeerConfig client={livepeerClient}>
+                          <AliveScope>
+                            <NavProvider>
+                              <Layout />
+                            </NavProvider>
+                          </AliveScope>
+                        </LivepeerConfig>
+                      </FarcasterProvider>
+                    </BrowserRouter>
+                  </ReduxProvider>
                 </AppLensProvider>
               </XmtpStoreProvider>
             </XmtpClientProvider>

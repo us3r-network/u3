@@ -12,7 +12,7 @@ import { useLensCtx } from '../../../contexts/AppLensCtx';
 import useLogin from '../../../hooks/useLogin';
 
 export default function LensReplyCard({ data }: { data: Comment }) {
-  const { isLogin: isLoginU3 } = useLogin();
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
 
   const navigate = useNavigate();
   const {
@@ -64,20 +64,35 @@ export default function LensReplyCard({ data }: { data: Comment }) {
     [updatedPublication]
   );
 
+  const replyDisabled = useMemo(
+    () => isLogin && !data?.canComment?.result,
+    [isLogin, data]
+  );
+  const repostDisabled = useMemo(
+    () => isLogin && !data?.canMirror?.result,
+    [isLogin, data]
+  );
   return (
     <ReplyCard
+      id={updatedPublication?.id}
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => (
         <LensPostCardContent publication={updatedPublication} />
       )}
       onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`);
+        navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
-      liked={hasUpvote}
+      replyDisabled={replyDisabled}
+      repostDisabled={repostDisabled}
+      liked={isLoginU3 && hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -85,7 +100,11 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -98,7 +117,11 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }

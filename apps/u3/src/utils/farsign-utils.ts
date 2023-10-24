@@ -41,14 +41,6 @@ function getPrivateKey() {
   return privateKey;
 }
 
-const getCurrFid = () => {
-  const request =
-    JSON.parse(
-      localStorage.getItem(`farsign-signer-${FARCASTER_CLIENT_NAME}`)!
-    ) || {};
-  return Number(request.userFid || 0);
-};
-
 const getSignedKeyRequest = () => {
   return localStorage.getItem(`farsign-signer-${FARCASTER_CLIENT_NAME}`);
 };
@@ -64,7 +56,6 @@ export {
   getPublicKeyAsync,
   bytesToHexString,
   hexStringToBytes,
-  getCurrFid,
   setSignedKeyRequest,
   getSignedKeyRequest,
   getSigner,

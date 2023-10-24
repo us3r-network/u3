@@ -1,4 +1,12 @@
-import { Post } from '@lens-protocol/react-web';
+import {
+  Post,
+  ProfileOwnedByMe,
+  useActiveProfile,
+  useFollow,
+  useUnfollow,
+  useProfilesOwnedBy,
+  Profile,
+} from '@lens-protocol/react-web';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -8,13 +16,14 @@ import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
 import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote';
 import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
-import { LensPublication } from '../../../api/lens';
 import { useLensCtx } from '../../../contexts/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/useLogin';
+import { getSocialDetailShareUrlWithLens } from '../../../utils/share';
+import { tweetShare } from '../../../utils/twitter';
 
-export default function LensPostCard({ data }: { data: LensPublication }) {
-  const { isLogin: isLoginU3 } = useLogin();
+export default function LensPostCard({ data }: { data: Post }) {
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const navigate = useNavigate();
   const {
     isLogin,
@@ -23,7 +32,7 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
     setOpenCommentModal,
   } = useLensCtx();
 
-  const publication = data as unknown as Post;
+  const publication = data;
 
   const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
     null
@@ -95,18 +104,48 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
     [updatedPublication]
   );
 
+  const replyDisabled = useMemo(
+    () => isLogin && !publication?.canComment?.result,
+    [isLogin, publication]
+  );
+  const repostDisabled = useMemo(
+    () => isLogin && !publication?.canMirror?.result,
+    [isLogin, publication]
+  );
+
+  const { data: lensProfiles } = useProfilesOwnedBy({
+    address: publication?.profile?.ownedBy || '',
+  });
+  const lensProfileFirst = lensProfiles?.[0];
+  const { data: lensActiveProfile } = useActiveProfile();
+  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
+    followee: (lensProfileFirst || { id: '' }) as Profile,
+    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+  });
+  const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
+    {
+      followee: (lensProfileFirst || { id: '' }) as Profile,
+      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
+    }
+  );
   return (
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => <LensPostCardContent publication={publication} />}
       onClick={() => {
-        navigate(`/post-detail/lens/${data.id}`);
+        navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
-      liked={hasUpvote}
+      replyDisabled={replyDisabled}
+      repostDisabled={repostDisabled}
+      liked={isLoginU3 && hasUpvote}
       liking={isPendingReactionUpvote}
       likeAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -114,7 +153,11 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       }}
       replying={false}
       replyAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -127,7 +170,11 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
       }}
       reposting={isPendingMirror}
       repostAction={() => {
-        if (!isLoginU3 || !isLogin) {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
           setOpenLensLoginModal(true);
           return;
         }
@@ -136,6 +183,54 @@ export default function LensPostCard({ data }: { data: LensPublication }) {
           return;
         }
         createMirror();
+      }}
+      showMenuBtn
+      isFollowed={lensProfileFirst?.followStatus?.isFollowedByMe}
+      followPending={lensFollowIsPending}
+      unfollowPending={lensUnfollowPending}
+      followAction={() => {
+        if (!isLoginU3) {
+          loginU3();
+          return;
+        }
+        if (!isLogin) {
+          setOpenLensLoginModal(true);
+          return;
+        }
+        if (lensFollowIsPending || lensUnfollowPending) {
+          return;
+        }
+        if (lensProfileFirst?.followStatus?.isFollowedByMe) {
+          lensUnfollow()
+            .then(() => {
+              toast.success('Unfollow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Unfollow failed');
+            });
+        } else {
+          lensFollow()
+            .then(() => {
+              toast.success('Follow success');
+            })
+            .catch((err) => {
+              console.error(err);
+              toast.error('Follow failed');
+            });
+        }
+      }}
+      shareAction={() => {
+        tweetShare(
+          data.metadata.content,
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+      }}
+      copyAction={async () => {
+        await window.navigator.clipboard.writeText(
+          getSocialDetailShareUrlWithLens(data.id)
+        );
+        toast.success('Copy success');
       }}
     />
   );

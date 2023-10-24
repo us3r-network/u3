@@ -1,4 +1,3 @@
-/* eslint-disable import/no-cycle */
 import {
   PropsWithChildren,
   createContext,
@@ -18,20 +17,23 @@ import {
   useActiveProfile,
   production,
   useUpdateDispatcherConfig,
-  Post,
-  Comment,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
-import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
-import { LENS_ENV } from '../constants/lens';
+import { Connector, useAccount } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
+import {
+  BIOLINK_LENS_NETWORK,
+  BIOLINK_PLATFORMS,
+  lensHandleToBioLinkHandle,
+} from '../utils/profile/biolink';
+import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../constants/lens';
 
-import LensLoginModal from '../components/social/lens/LensLoginModal';
-import LensCommentPostModal from '../components/social/lens/LensCommentPostModal';
+import { LensPost, LensComment } from '../api/lens';
+import useBioLinkActions from '../hooks/profile/useBioLinkActions';
 
-import { LensPublication } from '../api/lens';
-
-type CommentModalData = LensPublication | Post | Comment | null;
+type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
   isLogin: boolean;
   isLoginPending: boolean;
@@ -80,12 +82,8 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const { execute: login, isPending: isLoginPending } = useWalletLogin();
   const { execute: lensLogout } = useWalletLogout();
   const { data: wallet } = useActiveProfile();
-  const { isConnected } = useAccount();
-  const { disconnectAsync } = useDisconnect();
 
-  const { connectAsync } = useConnect({
-    connector: new InjectedConnector(),
-  });
+  const { openConnectModal } = useConnectModal();
 
   const { execute: updateDispatcher } = useUpdateDispatcherConfig({
     profile: wallet,
@@ -102,23 +100,57 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [wallet, updateDispatcher]);
 
+  const lensLoginStartRef = useRef(false);
+  const lensLoginAdpater = async (connector: Connector) => {
+    const chainId = await connector.getChainId();
+    if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
+      if (connector?.switchChain) {
+        await connector?.switchChain(LENS_ENV_POLYGON_CHAIN_ID);
+      }
+    }
+    const walletClient = await connector.getWalletClient();
+    const { address } = walletClient.account;
+    await login({ address });
+  };
+
+  const { connector: activeConnector, isConnected } = useAccount({
+    async onConnect({ connector }) {
+      if (lensLoginStartRef.current) {
+        await lensLoginAdpater(connector);
+        lensLoginStartRef.current = false;
+      }
+    },
+  });
+
   const lensLogin = useCallback(async () => {
     if (isConnected) {
-      await disconnectAsync();
+      await lensLoginAdpater(activeConnector);
+    } else if (openConnectModal) {
+      lensLoginStartRef.current = true;
+      openConnectModal();
     }
-    const { connector } = await connectAsync();
-
-    if (connector instanceof InjectedConnector) {
-      const walletClient = await connector.getWalletClient();
-      const { address } = walletClient.account;
-
-      await login({
-        address,
-      });
-    }
-  }, [isConnected, disconnectAsync, connectAsync, login]);
+  }, [isConnected, openConnectModal, activeConnector, lensLoginAdpater]);
 
   const isLogin = useMemo(() => !!wallet, [wallet]);
+
+  // 每次lens登录成功后，更新lens biolink
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    if (!!session?.id && !!profile?.id && !isLoginPending && !!wallet) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.lens,
+          network: BIOLINK_LENS_NETWORK,
+          handle: lensHandleToBioLinkHandle(wallet.handle),
+          data: JSON.stringify(wallet),
+        },
+      });
+    }
+  }, [session, profile, isLoginPending, wallet]);
 
   return (
     <LensAuthContext.Provider
@@ -137,14 +169,6 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
       }}
     >
       {children}
-      <LensLoginModal
-        open={openLensLoginModal}
-        closeModal={() => setOpenLensLoginModal(false)}
-      />
-      <LensCommentPostModal
-        open={openCommentModal}
-        closeModal={() => setOpenCommentModal(false)}
-      />
     </LensAuthContext.Provider>
   );
 }

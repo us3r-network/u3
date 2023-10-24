@@ -28,7 +28,7 @@ export enum RouteKey {
   favorite = 'favorite',
   frens = 'frens',
   profile = 'profile',
-  profileWallet = 'profileWallet',
+  profileByUser = 'profileByUser',
   noMatch = 'noMatch',
   policy = 'policy',
   web3Today = 'web3Today',
@@ -39,9 +39,17 @@ export enum RouteKey {
   gallery = 'gallery',
   notification = 'notification',
   save = 'save',
+  farcaster = 'farcaster',
+  farcasterData = 'farcasterData',
+  farcasterSignup = 'farcasterSignup',
+  farcasterProfile = 'farcasterProfile',
+  socialLayout = 'socialLayout',
   social = 'social',
+  socialChannel = 'socialChannel',
+  socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
+  socialSuggestFollow = 'socialSuggestFollow',
 }
 export enum RoutePermission {
   login = 'login',
@@ -121,17 +129,22 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.save,
     permissions: [RoutePermission.login],
   },
+  // {
+  //   path: '/profile',
+  //   element: loadContainerElement('ProfileRe'),
+  //   key: RouteKey.profile,
+  //   permissions: [RoutePermission.login],
+  // },
   {
     path: '/profile',
-    element: loadContainerElement('ProfileRe'),
+    element: loadContainerElement('Profile'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
   },
   {
-    path: '/profile/:wallet',
+    path: '/profile/:user',
     element: loadContainerElement('Profile'),
-    key: RouteKey.profileWallet,
-    permissions: [RoutePermission.login],
+    key: RouteKey.profileByUser,
   },
   {
     path: '/events',
@@ -216,19 +229,64 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.policy,
   },
   {
+    path: '/farcaster',
+    element: loadContainerElement('FarcasterLayout'),
+    key: RouteKey.farcaster,
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('FarcasterData'),
+        key: RouteKey.farcasterData,
+      },
+      {
+        path: 'signup',
+        element: loadContainerElement('FarcasterSignup'),
+        key: RouteKey.farcasterSignup,
+      } as CutomRouteObject,
+      {
+        path: 'profile',
+        element: loadContainerElement('FarcasterProfile'),
+        key: RouteKey.farcasterProfile,
+      },
+    ],
+  },
+
+  {
     path: '/social',
-    element: loadContainerElement('Social'),
-    key: RouteKey.social,
-  },
-  {
-    path: '/post-detail/lens/:publicationId',
-    element: loadContainerElement('LensPostDetail'),
-    key: RouteKey.socialPostDetailLens,
-  },
-  {
-    path: 'post-detail/fcast/:castId',
-    element: loadContainerElement('FarcasterPostDetail'),
-    key: RouteKey.socialPostDetailFcast,
+    element: loadContainerElement('SocialLayout'),
+    key: RouteKey.socialLayout,
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('Social'),
+        key: RouteKey.social,
+      },
+      {
+        path: 'trends',
+        element: loadContainerElement('SocialTrends'),
+        key: RouteKey.socialTrendsChannel,
+      },
+      {
+        path: 'channel/:channelName',
+        element: loadContainerElement('SocialChannel'),
+        key: RouteKey.socialChannel,
+      },
+      {
+        path: 'post-detail/lens/:publicationId',
+        element: loadContainerElement('LensPostDetail'),
+        key: RouteKey.socialPostDetailLens,
+      } as CutomRouteObject,
+      {
+        path: 'post-detail/fcast/:castId',
+        element: loadContainerElement('FarcasterPostDetail'),
+        key: RouteKey.socialPostDetailFcast,
+      },
+      {
+        path: 'suggest-follow',
+        element: loadContainerElement('SocialSuggestFollow'),
+        key: RouteKey.socialSuggestFollow,
+      },
+    ],
   },
   NoMatchRoute,
 ];

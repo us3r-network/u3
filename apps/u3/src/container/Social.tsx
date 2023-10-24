@@ -1,11 +1,9 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
-import { useSearchParams } from 'react-router-dom';
-import { useAccount } from 'wagmi';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { isMobile } from 'react-device-detect';
 import LensPostCard from '../components/social/lens/LensPostCard';
 import FCast from '../components/social/farcaster/FCast';
 import { useLoadTrendingFeeds } from '../hooks/useLoadTrendingFeeds';
@@ -13,24 +11,20 @@ import { useFarcasterCtx } from '../contexts/FarcasterCtx';
 import Loading from '../components/common/loading/Loading';
 import { useLoadFollowingFeeds } from '../hooks/useLoadFollowingFeeds';
 import useFarcasterCurrFid from '../hooks/farcaster/useFarcasterCurrFid';
-import useLogin from '../hooks/useLogin';
-import SocialPageNav, { FeedsType } from '../components/social/SocialPageNav';
+import { FeedsType } from '../components/social/SocialPageNav';
 import { SocailPlatform } from '../api';
-import SocialPlatformChoice from '../components/social/SocialPlatformChoice';
-import AddPost from '../components/social/AddPost';
-import SocialWhoToFollow from '../components/social/SocialWhoToFollow';
-import SearchInput from '../components/common/input/SearchInput';
-import ModalImg from '../components/social/ModalImg';
 import AddPostForm from '../components/social/AddPostForm';
+import FollowingDefault from '../components/social/FollowingDefault';
+import { getSocialScrollWrapperId } from '../utils/social/keep-alive';
+import useLogin from '../hooks/useLogin';
+import NoLogin from '../components/layout/NoLogin';
 
 export default function Home() {
-  const { isLogin: isLoginU3 } = useLogin();
-
+  const { isLogin } = useLogin();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const fid = useFarcasterCurrFid();
-
-  const { address } = useAccount();
+  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
   const {
     firstLoading: trendingFirstLoading,
     moreLoading: trendingMoreLoading,
@@ -48,27 +42,23 @@ export default function Home() {
     loadFirstFeeds: loadFollowingFirstFeeds,
     loadMoreFeeds: loadFollowingMoreFeeds,
   } = useLoadFollowingFeeds();
-  const [modalImg, setModalImg] = useState('');
-  const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
+  const { socialPlatform, feedsType } = useOutletContext<{
+    socialPlatform: SocailPlatform | '';
+    feedsType: FeedsType;
+  }>();
+  const {
+    openFarcasterQR,
+    farcasterUserData,
+    isConnected: isConnectedFarcaster,
+  } = useFarcasterCtx();
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
     () => ({
       keyword: searchParams.get('keyword') || '',
     }),
     [searchParams]
   );
-  const onSearch = useCallback(
-    (value: string) => {
-      const params = new URLSearchParams();
-      params.append('keyword', value);
-      setSearchParams(params);
-    },
-    [setSearchParams]
-  );
-
-  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
-  const [socialPlatform, setSocialPlatform] = useState<SocailPlatform | ''>('');
 
   const firstLoading = useMemo(
     () =>
@@ -102,8 +92,8 @@ export default function Home() {
       loadFollowingFirstFeeds({
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
-        address,
-        fid,
+        address: lensProfileOwnedByAddress,
+        fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
@@ -119,10 +109,11 @@ export default function Home() {
     loadTrendingFirstFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
-    address,
+    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
+    isConnectedFarcaster,
   ]);
 
   const loadMoreFeeds = useCallback(() => {
@@ -130,8 +121,8 @@ export default function Home() {
       loadFollowingMoreFeeds({
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
-        address,
-        fid,
+        address: lensProfileOwnedByAddress,
+        fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
@@ -146,148 +137,96 @@ export default function Home() {
     loadTrendingMoreFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
-    address,
+    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
+    isConnectedFarcaster,
   ]);
-
-  useEffect(() => {
-    if (address) {
-      setFeedsType(FeedsType.FOLLOWING);
-    } else {
-      setFeedsType(FeedsType.TRENDING);
-    }
-  }, [address]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;
     loadFirstFeeds();
   }, [activeLensProfileLoading, loadFirstFeeds]);
 
-  return (
-    <HomeWrapper id="social-wrapper">
-      <SocialPageNav
-        showFeedsTabs={isLoginU3 && !!address}
-        feedsType={feedsType}
-        onChangeFeedsType={(type) => {
-          setFeedsType(type);
-          loadFirstFeeds();
-        }}
-      />
-      <MainWrapper>
-        {!isMobile && (
-          <MainLeft>
-            <SocialPlatformChoice
-              platform={socialPlatform}
-              onChangePlatform={setSocialPlatform}
-            />
-            <AddPost />
-          </MainLeft>
-        )}
-
+  if (feedsType === FeedsType.FOLLOWING) {
+    if (!isLogin) {
+      return <NoLoginStyled />;
+    }
+    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+      return (
         <MainCenter>
-          <AddPostFormWrapper>
-            <AddPostForm />
-          </AddPostFormWrapper>
+          <FollowingDefault />
+        </MainCenter>
+      );
+    }
+  }
+  return (
+    <MainCenter>
+      <AddPostFormWrapper>
+        <AddPostForm />
+      </AddPostFormWrapper>
 
-          {firstLoading ? (
+      {(() => {
+        if (firstLoading) {
+          return (
             <LoadingWrapper>
               <Loading />
             </LoadingWrapper>
-          ) : (
-            <InfiniteScroll
-              dataLength={feeds.length}
-              next={() => {
-                if (moreLoading) return;
-                loadMoreFeeds();
-              }}
-              hasMore={!firstLoading && pageInfo.hasNextPage}
-              loader={
-                moreLoading ? (
-                  <LoadingMoreWrapper>
-                    <Loading />
-                  </LoadingMoreWrapper>
-                ) : null
-              }
-              scrollableTarget="social-wrapper"
-            >
-              <PostList>
-                {feeds.map(({ platform, data }) => {
-                  if (platform === 'lens') {
-                    return <LensPostCard key={data.id} data={data} />;
-                  }
-                  if (platform === 'farcaster') {
-                    const key = Buffer.from(data.hash.data).toString('hex');
-                    return (
-                      <FCast
-                        key={key}
-                        cast={data}
-                        openFarcasterQR={openFarcasterQR}
-                        farcasterUserData={farcasterUserData}
-                        openImgModal={(url) => {
-                          setModalImg(url);
-                        }}
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </PostList>
-            </InfiniteScroll>
-          )}
-        </MainCenter>
-        {!isMobile && (
-          <MainRight>
-            <SearchInput placeholder="Search" onSearch={onSearch} />
-            <SocialWhoToFollow />
-          </MainRight>
-        )}
-      </MainWrapper>
-      <ModalImg url={modalImg} onAfterClose={() => setModalImg('')} />
-    </HomeWrapper>
+          );
+        }
+        return (
+          <InfiniteScroll
+            dataLength={feeds.length}
+            next={() => {
+              if (moreLoading) return;
+              loadMoreFeeds();
+            }}
+            hasMore={!firstLoading && pageInfo.hasNextPage}
+            scrollThreshold="1000px"
+            loader={
+              moreLoading ? (
+                <LoadingMoreWrapper>
+                  <Loading />
+                </LoadingMoreWrapper>
+              ) : null
+            }
+            scrollableTarget={getSocialScrollWrapperId(
+              feedsType,
+              socialPlatform
+            )}
+          >
+            <PostList>
+              {feeds.map(({ platform, data }) => {
+                if (platform === 'lens') {
+                  return <LensPostCard key={data.id} data={data} />;
+                }
+                if (platform === 'farcaster') {
+                  const key = Buffer.from(data.hash.data).toString('hex');
+                  return (
+                    <FCast
+                      key={key}
+                      cast={data}
+                      openFarcasterQR={openFarcasterQR}
+                      farcasterUserData={farcasterUserData}
+                    />
+                  );
+                }
+                return null;
+              })}
+            </PostList>
+          </InfiniteScroll>
+        );
+      })()}
+    </MainCenter>
   );
 }
-
-const HomeWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  overflow: scroll;
-  box-sizing: border-box;
-  padding: 24px;
-  margin-bottom: 20px;
-  ${isMobile &&
-  `
-  height: 100vh;
-  padding: 10px;
-  padding-bottom: 60px;
-  `}
-`;
-const MainWrapper = styled.div`
-  margin-top: 20px;
-  display: flex;
-  gap: 40px;
-`;
-const MainLeft = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  height: fit-content;
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
 `;
 const MainCenter = styled.div`
-  width: 600px;
-`;
-const MainRight = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  position: sticky;
-  top: 0;
-  height: fit-content;
+  width: 100%;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -313,9 +252,9 @@ const PostList = styled.div`
   border-top-left-radius: 0;
   background: #212228;
   overflow: hidden;
-  /* & > *:not(:first-child) { */
-  border-top: 1px solid #718096;
-  /* } */
+  & > * {
+    border-top: 1px solid #718096;
+  }
 `;
 const AddPostFormWrapper = styled.div`
   background: #212228;
@@ -323,4 +262,6 @@ const AddPostFormWrapper = styled.div`
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
 `;

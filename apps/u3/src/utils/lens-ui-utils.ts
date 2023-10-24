@@ -1,10 +1,10 @@
-import { Post, Comment } from '@lens-protocol/react-web';
+import { Comment } from '@lens-protocol/react-web';
 import { SocailPlatform } from '../api';
-import { LensPublication } from '../api/lens';
+import { LensPost } from '../api/lens';
 import getAvatar from './lens/getAvatar';
 
 export const lensPublicationToPostCardData = (
-  publication: LensPublication | Post | null | undefined
+  publication: LensPost | null | undefined
 ) => {
   return {
     platform: SocailPlatform.Lens,
