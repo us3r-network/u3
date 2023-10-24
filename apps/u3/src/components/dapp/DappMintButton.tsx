@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
-import { useMint } from '../../hooks/dapp/useMint';
+import { TokenInfo, useMint } from '../../hooks/dapp/useMint';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useCreate1155Token } from '../../hooks/dapp/useCreate1155Token';
 import { DappExploreListItemResponse } from '../../services/types/dapp';
@@ -95,7 +95,7 @@ function MintButton(props: MintButtonProps) {
   const { tokenId, onSuccess } = props;
   // console.log('tokenId: ', tokenId);
   // hook for collecting already existing token
-  const { write, data, isError, isLoading, isSuccess, status } =
+  const { write, data, isError, isLoading, isSuccess, status, tokenInfo } =
     useMint(tokenId);
   useEffect(() => {
     if (isSuccess) {
@@ -116,9 +116,12 @@ function MintButton(props: MintButtonProps) {
   if (write)
     return (
       <>
-        {/* <NFTInfo>
-          <span>Minted</span> <span>0</span>
-        </NFTInfo> */}
+        {!!tokenInfo && (
+          <NFTInfo>
+            <span>Minted</span>{' '}
+            <span>{Number((tokenInfo as TokenInfo)?.totalMinted)}</span>
+          </NFTInfo>
+        )}
         <ButtonPrimaryWraper onClick={() => write?.()}>
           Free Mint & Collect Now
         </ButtonPrimaryWraper>
