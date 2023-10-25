@@ -19,7 +19,7 @@ const NO_RECIPIENT =
 const create1155Input = {
   fixedPriceStrategyAddress: '', // hardcoded address of fixed price strategy minter on goerli
   maxSupply: BigInt('18446744073709551615'), // value to create edition with no supply cap
-  mintLimit: 0, // no mint limit per wallet
+  mintLimit: 1, // no mint limit per wallet
   nextTokenId: 0, // default to be overriden
   price: BigInt(0), // free to mint
   saleEnd: BigInt('18446744073709551615'), // "forever edition value"
