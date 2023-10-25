@@ -1,6 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile, useActiveProfile, useFollow } from '@lens-protocol/react-web';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
 import useFarcasterFollowAction from '../../../hooks/farcaster/useFarcasterFollowAction';
@@ -11,6 +11,7 @@ import {
 import { useNav } from '../../../contexts/NavCtx';
 import { ReactComponent as MessageChatSquareSvg } from '../../icons/svgs/message-chat-square.svg';
 import useCanMessage from '../../../hooks/xmtp/useCanMessage';
+import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -27,6 +28,7 @@ export default function ProfileBtns({
   address,
   ...wrapperProps
 }: ProfileBtnsProps) {
+  const { following: farcasterFollowings } = useFarcasterCtx();
   const lensProfileFirst = lensProfiles?.[0];
   const { data: activeProfile } = useActiveProfile();
 
@@ -35,12 +37,16 @@ export default function ProfileBtns({
     follower: activeProfile,
   });
 
-  // TODO 这个isFollowing是临时的，要有个接口获取
   const {
     followAction: fcastFollow,
     isPending: fcastFollowIsPending,
-    isFollowing: fcastIsFollowing,
+    isFollowing: fcastIsFollowingTemp,
   } = useFarcasterFollowAction();
+
+  const fcastIsFollowing = useMemo(
+    () => fcastIsFollowingTemp || farcasterFollowings.includes(String(fid)),
+    [fcastIsFollowingTemp, fid, farcasterFollowings]
+  );
 
   const onFollow = useCallback(async () => {
     if (
@@ -75,12 +81,8 @@ export default function ProfileBtns({
     (fid && fcastIsFollowing && !lensProfileFirst) ||
     (lensProfileFirst && lensProfileFirst?.isFollowedByMe && !fid);
 
-  const canFollow =
-    (fid && !fcastIsFollowing) ||
-    (lensProfileFirst && !lensProfileFirst?.isFollowedByMe);
-
   const followActionDisabled =
-    lensFollowIsPending || fcastFollowIsPending || isFollowing || !canFollow;
+    lensFollowIsPending || fcastFollowIsPending || isFollowing;
 
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
@@ -89,15 +91,7 @@ export default function ProfileBtns({
     <BtnsWrapper {...wrapperProps}>
       {showFollowBtn && (
         <FollowBtn onClick={onFollow} disabled={followActionDisabled}>
-          {(() => {
-            if (isFollowing) {
-              return 'Following';
-            }
-            if (canFollow) {
-              return 'Follow';
-            }
-            return 'Follow';
-          })()}
+          {isFollowing ? 'Following' : 'follow'}
         </FollowBtn>
       )}
 
