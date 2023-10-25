@@ -19,6 +19,7 @@ import FarcasterVerifyModal from 'src/components/social/farcaster/FarcasterVerif
 import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/farcaster/useFarcasterTrendChannel';
+import useFarcasterFollowData from 'src/hooks/farcaster/useFarcasterFollowData';
 
 import { getPrivateKey } from '../utils/farsign-utils';
 import { getFarcasterUserInfo } from '../api/farcaster';
@@ -82,6 +83,7 @@ export interface FarcasterContextData {
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
   channels: FarcasterChannel[];
+  following: string[];
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -116,6 +118,10 @@ export default function FarcasterProvider({
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+
+  const { farcasterFollowData } = useFarcasterFollowData({
+    fid: currFid,
+  });
 
   const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
     useFarcasterWallet();
@@ -254,6 +260,7 @@ export default function FarcasterProvider({
         farcasterUserData,
         setFarcasterUserData,
         channels,
+        following: farcasterFollowData.followingData,
       }}
     >
       {children}
