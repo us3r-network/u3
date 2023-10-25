@@ -22,6 +22,8 @@ interface XmtpClientCtxValue {
   enablingXmtp: boolean;
   enableXmtp: (signer: Signer) => Promise<void>;
   disconnectXmtp: () => void;
+  canEnableXmtp: boolean;
+  setCanEnableXmtp: (canEnable: boolean) => void;
 }
 
 const defaultContextValue: XmtpClientCtxValue = {
@@ -29,6 +31,8 @@ const defaultContextValue: XmtpClientCtxValue = {
   enablingXmtp: false,
   enableXmtp: async () => {},
   disconnectXmtp: () => {},
+  canEnableXmtp: false,
+  setCanEnableXmtp: () => {},
 };
 
 export const XmtpClientCtx = createContext(defaultContextValue);
@@ -36,6 +40,7 @@ export const XmtpClientCtx = createContext(defaultContextValue);
 export function XmtpClientProvider({ children }: PropsWithChildren) {
   const [xmtpClient, setXmtpClient] = useState<Client | null>(null);
   const [enablingXmtp, setEnablingXmtp] = useState(false);
+  const [canEnableXmtp, setCanEnableXmtp] = useState(false);
   const { data } = useWalletClient();
 
   /**
@@ -45,7 +50,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
    */
   const signer = useMemo(
     () =>
-      data && !!data.account && !!(data as any)?.signMessage
+      canEnableXmtp && data && !!data.account && !!(data as any)?.signMessage
         ? {
             getAddress: async (): Promise<string> => {
               const address = await (data.account.address as any);
@@ -60,7 +65,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
             },
           }
         : null,
-    [data]
+    [data, canEnableXmtp]
   );
 
   const enableXmtp = useCallback(async (walletSigner: Signer) => {
@@ -108,8 +113,22 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   return (
     <XmtpClientCtx.Provider
       value={useMemo(
-        () => ({ xmtpClient, enablingXmtp, enableXmtp, disconnectXmtp }),
-        [xmtpClient, enablingXmtp, enableXmtp, disconnectXmtp]
+        () => ({
+          xmtpClient,
+          enablingXmtp,
+          enableXmtp,
+          disconnectXmtp,
+          canEnableXmtp,
+          setCanEnableXmtp,
+        }),
+        [
+          xmtpClient,
+          enablingXmtp,
+          enableXmtp,
+          disconnectXmtp,
+          canEnableXmtp,
+          setCanEnableXmtp,
+        ]
       )}
     >
       {children}

@@ -7,8 +7,10 @@ import {
   ReactNode,
   useRef,
   useCallback,
+  useEffect,
 } from 'react';
 import styled from 'styled-components';
+import { useXmtpClient } from './xmtp/XmtpClientCtx';
 
 interface NavCtxValue {
   openNotificationModal: boolean;
@@ -41,6 +43,13 @@ export function NavProvider({ children }: NavCtxProviderProps) {
   const [openMessageModal, setOpenMessageModal] = useState(
     defaultContextValue.openMessageModal
   );
+
+  const { setCanEnableXmtp } = useXmtpClient();
+  useEffect(() => {
+    if (openMessageModal) {
+      setCanEnableXmtp(true);
+    }
+  }, [openMessageModal]);
   const [isOpen, setIsOpen] = useState(defaultContextValue.isOpen);
 
   const navItemTextInnerEls = useRef(new Map());
