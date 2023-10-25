@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-10-20 19:08:17
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-23 18:17:41
+ * @LastEditTime: 2023-10-25 09:21:48
  * @FilePath: /u3/apps/u3/src/constants/zora.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -64,12 +64,8 @@ export const zoraDappsNetworkExplorer =
     : Number(ziraChainId) === optimismGoerli.id
     ? optimismGoerli.blockExplorers.default.url
     : null;
-// console.log('zoraDappsNetworkInfo', zoraDappsNetworkInfo);
-
-export const zoraFee = 777_000_000_000_000n;
-export const recipientAddress: `0x${string}` =
-  (process.env.REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS as `0x${string}`) ||
-  '0xA25532B1287dEe6501fFa13Ff457fFcc9a6Ca6B0'; // bufan
+export const recipientAddress: `0x${string}` = process.env
+  .REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS as `0x${string}`;
 
 export const ZORA_API_ENDPOINT = 'https://api.zora.co/graphql';
-export const ZORA_API_KEY = 'https://api.zora.co/graphql';
+export const ZORA_API_KEY = '';
