@@ -2,6 +2,7 @@ export function shortPubKey(
   key: string,
   ops?: { len?: number; split?: string }
 ) {
+  if (!key) return '';
   const split = ops?.split;
   const len = ops?.len || 4;
 

@@ -110,16 +110,9 @@ export default function useDid(identity: string) {
       }
 
       if (isLensHandle(identity)) {
-        if (!s3ProfileModalInitialed) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
-            platform: BIOLINK_PLATFORMS.lens,
-            network: BIOLINK_LENS_NETWORK,
-            handle: lensHandleToBioLinkHandle(identity),
-          });
-          console.log({
-            biolink,
             platform: BIOLINK_PLATFORMS.lens,
             network: BIOLINK_LENS_NETWORK,
             handle: lensHandleToBioLinkHandle(identity),
@@ -137,7 +130,6 @@ export default function useDid(identity: string) {
       }
 
       if (isFarcasterHandle(identity)) {
-        if (!s3ProfileModalInitialed) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({

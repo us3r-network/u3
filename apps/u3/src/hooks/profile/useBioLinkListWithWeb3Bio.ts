@@ -18,7 +18,10 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchBioLinks = async () => {
-      if (!identity) return;
+      if (!identity) {
+        setBioLinkList([]);
+        return;
+      }
       setLoading(true);
       try {
         let web3BioIdentity = identity;

@@ -3,8 +3,8 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useState } from 'react';
 import useDid from '../../../hooks/profile/useDid';
 import Loading from '../../common/loading/Loading';
-import HasU3ProfileInfoCard from './HasProfileInfoCard';
-import NoU3ProfileInfoCard from './NoProfileInfoCard';
+import U3ProfileInfoCardContainer from './U3ProfileInfoCardContainer';
+import PlatformProfileInfoCardContainer from './PlatformProfileInfoCardContainer';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   identity: string;
@@ -43,7 +43,7 @@ export default function ProfileInfoCard({
   }
   if (did && hasProfile) {
     return (
-      <HasU3ProfileInfoCard
+      <U3ProfileInfoCardContainer
         did={did}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
@@ -52,7 +52,7 @@ export default function ProfileInfoCard({
     );
   }
   return (
-    <NoU3ProfileInfoCard
+    <PlatformProfileInfoCardContainer
       identity={identity}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
