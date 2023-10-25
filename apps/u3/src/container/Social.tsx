@@ -209,6 +209,7 @@ export default function Home() {
                       cast={data}
                       openFarcasterQR={openFarcasterQR}
                       farcasterUserData={farcasterUserData}
+                      showMenuBtn
                     />
                   );
                 }
