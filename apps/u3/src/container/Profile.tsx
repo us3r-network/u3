@@ -146,8 +146,8 @@ export default function Profile() {
   const [followNavData, setFollowNavData] = useState({
     showFollowNav: false,
     followNavType: FollowType.FOLLOWING,
-    followingActivePlatform: SocailPlatform.Lens,
-    followersActivePlatform: SocailPlatform.Lens,
+    followingActivePlatform: SocailPlatform.Farcaster,
+    followersActivePlatform: SocailPlatform.Farcaster,
     followingPlatformCount: {
       [SocailPlatform.Lens]: 0,
       [SocailPlatform.Farcaster]: 0,
