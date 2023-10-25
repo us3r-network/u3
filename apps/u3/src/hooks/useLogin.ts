@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-09 14:13:59
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-10 18:38:14
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-23 14:21:10
  * @Description: file description
  */
 import { useCallback, useMemo } from 'react';
@@ -13,6 +13,7 @@ import {
 import { useU3Login } from '../contexts/U3LoginContext';
 import { RoleType } from '../services/api/login';
 import { useXmtpClient } from '../contexts/xmtp/XmtpClientCtx';
+import { getAddressWithDidPkh } from '../utils/did';
 
 export default () => {
   const session = useSession();
@@ -32,6 +33,11 @@ export default () => {
 
   const isLogin = useMemo(() => !!session && u3IsLogin, [session, u3IsLogin]);
 
+  const walletAddress = useMemo(
+    () => (isLogin && session?.id ? getAddressWithDidPkh(session.id) : null),
+    [session, isLogin]
+  );
+
   const handleCallbackVerifyLogin = useCallback(
     (callback?: () => void) => {
       if (!isLogin) {
@@ -47,6 +53,7 @@ export default () => {
 
   return {
     user,
+    walletAddress,
     isLogin,
     isAdmin,
     login,

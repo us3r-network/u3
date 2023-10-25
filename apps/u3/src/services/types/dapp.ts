@@ -51,6 +51,7 @@ export type DappExploreListItemResponse = {
   status?: DappStatus;
   project?: ProjectExploreListItemResponse;
   linkStreamId?: string;
+  tokenId?: number;
   supportIframe: boolean;
 };
 export type DappExploreListResponse = ApiResp<

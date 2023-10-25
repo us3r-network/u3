@@ -18,9 +18,9 @@ import useConfigsTopics from '../../../hooks/useConfigsTopics';
 import { ReactComponent as CheckVerifiedSvg } from '../../common/icons/svgs/check-verified.svg';
 import EllipsisTextExpandMore from '../../common/text/EllipsisTextExpandMore';
 import { Edit } from '../../icons/edit';
-import DappFavorButton from '../DappFavorButton';
 import useLogin from '../../../hooks/useLogin';
 import Badge from '../Badge';
+import { DappMintButton } from '../DappMintButton';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   data: DappExploreListItemResponse;
@@ -105,19 +105,21 @@ export default function Header({
               <LinkIcon src={TelegramSvg} />
             </LinkButton>
           )}
-          {isU3Dapp ? (
-            <OpenButton
-              onClick={(e) => {
-                e.stopPropagation();
-                navigate(u3DappRoutePath);
-              }}
-            >
-              Open Dapp
-            </OpenButton>
-          ) : (
-            data?.url &&
-            data?.linkStreamId &&
-            (isFavored ? (
+        </RightButtons>
+        {isU3Dapp ? (
+          <OpenButton
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(u3DappRoutePath);
+            }}
+          >
+            Open Dapp
+          </OpenButton>
+        ) : (
+          data?.url &&
+          data?.linkStreamId && (
+            <RightButtons>
+              <DappMintButton dappData={data} />
               <OpenButton
                 onClick={(e) => {
                   e.stopPropagation();
@@ -126,22 +128,9 @@ export default function Header({
               >
                 Open Dapp
               </OpenButton>
-            ) : (
-              <DappFavorButton
-                linkId={data.linkStreamId}
-                onSuccessfullyFavor={(favored) => {
-                  if (favored) {
-                    updateProfile({
-                      tags: Array.from(
-                        new Set([...profile.tags, `${data.name} User`])
-                      ),
-                    });
-                  }
-                }}
-              />
-            ))
-          )}
-        </RightButtons>
+            </RightButtons>
+          )
+        )}
       </HeaderRight>
     </HeaderWrapper>
   );
@@ -193,8 +182,12 @@ const Description = styled(EllipsisTextExpandMore)`
 `;
 const HeaderRight = styled.div`
   margin-left: 80px;
-  margin-top: auto;
+  height: 100%;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: end;
 `;
 const RightButtons = styled.div`
   display: flex;
@@ -214,7 +207,10 @@ const LinkIcon = styled.img`
   width: 100%;
   height: 100%;
 `;
-const OpenButton = styled(ButtonPrimaryLine)``;
+const OpenButton = styled(ButtonPrimaryLine)`
+  height: 40px;
+  font-weight: 700;
+`;
 const ChainIcon = styled.img`
   width: 18px;
   height: 18px;

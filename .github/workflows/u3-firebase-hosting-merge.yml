@@ -36,7 +36,12 @@ jobs:
           REACT_APP_XMTP_ENV: "${{ vars.REACT_APP_XMTP_ENV }}"
           REACT_APP_LENS_ENV: "${{ vars.REACT_APP_LENS_ENV }}"
           REACT_APP_FARCASTER_HUB_URL: "${{ vars.REACT_APP_FARCASTER_HUB_URL }}"
-          REACT_APP_FARCASTER_NETWORK: "${{ vars.REACT_APP_FARCASTER_NETWORK }}"
+          REACT_APP_FARCASTER_NETWORK: "${{ vars.REACT_APP_FARCASTER_NETWORK }}"          
+          REACT_APP_NFT_STORAGE_API_KEY: "${{ vars.REACT_APP_NFT_STORAGE_API_KEY }}"
+          REACT_APP_DAPP_NFT_TO_MINT: "${{ vars.REACT_APP_DAPP_NFT_TO_MINT }}"
+          REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY }}"
+          REACT_APP_DAPP_NFT_CHAIN_ID: "${{ vars.REACT_APP_DAPP_NFT_CHAIN_ID }}"
+          REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -74,6 +79,11 @@ jobs:
           REACT_APP_LENS_ENV: "${{ vars.REACT_APP_LENS_ENV }}"
           REACT_APP_FARCASTER_HUB_URL: "${{ vars.REACT_APP_FARCASTER_HUB_URL }}"
           REACT_APP_FARCASTER_NETWORK: "${{ vars.REACT_APP_FARCASTER_NETWORK }}"
+          REACT_APP_NFT_STORAGE_API_KEY: "${{ vars.REACT_APP_NFT_STORAGE_API_KEY }}"
+          REACT_APP_DAPP_NFT_TO_MINT: "${{ vars.REACT_APP_DAPP_NFT_TO_MINT }}"
+          REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY }}"
+          REACT_APP_DAPP_NFT_CHAIN_ID: "${{ vars.REACT_APP_DAPP_NFT_CHAIN_ID }}"
+          REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 import useDappWebsite from '../../../hooks/useDappWebsite';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import ImgDefault from '../../common/ImgDefault';
@@ -7,9 +8,24 @@ import DappWebsitePreview from './DappWebsitePreview';
 import PowerSvg from '../../common/icons/svgs/power.svg';
 import useFullScreen from '../../../hooks/useFullScreen';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
+import { fetchOneDapp, fetchDappByTokenId } from '../../../services/api/dapp';
 
 export default function DappWebsiteModal() {
-  const { isOpenDappModal, dappModalData, closeDappModal } = useDappWebsite();
+  const { isOpenDappModal, dappId, closeDappModal } = useDappWebsite();
+  const [dappModalData, setDappModalData] = useState(null);
+  useEffect(() => {
+    if (dappId?.id) {
+      fetchOneDapp(dappId.id).then((r) => {
+        setDappModalData(r.data.data);
+      });
+    }
+    if (dappId?.tokenId) {
+      fetchDappByTokenId(dappId.tokenId).then((r) => {
+        setDappModalData(r.data.data);
+      });
+    }
+  }, [dappId]);
+
   const { ref, isFullscreen, onToggle } = useFullScreen();
   return isOpenDappModal ? (
     <DappWebsiteModalWrapper>
