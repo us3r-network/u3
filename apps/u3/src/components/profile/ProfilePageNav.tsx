@@ -11,10 +11,12 @@ export enum FeedsType {
 }
 export default function ProfilePageNav({
   showFeedsTabs = true,
+  enabledFeedsTypes,
   feedsType,
   onChangeFeedsType,
 }: {
   showFeedsTabs?: boolean;
+  enabledFeedsTypes?: FeedsType[];
   feedsType: FeedsType;
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
@@ -31,11 +33,13 @@ export default function ProfilePageNav({
         {showFeedsTabs &&
           (isMobile ? (
             <MobileFeedsTypeTable
+              enabledFeedsTypes={enabledFeedsTypes}
               feedsType={feedsType}
               onChangeFeedsType={onChangeFeedsType}
             />
           ) : (
             <PcFeedsTypeTable
+              enabledFeedsTypes={enabledFeedsTypes}
               feedsType={feedsType}
               onChangeFeedsType={onChangeFeedsType}
             />
@@ -45,11 +49,14 @@ export default function ProfilePageNav({
     </SocialNavWrapper>
   );
 }
+
 function PcFeedsTypeTable({
   feedsType,
+  enabledFeedsTypes,
   onChangeFeedsType,
 }: {
   feedsType: FeedsType;
+  enabledFeedsTypes?: FeedsType[];
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
   const tabs = [
@@ -74,9 +81,12 @@ function PcFeedsTypeTable({
     //   value: FeedsType.LIKES,
     // },
   ];
+  const showTabs = enabledFeedsTypes
+    ? tabs.filter((tab) => enabledFeedsTypes.includes(tab.value))
+    : tabs;
   return (
     <FeedsTypeTabsWrapper>
-      {tabs.map((tab) => (
+      {showTabs.map((tab) => (
         <FeedsTypeTab
           key={tab.value}
           active={feedsType === tab.value}
@@ -90,9 +100,11 @@ function PcFeedsTypeTable({
 }
 function MobileFeedsTypeTable({
   feedsType,
+  enabledFeedsTypes,
   onChangeFeedsType,
 }: {
   feedsType: FeedsType;
+  enabledFeedsTypes?: FeedsType[];
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
   const tabs = [
@@ -102,9 +114,12 @@ function MobileFeedsTypeTable({
     FeedsType.REPLIES,
     // FeedsType.LIKES,
   ];
+  const showTabs = enabledFeedsTypes
+    ? tabs.filter((tab) => enabledFeedsTypes.includes(tab))
+    : tabs;
   return (
     <MobilePageHeader
-      tabs={tabs}
+      tabs={showTabs}
       setTab={onChangeFeedsType}
       curTab={feedsType}
     />

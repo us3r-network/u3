@@ -16,11 +16,11 @@ export default function useFarcasterFollowAction() {
 
   const follow = useCallback(
     async (targetFid: number | string) => {
-      if (!currFid) return;
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
+      if (!currFid) return;
       if (!encryptedSigner) return;
       if (Number.isNaN(Number(targetFid))) return;
       setIsPending(true);
@@ -54,11 +54,11 @@ export default function useFarcasterFollowAction() {
 
   const unfollow = useCallback(
     async (targetFid: number | string) => {
-      if (!currFid) return;
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
+      if (!currFid) return;
       if (!encryptedSigner) return;
       if (Number.isNaN(Number(targetFid))) return;
       setIsPending(true);

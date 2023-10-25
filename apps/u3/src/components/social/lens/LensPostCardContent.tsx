@@ -45,17 +45,14 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
   }, [isDetail]);
 
   const embedImgs =
-    metadata?.media?.filter(
-      (m) => m.original && m.original.mimeType.includes('image')
-    ) || [];
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('image')) ||
+    [];
   const embedAudios =
-    metadata?.media?.filter(
-      (m) => m.original && m.original.mimeType.includes('audio')
-    ) || [];
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('audio')) ||
+    [];
   const embedVideos =
-    metadata?.media?.filter(
-      (m) => m.original && m.original.mimeType.includes('video')
-    ) || [];
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('video')) ||
+    [];
 
   return (
     <>

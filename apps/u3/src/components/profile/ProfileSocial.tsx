@@ -2,7 +2,6 @@ import { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { FeedsType } from './ProfilePageNav';
 import { useLoadProfileFeeds } from '../../hooks/useLoadProfileFeeds';
 import Loading from '../common/loading/Loading';
 import LensPostCard from '../social/lens/LensPostCard';
@@ -13,16 +12,14 @@ import { LensComment, LensMirror, LensPost } from '../../api/lens';
 import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
 
-export default function ProfileSocial({
-  address,
+export function ProfileSocialPosts({
   lensProfileId,
   fid,
-  feedsType,
+  group,
 }: {
-  address: string;
   lensProfileId: string;
   fid: string;
-  feedsType: FeedsType;
+  group: ProfileFeedsGroups;
 }) {
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
@@ -38,24 +35,22 @@ export default function ProfileSocial({
   } = useLoadProfileFeeds();
 
   const loadFirstSocialFeeds = useCallback(() => {
-    if (feedsType === FeedsType.ACTIVITIES) return;
     loadFirstFeeds({
       activeLensProfileId: activeLensProfile?.id,
       lensProfileId,
       fid,
-      group: feedsType as unknown as ProfileFeedsGroups,
+      group,
     });
-  }, [loadFirstFeeds, activeLensProfile?.id, fid, feedsType, lensProfileId]);
+  }, [loadFirstFeeds, activeLensProfile?.id, fid, group, lensProfileId]);
 
   const loadMoreSocialFeeds = useCallback(() => {
-    if (feedsType === FeedsType.ACTIVITIES) return;
     loadMoreFeeds({
       activeLensProfileId: activeLensProfile?.id,
       lensProfileId,
       fid,
-      group: feedsType as unknown as ProfileFeedsGroups,
+      group,
     });
-  }, [loadMoreFeeds, activeLensProfile?.id, fid, feedsType, lensProfileId]);
+  }, [loadMoreFeeds, activeLensProfile?.id, fid, group, lensProfileId]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;
@@ -65,19 +60,6 @@ export default function ProfileSocial({
   return (
     <MainCenter>
       {(() => {
-        if (feedsType === FeedsType.ACTIVITIES) {
-          return (
-            <Rss3Content
-              address={[address]}
-              empty={
-                <NoActivityWrapper>
-                  <NoActivity />
-                </NoActivityWrapper>
-              }
-            />
-          );
-        }
-
         if (firstLoading) {
           return (
             <LoadingWrapper>
@@ -107,14 +89,14 @@ export default function ProfileSocial({
               {feeds.map(({ platform, data }) => {
                 if (platform === 'lens') {
                   let d;
-                  switch (feedsType) {
-                    case FeedsType.POSTS:
+                  switch (group) {
+                    case ProfileFeedsGroups.POSTS:
                       d = data as LensPost;
                       break;
-                    case FeedsType.REPOSTS:
+                    case ProfileFeedsGroups.REPOSTS:
                       d = (data as LensMirror).mirrorOf;
                       break;
-                    case FeedsType.REPLIES:
+                    case ProfileFeedsGroups.REPLIES:
                       d = (data as LensComment).commentOn;
                       break;
                     default:
@@ -143,8 +125,23 @@ export default function ProfileSocial({
     </MainCenter>
   );
 }
+export function ProfileSocialActivity({ address }: { address: string }) {
+  return (
+    <MainCenter>
+      <Rss3Content
+        address={[address]}
+        empty={
+          <NoActivityWrapper>
+            <NoActivity />
+          </NoActivityWrapper>
+        }
+      />
+    </MainCenter>
+  );
+}
+
 const MainCenter = styled.div`
-  width: 600px;
+  width: 100%;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;

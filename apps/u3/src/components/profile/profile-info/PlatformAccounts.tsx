@@ -11,6 +11,9 @@ export type PlatformAccountsData = Array<{
   avatar: string;
   name: string;
   handle: string;
+  id: string | number;
+  bio: string;
+  address?: string;
 }>;
 interface PlatformAccountsProps extends StyledComponentPropsWithRef<'div'> {
   data: PlatformAccountsData;

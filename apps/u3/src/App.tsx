@@ -67,7 +67,6 @@ function App() {
             <XmtpClientProvider>
               <XmtpStoreProvider>
                 <AppLensProvider>
-                  <LensGlobalModals />
                   <ReduxProvider store={store}>
                     <GlobalStyle />
                     <BrowserRouter>
@@ -75,6 +74,7 @@ function App() {
                         <LivepeerConfig client={livepeerClient}>
                           <AliveScope>
                             <NavProvider>
+                              <LensGlobalModals />
                               <Layout />
                             </NavProvider>
                           </AliveScope>
