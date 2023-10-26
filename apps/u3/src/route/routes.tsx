@@ -136,13 +136,13 @@ export const routes: CutomRouteObject[] = [
   //   permissions: [RoutePermission.login],
   // },
   {
-    path: '/profile',
+    path: '/u',
     element: loadContainerElement('Profile'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
   },
   {
-    path: '/profile/:user',
+    path: '/u/:user',
     element: loadContainerElement('Profile'),
     key: RouteKey.profileByUser,
   },

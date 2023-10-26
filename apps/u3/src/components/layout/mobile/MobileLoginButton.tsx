@@ -26,7 +26,7 @@ export default function MobileLoginButton({ onLogout }: Props) {
         if (!isLogin) {
           login();
         } else {
-          navigate('/profile');
+          navigate('/u');
           // onLogout();
         }
       }}
