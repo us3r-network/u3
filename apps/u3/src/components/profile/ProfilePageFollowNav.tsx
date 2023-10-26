@@ -76,16 +76,16 @@ function PcFollowPlatformTable({
     followType.slice(0, 1).toUpperCase() + followType.slice(1);
   const tabs = [
     {
-      name: `Lens ${followTypeText}(${
-        platformCount[SocailPlatform.Lens] || 0
-      })`,
-      value: SocailPlatform.Lens,
-    },
-    {
       name: `Farcaster ${followTypeText}(${
         platformCount[SocailPlatform.Farcaster] || 0
       })`,
       value: SocailPlatform.Farcaster,
+    },
+    {
+      name: `Lens ${followTypeText}(${
+        platformCount[SocailPlatform.Lens] || 0
+      })`,
+      value: SocailPlatform.Lens,
     },
   ];
   return (
@@ -119,16 +119,16 @@ function MobileFollowPlatformTable({
     followType.slice(0, 1).toUpperCase() + followType.slice(1);
   const options = [
     {
-      label: `Lens ${followTypeText}(${
-        platformCount[SocailPlatform.Lens] || 0
-      })`,
-      value: SocailPlatform.Lens,
-    },
-    {
       label: `Farcaster ${followTypeText}(${
         platformCount[SocailPlatform.Farcaster] || 0
       })`,
       value: SocailPlatform.Farcaster,
+    },
+    {
+      label: `Lens ${followTypeText}(${
+        platformCount[SocailPlatform.Lens] || 0
+      })`,
+      value: SocailPlatform.Lens,
     },
   ];
   return (

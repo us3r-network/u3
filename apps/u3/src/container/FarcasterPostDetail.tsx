@@ -79,6 +79,7 @@ export default function FarcasterPostDetail() {
             openFarcasterQR={openFarcasterQR}
             farcasterUserData={farcasterUserData}
             isDetail
+            showMenuBtn
           />
           <FarcasterCommentForm
             castId={{

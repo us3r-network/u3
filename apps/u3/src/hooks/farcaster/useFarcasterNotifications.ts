@@ -70,6 +70,7 @@ export default function useFarcasterNotifications(
     setLoading(true);
     try {
       const resp = await getFarcasterNotifications({ fid, pageSize });
+      if (!resp?.data?.data) return;
       const {
         notifications,
         pageInfo,

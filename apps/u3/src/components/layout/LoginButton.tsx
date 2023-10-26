@@ -80,7 +80,7 @@ export default function LoginButton({ onlyIcon, onLogout, karmaScore }: Props) {
           )} */}
           <LoginUser
             onClick={() => {
-              navigate('/profile');
+              navigate('/u');
             }}
             onlyIcon={onlyIcon}
           >

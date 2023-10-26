@@ -12,7 +12,6 @@ import {
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
-import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
 import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
 // import { getCurrFid } from '../../../utils/farsign-utils';
 import PostLike, {
@@ -47,7 +46,10 @@ export default function FCastLike({
         openFarcasterQR();
         return;
       }
-      if (!encryptedSigner) return;
+      if (!encryptedSigner) {
+        console.error('no encryptedSigner');
+        return;
+      }
       try {
         const cast = await makeReactionAdd(
           {

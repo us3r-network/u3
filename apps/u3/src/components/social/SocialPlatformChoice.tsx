@@ -11,14 +11,14 @@ const options = [
     iconUrl: GridSvgUrl,
   },
   {
-    value: SocailPlatform.Lens,
-    label: 'Lens',
-    iconUrl: LensIcon,
-  },
-  {
     value: SocailPlatform.Farcaster,
     label: 'Farcaster',
     iconUrl: FarcasterIcon,
+  },
+  {
+    value: SocailPlatform.Lens,
+    label: 'Lens',
+    iconUrl: LensIcon,
   },
 ];
 

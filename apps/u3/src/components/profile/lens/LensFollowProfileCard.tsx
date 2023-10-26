@@ -14,9 +14,11 @@ import getAvatar from '../../../utils/lens/getAvatar';
 
 type LensFollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
   profile?: Profile;
+  isFollowingCard?: boolean;
 };
 export default function LensFollowProfileCard({
   profile,
+  isFollowingCard,
   ...wrapperProps
 }: LensFollowProfileCardProps) {
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
@@ -38,10 +40,11 @@ export default function LensFollowProfileCard({
       name: profile.name,
       avatar: getAvatar(profile),
       bio: profile.bio,
-      isFollowed: profile.isFollowedByMe,
+      isFollowed:
+        isFollowingCard && !isLoginLens ? true : profile.isFollowedByMe,
       platforms: [SocailPlatform.Lens],
     }),
-    [profile]
+    [profile, isFollowingCard, isLoginLens]
   );
 
   return (

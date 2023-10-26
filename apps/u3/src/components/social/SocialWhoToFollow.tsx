@@ -20,6 +20,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
+import TooltipProfileNavigateLink from './TooltipProfileNavigateLink';
 
 const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {
@@ -93,22 +94,18 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
   });
   const { name, handle } = profile;
 
-  const profileUrl = useMemo(
-    () => `/profile/${lensHandleToBioLinkHandle(handle)}`,
-    [handle]
-  );
+  const profileIdentity = useMemo(() => {
+    if (handle.endsWith('.eth')) return handle;
+    return lensHandleToBioLinkHandle(handle);
+  }, [handle]);
+
+  const profileUrl = useMemo(() => `/u/${profileIdentity}`, [profileIdentity]);
+
   return (
     <FollowItemWrapper>
-      <a
-        href={profileUrl}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          navigate(profileUrl);
-        }}
-      >
+      <TooltipProfileNavigateLink identity={profileIdentity}>
         <Avatar src={getAvatar(profile)} />
-      </a>
+      </TooltipProfileNavigateLink>
 
       <NameHandleWraper>
         <NameText>
@@ -165,22 +162,18 @@ function FarcasterFollowItem({
     isFollowing,
   } = useFarcasterFollowAction();
 
-  const profileUrl = useMemo(
-    () => `/profile/${farcasterHandleToBioLinkHandle(userData.userName)}`,
-    [userData]
-  );
+  const profileIdentity = useMemo(() => {
+    if (userData.userName.endsWith('.eth')) return userData.userName;
+    return farcasterHandleToBioLinkHandle(userData.userName);
+  }, [userData]);
+
+  const profileUrl = useMemo(() => `/u/${profileIdentity}`, [profileIdentity]);
+
   return (
     <FollowItemWrapper>
-      <a
-        href={profileUrl}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          navigate(profileUrl);
-        }}
-      >
+      <TooltipProfileNavigateLink identity={profileIdentity}>
         <Avatar src={userData.pfp} />
-      </a>
+      </TooltipProfileNavigateLink>
 
       <NameHandleWraper>
         <NameText>

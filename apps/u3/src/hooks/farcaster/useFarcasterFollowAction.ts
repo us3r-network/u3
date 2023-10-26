@@ -10,18 +10,19 @@ import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 
 export default function useFarcasterFollowAction() {
   const [isPending, setIsPending] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false); // todo: check if following
+  const [isFollowing, setIsFollowing] = useState<boolean>(undefined); // todo: check if following
   const { encryptedSigner, isConnected, openFarcasterQR, currFid } =
     useFarcasterCtx();
 
   const follow = useCallback(
-    async (targetFid: number) => {
-      if (!currFid) return;
+    async (targetFid: number | string) => {
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
+      if (!currFid) return;
       if (!encryptedSigner) return;
+      if (Number.isNaN(Number(targetFid))) return;
       setIsPending(true);
       // const currFid = getCurrFid();
       try {
@@ -30,7 +31,7 @@ export default function useFarcasterFollowAction() {
           await makeLinkAdd(
             {
               type: 'follow',
-              targetFid,
+              targetFid: Number(targetFid),
             },
             { fid: currFid, network: FARCASTER_NETWORK },
             encryptedSigner
@@ -52,13 +53,14 @@ export default function useFarcasterFollowAction() {
   );
 
   const unfollow = useCallback(
-    async (targetFid: number) => {
-      if (!currFid) return;
+    async (targetFid: number | string) => {
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
+      if (!currFid) return;
       if (!encryptedSigner) return;
+      if (Number.isNaN(Number(targetFid))) return;
       setIsPending(true);
       try {
         // eslint-disable-next-line no-underscore-dangle
@@ -66,7 +68,7 @@ export default function useFarcasterFollowAction() {
           await makeLinkRemove(
             {
               type: 'follow',
-              targetFid,
+              targetFid: Number(targetFid),
             },
             { fid: currFid, network: FARCASTER_NETWORK },
             encryptedSigner

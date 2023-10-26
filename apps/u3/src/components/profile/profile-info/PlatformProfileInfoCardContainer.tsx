@@ -7,28 +7,31 @@ import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
 import useUpsertFarcasterUserData from '../../../hooks/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
 import useBioLinkListWithWeb3Bio from '../../../hooks/profile/useBioLinkListWithWeb3Bio';
-import { getDidPkhWithAddress } from '../../../utils/did';
-import ProfileInfoBaseCard from './ProfileInfoBaseCard';
+import ProfileInfoBaseCard from './ProfileInfoCardLayout';
 import getAvatar from '../../../utils/lens/getAvatar';
 import useLazyQueryFidWithAddress from '../../../hooks/farcaster/useLazyQueryFidWithAddress';
 
-interface NoU3ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
+interface PlatformProfileInfoCardContainerProps
+  extends StyledComponentPropsWithRef<'div'> {
   identity: string;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
 }
-export default function NoU3ProfileInfoCard({
+export default function PlatformProfileInfoCardContainer({
   identity,
   clickFollowing,
   clickFollowers,
   ...wrapperProps
-}: NoU3ProfileInfoCardProps) {
-  const { bioLinkList, lensBioLinks, fcastBioLinks } =
-    useBioLinkListWithWeb3Bio(identity);
+}: PlatformProfileInfoCardContainerProps) {
+  const {
+    bioLinkList,
+    lensBioLinks,
+    fcastBioLinks,
+    loading: bioLinkLoading,
+  } = useBioLinkListWithWeb3Bio(identity);
   const { farcasterUserData } = useFarcasterCtx();
 
   const address = bioLinkList.find((item) => !!item.address)?.address;
-  const did = getDidPkhWithAddress(address);
 
   const { data: lensProfiles } = useProfilesOwnedBy({
     address: lensBioLinks?.[0]?.address || '',
@@ -53,6 +56,17 @@ export default function NoU3ProfileInfoCard({
 
   const platformAccounts: PlatformAccountsData = useMemo(() => {
     const accounts = [];
+    for (const fcastProfile of fcastBioLinks) {
+      accounts.push({
+        platform: SocailPlatform.Farcaster,
+        avatar: fcastProfile.avatar,
+        name: fcastProfile.displayName,
+        handle: fcastProfile.identity,
+        id: fid,
+        bio: fcastProfile.description,
+        address: fcastProfile.address,
+      });
+    }
     if (lensProfiles?.length > 0) {
       for (const lensProfile of lensProfiles) {
         accounts.push({
@@ -60,20 +74,14 @@ export default function NoU3ProfileInfoCard({
           avatar: getAvatar(lensProfile),
           name: lensProfile.name,
           handle: lensProfile.handle,
+          id: lensProfile.id,
+          bio: lensProfile.bio,
+          address: lensProfile.ownedBy,
         });
       }
     }
-
-    for (const fcastProfile of fcastBioLinks) {
-      accounts.push({
-        platform: SocailPlatform.Farcaster,
-        avatar: fcastProfile.avatar,
-        name: fcastProfile.displayName,
-        handle: fcastProfile.identity,
-      });
-    }
     return accounts;
-  }, [lensProfiles, fcastBioLinks]);
+  }, [lensProfiles, fcastBioLinks, fid]);
 
   const followersCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
@@ -89,12 +97,14 @@ export default function NoU3ProfileInfoCard({
 
   return (
     <ProfileInfoBaseCard
-      did={did}
+      isU3Profile={false}
+      loading={bioLinkLoading}
       address={address}
       platformAccounts={platformAccounts}
       followersCount={followersCount}
       followingCount={followingCount}
       lensProfiles={lensProfiles}
+      fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
       {...wrapperProps}

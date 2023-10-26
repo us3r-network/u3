@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
+import { toast } from 'react-toastify';
+
+import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
+import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
+import { tweetShare } from 'src/utils/twitter';
+import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/share';
 
 import { FarCast, SocailPlatform } from '../../../api';
 import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
@@ -13,29 +19,36 @@ import FCastComment from './FCastComment';
 import {
   PostCardActionsWrapper,
   PostCardContentWrapper,
+  PostCardHeaderWrapper,
   PostCardShowMoreWrapper,
   PostCardUserInfo,
   PostCardWrapper,
 } from '../PostCard';
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
+import { PostCardMenuBtn } from '../PostCardMenuBtn';
 
 export default function FCast({
   cast,
   farcasterUserData,
   openFarcasterQR,
   isDetail,
+  showMenuBtn,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
   isDetail?: boolean;
+  showMenuBtn?: boolean;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
   const castId: CastId = useFarcasterCastId({ cast });
   const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
   const [showMore, setShowMore] = useState(false);
+  const { following } = useFarcasterCtx();
+  const { followAction, unfollowAction, isPending, isFollowing } =
+    useFarcasterFollowAction();
 
   const embeds: {
     imgs: {
@@ -83,6 +96,11 @@ export default function FCast({
     };
   }, [viewRef]);
 
+  const followed = useMemo(() => {
+    if (isFollowing !== undefined) return isFollowing;
+    return following.includes(userData.fid);
+  }, [isFollowing, following, userData.fid]);
+
   return (
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
@@ -93,15 +111,53 @@ export default function FCast({
         navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
-      <PostCardUserInfo
-        data={{
-          platform: SocailPlatform.Farcaster,
-          avatar: userData.pfp,
-          name: userData.display,
-          handle: userData.userName,
-          createdAt: cast.created_at,
-        }}
-      />
+      <PostCardHeaderWrapper>
+        <PostCardUserInfo
+          data={{
+            platform: SocailPlatform.Farcaster,
+            avatar: userData.pfp,
+            name: userData.display,
+            handle: userData.userName,
+            createdAt: cast.created_at,
+          }}
+        />
+        {showMenuBtn && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostCardMenuBtn
+              data={{
+                name: userData.display,
+                handle: userData.userName,
+              }}
+              isFollowed={followed}
+              followPending={isPending}
+              unfollowPending={isPending}
+              followAction={() => {
+                if (followed) {
+                  unfollowAction(userData.fid);
+                } else {
+                  followAction(userData.fid);
+                }
+              }}
+              shareAction={() => {
+                tweetShare(
+                  cast.text,
+                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                );
+              }}
+              copyAction={async () => {
+                await window.navigator.clipboard.writeText(
+                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                );
+                toast.success('Copy success');
+              }}
+            />
+          </div>
+        )}
+      </PostCardHeaderWrapper>
 
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
         <CardText text={cast.text} />

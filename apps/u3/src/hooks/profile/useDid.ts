@@ -26,7 +26,6 @@ export type BioLinksEqualToFilters = {
   network?: string;
   handle?: string;
 };
-const s3ProfileModel = getS3ProfileModel();
 
 const getEqualToFilters = (filters: BioLinksEqualToFilters) => {
   const inputAnd = [];
@@ -59,6 +58,7 @@ const queryBioLinkWithFilters = async ({
     handle,
   });
   try {
+    const s3ProfileModel = getS3ProfileModel();
     const res = await s3ProfileModel.queryBioLinksWithFilters({
       filters,
     });
@@ -79,7 +79,10 @@ export default function useDid(identity: string) {
 
   useEffect(() => {
     (async () => {
-      if (!identity) return;
+      if (!identity) {
+        setDid('');
+        return;
+      }
 
       if (isDidPkh(identity)) {
         setDid(identity);
@@ -107,7 +110,6 @@ export default function useDid(identity: string) {
       }
 
       if (isLensHandle(identity)) {
-        if (!s3ProfileModalInitialed || !s3ProfileModel) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
@@ -115,6 +117,7 @@ export default function useDid(identity: string) {
             network: BIOLINK_LENS_NETWORK,
             handle: lensHandleToBioLinkHandle(identity),
           });
+
           if (biolink) {
             setDid(biolink.creator.id);
           }
@@ -127,7 +130,6 @@ export default function useDid(identity: string) {
       }
 
       if (isFarcasterHandle(identity)) {
-        if (!s3ProfileModalInitialed || !s3ProfileModel) return;
         setLoading(true);
         try {
           const biolink = await queryBioLinkWithFilters({
@@ -143,7 +145,9 @@ export default function useDid(identity: string) {
         } finally {
           setLoading(false);
         }
+        return;
       }
+      setDid('');
     })();
   }, [identity, publicClient, s3ProfileModalInitialed]);
 

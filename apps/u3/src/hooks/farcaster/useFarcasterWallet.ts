@@ -1,13 +1,13 @@
 /* eslint-disable consistent-return */
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import axios from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IdRegistryABI } from 'src/abi/farcaster/IdRegistryABI';
 import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
 
 export default function useFarcasterWallet() {
-  const [walletFid, setWalletFid] = useState<number>(0);
+  const [walletFid, setWalletFid] = useState<number>();
   const [walletSigner, setWalletSigner] = useState<NobleEd25519Signer | null>(
     null
   );
@@ -26,22 +26,22 @@ export default function useFarcasterWallet() {
     chainId: OP_CHAIN_ID,
   });
 
-  const signerCheck = useCallback(() => {
-    if (!walletFid) return;
-    const privateKey = localStorage.getItem(`signerPrivateKey-${walletFid}`);
+  const signerCheck = (fid: number) => {
+    if (!fid) return;
+    const privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
     if (privateKey !== null) {
       const ed25519Signer = new NobleEd25519Signer(
         Buffer.from(privateKey, 'hex')
       );
       return ed25519Signer;
     }
-  }, [walletFid]);
+  };
 
-  const fnameCheck = useCallback(async () => {
-    if (!walletFid) return;
+  const fnameCheck = async (fid: number) => {
+    if (!fid) return;
     try {
       const resp = await axios.get(
-        `https://fnames.farcaster.xyz/transfers?fid=${walletFid}`
+        `https://fnames.farcaster.xyz/transfers?fid=${fid}`
       );
       if (resp.data.transfers.length > 0) {
         return resp.data.transfers[0].username;
@@ -49,13 +49,13 @@ export default function useFarcasterWallet() {
     } catch (error) {
       console.log(error);
     }
-  }, [walletFid]);
+  };
 
-  const storageCheck = useCallback(async () => {
-    if (!walletFid) return;
+  const storageCheck = async (fid: number) => {
+    if (!fid) return;
     try {
       const resp = await axios.get(
-        `https://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${walletFid}`
+        `https://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${fid}`
       );
       if (resp.data.limits?.length > 0) {
         return Boolean(resp.data.limits?.[0].limit); // mainnet
@@ -63,32 +63,47 @@ export default function useFarcasterWallet() {
     } catch (error) {
       console.log(error);
     }
-  }, [walletFid]);
+  };
 
   useEffect(() => {
+    // console.log('wallet check effect', { status, walletFid });
+    if (status === 'idle') {
+      setWalletCheckStatus('idle');
+      return;
+    }
     if (status === 'loading') return;
+    if (walletFid === undefined) {
+      setWalletCheckStatus('done');
+      return;
+    }
+
     setWalletCheckStatus('loading');
-    Promise.all([signerCheck(), fnameCheck(), storageCheck()])
+    console.log('wallet check start', { walletFid });
+    Promise.all([
+      signerCheck(walletFid),
+      fnameCheck(walletFid),
+      storageCheck(walletFid),
+    ])
       .then((data) => {
         setWalletSigner(data[0]);
         setFname(data[1]);
         setHasStorage(data[2]);
+        console.log('promise wallet check done', data);
       })
       .finally(() => {
         // TODO: timeout is wait for state to update
         setTimeout(() => {
+          console.log('wallet check done');
           setWalletCheckStatus('done');
         }, 100);
       });
-  }, [signerCheck, fnameCheck, storageCheck, status]);
+  }, [walletFid, status]);
 
   useEffect(() => {
-    // eslint-disable-next-line  @typescript-eslint/no-base-to-string
-    console.log(`Your FID is: ${idOf}`);
     if (idOf) {
       setWalletFid(Number(idOf));
     } else if (chain?.id !== 1) {
-      setWalletFid(0);
+      setWalletFid(undefined);
     }
   }, [chain?.id, idOf]);
 
