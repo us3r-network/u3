@@ -10,7 +10,7 @@ import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 
 export default function useFarcasterFollowAction() {
   const [isPending, setIsPending] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(undefined); // todo: check if following
+  const [isFollowing, setIsFollowing] = useState<boolean>(undefined); // todo: check if following
   const { encryptedSigner, isConnected, openFarcasterQR, currFid } =
     useFarcasterCtx();
 
