@@ -134,7 +134,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
 
   const castImg = useMemo(() => {
     const img = data.cast.embeds.find((item) => isImg(item?.url))?.url;
-    return img;
+    return img as string;
   }, [data.cast]);
 
   if (!castImg) return null;

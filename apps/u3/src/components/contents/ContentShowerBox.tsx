@@ -67,7 +67,7 @@ export default function ContentShowerBox({
     if (!selectContent?.value) return '';
     try {
       const content = JSON.parse(selectContent?.value);
-      return content.content;
+      return content.content as string;
     } catch (error) {
       return selectContent?.value;
     }
