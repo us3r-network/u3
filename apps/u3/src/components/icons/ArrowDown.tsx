@@ -13,11 +13,11 @@ export default function ArrowDown() {
         width="12"
         height="12"
         transform="rotate(-90 0 12)"
-        fill="url(#pattern0)"
+        fill="url(#pattern0_arrow_down)"
       />
       <defs>
         <pattern
-          id="pattern0"
+          id="pattern0_arrow_down"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"

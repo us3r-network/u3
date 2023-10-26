@@ -274,3 +274,22 @@ export function getFarcasterChannelTrends(
     },
   });
 }
+
+export function getUserChannels(fid: string | number) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/user/channels?fid=${fid}`,
+    method: 'get',
+  });
+}
+
+export function pinFarcasterChannel(fid: string | number, parent_url: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/user/channels`,
+    method: 'post',
+    data: {
+      fid,
+      parent_url,
+      platform: 'farcaster',
+    },
+  });
+}

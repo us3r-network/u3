@@ -20,6 +20,7 @@ import useFarcasterWallet from 'src/hooks/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/farcaster/useFarcasterTrendChannel';
 import useFarcasterFollowData from 'src/hooks/farcaster/useFarcasterFollowData';
+import useFarcasterChannel from 'src/hooks/farcaster/useFarcasterChannel';
 
 import { getPrivateKey } from '../utils/farsign-utils';
 import { getFarcasterUserInfo } from '../api/farcaster';
@@ -84,6 +85,9 @@ export interface FarcasterContextData {
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
   channels: FarcasterChannel[];
   following: string[];
+  joinChannel: (parent_url: string) => Promise<void>;
+  userChannels: { parent_url: string }[];
+  getUserChannels: () => Promise<void>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -121,6 +125,9 @@ export default function FarcasterProvider({
 
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
+  });
+  const { userChannels, getUserChannels, joinChannel } = useFarcasterChannel({
+    currFid,
   });
 
   const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
@@ -261,6 +268,9 @@ export default function FarcasterProvider({
         setFarcasterUserData,
         channels,
         following: farcasterFollowData.followingData,
+        userChannels,
+        joinChannel,
+        getUserChannels,
       }}
     >
       {children}

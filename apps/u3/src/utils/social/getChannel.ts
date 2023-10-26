@@ -10,6 +10,14 @@ export function getChannelFromName(name: string) {
   return null;
 }
 
+export function getChannelFromUrl(url: string) {
+  const channel = FarcasterChannelData.find((c) => c.parent_url === url);
+  if (channel) {
+    return channel;
+  }
+  return null;
+}
+
 export function getChannel() {
   return FarcasterChannelData;
 }

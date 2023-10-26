@@ -6,11 +6,12 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-
 import { isMobile } from 'react-device-detect';
-
 import { useActiveProfile } from '@lens-protocol/react-web';
 import KeepAlive from 'react-activation';
+
+import PinedChannels from 'src/components/social/PinedChannels';
+
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
@@ -153,6 +154,7 @@ export default function Home() {
             onChangePlatform={setSocialPlatform}
           />
           <AddPost />
+          <PinedChannels />
         </LeftWrapper>
       )}
 
@@ -234,7 +236,8 @@ const LeftWrapper = styled(MainLeft)`
   gap: 20px;
   position: absolute;
   top: 116px;
-  height: fit-content;
+  height: calc(100vh - 96px - 40px);
+  overflow: scroll;
 `;
 
 const RightWrapper = styled(MainRight)`
