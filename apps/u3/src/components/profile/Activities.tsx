@@ -5,7 +5,6 @@ import Badge from '../contents/Badge';
 import { Copy } from '../icons/copy';
 import { CurrencyETH } from '../icons/currency-eth';
 import { GasPump } from '../icons/gas-pump';
-import UKarmaList, { UKarmaTitle } from './UKarmaList';
 import Rss3Content from '../fren/Rss3Content';
 
 export default function Activities() {
@@ -25,11 +24,6 @@ export default function Activities() {
             </div>
           );
         })) || <NoActivities />} */}
-
-      <div className="karma-list">
-        <UKarmaTitle />
-        <UKarmaList />
-      </div>
     </ContentBox>
   );
 }
@@ -199,17 +193,6 @@ const ContentBox = styled.div`
         }
       }
     }
-  }
-
-  & .karma-list {
-    min-width: 360px;
-    width: 360px;
-    background: #1b1e23;
-    border-radius: 20px;
-    color: #ffffff;
-    overflow: scroll;
-    max-height: calc(100vh - 170px - 24px - 24px - 73px - 40px);
-    height: fit-content;
   }
 `;
 
