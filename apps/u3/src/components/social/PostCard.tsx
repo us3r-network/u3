@@ -190,7 +190,7 @@ export function PostCardUserInfo({
 
   const profileUrl = useMemo(() => {
     if (profileIdentity) {
-      return `/profile/${profileIdentity}`;
+      return `/u/${profileIdentity}`;
     }
     return '';
   }, [profileIdentity]);

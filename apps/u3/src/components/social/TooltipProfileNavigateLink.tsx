@@ -17,7 +17,7 @@ export default function TooltipProfileNavigateLink({
   const navigate = useNavigate();
   const profileUrl = useMemo(() => {
     if (identity) {
-      return `/profile/${identity}`;
+      return `/u/${identity}`;
     }
     return '';
   }, [identity]);

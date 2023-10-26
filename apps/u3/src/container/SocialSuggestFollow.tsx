@@ -112,10 +112,7 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
     return lensHandleToBioLinkHandle(handle);
   }, [handle]);
 
-  const profileUrl = useMemo(
-    () => `/profile/${profileIdentity}`,
-    [profileIdentity]
-  );
+  const profileUrl = useMemo(() => `/u/${profileIdentity}`, [profileIdentity]);
 
   return (
     <FollowItemWrapper>
@@ -186,10 +183,7 @@ function FarcasterFollowItem({
     return farcasterHandleToBioLinkHandle(userData.userName);
   }, [userData]);
 
-  const profileUrl = useMemo(
-    () => `/profile/${profileIdentity}`,
-    [profileIdentity]
-  );
+  const profileUrl = useMemo(() => `/u/${profileIdentity}`, [profileIdentity]);
 
   return (
     <FollowItemWrapper>

@@ -74,9 +74,7 @@ export default function ListTable({
                       </div>
                       <div className="user-details-container">
                         <div className="name">
-                          <a href={`/profile/${item.did}`}>
-                            {shortPubKey(pubkey)}
-                          </a>
+                          <a href={`/u/${item.did}`}>{shortPubKey(pubkey)}</a>
                         </div>
                         <div className="badge grey">{shortPubKey(pubkey)}</div>
                       </div>

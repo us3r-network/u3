@@ -50,7 +50,7 @@ function MessageRow({ msg }: { msg: DecodedMessage }) {
     })();
   }, [msg, xmtpClient]);
   const profileUrl = useMemo(
-    () => `/profile/${msg.senderAddress}`,
+    () => `/u/${msg.senderAddress}`,
     [msg.senderAddress]
   );
   return (

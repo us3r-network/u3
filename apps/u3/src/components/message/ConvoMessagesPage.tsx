@@ -15,7 +15,7 @@ export default function ConvoMessagesPage() {
   const { setOpenMessageModal } = useNav();
   const { messageRouteParams, setMessageRouteParams } = useXmtpStore();
   const { peerAddress } = messageRouteParams;
-  const profileUrl = useMemo(() => `/profile/${peerAddress}`, [peerAddress]);
+  const profileUrl = useMemo(() => `/u/${peerAddress}`, [peerAddress]);
   return (
     <Wrapper>
       <Header>
