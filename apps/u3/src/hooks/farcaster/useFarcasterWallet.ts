@@ -66,12 +66,17 @@ export default function useFarcasterWallet() {
   };
 
   useEffect(() => {
+    // console.log('wallet check effect', { status, walletFid });
     if (status === 'idle') {
       setWalletCheckStatus('idle');
       return;
     }
-    if (walletFid === undefined) return;
     if (status === 'loading') return;
+    if (walletFid === undefined) {
+      setWalletCheckStatus('done');
+      return;
+    }
+
     setWalletCheckStatus('loading');
     console.log('wallet check start', { walletFid });
     Promise.all([
