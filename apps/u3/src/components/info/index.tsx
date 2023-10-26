@@ -11,11 +11,8 @@ import WalletList from './WalletList';
 import AddWalletModal from './AddWalletModal';
 import { ProfileWallet } from '../../services/types/profile';
 import { defaultFormatDate } from '../../utils/time';
-import Karma from '../common/Karma';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
-import { selectKarmaState } from '../../features/profile/karma';
-import KarmaModal from './KarmaModal';
 import { messages } from '../../utils/message';
 import {
   selectFrensHandlesState,
@@ -37,8 +34,6 @@ export default function Info({
   addWallet: (addr: string) => Promise<boolean>;
 }) {
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showKarmaModal, setShowKarmaModal] = useState(false);
-  const { totalScore } = useAppSelector(selectKarmaState);
 
   const dispatch = useAppDispatch();
   const { following, follower } = useAppSelector(selectFrensHandlesState);
@@ -68,12 +63,6 @@ export default function Info({
               <span className="name">
                 <UserName />
               </span>
-              <Karma
-                score={`${totalScore || ''}`}
-                clickAction={() => {
-                  setShowKarmaModal(true);
-                }}
-              />
             </div>
             <div className="wallet">
               <WalletList
@@ -135,12 +124,6 @@ export default function Info({
             setShowAddModal(false);
           }
           return r;
-        }}
-      />
-      <KarmaModal
-        show={showKarmaModal}
-        closeAction={() => {
-          setShowKarmaModal(false);
         }}
       />
     </InfoBox>

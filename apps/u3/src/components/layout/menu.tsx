@@ -14,8 +14,6 @@ import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
 import { ReactComponent as LogoIconSvg } from '../imgs/logo-icon.svg';
 // import LogoutConfirmModal from './LogoutConfirmModal';
 // import useLogin from '../../hooks/useLogin';
-import { useAppSelector } from '../../store/hooks';
-import { selectKarmaState } from '../../features/profile/karma';
 import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
@@ -37,7 +35,6 @@ export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   // const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
-  const { totalScore } = useAppSelector(selectKarmaState);
 
   const { data: lensProfile } = useActiveProfile();
   const lensProfileId = lensProfile?.id;
@@ -92,7 +89,6 @@ export default function Menu() {
             // onLogout={() => {
             //   setOpenLogoutConfirm(true);
             // }}
-            karmaScore={totalScore}
           />
         </LoginButtonBox>
       </FooterBox>

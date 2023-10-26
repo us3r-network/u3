@@ -5,14 +5,12 @@
  * @LastEditTime: 2023-02-02 10:24:07
  * @Description: file description
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import useLogin from './useLogin';
 import { complete, personalComplete } from '../services/api/contents';
 import { getContentShareUrl } from '../utils/share';
 import { tweetShare } from '../utils/twitter';
-import { fetchUserKarma } from '../features/profile/karma';
-import { store } from '../store/store';
 import { messages } from '../utils/message';
 import { ContentListItem } from '../services/types/contents';
 

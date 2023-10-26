@@ -1,10 +1,4 @@
-import {
-  KarmaCheckInResponse,
-  KarmaListResponse,
-  KarmaResponse,
-  ProfileResponse,
-  ProfilesResponse,
-} from '../types/profile';
+import { ProfileResponse, ProfilesResponse } from '../types/profile';
 import request, { RequestPromise } from './request';
 
 export function fetchU3Profile(token: string): RequestPromise<ProfileResponse> {
@@ -131,54 +125,6 @@ export function updatePreference(
     url: `/users/preference`,
     method: 'post',
     data,
-    headers: {
-      token,
-      needToken: true,
-    },
-  });
-}
-
-export function getKarma(token: string): RequestPromise<KarmaResponse> {
-  return request({
-    url: `/users/karma`,
-    method: 'get',
-    headers: {
-      token,
-      needToken: true,
-    },
-  });
-}
-
-export function dailyCheckIn(
-  token: string
-): RequestPromise<KarmaCheckInResponse> {
-  return request({
-    url: `/users/karma-dailycheckin`,
-    method: 'post',
-    headers: {
-      token,
-      needToken: true,
-    },
-  });
-}
-
-export function getKarmaList(
-  {
-    pageSize,
-    pageNumber,
-  }: {
-    pageSize?: number;
-    pageNumber?: number;
-  },
-  token: string
-): RequestPromise<KarmaListResponse> {
-  return request({
-    url: `/users/karma-list`,
-    method: 'get',
-    params: {
-      pageSize: pageSize ?? 10,
-      pageNumber: pageNumber ?? 0,
-    },
     headers: {
       token,
       needToken: true,

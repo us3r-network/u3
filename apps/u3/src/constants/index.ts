@@ -6,7 +6,6 @@
  * @Description: 系统相关常量定义
  */
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-export const API_SCAN_URL = process.env.REACT_APP_S3_API_BASE_URL;
 export const MEDIA_BREAK_POINTS = {
   xs: 320,
   sm: 480,
@@ -29,17 +28,6 @@ export const CERAMIC_HOST = process.env.REACT_APP_CERAMIC_HOST;
 export const FamilyOrAppMap = {
   'Gitcoin Passport':
     'kjzl6cwe1jw148h1e14jb5fkf55xmqhmyorp29r9cq356c7ou74ulowf8czjlzs',
-};
-
-export const FamilyOrAppMapReverse = Object.fromEntries(
-  Object.entries(FamilyOrAppMap).map(([key, value]) => [value, key])
-);
-
-export const Types: { [key: string]: string } = {
-  '0': 'TileDocument',
-  '1': 'Caip10Link',
-  '2': 'Model',
-  '3': 'ModelInstanceDocument',
 };
 
 export const WALLET_CONNECT_PROJECT_ID =
