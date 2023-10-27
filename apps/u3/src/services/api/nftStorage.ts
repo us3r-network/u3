@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-10-20 19:08:17
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-23 15:50:26
+ * @LastEditTime: 2023-10-26 18:37:34
  * @FilePath: /u3/apps/u3/src/services/api/nftStorage.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -55,7 +55,10 @@ export async function storeNFT(nft) {
 }
 
 export const parseIPFSImage = (ipfs) => {
-  const url = new URL(ipfs.url);
-  const cid = url.pathname.replace('//', '');
-  return `https://ipfs.io/ipfs/${cid}`;
+  if (ipfs && ipfs.url && ipfs.url.includes('ipfs://')) {
+    const url = new URL(ipfs?.url);
+    const cid = url.pathname.replace('//', '');
+    return `https://ipfs.io/ipfs/${cid}`;
+  }
+  return null;
 };
