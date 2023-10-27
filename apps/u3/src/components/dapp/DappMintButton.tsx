@@ -8,13 +8,13 @@ import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
 import { storeNFT } from '../../services/shared/api/nftStorage';
 
 import { updateDappTokenId } from '../../services/dapp/api/dapp';
-import useDappCollection from '../../hooks/dapp/useDappCollection';
+import useDappCollection, { ZoraNFT } from '../../hooks/dapp/useDappCollection';
 import useLogin from '../../hooks/shared/useLogin';
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn, ModalTitle } from '../common/modal/ModalWidgets';
 import {
   zora1155ToMintAddress,
-  zoraDappsNetworkInfo,
+  zoraDappsNetworkName,
   zoraDappsNetworkExplorer,
   ziraChainId,
 } from '../../constants/zora';
@@ -30,14 +30,14 @@ export function DappMintButton(props: DappMintButtonProps) {
   const [dappCollected, setDappCollected] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const { walletAddress, isLogin, login } = useLogin();
-  const { dappCollection, updateDappCollection } =
-    useDappCollection(walletAddress);
+  const { dappCollection, append } = useDappCollection(walletAddress);
   useEffect(() => {
     setDappCollected(
       dappCollection?.filter(
-        (token) => Number(token.tokenId) === dappData.tokenId
+        (dapp) => Number(dapp.tokenId) === dappData.tokenId
       ).length > 0
     );
+    console.log('dappCollection updated ', dappCollection, dappCollected);
   }, [dappCollection]);
   return isLogin ? (
     <>
@@ -68,7 +68,14 @@ export function DappMintButton(props: DappMintButtonProps) {
         onSuccess={(type, tokenId) => {
           switch (type) {
             case SuccessType.MINT:
-              updateDappCollection();
+              // eslint-disable-next-line no-case-declarations
+              const newNFT: ZoraNFT = {
+                chainId: Number(ziraChainId),
+                contractAddress: zora1155ToMintAddress,
+                tokenId: Number(tokenId),
+              };
+              console.log('newNFT: ', newNFT);
+              append([newNFT]);
               break;
             case SuccessType.NEW_TOKEN:
               dappData.tokenId = Number(tokenId);
@@ -88,7 +95,7 @@ export function DappMintButton(props: DappMintButtonProps) {
 
 type MintButtonProps = {
   tokenId: number;
-  onSuccess?: (tokenId?: bigint) => void;
+  onSuccess?: (tokenId?: number) => void;
 };
 
 function MintButton(props: MintButtonProps) {
@@ -99,7 +106,7 @@ function MintButton(props: MintButtonProps) {
     useMint(tokenId);
   useEffect(() => {
     if (isSuccess) {
-      onSuccess();
+      onSuccess(tokenId);
     }
   }, [isSuccess]);
   if (isSuccess) {
@@ -131,7 +138,7 @@ function MintButton(props: MintButtonProps) {
 
 type PrepareNewTokenButtonProps = {
   dappData: DappExploreListItemResponse;
-  onSuccess?: (tokenId: bigint) => void;
+  onSuccess?: (tokenId: number) => void;
 };
 
 function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
@@ -184,7 +191,7 @@ function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
 type NewTokenButtonProps = {
   dappId: string | number;
   metadataUri: string;
-  onSuccess?: (tokenId: bigint) => void;
+  onSuccess?: (tokenId: number) => void;
 };
 function NewTokenButton(props: NewTokenButtonProps) {
   const { dappId, metadataUri, onSuccess } = props;
@@ -197,7 +204,7 @@ function NewTokenButton(props: NewTokenButtonProps) {
   useEffect(() => {
     if (isSuccess) {
       updateDappTokenId(dappId, Number(nextTokenId as bigint));
-      onSuccess(nextTokenId as bigint);
+      onSuccess(Number(nextTokenId as bigint));
     }
   }, [isSuccess]);
   if (isSuccess) return <MintMessage>New Token Created</MintMessage>;
@@ -225,7 +232,7 @@ type NFTDetailModalProps = {
   open: boolean;
   closeModal: () => void;
   dappData: DappExploreListItemResponse;
-  onSuccess: (type: SuccessType, tokenId?: bigint) => void;
+  onSuccess: (type: SuccessType, tokenId?: number) => void;
 };
 
 function NFTDetailModal({
@@ -250,7 +257,7 @@ function NFTDetailModal({
           {dappData.tokenId ? (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkInfo.chain}</span>
+                <span>Network</span> <span>{zoraDappsNetworkName}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -269,23 +276,23 @@ function NFTDetailModal({
               <NFTInfo>
                 <span>Token ID</span> <span>{dappData.tokenId}</span>
               </NFTInfo>
-              {chain.id === Number(ziraChainId) ? (
+              {chain?.id === Number(ziraChainId) ? (
                 <MintButton
                   tokenId={dappData.tokenId}
                   onSuccess={() => {
-                    onSuccess(SuccessType.MINT);
+                    onSuccess(SuccessType.MINT, dappData.tokenId);
                   }}
                 />
               ) : (
                 <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkInfo.chain}`}
+                  {`Switch to ${zoraDappsNetworkName}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>
           ) : (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkInfo.chain}</span>
+                <span>Network</span> <span>{zoraDappsNetworkName}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -307,7 +314,7 @@ function NFTDetailModal({
                   <b>to earn 0.000111 ETH for each NFT minted.</b>
                 </p>
               </NFTInfo>
-              {chain.id === Number(ziraChainId) ? (
+              {chain?.id === Number(ziraChainId) ? (
                 <PrepareNewTokenButton
                   dappData={dappData}
                   onSuccess={(tokenId) => {
@@ -316,7 +323,7 @@ function NFTDetailModal({
                 />
               ) : (
                 <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkInfo.chain}`}
+                  {`Switch to ${zoraDappsNetworkName}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>

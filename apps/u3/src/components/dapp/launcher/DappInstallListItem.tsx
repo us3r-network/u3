@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-10-23 15:08:46
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-24 13:40:47
+ * @LastEditTime: 2023-10-26 18:35:10
  * @FilePath: /u3/apps/u3/src/components/dapp/launcher/DappInstallListItem.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -10,11 +10,10 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import React from 'react';
 import ImgDefault from '../../common/ImgDefault';
 import { ReactComponent as DappHandleIcon } from '../../common/assets/svgs/dots-vertical.svg';
-import { parseIPFSImage } from '../../../services/shared/api/nftStorage';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   data: {
-    image?: unknown;
+    image?: string;
     name?: string;
   };
   onOpen?: () => void;
@@ -34,7 +33,7 @@ export default React.forwardRef(function DappInstallListItem(
       <ItemInner>
         <ItemImg
           draggable={false}
-          src={parseIPFSImage(data?.image)}
+          src={data?.image}
           onClick={() => !disabled && onOpen && onOpen()}
           title={data?.name}
         />
