@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { CastId } from '@farcaster/hub-web';
 
-import { FarCast } from '../../../api';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import { FarCast } from '../../../services/social/types';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import FCastCommentPostModal from './FCastCommentPostModal';
-import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
+import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import PostReply from '../PostReply';
-import useLogin from '../../../hooks/useLogin';
-import useFarcasterCurrFid from '../../../hooks/farcaster/useFarcasterCurrFid';
+import useLogin from '../../../hooks/shared/useLogin';
+import useFarcasterCurrFid from '../../../hooks/social/farcaster/useFarcasterCurrFid';
 
 export default function FCastComment({
   cast,

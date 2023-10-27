@@ -8,9 +8,9 @@
 import { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { ReactComponent as IconArrowCircleLeft } from '../../common/icons/svgs/arrow-circle-left.svg';
-import { ReactComponent as IconFilterFunnel } from '../../common/icons/svgs/filter-funnel.svg';
-import { ReactComponent as IconRefresh } from '../../common/icons/svgs/refresh.svg';
+import { ReactComponent as IconArrowCircleLeft } from '../../common/assets/svgs/arrow-circle-left.svg';
+import { ReactComponent as IconFilterFunnel } from '../../common/assets/svgs/filter-funnel.svg';
+import { ReactComponent as IconRefresh } from '../../common/assets/svgs/refresh.svg';
 import {
   ButtonPrimary,
   ButtonPrimaryLine,

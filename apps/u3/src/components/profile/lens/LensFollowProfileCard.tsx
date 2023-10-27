@@ -8,9 +8,9 @@ import {
 import { useMemo } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
 import FollowProfileCard from '../FollowProfileCard';
-import { useLensCtx } from '../../../contexts/AppLensCtx';
-import { SocailPlatform } from '../../../api';
-import getAvatar from '../../../utils/lens/getAvatar';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
+import { SocailPlatform } from '../../../services/social/types';
+import getAvatar from '../../../utils/social/lens/getAvatar';
 
 type LensFollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
   profile?: Profile;

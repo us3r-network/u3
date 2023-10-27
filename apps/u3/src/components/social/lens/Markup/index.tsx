@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import linkifyRegex from 'remark-linkify-regex';
 import MarkupLink from './MarkupLink';
-import trimify from '../../../../utils/trimify';
+import trimify from '../../../../utils/shared/trimify';
 import { Regex } from './regex';
 
 const plugins = [

@@ -9,13 +9,13 @@ import { useProfileState } from '@us3r-network/profile';
 import OnChainInterest, {
   OnChainInterestMobile,
 } from '../components/profile/OnChainInterest';
-import { fetchU3Assets, ProfileDefault } from '../services/api/profile';
-import { ProfileEntity } from '../services/types/profile';
+import { fetchU3Assets, ProfileDefault } from '../services/profile/api/profile';
+import { ProfileEntity } from '../services/profile/types/profile';
 import Loading from '../components/common/loading/Loading';
-import { mergeProfilesData } from '../utils/mergeProfilesData';
+import { mergeProfilesData } from '../utils/profile/mergeProfilesData';
 import { MainWrapper } from '../components/layout/Index';
-import PageTitle from '../components/common/PageTitle';
-import MobilePageHeader from '../components/common/mobile/MobilePageHeader';
+import PageTitle from '../components/layout/PageTitle';
+import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
 
 export default function Asset() {
   const { profile } = useProfileState()!;

@@ -19,15 +19,15 @@ import { Popover } from 'antd';
 
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
-import { TagType } from '../services/types/common';
-import { AsyncRequestStatus } from '../services/types';
+import { TagType } from '../services/shared/types/common';
+import { AsyncRequestStatus } from '../services/shared/types';
 
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import SearchInput from '../components/common/input/SearchInput';
 import Loading from '../components/common/loading/Loading';
 
 import Select, { SelectOption } from '../components/common/select/Select';
-import ProjectTypeSvg from '../components/common/icons/svgs/grid.svg';
+import ProjectTypeSvg from '../components/common/assets/svgs/grid.svg';
 
 import {
   getFeed,
@@ -38,10 +38,10 @@ import {
   getReco,
 } from '../features/frens/frensHandles';
 import { MainWrapper } from '../components/layout/Index';
-import FeedsMenu from '../components/web3-today/feeds/FeedsMenu';
+import FeedsMenu from '../components/news/web3-today/feeds/FeedsMenu';
 import ListScrollBox from '../components/common/box/ListScrollBox';
-import { messages } from '../utils/message';
-import useLogin from '../hooks/useLogin';
+import { messages } from '../utils/shared/message';
+import useLogin from '../hooks/shared/useLogin';
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');

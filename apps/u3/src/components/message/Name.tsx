@@ -1,5 +1,5 @@
 import { UserName, UserNameProps } from '@us3r-network/profile';
-import { getDidPkhWithAddress } from '../../utils/did';
+import { getDidPkhWithAddress } from '../../utils/shared/did';
 
 export default function Name({
   address,

@@ -1,7 +1,7 @@
-import { SocailPlatform } from '../../api';
-import GridSvgUrl from '../common/icons/svgs/grid2.svg';
-import LensIcon from '../icons/pngs/lens.png';
-import FarcasterIcon from '../icons/pngs/farcaster.png';
+import { SocailPlatform } from '../../services/social/types';
+import GridSvgUrl from '../common/assets/svgs/grid2.svg';
+import LensIcon from '../common/assets/pngs/lens.png';
+import FarcasterIcon from '../common/assets/pngs/farcaster.png';
 import ListChoice from '../common/select/ListChoice';
 
 const options = [

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
+import { useXmtpStore } from '../../contexts/message/XmtpStoreCtx';
 import ConversationList from './ConversationList';
 import NoConversations from './NoConversations';
 // import SearchConversation from './SearchConversation';

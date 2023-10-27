@@ -6,14 +6,17 @@ import { UserDataType } from '@farcaster/hub-web';
 import styled from 'styled-components';
 import dayjs from 'dayjs';
 
-import { FarCastEmbedMeta, FarCastEmbedMetaCast } from '../../api';
+import {
+  FarCastEmbedMeta,
+  FarCastEmbedMetaCast,
+} from '../../services/social/types';
 import {
   PostCardCastWrapper,
   PostCardEmbedWrapper,
   PostCardImgWrapper,
   PostCardNftWrapper,
 } from './PostCard';
-import { getFarcasterEmbedMetadata } from '../../api/farcaster';
+import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 
 export default function Embed({

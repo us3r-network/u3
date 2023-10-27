@@ -7,7 +7,7 @@
  */
 import styled from 'styled-components';
 import ModalBase, { ModalBaseBody } from '../common/modal/ModalBase';
-import { UpdateProjectData } from '../../services/types/project';
+import { UpdateProjectData } from '../../services/shared/types/project';
 import ProjectForm from './ProjectForm';
 
 export type ProjectEditModalProps = {

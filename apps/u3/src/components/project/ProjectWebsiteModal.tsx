@@ -6,13 +6,13 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import useProjectWebsite from '../../hooks/useProjectWebsite';
+import useProjectWebsite from '../../hooks/shared/useProjectWebsite';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 import ImgDefault from '../common/ImgDefault';
 import ProjectWebsitePreview from './ProjectWebsitePreview';
 
-import CloseSvg from '../common/icons/svgs/close.svg';
-import useFullScreen from '../../hooks/useFullScreen';
+import CloseSvg from '../common/assets/svgs/close.svg';
+import useFullScreen from '../../hooks/shared/useFullScreen';
 import ButtonFullScreen from '../common/button/ButtonFullScreen';
 
 export default function ProjectWebsiteModal() {

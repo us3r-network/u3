@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { ButtonPrimary } from '../common/button/ButtonBase';
-import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import MessageModalCloseBtn from './MessageModalCloseBtn';
 
 export default function NoEnableXmtp() {

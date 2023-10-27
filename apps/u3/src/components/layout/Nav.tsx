@@ -8,7 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import useLogin from '../../hooks/useLogin';
+import useLogin from '../../hooks/shared/useLogin';
 import { CustomNavObject, navs } from '../../route/nav';
 import useRoute from '../../route/useRoute';
 

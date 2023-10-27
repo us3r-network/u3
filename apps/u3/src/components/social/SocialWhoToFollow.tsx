@@ -5,22 +5,22 @@ import {
   useProfilesToFollow,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
-import useFarcasterCurrFid from 'src/hooks/farcaster/useFarcasterCurrFid';
-import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
+import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
+import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import getAvatar from '../../utils/lens/getAvatar';
-import { useLensCtx } from '../../contexts/AppLensCtx';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import useFarcasterRecommendedProfile from '../../hooks/farcaster/useFarcasterRecommendedProfile';
-import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
-import useLogin from '../../hooks/useLogin';
+import getAvatar from '../../utils/social/lens/getAvatar';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
+import useFarcasterRecommendedProfile from '../../hooks/social/farcaster/useFarcasterRecommendedProfile';
+import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
+import useLogin from '../../hooks/shared/useLogin';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
-import TooltipProfileNavigateLink from './TooltipProfileNavigateLink';
+import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 
 const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {

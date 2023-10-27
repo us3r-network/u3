@@ -2,14 +2,14 @@ import { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo } from 'react';
 import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { PlatformAccountsData } from './PlatformAccounts';
-import { SocailPlatform } from '../../../api';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
-import useUpsertFarcasterUserData from '../../../hooks/farcaster/useUpsertFarcasterUserData';
-import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
+import { SocailPlatform } from '../../../services/social/types';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import useUpsertFarcasterUserData from '../../../hooks/social/farcaster/useUpsertFarcasterUserData';
+import useFarcasterFollowNum from '../../../hooks/social/farcaster/useFarcasterFollowNum';
 import useBioLinkListWithWeb3Bio from '../../../hooks/profile/useBioLinkListWithWeb3Bio';
 import ProfileInfoBaseCard from './ProfileInfoCardLayout';
-import getAvatar from '../../../utils/lens/getAvatar';
-import useLazyQueryFidWithAddress from '../../../hooks/farcaster/useLazyQueryFidWithAddress';
+import getAvatar from '../../../utils/social/lens/getAvatar';
+import useLazyQueryFidWithAddress from '../../../hooks/social/farcaster/useLazyQueryFidWithAddress';
 
 interface PlatformProfileInfoCardContainerProps
   extends StyledComponentPropsWithRef<'div'> {

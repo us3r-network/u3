@@ -7,8 +7,8 @@
  */
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import useConfigsTopics from '../../hooks/useConfigsTopics';
-import { DappExploreListParams } from '../../services/types/dapp';
+import useConfigsTopics from '../../hooks/shared/useConfigsTopics';
+import { DappExploreListParams } from '../../services/dapp/types/dapp';
 import CheckboxMultiChoice from '../common/checkbox/CheckboxMultiChoice';
 
 export type DappExploreListFilterMobileValues = Pick<

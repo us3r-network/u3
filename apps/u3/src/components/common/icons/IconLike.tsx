@@ -1,3 +1,3 @@
-import { ReactComponent as IconImage } from './svgs/like.svg';
+import { ReactComponent as IconImage } from '../assets/svgs/like.svg';
 
 export default IconImage;

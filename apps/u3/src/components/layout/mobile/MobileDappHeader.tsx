@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
-import useDappsSearchParams from '../../../hooks/useDappsSearchParams';
+import useDappsSearchParams from '../../../hooks/dapp/useDappsSearchParams';
 import Filter from '../../dapp/DappExploreListFilterMobile';
 import MobileHeaderLayout from './MobileHeaderLayout';
 

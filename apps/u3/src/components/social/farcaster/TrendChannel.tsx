@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import styled from 'styled-components';
 import ChannelItem from './ChannelItem';
 

@@ -4,12 +4,12 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { TokenInfo, useMint } from '../../hooks/dapp/useMint';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useCreate1155Token } from '../../hooks/dapp/useCreate1155Token';
-import { DappExploreListItemResponse } from '../../services/types/dapp';
-import { storeNFT } from '../../services/api/nftStorage';
+import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
+import { storeNFT } from '../../services/shared/api/nftStorage';
 
-import { updateDappTokenId } from '../../services/api/dapp';
+import { updateDappTokenId } from '../../services/dapp/api/dapp';
 import useDappCollection from '../../hooks/dapp/useDappCollection';
-import useLogin from '../../hooks/useLogin';
+import useLogin from '../../hooks/shared/useLogin';
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn, ModalTitle } from '../common/modal/ModalWidgets';
 import {
@@ -18,7 +18,7 @@ import {
   zoraDappsNetworkExplorer,
   ziraChainId,
 } from '../../constants/zora';
-import { shortPubKey } from '../../utils/shortPubKey';
+import { shortPubKey } from '../../utils/shared/shortPubKey';
 import Loading from '../common/loading/Loading';
 
 type DappMintButtonProps = {

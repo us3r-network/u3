@@ -7,7 +7,7 @@
  */
 import styled from 'styled-components';
 import ModalBase, { ModalBaseBody } from '../common/modal/ModalBase';
-import { UpdateDappData } from '../../services/types/dapp';
+import { UpdateDappData } from '../../services/dapp/types/dapp';
 import DappForm from './DappForm';
 
 export type DappEditModalProps = {

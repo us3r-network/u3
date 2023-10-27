@@ -11,10 +11,10 @@ import { toast } from 'react-toastify';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
-import { getAddressWithDidPkh } from '../../../utils/did';
-import { getAvatarUploadOpts } from '../../../utils/uploadAvatar';
-import { shortPubKey } from '../../../utils/shortPubKey';
-import { Copy } from '../../icons/copy';
+import { getAddressWithDidPkh } from '../../../utils/shared/did';
+import { getAvatarUploadOpts } from '../../../utils/profile/uploadAvatar';
+import { shortPubKey } from '../../../utils/shared/shortPubKey';
+import { Copy } from '../../common/icons/copy';
 import ProfileAvatar from './ProfileAvatar';
 
 export function U3ProfileBasicInfo({ did }: { did: string }) {

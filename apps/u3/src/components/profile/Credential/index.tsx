@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-import { GalxeData, NooxData, PoapData } from '../../../services/types/profile';
+import {
+  GalxeData,
+  NooxData,
+  PoapData,
+} from '../../../services/profile/types/profile';
 import Galxe from './Galxe';
 import Noox from './Noox';
 import Poap from './Poap';

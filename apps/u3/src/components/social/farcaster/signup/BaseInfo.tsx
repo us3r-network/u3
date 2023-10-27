@@ -11,10 +11,10 @@ import {
   FARCASTER_WEB_CLIENT,
 } from 'src/constants/farcaster';
 import styled from 'styled-components';
-import { getFarcasterUserInfo } from 'src/api/farcaster';
-import { uploadImage } from 'src/services/api/upload';
+import { getFarcasterUserInfo } from 'src/services/social/api/farcaster';
+import { uploadImage } from 'src/services/shared/api/upload';
 import { toast } from 'react-toastify';
-import { Edit } from 'src/components/icons/edit';
+import { Edit } from '../../../common/icons/edit';
 // import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import { StyledOps } from './Steps';
 

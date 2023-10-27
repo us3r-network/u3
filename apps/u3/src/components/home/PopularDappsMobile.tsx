@@ -7,7 +7,7 @@
  */
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { DappExploreListItemResponse } from '../../services/types/dapp';
+import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
 import DappExploreListItem from '../dapp/DappExploreListItem';
 import TitleMobile from './TitleMobile';
 

@@ -8,11 +8,11 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Reward } from '../../services/types/common';
-import { EventExploreListItemResponse } from '../../services/types/event';
-import isUrl from '../../utils/isUrl';
+import { Reward } from '../../services/shared/types/common';
+import { EventExploreListItemResponse } from '../../services/news/types/event';
+import isUrl from '../../utils/shared/isUrl';
 import EllipsisText from '../common/text/EllipsisText';
-import RewardTag from '../event/RewardTag';
+import RewardTag from '../news/event/RewardTag';
 
 import TitleMobile from './TitleMobile';
 

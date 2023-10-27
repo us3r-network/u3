@@ -2,10 +2,10 @@ import { useCallback, useState } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import ReplyForm from '../ReplyForm';
-import { useLensCtx } from '../../../contexts/AppLensCtx';
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
-import getAvatar from '../../../utils/lens/getAvatar';
-import useLogin from '../../../hooks/useLogin';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
+import { useCreateLensComment } from '../../../hooks/social/lens/useCreateLensComment';
+import getAvatar from '../../../utils/social/lens/getAvatar';
+import useLogin from '../../../hooks/shared/useLogin';
 
 export default function LensCommentPostForm({
   publicationId,

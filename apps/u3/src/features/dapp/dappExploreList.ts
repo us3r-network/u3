@@ -12,12 +12,12 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { fetchListForDappExplore } from '../../services/api/dapp';
-import { ApiRespCode, AsyncRequestStatus } from '../../services/types';
+import { fetchListForDappExplore } from '../../services/dapp/api/dapp';
+import { ApiRespCode, AsyncRequestStatus } from '../../services/shared/types';
 import {
   DappExploreListItemResponse,
   DappExploreListParams,
-} from '../../services/types/dapp';
+} from '../../services/dapp/types/dapp';
 import type { RootState } from '../../store/store';
 
 export type DappExploreListItem = DappExploreListItemResponse;

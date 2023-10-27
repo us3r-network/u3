@@ -10,8 +10,8 @@ import { useNavigate } from 'react-router-dom';
 import { MainWrapper } from '../layout/Index';
 import ListScrollBox from '../common/box/ListScrollBox';
 import Loading from '../common/loading/Loading';
-import NoResult from '../common/NoResult';
-import type { DappsPageProps } from '../../container/Dapps';
+import NoResult from '../layout/NoResult';
+import type { DappsPageProps } from '../../container/dapp/Dapps';
 import DappExploreListMobile from './DappExploreListMobile';
 
 export default function DappsPageMobile({

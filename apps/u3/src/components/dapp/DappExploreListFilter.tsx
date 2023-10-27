@@ -7,10 +7,10 @@
  */
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import useConfigsTopics from '../../hooks/useConfigsTopics';
-import { DappExploreListParams } from '../../services/types/dapp';
+import useConfigsTopics from '../../hooks/shared/useConfigsTopics';
+import { DappExploreListParams } from '../../services/dapp/types/dapp';
 import SearchInput from '../common/input/SearchInput';
-import GridSvgUrl from '../common/icons/svgs/grid2.svg';
+import GridSvgUrl from '../common/assets/svgs/grid2.svg';
 import ListChoice from '../common/select/ListChoice';
 
 export type DappExploreListFilterValues = Pick<

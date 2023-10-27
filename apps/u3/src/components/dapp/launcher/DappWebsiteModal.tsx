@@ -1,14 +1,17 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import useDappWebsite from '../../../hooks/useDappWebsite';
+import useDappWebsite from '../../../hooks/dapp/useDappWebsite';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import ImgDefault from '../../common/ImgDefault';
 import DappWebsitePreview from './DappWebsitePreview';
 
-import PowerSvg from '../../common/icons/svgs/power.svg';
-import useFullScreen from '../../../hooks/useFullScreen';
+import PowerSvg from '../../common/assets/svgs/power.svg';
+import useFullScreen from '../../../hooks/shared/useFullScreen';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
-import { fetchOneDapp, fetchDappByTokenId } from '../../../services/api/dapp';
+import {
+  fetchOneDapp,
+  fetchDappByTokenId,
+} from '../../../services/dapp/api/dapp';
 
 export default function DappWebsiteModal() {
   const { isOpenDappModal, dappId, closeDappModal } = useDappWebsite();

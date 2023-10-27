@@ -8,8 +8,8 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
 import { ButtonPrimary } from '../common/button/ButtonBase';
-import WalletSvg from '../common/icons/svgs/wallet.svg';
-import useLogin from '../../hooks/useLogin';
+import WalletSvg from '../common/assets/svgs/wallet.svg';
+import useLogin from '../../hooks/shared/useLogin';
 import Loading from '../common/loading/Loading';
 
 function NoLogin({ ...wrapperProps }: StyledComponentPropsWithRef<'div'>) {

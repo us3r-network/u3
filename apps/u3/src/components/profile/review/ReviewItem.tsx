@@ -1,11 +1,11 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { UserAvatar, UserName } from '@us3r-network/profile';
 import CardBase from '../../common/card/CardBase';
-import { ReactComponent as CheckVerifiedSvg } from '../../common/icons/svgs/check-verified.svg';
+import { ReactComponent as CheckVerifiedSvg } from '../../common/assets/svgs/check-verified.svg';
 import EllipsisText from '../../common/text/EllipsisText';
 import ScoreRateValue from '../../common/score/ScoreRateValue';
 import ImgDefault from '../../common/ImgDefault';
-import { DappStatus } from '../../../services/types/dapp';
+import { DappStatus } from '../../../services/dapp/types/dapp';
 
 export type ReviewItemData = {
   value: number;

@@ -8,9 +8,9 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { ReactComponent as LogoIconSvg } from '../../imgs/logo-icon.svg';
+import { ReactComponent as LogoIconSvg } from '../../common/assets/imgs/logo-icon.svg';
 import LogoutConfirmModal from '../LogoutConfirmModal';
-import useLogin from '../../../hooks/useLogin';
+import useLogin from '../../../hooks/shared/useLogin';
 import MobileLoginButton from './MobileLoginButton';
 
 export default function MobileHomeHeader() {

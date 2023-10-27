@@ -1,10 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useState } from 'react';
-import { selectWebsite } from '../../../features/website/websiteSlice';
+import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import Loading from '../../common/loading/Loading';
-import isUrl from '../../../utils/isUrl';
-import CannotOpenPlatFormLink from '../../event/CannotOpenPlatFormLink';
+import isUrl from '../../../utils/shared/isUrl';
+import CannotOpenPlatFormLink from '../../news/event/CannotOpenPlatFormLink';
 
 export type DappWebsitePreviewProps = StyledComponentPropsWithRef<'div'> & {
   data: {

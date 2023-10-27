@@ -1,4 +1,4 @@
-import useFarcasterFollowData from 'src/hooks/farcaster/useFarcasterFollowData';
+import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
 import Loading from 'src/components/common/loading/Loading';
 
 import {

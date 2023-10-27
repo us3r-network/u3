@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Platform } from '../../../services/types/common';
-import { NooxData } from '../../../services/types/profile';
+import { Platform } from '../../../services/shared/types/common';
+import { NooxData } from '../../../services/profile/types/profile';
 import { NoItem, NooxCard } from './Card';
 import { ContentBox } from './ItemContainer';
 import Title from './Title';

@@ -7,7 +7,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled, { css, StyledComponentPropsWithRef } from 'styled-components';
-import ChevronDownSvg from '../icons/svgs/chevron-down.svg';
+import ChevronDownSvg from '../assets/svgs/chevron-down.svg';
 
 type ValueType = any;
 export type SelectOption = {

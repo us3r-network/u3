@@ -7,7 +7,7 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { Email } from '../icons/email';
+import { Email } from '../common/icons/email';
 
 const DailyDigestBox = styled.div`
   display: flex;

@@ -21,16 +21,16 @@ import { clamp } from 'lodash';
 import swap from 'lodash-move';
 import { useFavorAction } from '@us3r-network/link';
 import DappSideBarListItem from './DappInstallListItem';
-import useDappWebsite from '../../../hooks/useDappWebsite';
+import useDappWebsite from '../../../hooks/dapp/useDappWebsite';
 import useDappCollection from '../../../hooks/dapp/useDappCollection';
-import useLogin from '../../../hooks/useLogin';
-import InfoCircleSvgUrl from '../../common/icons/svgs/info-circle.svg';
-import TrashSvgUrl from '../../common/icons/svgs/trash.svg';
+import useLogin from '../../../hooks/shared/useLogin';
+import InfoCircleSvgUrl from '../../common/assets/svgs/info-circle.svg';
+import TrashSvgUrl from '../../common/assets/svgs/trash.svg';
 import {
   getDappSideBarOrderForStore,
   setDappSideBarOrderToStore,
-} from '../../../utils/dapp';
-import { fetchDappByTokenId } from '../../../services/api/dapp';
+} from '../../../utils/dapp/dapp';
+import { fetchDappByTokenId } from '../../../services/dapp/api/dapp';
 
 const dragFn =
   (orders: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) =>

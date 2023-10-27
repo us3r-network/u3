@@ -9,9 +9,9 @@ import { UserAvatar } from '@us3r-network/profile';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-import useLogin from '../../../hooks/useLogin';
+import useLogin from '../../../hooks/shared/useLogin';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
-import LogoutSvg from '../../common/icons/svgs/logout.svg';
+import LogoutSvg from '../../common/assets/svgs/logout.svg';
 
 type Props = {
   onLogout?: () => void;

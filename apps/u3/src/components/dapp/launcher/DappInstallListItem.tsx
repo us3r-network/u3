@@ -9,8 +9,8 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import React from 'react';
 import ImgDefault from '../../common/ImgDefault';
-import { ReactComponent as DappHandleIcon } from '../../common/icons/svgs/dots-vertical.svg';
-import { parseIPFSImage } from '../../../services/api/nftStorage';
+import { ReactComponent as DappHandleIcon } from '../../common/assets/svgs/dots-vertical.svg';
+import { parseIPFSImage } from '../../../services/shared/api/nftStorage';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   data: {

@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { ReactComponent as Close } from '../icons/svgs/close.svg';
+import { ReactComponent as Close } from '../assets/svgs/close.svg';
 
 export function ModalCloseBtn(props: StyledComponentPropsWithRef<'div'>) {
   return (

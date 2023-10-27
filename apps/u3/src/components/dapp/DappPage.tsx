@@ -11,18 +11,18 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { MainWrapper } from '../layout/Index';
 import Loading from '../common/loading/Loading';
-import useDappWebsite from '../../hooks/useDappWebsite';
-import type { DappPageProps } from '../../container/Dapp';
+import useDappWebsite from '../../hooks/dapp/useDappWebsite';
+import type { DappPageProps } from '../../container/dapp/Dapp';
 import Header from './detail/Header';
-import { UpdateDappData } from '../../services/types/dapp';
-import { updateDapp } from '../../services/api/dapp';
-import { messages } from '../../utils/message';
+import { UpdateDappData } from '../../services/dapp/types/dapp';
+import { updateDapp } from '../../services/dapp/api/dapp';
+import { messages } from '../../utils/shared/message';
 import Screeshots from './detail/Screeshots';
 import UserScore from './detail/UserScore';
 // import Project from './detail/Project';
 import RecommendDapps from './detail/RecommendDapps';
 import DappEditModal from './DappEditModal';
-import useLinkSubmit from '../../hooks/useLinkSubmit';
+import useLinkSubmit from '../../hooks/shared/useLinkSubmit';
 
 export default function DappPage({
   id,

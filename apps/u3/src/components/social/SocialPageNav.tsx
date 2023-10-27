@@ -1,9 +1,9 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import MobilePageHeader from '../common/mobile/MobilePageHeader';
-import { ArrowLeft } from '../icons/ArrowLeft';
-import { getChannelFromName } from '../../utils/social/getChannel';
+import MobilePageHeader from '../layout/mobile/MobilePageHeader';
+import { ArrowLeft } from '../common/icons/ArrowLeft';
+import { getChannelFromName } from '../../utils/social/farcaster/getChannel';
 import PinChannelBtn from './PinChannelBtn';
 
 export enum FeedsType {

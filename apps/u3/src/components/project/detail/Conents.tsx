@@ -6,8 +6,8 @@
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { ContentListItem } from '../../../services/types/contents';
-import GridItem from '../../contents/GridItem';
+import { ContentListItem } from '../../../services/news/types/contents';
+import GridItem from '../../news/contents/GridItem';
 import Card, { CardTitle } from './Card';
 
 type Props = StyledComponentPropsWithRef<'div'> & {

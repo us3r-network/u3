@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
-import { Close } from '../icons/close';
+import { Close } from '../common/icons/close';
 
 export default function AddWalletModal({
   show,

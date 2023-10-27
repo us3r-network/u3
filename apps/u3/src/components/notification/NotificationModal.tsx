@@ -9,13 +9,13 @@ import {
 import { MessageType, ReactionType } from '@farcaster/hub-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
-import { useNotificationStore } from '../../contexts/NotificationStoreCtx';
+import { useNotificationStore } from '../../contexts/notification/NotificationStoreCtx';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
-import { FarcasterNotification } from '../../api/farcaster';
-import useFarcasterUserData from '../../hooks/farcaster/useFarcasterUserData';
-import getAvatar from '../../utils/lens/getAvatar';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
+import { FarcasterNotification } from '../../services/social/api/farcaster';
+import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
+import getAvatar from '../../utils/social/lens/getAvatar';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';
 

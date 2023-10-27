@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { DappExploreListItemResponse } from '../../../services/types/dapp';
+import { DappExploreListItemResponse } from '../../../services/dapp/types/dapp';
 import Loading from '../../common/loading/Loading';
 import DappExploreListItem from '../../dapp/DappExploreListItem';
 import Card, { CardTitle } from './Card';

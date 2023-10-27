@@ -3,7 +3,7 @@ import {
   Web3BioProfile,
   Web3BioProfilePlatform,
   getProfilesWithWeb3Bio,
-} from '../../api/web3bio';
+} from '../../services/social/api/web3bio';
 import { isFarcasterHandle, isLensHandle } from '../../utils/profile/biolink';
 
 export const farcasterHandleToWeb3BioHandle = (handle: string) => {

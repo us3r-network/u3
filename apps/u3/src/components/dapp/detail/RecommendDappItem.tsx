@@ -1,5 +1,5 @@
 import styled, { css, StyledComponentPropsWithRef } from 'styled-components';
-import { DappExploreListItemResponse } from '../../../services/types/dapp';
+import { DappExploreListItemResponse } from '../../../services/dapp/types/dapp';
 import EllipsisText from '../../common/text/EllipsisText';
 import ImgDefault from '../../common/ImgDefault';
 

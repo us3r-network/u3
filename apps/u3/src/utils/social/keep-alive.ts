@@ -1,4 +1,4 @@
-import { SocailPlatform } from '../../api';
+import { SocailPlatform } from '../../services/social/types';
 import { FeedsType } from '../../components/social/SocialPageNav';
 
 export const getSocialScrollWrapperId = (

@@ -7,7 +7,7 @@
  */
 import ReactSwitch, { ReactSwitchProps } from 'react-switch';
 import styled from 'styled-components';
-import CheckSvg from '../icons/svgs/check.svg';
+import CheckSvg from '../assets/svgs/check.svg';
 
 export type Props = ReactSwitchProps;
 const SwitchIconBox = styled.div`

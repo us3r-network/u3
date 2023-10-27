@@ -1,11 +1,14 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { SocialButtonPrimaryLine } from '../social/button/SocialButton';
 import { SocialMessageChatBtn } from '../message/MessageChatBtn';
-import { SocailPlatform } from '../../api';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import useCanMessage from '../../hooks/xmtp/useCanMessage';
-import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
+import { SocailPlatform } from '../../services/social/types';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
+import useCanMessage from '../../hooks/message/xmtp/useCanMessage';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../contexts/NavCtx';
 
 export type FollowProfileData = {

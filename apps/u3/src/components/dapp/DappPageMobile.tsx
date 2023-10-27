@@ -11,7 +11,7 @@ import { ScoresAvg } from '@us3r-network/link';
 
 import { MainWrapper } from '../layout/Index';
 import Loading from '../common/loading/Loading';
-import type { DappPageProps } from '../../container/Dapp';
+import type { DappPageProps } from '../../container/dapp/Dapp';
 import { HeaderMobile } from './detail/Header';
 import { ScreeshotsMobile } from './detail/Screeshots';
 import { UserScoreMobile } from './detail/UserScore';

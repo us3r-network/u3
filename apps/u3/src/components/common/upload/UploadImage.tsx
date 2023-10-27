@@ -2,12 +2,12 @@ import { toast } from 'react-toastify';
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { UPLOAD_IMAGE_SIZE_LIMIT } from '../../../constants';
-import { uploadImage } from '../../../services/api/upload';
-import { messages } from '../../../utils/message';
-import UploadImgMaskImg from '../../imgs/upload_img_mask.svg';
+import { uploadImage } from '../../../services/shared/api/upload';
+import { messages } from '../../../utils/shared/message';
+import UploadImgMaskImg from '../assets/imgs/upload_img_mask.svg';
 import CardBase from '../card/CardBase';
-import useLogin from '../../../hooks/useLogin';
-import { ReactComponent as CloseSvg } from '../icons/svgs/close.svg';
+import useLogin from '../../../hooks/shared/useLogin';
+import { ReactComponent as CloseSvg } from '../assets/svgs/close.svg';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   url: string;

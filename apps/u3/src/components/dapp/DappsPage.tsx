@@ -11,12 +11,12 @@ import { isMobile } from 'react-device-detect';
 import { MainWrapper } from '../layout/Index';
 import ListScrollBox from '../common/box/ListScrollBox';
 import Loading from '../common/loading/Loading';
-import NoResult from '../common/NoResult';
+import NoResult from '../layout/NoResult';
 import DappExploreListFilter from './DappExploreListFilter';
 import DappExploreList from './DappExploreList';
-import type { DappsPageProps } from '../../container/Dapps';
+import type { DappsPageProps } from '../../container/dapp/Dapps';
 import { useAppSelector } from '../../store/hooks';
-import { selectWebsite } from '../../features/website/websiteSlice';
+import { selectWebsite } from '../../features/shared/websiteSlice';
 import Banner from '../home/Banner';
 
 export default function DappsPage({
