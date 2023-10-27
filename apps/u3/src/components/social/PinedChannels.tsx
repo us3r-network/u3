@@ -5,6 +5,7 @@ import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
 import { getChannelFromUrl } from 'src/utils/social/getChannel';
 
 import { PinRed } from '../icons/pin-red';
+import PinChannelBtn from './PinChannelBtn';
 
 export default function PinedChannels() {
   const { userChannels, currFid } = useFarcasterCtx();
@@ -33,14 +34,7 @@ function PinedChannelItem({ parent_url }: { parent_url: string }) {
         <img src={item?.image} alt={item?.name} />
         <div className="name">{item?.name}</div>
       </div>
-      <span
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <PinRed />
-      </span>
+      <PinChannelBtn parent_url={item.parent_url} />
     </ItemBox>
   );
 }

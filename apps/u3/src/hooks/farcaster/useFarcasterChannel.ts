@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getUserChannels, pinFarcasterChannel } from 'src/api/farcaster';
+import {
+  getUserChannels,
+  pinFarcasterChannel,
+  unPinFarcasterChannel,
+} from 'src/api/farcaster';
 
 export default function useFarcasterChannel({
   currFid,
@@ -35,6 +39,19 @@ export default function useFarcasterChannel({
     [currFid]
   );
 
+  const unPinChannel = useCallback(
+    async (parent_url: string) => {
+      if (!currFid) return;
+      try {
+        await unPinFarcasterChannel(currFid, parent_url);
+        await getUserChannelsAction();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [currFid]
+  );
+
   useEffect(() => {
     getUserChannelsAction();
   }, [getUserChannelsAction]);
@@ -43,5 +60,6 @@ export default function useFarcasterChannel({
     userChannels,
     getUserChannels: getUserChannelsAction,
     joinChannel,
+    unPinChannel,
   };
 }
