@@ -1,10 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import { SocialButtonPrimary } from './button/SocialButton';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import { useLensCtx } from '../../contexts/AppLensCtx';
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 export default function FollowingDefault(
   props: StyledComponentPropsWithRef<'div'>

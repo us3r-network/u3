@@ -12,12 +12,12 @@ import {
   createSlice,
   PayloadAction,
 } from '@reduxjs/toolkit';
-import { fetchListForProjectExplore } from '../../services/api/project';
-import { ApiRespCode, AsyncRequestStatus } from '../../services/types';
+import { fetchListForProjectExplore } from '../../services/shared/api/project';
+import { ApiRespCode, AsyncRequestStatus } from '../../services/shared/types';
 import {
   ProjectExploreListItemResponse,
   ProjectExploreListParams,
-} from '../../services/types/project';
+} from '../../services/shared/types/project';
 import type { RootState } from '../../store/store';
 
 export type ProjectExploreListItem = ProjectExploreListItemResponse;

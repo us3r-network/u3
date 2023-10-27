@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { Platform } from '../../../services/types/common';
-import { PoapData } from '../../../services/types/profile';
+import { Platform } from '../../../services/shared/types/common';
+import { PoapData } from '../../../services/profile/types/profile';
 import { NoItem, PoapCard } from './Card';
 
 import Title from './Title';

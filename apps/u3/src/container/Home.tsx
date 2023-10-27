@@ -19,17 +19,17 @@ import RecommendEvents from '../components/home/RecommendEvents';
 
 import Poster from '../components/home/Poster';
 import { MainWrapper } from '../components/layout/Index';
-import { selectWebsite } from '../features/website/websiteSlice';
-import useConfigsPlatforms from '../hooks/useConfigsPlatforms';
+import { selectWebsite } from '../features/shared/websiteSlice';
+import useConfigsPlatforms from '../hooks/shared/useConfigsPlatforms';
 import {
   getTrendingDapps,
   getTrendingEvents,
   getTrendingContents,
-} from '../services/api/home';
-import { ContentListItem } from '../services/types/contents';
-import { EventExploreListItemResponse } from '../services/types/event';
+} from '../services/shared/api/home';
+import { ContentListItem } from '../services/news/types/contents';
+import { EventExploreListItemResponse } from '../services/news/types/event';
 
-import { DappExploreListItemResponse } from '../services/types/dapp';
+import { DappExploreListItemResponse } from '../services/dapp/types/dapp';
 import { useAppSelector } from '../store/hooks';
 import PopularDappsMobile from '../components/home/PopularDappsMobile';
 import RecommendEventMobile from '../components/home/RecommendEventsMobile';

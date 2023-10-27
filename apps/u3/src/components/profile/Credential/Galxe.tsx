@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GalxeCard, NoItem } from './Card';
 
-import { GalxeData } from '../../../services/types/profile';
-import { Platform } from '../../../services/types/common';
+import { GalxeData } from '../../../services/profile/types/profile';
+import { Platform } from '../../../services/shared/types/common';
 import Title from './Title';
 import { ContentBox } from './ItemContainer';
 

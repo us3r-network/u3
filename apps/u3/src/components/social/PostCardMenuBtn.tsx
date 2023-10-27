@@ -1,10 +1,10 @@
 import { useRef, useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import PopoverBase from '../common/popover/PopoverBase';
-import CopyIcon from '../icons/CopyIcon';
-import { TwitterLine } from '../icons/twitter';
-import AddUserIcon from '../icons/AddUserIcon';
-import MoreIcon from '../icons/MoreIcon';
+import CopyIcon from '../common/icons/CopyIcon';
+import { TwitterLine } from '../common/icons/twitter';
+import AddUserIcon from '../common/icons/AddUserIcon';
+import MoreIcon from '../common/icons/MoreIcon';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 
 export type PostCardMenuData = {

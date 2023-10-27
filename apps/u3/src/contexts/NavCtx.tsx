@@ -10,7 +10,7 @@ import {
   useEffect,
 } from 'react';
 import styled from 'styled-components';
-import { useXmtpClient } from './xmtp/XmtpClientCtx';
+import { useXmtpClient } from './message/XmtpClientCtx';
 
 interface NavCtxValue {
   openNotificationModal: boolean;

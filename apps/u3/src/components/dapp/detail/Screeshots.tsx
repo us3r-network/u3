@@ -10,7 +10,7 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import Slider from 'react-slick';
 import Card, { CardTitle } from './Card';
 import ModalBase, { ModalBaseBody } from '../../common/modal/ModalBase';
-// import CloseSvg from '../../common/icons/svgs/close.svg';
+// import CloseSvg from '../../common/assets/svgs/close.svg';
 
 import ComingSoonImgUrl from './imgs/screeshots.png';
 // import ComingSoonImgUrl from './imgs/screeshots.png';

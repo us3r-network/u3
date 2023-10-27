@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import EditSvg from '../../common/icons/svgs/edit.svg';
+import EditSvg from '../../common/assets/svgs/edit.svg';
 
 interface ProfileAvatarProps extends StyledComponentPropsWithRef<'div'> {
   src: string;

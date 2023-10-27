@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import CardBase from '../../common/card/CardBase';
 import ReviewItem from './ReviewItem';
 import Loading from '../../common/loading/Loading';
-import { getDappLinkDataWithJsonValue } from '../../../utils/dapp';
+import { getDappLinkDataWithJsonValue } from '../../../utils/dapp/dapp';
 
 export default function Reviews() {
   const { isFetching, personalScores } = usePersonalScores();

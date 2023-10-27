@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { MEDIA_BREAK_POINTS } from '../../constants';
-import dailyPosterBg from '../imgs/daily-poster.png';
-import web3TodayBg from '../imgs/web3-today.png';
+import dailyPosterBg from '../common/assets/imgs/daily-poster.png';
+import web3TodayBg from '../common/assets/imgs/web3-today.png';
 
 import { useAppDispatch } from '../../store/hooks';
-import { ContentListItem } from '../../services/types/contents';
+import { ContentListItem } from '../../services/news/types/contents';
 
 export default function Today({
   contents,

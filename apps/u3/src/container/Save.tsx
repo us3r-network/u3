@@ -5,18 +5,18 @@ import { isMobile } from 'react-device-detect';
 
 import { MainWrapper } from '../components/layout/Index';
 import Loading from '../components/common/loading/Loading';
-import PageTitle from '../components/common/PageTitle';
+import PageTitle from '../components/layout/PageTitle';
 import SaveExploreList from '../components/save/SaveExploreList';
 import SaveExploreListMobile from '../components/save/SaveExploreListMobile';
 import {
   getContentLinkDataWithJsonValue,
   getContentPlatformLogoWithJsonValue,
-} from '../utils/content';
-import { getDappLinkDataWithJsonValue } from '../utils/dapp';
-import { getEventLinkDataWithJsonValue } from '../utils/event';
-import { DappLinkData } from '../services/types/dapp';
-import { ContentLinkData } from '../services/types/contents';
-import { EventLinkData } from '../services/types/event';
+} from '../utils/news/content';
+import { getDappLinkDataWithJsonValue } from '../utils/dapp/dapp';
+import { getEventLinkDataWithJsonValue } from '../utils/news/event';
+import { DappLinkData } from '../services/dapp/types/dapp';
+import { ContentLinkData } from '../services/news/types/contents';
+import { EventLinkData } from '../services/news/types/event';
 
 function EmptyList() {
   return (

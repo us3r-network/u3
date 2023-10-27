@@ -12,7 +12,7 @@ import {
 import Markup from './Markup';
 import ModalImg from '../ModalImg';
 import Audio from '../Audio';
-import sanitizeDStorageUrl from '../../../utils/lens/sanitizeDStorageUrl';
+import sanitizeDStorageUrl from '../../../utils/social/lens/sanitizeDStorageUrl';
 
 type Props = {
   publication: Post | Comment;

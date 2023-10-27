@@ -9,17 +9,17 @@ import { MOBILE_BREAK_POINT } from '../../constants';
 import ModalBase, { ModalBaseTitle } from '../common/modal/ModalBase';
 import { ButtonInfo, ButtonPrimary } from '../common/button/ButtonBase';
 
-import { ReactComponent as LogoIconSvg } from '../imgs/logo-icon.svg';
-import { ReactComponent as MultipleSvg } from '../imgs/multiple.svg';
-import { ReactComponent as TwitterSvg } from '../imgs/twitter.svg';
-// import { ReactComponent as TwitterSvg } from '../imgs/twitter.svg';
-// import CloseSvg from '../common/icons/svgs/close.svg';
+import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
+import { ReactComponent as MultipleSvg } from '../common/assets/imgs/multiple.svg';
+import { ReactComponent as TwitterSvg } from '../common/assets/imgs/twitter.svg';
+// import { ReactComponent as TwitterSvg } from '../common/assets/imgs/twitter.svg';
+// import CloseSvg from '../common/assets/svgs/close.svg';
 // import IconClose from '../icons/close';
-import { Close } from '../icons/close';
+import { Close } from '../common/icons/close';
 
-import qrCodeU3 from '../imgs/qrcode_u3.xyz.png';
-import useLogin from '../../hooks/useLogin';
-import { uploadImage } from '../../services/api/upload';
+import qrCodeU3 from '../common/assets/imgs/qrcode_u3.xyz.png';
+import useLogin from '../../hooks/shared/useLogin';
+import { uploadImage } from '../../services/shared/api/upload';
 import { UserAvatar } from '@us3r-network/profile';
 
 export default function Poster({

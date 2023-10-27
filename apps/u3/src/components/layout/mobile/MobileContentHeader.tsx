@@ -6,8 +6,8 @@
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
-import useContentsSearchParams from '../../../hooks/useContentsSearchParams';
-import Filter from '../../contents/Filter';
+import useContentsSearchParams from '../../../hooks/news/useContentsSearchParams';
+import Filter from '../../news/contents/Filter';
 import MobileHeaderLayout from './MobileHeaderLayout';
 
 export default function MobileContentHeader({

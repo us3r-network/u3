@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 
 import ModalBase from '../common/modal/ModalBase';
-import { Close } from '../icons/close';
-import { ChevronRight } from '../icons/chevron-right';
-import { ChevronLeft } from '../icons/chevron-left';
+import { Close } from '../common/icons/close';
+import { ChevronRight } from '../common/icons/chevron-right';
+import { ChevronLeft } from '../common/icons/chevron-left';
 
 export default function ModalImg({
   onAfterClose,

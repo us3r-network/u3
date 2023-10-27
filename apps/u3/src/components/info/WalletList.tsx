@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
-import { sortPubKey } from '../../utils/solana';
-import Badge from '../contents/Badge';
-import { Add } from '../icons/add';
-import { ChevronDown } from '../icons/chevron-down';
-import { Copy2 } from '../icons/copy';
-import { Trash } from '../icons/trash';
-import { Wallet } from '../icons/wallet';
-import { ProfileWallet } from '../../services/types/profile';
-import { messages } from '../../utils/message';
+import { sortPubKey } from '../../utils/shared/solana';
+import Badge from '../news/contents/Badge';
+import { Add } from '../common/icons/add';
+import { ChevronDown } from '../common/icons/chevron-down';
+import { Copy2 } from '../common/icons/copy';
+import { Trash } from '../common/icons/trash';
+import { Wallet } from '../common/icons/wallet';
+import { ProfileWallet } from '../../services/profile/types/profile';
+import { messages } from '../../utils/shared/message';
 
 export default function WalletList({
   wallets,

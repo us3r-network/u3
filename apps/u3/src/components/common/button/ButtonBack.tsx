@@ -7,7 +7,7 @@
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ButtonPrimaryLine } from './ButtonBase';
-import ArrowNarrowLeftSvg from '../icons/svgs/arrow-narrow-left.svg';
+import ArrowNarrowLeftSvg from '../assets/svgs/arrow-narrow-left.svg';
 
 export type ButtonProps = StyledComponentPropsWithRef<'button'>;
 

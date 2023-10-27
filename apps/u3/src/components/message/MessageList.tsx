@@ -2,9 +2,9 @@ import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
-import { useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
-import { getAttachmentUrl, isAttachment } from '../../utils/xmtp';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
+import { useXmtpStore } from '../../contexts/message/XmtpStoreCtx';
+import { getAttachmentUrl, isAttachment } from '../../utils/message/xmtp';
 import Avatar from './Avatar';
 import { useNav } from '../../contexts/NavCtx';
 

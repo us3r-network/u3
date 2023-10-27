@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react';
 import { Post, useActiveProfile } from '@lens-protocol/react-web';
 // eslint-disable-next-line import/no-cycle
-import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import ReplyModal from '../ReplyModal';
-import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils';
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
-import getAvatar from '../../../utils/lens/getAvatar';
+import { lensPublicationToPostCardData } from '../../../utils/social/lens/lens-ui-utils';
+import { useCreateLensComment } from '../../../hooks/social/lens/useCreateLensComment';
+import getAvatar from '../../../utils/social/lens/getAvatar';
 
 export default function LensCommentPostModal({
   open,

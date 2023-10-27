@@ -2,18 +2,18 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import { useEffect, useState } from 'react';
 import { UserAvatar, UserName } from '@us3r-network/profile';
-import { sortPubKey } from '../../utils/solana';
-import { Copy } from '../icons/copy';
+import { sortPubKey } from '../../utils/shared/solana';
+import { Copy } from '../common/icons/copy';
 
-import { Refresh } from '../icons/refresh';
-import { Edit } from '../icons/edit';
+import { Refresh } from '../common/icons/refresh';
+import { Edit } from '../common/icons/edit';
 import WalletList from './WalletList';
 import AddWalletModal from './AddWalletModal';
-import { ProfileWallet } from '../../services/types/profile';
-import { defaultFormatDate } from '../../utils/time';
+import { ProfileWallet } from '../../services/profile/types/profile';
+import { defaultFormatDate } from '../../utils/shared/time';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
-import { messages } from '../../utils/message';
+import { messages } from '../../utils/shared/message';
 import {
   selectFrensHandlesState,
   getFollower,

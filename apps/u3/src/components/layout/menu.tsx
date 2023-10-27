@@ -11,23 +11,23 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useState } from 'react';
 import LoginButton from './LoginButton';
 import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
-import { ReactComponent as LogoIconSvg } from '../imgs/logo-icon.svg';
+import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
 // import LogoutConfirmModal from './LogoutConfirmModal';
 // import useLogin from '../../hooks/useLogin';
-import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
+import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
   useNotificationStore,
   NotificationStoreProvider,
-} from '../../contexts/NotificationStoreCtx';
+} from '../../contexts/notification/NotificationStoreCtx';
 import {
   useNotificationStore as useNotificationStoreNoLens,
   NotificationStoreProvider as NotificationStoreProviderNoLens,
-} from '../../contexts/NotificationStoreCtx_NoLens';
+} from '../../contexts/notification/NotificationStoreCtx_NoLens';
 import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
-import useFarcasterCurrFid from '../../hooks/farcaster/useFarcasterCurrFid';
+import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { useNav } from '../../contexts/NavCtx';
 
 export default function Menu() {

@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Title from './Title';
-import { Subtract } from '../icons/subtract';
-import { DappExploreListItemResponse } from '../../services/types/dapp';
+import { Subtract } from '../common/icons/subtract';
+import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
 import CardBase from '../common/card/CardBase';
 
 export default function DiscoverProj({

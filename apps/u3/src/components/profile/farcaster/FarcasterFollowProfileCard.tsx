@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import useFarcasterUserData from 'src/hooks/farcaster/useFarcasterUserData';
-import { SocailPlatform } from 'src/api';
-import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
+import useFarcasterUserData from 'src/hooks/social/farcaster/useFarcasterUserData';
+import { SocailPlatform } from 'src/services/social/types';
+import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 
 import FollowProfileCard from '../FollowProfileCard';
 

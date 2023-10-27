@@ -1,6 +1,9 @@
 import styled from 'styled-components';
-import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
-import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../contexts/message/XmtpStoreCtx';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import NoEnableXmtp from './NoEnableXmtp';
 import ConversationsPage from './ConversationsPage';
 import ConvoMessagesPage from './ConvoMessagesPage';

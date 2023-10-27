@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 
-import { SignedKeyRequestMetadataABI } from 'src/abi/farcaster/SignedKeyRequestMetadataABI';
+import { SignedKeyRequestMetadataABI } from 'src/services/social/abi/farcaster/SignedKeyRequestMetadataABI';
 
 import {
   useAccount,
@@ -10,7 +10,7 @@ import {
   useSignTypedData,
   useWaitForTransaction,
 } from 'wagmi';
-import { KeyRegistryABI } from 'src/abi/farcaster/KeyRegistryABI';
+import { KeyRegistryABI } from 'src/services/social/abi/farcaster/KeyRegistryABI';
 import * as ed from '@noble/ed25519';
 import { encodeAbiParameters } from 'viem';
 import { toast } from 'react-toastify';

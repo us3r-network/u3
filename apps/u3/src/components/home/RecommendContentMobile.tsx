@@ -7,9 +7,9 @@
  */
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { ContentListItem } from '../../services/types/contents';
+import { ContentListItem } from '../../services/news/types/contents';
 
-import ContentListItemMobile from '../contents/ContentListItemMobile';
+import ContentListItemMobile from '../news/contents/ContentListItemMobile';
 import TitleMobile from './TitleMobile';
 
 export default function RecommendContentMobile({

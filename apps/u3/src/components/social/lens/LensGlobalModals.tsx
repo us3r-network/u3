@@ -1,4 +1,4 @@
-import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import LensCommentPostModal from './LensCommentPostModal';
 import LensLoginModal from './LensLoginModal';
 

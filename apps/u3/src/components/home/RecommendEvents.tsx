@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import Title from './Title';
-import Badge from '../contents/Badge';
-import { EventExploreListItemResponse } from '../../services/types/event';
-import isUrl from '../../utils/isUrl';
+import Badge from '../news/contents/Badge';
+import { EventExploreListItemResponse } from '../../services/news/types/event';
+import isUrl from '../../utils/shared/isUrl';
 import { MEDIA_BREAK_POINTS } from '../../constants';
-import RewardTag from '../event/RewardTag';
-import { Reward } from '../../services/types/common';
+import RewardTag from '../news/event/RewardTag';
+import { Reward } from '../../services/shared/types/common';
 
 export default function RecommendEvents({
   data,

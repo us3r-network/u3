@@ -11,9 +11,9 @@ import {
   PlatformProfileBasicInfo,
   U3ProfileBasicInfo,
 } from './ProfileBasicInfo';
-import { shortPubKey } from '../../../utils/shortPubKey';
-import { getDefaultAvatarWithIdentity } from '../../../utils/avatar';
-import { SocailPlatform } from '../../../api';
+import { shortPubKey } from '../../../utils/shared/shortPubKey';
+import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
+import { SocailPlatform } from '../../../services/social/types';
 
 interface ProfileInfoCardLayoutProps
   extends StyledComponentPropsWithRef<'div'> {

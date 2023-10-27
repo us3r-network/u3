@@ -1,7 +1,10 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
-import useStartNewConvo from '../../hooks/xmtp/useStartNewConvo';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../contexts/message/XmtpStoreCtx';
+import useStartNewConvo from '../../hooks/message/xmtp/useStartNewConvo';
 import InputBase from '../common/input/InputBase';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 

@@ -5,11 +5,11 @@ import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
 import InputBase from '../common/input/InputBase';
 import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase';
 import Switch from '../common/switch/Switch';
-import useConfigsTopics from '../../hooks/useConfigsTopics';
+import useConfigsTopics from '../../hooks/shared/useConfigsTopics';
 import {
   UpdateProjectData,
   UniprojectStatus,
-} from '../../services/types/project';
+} from '../../services/shared/types/project';
 import TextareaBase from '../common/input/TextareaBase';
 import MultiSelect from '../common/select/MultiSelect';
 import UploadImage from '../common/upload/UploadImage';

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
-import { CircleDown } from '../../icons/circle-down';
-import { CircleUp } from '../../icons/circle-up';
+import { CircleDown } from '../../common/icons/circle-down';
+import { CircleUp } from '../../common/icons/circle-up';
 
 export default function Title({
   name,

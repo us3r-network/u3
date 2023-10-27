@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
-import BackIcon from '../icons/BackIcon';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../contexts/message/XmtpStoreCtx';
+import BackIcon from '../common/icons/BackIcon';
 import Avatar from './Avatar';
 import Name from './Name';
 import SendMessageForm from './SendMessageForm';

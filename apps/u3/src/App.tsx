@@ -25,20 +25,20 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { AliveScope } from 'react-activation';
 import Layout from './components/layout/Index';
 import { store } from './store/store';
-import GlobalStyle from './GlobalStyle';
+import GlobalStyle from './styles/GlobalStyle';
 
 import {
   AIRSTACK_API_KEY,
   CERAMIC_HOST,
   WALLET_CONNECT_PROJECT_ID,
 } from './constants';
-import { injectStore, injectU3Token } from './services/api/request';
+import { injectStore, injectU3Token } from './services/shared/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
-import { XmtpClientProvider } from './contexts/xmtp/XmtpClientCtx';
-import { XmtpStoreProvider } from './contexts/xmtp/XmtpStoreCtx';
-import { AppLensProvider } from './contexts/AppLensCtx';
+import { XmtpClientProvider } from './contexts/message/XmtpClientCtx';
+import { XmtpStoreProvider } from './contexts/message/XmtpStoreCtx';
+import { AppLensProvider } from './contexts/social/AppLensCtx';
 import { NavProvider } from './contexts/NavCtx';
-import FarcasterProvider from './contexts/FarcasterCtx';
+import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
 
 const livepeerClient = createReactClient({

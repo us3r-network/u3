@@ -9,7 +9,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { css, StyledComponentPropsWithRef } from 'styled-components';
 import { ButtonPrimaryLine } from '../button/ButtonBase';
-import ChoiceCheckedSvg from '../icons/svgs/choice-checked.svg';
+import ChoiceCheckedSvg from '../assets/svgs/choice-checked.svg';
 
 type ValueType = any;
 export type CheckboxMultiChoiceOption = {

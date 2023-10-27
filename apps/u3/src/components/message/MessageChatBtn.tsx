@@ -1,6 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { SocialButtonPrimary } from '../social/button/SocialButton';
-import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
+import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 
 export function SocialMessageChatBtn(
   props: StyledComponentPropsWithRef<'button'>

@@ -1,10 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
-import { getChannelFromUrl } from 'src/utils/social/getChannel';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
+import { getChannelFromUrl } from 'src/utils/social/farcaster/getChannel';
 
-import { PinRed } from '../icons/pin-red';
+import { PinRed } from '../common/icons/pin-red';
 import PinChannelBtn from './PinChannelBtn';
 
 export default function PinedChannels() {

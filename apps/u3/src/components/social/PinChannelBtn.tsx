@@ -1,11 +1,11 @@
 import styled from 'styled-components';
 import { useMemo, useState } from 'react';
 
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 
 import { SocialButtonPrimary } from './button/SocialButton';
-import { Pin } from '../icons/pin';
-import { PinRed } from '../icons/pin-red';
+import { Pin } from '../common/icons/pin';
+import { PinRed } from '../common/icons/pin-red';
 
 export default function PinChannelBtn({
   parent_url,

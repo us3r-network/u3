@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { SocailPlatform } from '../../api';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
+import { SocailPlatform } from '../../services/social/types';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
 import PostLike from './PostLike';
 import PostReply from './PostReply';
 import PostReport from './PostReport';
@@ -14,7 +14,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
-import TooltipProfileNavigateLink from './TooltipProfileNavigateLink';
+import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 
 export type PostCardData = {
   platform: SocailPlatform;

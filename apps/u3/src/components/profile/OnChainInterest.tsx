@@ -6,12 +6,12 @@ import {
   ERC20Balances,
   NFTData,
   NFTDataListItem,
-} from '../../services/types/profile';
+} from '../../services/profile/types/profile';
 import Select from '../common/select/Select';
-import { NoItem } from '../icons/no-item';
+import { NoItem } from '../common/icons/no-item';
 
-import CrownImg from '../imgs/crown.svg';
-import ethImage from '../imgs/eth.png';
+import CrownImg from '../common/assets/imgs/crown.svg';
+import ethImage from '../common/assets/imgs/eth.png';
 import NFTShower from './Credential/NFTShower';
 import { ERC20Tokens } from '../airstack/ERC20Tokens';
 import { Tokens } from '../airstack/Tokens';

@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import styled from 'styled-components';
 import { UserAvatar } from '@us3r-network/profile';
-import Badge from '../contents/Badge';
-import { Copy } from '../icons/copy';
-import { CurrencyETH } from '../icons/currency-eth';
-import { GasPump } from '../icons/gas-pump';
+import Badge from '../news/contents/Badge';
+import { Copy } from '../common/icons/copy';
+import { CurrencyETH } from '../common/icons/currency-eth';
+import { GasPump } from '../common/icons/gas-pump';
 import Rss3Content from '../fren/Rss3Content';
 
 export default function Activities() {

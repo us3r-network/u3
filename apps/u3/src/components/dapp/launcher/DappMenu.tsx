@@ -1,9 +1,9 @@
 import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import useLogin from '../../../hooks/useLogin';
+import useLogin from '../../../hooks/shared/useLogin';
 import DappWebsiteModal from './DappWebsiteModal';
-import { ReactComponent as PlusSquareSvg } from '../../common/icons/svgs/plus-square.svg';
+import { ReactComponent as PlusSquareSvg } from '../../common/assets/svgs/plus-square.svg';
 import DappInstallList from './DappInstallList';
 import Web3TodaySvgUrl from './imgs/web3-today.svg';
 

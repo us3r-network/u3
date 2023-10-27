@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from 'react';
 
 // import { useFarcaster } from 'src/providers/FarcasterProvider';
-import { StorageRegistryABI } from 'src/abi/farcaster/StorageRegistryABI';
+import { StorageRegistryABI } from 'src/services/social/abi/farcaster/StorageRegistryABI';
 import { toast } from 'react-toastify';
 import {
   StepsBox,

@@ -17,8 +17,8 @@ import {
   // zoraTestnet,
 } from 'viem/chains';
 import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
-import { ZoraCreator1155ImplAbi } from '../abi/zora/ZoraCreator1155ImplABI';
-import { ZoraCreatorFixedPriceSaleStrategyAbi } from '../abi/zora/ZoraCreatorFixedPriceSaleStrategyABI';
+import { ZoraCreator1155ImplAbi } from '../services/dapp/abi/zora/ZoraCreator1155ImplABI';
+import { ZoraCreatorFixedPriceSaleStrategyAbi } from '../services/dapp/abi/zora/ZoraCreatorFixedPriceSaleStrategyABI';
 
 export { ZoraCreator1155ImplAbi, ZoraCreatorFixedPriceSaleStrategyAbi };
 

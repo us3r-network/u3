@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import { ReactComponent as IconArrowCircleRight } from '../common/icons/svgs/arrow-circle-right.svg';
+import { ReactComponent as IconArrowCircleRight } from '../common/assets/svgs/arrow-circle-right.svg';
 
 export default function TitleMobile({
   text,

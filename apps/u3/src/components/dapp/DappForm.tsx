@@ -12,12 +12,12 @@ import {
 import InputBase from '../common/input/InputBase';
 import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase';
 import Switch from '../common/switch/Switch';
-import useConfigsTopics from '../../hooks/useConfigsTopics';
-import { UpdateDappData, DappStatus } from '../../services/types/dapp';
+import useConfigsTopics from '../../hooks/shared/useConfigsTopics';
+import { UpdateDappData, DappStatus } from '../../services/dapp/types/dapp';
 import TextareaBase from '../common/input/TextareaBase';
 import MultiSelect from '../common/select/MultiSelect';
 import UploadImage from '../common/upload/UploadImage';
-import ProjectAsyncSelect from '../business/form/ProjectAsyncSelect';
+import ProjectAsyncSelect from '../shared/form/ProjectAsyncSelect';
 import ButtonRefresh from '../common/button/ButtonRefresh';
 import UploadImages from '../common/upload/UploadImages';
 

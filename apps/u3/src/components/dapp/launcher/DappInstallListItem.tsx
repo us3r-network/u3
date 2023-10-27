@@ -9,7 +9,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import React from 'react';
 import ImgDefault from '../../common/ImgDefault';
-import { ReactComponent as DappHandleIcon } from '../../common/icons/svgs/dots-vertical.svg';
+import { ReactComponent as DappHandleIcon } from '../../common/assets/svgs/dots-vertical.svg';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   data: {

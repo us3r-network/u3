@@ -7,7 +7,7 @@
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import Card, { CardTitle } from './Card';
-import ComingSoonImgUrl from './imgs/user_score.png';
+import ComingSoonImgUrl from '../../common/assets/imgs/user_score.png';
 
 type Props = StyledComponentPropsWithRef<'div'>;
 export default function UserScore({ ...otherProps }: Props) {

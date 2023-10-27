@@ -9,8 +9,8 @@ import React, { useRef, useState } from 'react';
 
 import Select from 'react-select';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { ScrollBarCss } from '../../../GlobalStyle';
-import ChevronDownSvg from '../icons/svgs/chevron-down.svg';
+import { ScrollBarCss } from '../../../styles/GlobalStyle';
+import ChevronDownSvg from '../assets/svgs/chevron-down.svg';
 
 type ValueType = string | number;
 export type Option = {

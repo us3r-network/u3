@@ -13,13 +13,13 @@ import { useCallback, useEffect } from 'react';
 // import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { CutomRouteObject, RoutePermission, routes } from '../../route/routes';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import useU3Extension from '../../hooks/useU3Extension';
+import useU3Extension from '../../hooks/shared/useU3Extension';
 import {
   selectWebsite,
   setU3ExtensionInstalled,
-} from '../../features/website/websiteSlice';
-import EventCompleteGuideModal from '../event/EventCompleteGuideModal';
-import useLogin from '../../hooks/useLogin';
+} from '../../features/shared/websiteSlice';
+import EventCompleteGuideModal from '../news/event/EventCompleteGuideModal';
+import useLogin from '../../hooks/shared/useLogin';
 import NoLogin from './NoLogin';
 // import usePreference from '../../hooks/usePreference';
 // import OnboardModal from '../onboard/OnboardModal';

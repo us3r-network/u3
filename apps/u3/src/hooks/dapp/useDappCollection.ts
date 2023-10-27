@@ -17,7 +17,7 @@ import {
   // ZORA_API_KEY,
 } from '../../constants/zora';
 // import { getMyDappCollectionNFT } from '../../api/chainbase';
-import { fetchDappByTokenId } from '../../services/api/dapp';
+import { fetchDappByTokenId } from '../../services/dapp/api/dapp';
 
 const args = {
   endPoint: ZORA_API_ENDPOINT,

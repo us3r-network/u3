@@ -1,6 +1,6 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import { useNotificationStore } from '../../contexts/NotificationStoreCtx_NoLens';
+import { useNotificationStore } from '../../contexts/notification/NotificationStoreCtx_NoLens';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';

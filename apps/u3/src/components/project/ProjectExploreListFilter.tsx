@@ -7,12 +7,12 @@
  */
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import useConfigsTopics from '../../hooks/useConfigsTopics';
-import { ProjectExploreListParams } from '../../services/types/project';
+import useConfigsTopics from '../../hooks/shared/useConfigsTopics';
+import { ProjectExploreListParams } from '../../services/shared/types/project';
 import SearchInput from '../common/input/SearchInput';
 import Select from '../common/select/Select';
-import GridSvgUrl from '../common/icons/svgs/grid.svg';
-import ListSvgUrl from '../common/icons/svgs/list.svg';
+import GridSvgUrl from '../common/assets/svgs/grid.svg';
+import ListSvgUrl from '../common/assets/svgs/list.svg';
 
 export type ProjectExploreListFilterValues = Pick<
   ProjectExploreListParams,

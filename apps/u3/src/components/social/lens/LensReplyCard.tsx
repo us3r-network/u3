@@ -2,14 +2,14 @@ import { Comment } from '@lens-protocol/react-web';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { lensPublicationToReplyCardData } from '../../../utils/lens-ui-utils';
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
+import { lensPublicationToReplyCardData } from '../../../utils/social/lens/lens-ui-utils';
+import { useCreateLensComment } from '../../../hooks/social/lens/useCreateLensComment';
 import ReplyCard, { ReplyCardData } from '../ReplyCard';
-import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote';
-import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
+import { useReactionLensUpvote } from '../../../hooks/social/lens/useReactionLensUpvote';
+import { useCreateLensMirror } from '../../../hooks/social/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
-import { useLensCtx } from '../../../contexts/AppLensCtx';
-import useLogin from '../../../hooks/useLogin';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
+import useLogin from '../../../hooks/shared/useLogin';
 
 export default function LensReplyCard({ data }: { data: Comment }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();

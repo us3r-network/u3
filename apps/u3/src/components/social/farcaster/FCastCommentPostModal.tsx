@@ -7,11 +7,11 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
-import { FarCast, SocailPlatform } from '../../../api';
-import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
+import { FarCast, SocailPlatform } from '../../../services/social/types';
+import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 
 import ReplyModal from '../ReplyModal';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 export default function FCastCommentPostModal({
   cast,

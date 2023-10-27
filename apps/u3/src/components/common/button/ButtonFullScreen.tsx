@@ -7,8 +7,8 @@
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ButtonPrimaryLine } from './ButtonBase';
-import ExpandSvg from '../icons/svgs/expand.svg';
-import ShrinkSvg from '../icons/svgs/shrink.svg';
+import ExpandSvg from '../assets/svgs/expand.svg';
+import ShrinkSvg from '../assets/svgs/shrink.svg';
 
 export type ButtonProps = StyledComponentPropsWithRef<'button'> & {
   isFullscreen?: boolean;
