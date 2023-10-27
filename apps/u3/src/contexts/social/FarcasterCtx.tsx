@@ -86,6 +86,7 @@ export interface FarcasterContextData {
   channels: FarcasterChannel[];
   following: string[];
   joinChannel: (parent_url: string) => Promise<void>;
+  unPinChannel: (parent_url: string) => Promise<void>;
   userChannels: { parent_url: string }[];
   getUserChannels: () => Promise<void>;
 }
@@ -126,9 +127,10 @@ export default function FarcasterProvider({
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
   });
-  const { userChannels, getUserChannels, joinChannel } = useFarcasterChannel({
-    currFid,
-  });
+  const { userChannels, getUserChannels, joinChannel, unPinChannel } =
+    useFarcasterChannel({
+      currFid,
+    });
 
   const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
     useFarcasterWallet();
@@ -270,6 +272,7 @@ export default function FarcasterProvider({
         following: farcasterFollowData.followingData,
         userChannels,
         joinChannel,
+        unPinChannel,
         getUserChannels,
       }}
     >

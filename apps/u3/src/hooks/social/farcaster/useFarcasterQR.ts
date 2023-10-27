@@ -8,6 +8,8 @@ import { isMobile } from 'react-device-detect';
 import {
   generateKeyPair,
   getSignedKeyRequest,
+  removeFarsignPrivateKey,
+  removeFarsignSigner,
   setPrivateKey,
   setSignedKeyRequest,
 } from 'src/utils/social/farcaster/farsign-utils';
@@ -120,6 +122,9 @@ export default function useFarcasterQR() {
         deadline,
       })
       .then((response) => response.data.result.signedKeyRequest);
+
+    removeFarsignPrivateKey();
+    removeFarsignSigner();
 
     setPrivateKey(keyPair.privateKey);
     pollForSigner(token);

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import {
   getUserChannels,
   pinFarcasterChannel,
+  unPinFarcasterChannel,
 } from 'src/services/social/api/farcaster';
 
 export default function useFarcasterChannel({
@@ -38,6 +39,19 @@ export default function useFarcasterChannel({
     [currFid]
   );
 
+  const unPinChannel = useCallback(
+    async (parent_url: string) => {
+      if (!currFid) return;
+      try {
+        await unPinFarcasterChannel(currFid, parent_url);
+        await getUserChannelsAction();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [currFid]
+  );
+
   useEffect(() => {
     getUserChannelsAction();
   }, [getUserChannelsAction]);
@@ -46,5 +60,6 @@ export default function useFarcasterChannel({
     userChannels,
     getUserChannels: getUserChannelsAction,
     joinChannel,
+    unPinChannel,
   };
 }
