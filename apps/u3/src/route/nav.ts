@@ -52,7 +52,7 @@ export const navs: CustomNavObject[] = [
       RouteKey.eventEdit,
     ],
     icon: React.createElement(NewsSvg),
-    route: getRoute(RouteKey.contents),
+    route: getRoute(RouteKey.web3Today),
   },
   {
     name: 'dapp store',
@@ -78,18 +78,18 @@ export const navs: CustomNavObject[] = [
   //   icon: React.createElement(HeartSvg),
   //   route: getRoute(RouteKey.save),
   // },
-  {
-    name: 'asset',
-    activeRouteKeys: [RouteKey.asset],
-    icon: React.createElement(WalletSvg),
-    route: getRoute(RouteKey.asset),
-  },
-  {
-    name: 'gallery',
-    activeRouteKeys: [RouteKey.gallery],
-    icon: React.createElement(ImageSvg),
-    route: getRoute(RouteKey.gallery),
-  },
+  // {
+  //   name: 'asset',
+  //   activeRouteKeys: [RouteKey.asset],
+  //   icon: React.createElement(WalletSvg),
+  //   route: getRoute(RouteKey.asset),
+  // },
+  // {
+  //   name: 'gallery',
+  //   activeRouteKeys: [RouteKey.gallery],
+  //   icon: React.createElement(ImageSvg),
+  //   route: getRoute(RouteKey.gallery),
+  // },
   // {
   //   name: 'notification',
   //   activeRouteKeys: [RouteKey.notification],

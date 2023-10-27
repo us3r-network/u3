@@ -15,19 +15,7 @@ export default function Header() {
   return (
     <Wrapper>
       <Avatar />
-      <Title>
-        Welcome to Web 3 Today
-        <UserName>
-          {({ username, isLoading }) =>
-            !isLoading && username ? username : null
-          }
-        </UserName>
-        {session && (
-          <>
-            , <UserName /> !
-          </>
-        )}
-      </Title>
+      <Title>Welcome to Web 3 Today !</Title>
       {!session && <LoginButtonStyled>Login</LoginButtonStyled>}
       <RightBox>
         <BookmarkButton
