@@ -85,7 +85,7 @@ export function SocialBackNav({
           </div>
         </div>
         {isChannel && channel && (
-          <PinChannelBtn parent_url={channel.parent_url} bg="#1B1E23" />
+          <PinChannelBtn parent_url={channel.parent_url} />
         )}
       </SocialNavCenter>
       {!isMobile && <SocialNavRight />}

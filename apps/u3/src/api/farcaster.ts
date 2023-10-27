@@ -293,3 +293,19 @@ export function pinFarcasterChannel(fid: string | number, parent_url: string) {
     },
   });
 }
+
+export function unPinFarcasterChannel(
+  fid: string | number,
+  parent_url: string
+) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/user/channels`,
+    method: 'post',
+    data: {
+      fid,
+      parent_url,
+      platform: 'farcaster',
+      isDelete: true,
+    },
+  });
+}

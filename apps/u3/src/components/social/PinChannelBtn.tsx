@@ -9,13 +9,14 @@ import { PinRed } from '../icons/pin-red';
 
 export default function PinChannelBtn({
   parent_url,
-  bg,
+  border,
 }: {
   parent_url: string;
-  bg?: string;
+  border?: string;
 }) {
   const [loading, setLoading] = useState(false);
-  const { joinChannel, userChannels, currFid } = useFarcasterCtx();
+  const { joinChannel, userChannels, currFid, unPinChannel } =
+    useFarcasterCtx();
   const joined = useMemo(() => {
     const joinItem = userChannels.find((c) => c.parent_url === parent_url);
     return !!joinItem;
@@ -23,13 +24,17 @@ export default function PinChannelBtn({
 
   if (!currFid) return null;
   return (
-    <JoinBtn
-      bg={bg}
+    <PinUnpinBtn
+      border={border}
       onClick={async (e) => {
         e.preventDefault();
-        if (joined) return;
+        e.stopPropagation();
         setLoading(true);
-        await joinChannel(parent_url);
+        if (joined) {
+          await unPinChannel(parent_url);
+        } else {
+          await joinChannel(parent_url);
+        }
         await new Promise((resolve) => {
           setTimeout(resolve, 1000);
         });
@@ -37,13 +42,13 @@ export default function PinChannelBtn({
       }}
     >
       {loading ? '...' : joined ? <PinRed /> : <Pin />}
-    </JoinBtn>
+    </PinUnpinBtn>
   );
 }
 
-const JoinBtn = styled(SocialButtonPrimary)<{ bg?: string }>`
+const PinUnpinBtn = styled(SocialButtonPrimary)<{ border?: string }>`
   border-radius: 10px;
-  border: 1px solid #39424c;
+  border: ${(props) => (props.border ? props.border : '1px solid #39424c')};
   background: #1b1e23;
   width: 40px;
   height: 40px;
