@@ -27,6 +27,13 @@ function getSigner(): NobleEd25519Signer {
   return ed25519Signer;
 }
 
+function removeFarsignPrivateKey() {
+  localStorage.removeItem(`farsign-privateKey-${FARCASTER_CLIENT_NAME}`);
+}
+function removeFarsignSigner() {
+  localStorage.removeItem(`farsign-signer-${FARCASTER_CLIENT_NAME}`);
+}
+
 function setPrivateKey(privateKey: string) {
   localStorage.setItem(
     `farsign-privateKey-${FARCASTER_CLIENT_NAME}`,
@@ -61,4 +68,6 @@ export {
   getSigner,
   setPrivateKey,
   getPrivateKey,
+  removeFarsignPrivateKey,
+  removeFarsignSigner,
 };
