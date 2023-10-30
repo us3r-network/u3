@@ -15,6 +15,7 @@ import { ReactComponent as ImageSvg } from './svgs/image.svg';
 // import { ReactComponent as UserCircleSvg } from './svgs/user-circle.svg';
 // import { ReactComponent as SocialSvg } from './svgs/social.svg';
 import { ReactComponent as HomeSvg } from './svgs/home.svg';
+import { ReactComponent as NewsSvg } from './svgs/news.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
 
@@ -37,6 +38,21 @@ export const navs: CustomNavObject[] = [
     ],
     icon: React.createElement(HomeSvg),
     route: getRoute(RouteKey.social),
+  },
+  {
+    name: 'news',
+    activeRouteKeys: [
+      RouteKey.web3Today,
+      RouteKey.contents,
+      RouteKey.content,
+      RouteKey.contentCreate,
+      RouteKey.events,
+      RouteKey.event,
+      RouteKey.eventCreate,
+      RouteKey.eventEdit,
+    ],
+    icon: React.createElement(NewsSvg),
+    route: getRoute(RouteKey.web3Today),
   },
   {
     name: 'dapp store',
@@ -62,18 +78,18 @@ export const navs: CustomNavObject[] = [
   //   icon: React.createElement(HeartSvg),
   //   route: getRoute(RouteKey.save),
   // },
-  {
-    name: 'asset',
-    activeRouteKeys: [RouteKey.asset],
-    icon: React.createElement(WalletSvg),
-    route: getRoute(RouteKey.asset),
-  },
-  {
-    name: 'gallery',
-    activeRouteKeys: [RouteKey.gallery],
-    icon: React.createElement(ImageSvg),
-    route: getRoute(RouteKey.gallery),
-  },
+  // {
+  //   name: 'asset',
+  //   activeRouteKeys: [RouteKey.asset],
+  //   icon: React.createElement(WalletSvg),
+  //   route: getRoute(RouteKey.asset),
+  // },
+  // {
+  //   name: 'gallery',
+  //   activeRouteKeys: [RouteKey.gallery],
+  //   icon: React.createElement(ImageSvg),
+  //   route: getRoute(RouteKey.gallery),
+  // },
   // {
   //   name: 'notification',
   //   activeRouteKeys: [RouteKey.notification],

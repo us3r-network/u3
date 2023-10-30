@@ -2,23 +2,23 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useFavorAction } from '@us3r-network/link';
 import { useProfileState } from '@us3r-network/profile';
-import { formatFilterShowName } from '../../../utils/filter';
+import { formatFilterShowName } from '../../../utils/shared/filter';
 import {
   DappExploreListItemResponse,
   DappStatus,
-} from '../../../services/types/dapp';
+} from '../../../services/dapp/types/dapp';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import ImgDefault from '../../common/ImgDefault';
 import Card from './Card';
-import TwitterSvg from '../../common/icons/svgs/twitter.svg';
-import DiscordSvg from '../../common/icons/svgs/discord.svg';
-import FacebookSvg from '../../common/icons/svgs/facebook.svg';
-import TelegramSvg from '../../common/icons/svgs/telegram.svg';
-import useConfigsTopics from '../../../hooks/useConfigsTopics';
-import { ReactComponent as CheckVerifiedSvg } from '../../common/icons/svgs/check-verified.svg';
+import TwitterSvg from '../../common/assets/svgs/twitter.svg';
+import DiscordSvg from '../../common/assets/svgs/discord.svg';
+import FacebookSvg from '../../common/assets/svgs/facebook.svg';
+import TelegramSvg from '../../common/assets/svgs/telegram.svg';
+import useConfigsTopics from '../../../hooks/shared/useConfigsTopics';
+import { ReactComponent as CheckVerifiedSvg } from '../../common/assets/svgs/check-verified.svg';
 import EllipsisTextExpandMore from '../../common/text/EllipsisTextExpandMore';
-import { Edit } from '../../icons/edit';
-import useLogin from '../../../hooks/useLogin';
+import { Edit } from '../../common/icons/edit';
+import useLogin from '../../../hooks/shared/useLogin';
 import Badge from '../Badge';
 import { DappMintButton } from '../DappMintButton';
 

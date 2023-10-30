@@ -11,7 +11,7 @@ import {
   createSlice,
   EntityState,
 } from '@reduxjs/toolkit';
-import { AsyncRequestStatus } from '../../services/types';
+import { AsyncRequestStatus } from '../../services/shared/types';
 // import {
 //   FrensEntity,
 //   FrensExploreListItemResponse,
@@ -26,7 +26,7 @@ import {
   unFollow,
   reco,
   queryRss3,
-} from '../../services/api/frens';
+} from '../../services/shared/api/frens';
 
 // // 统一管理操作
 // export type FrensHandle<T> = {

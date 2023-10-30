@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import ModalContainer from '../../common/modal/ModalContainer';
 
 // eslint-disable-next-line import/no-cycle
-import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import {
   ModalCloseBtn,
   ModalDescription,

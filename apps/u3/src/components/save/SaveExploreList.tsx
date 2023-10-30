@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import AnimatedListItem, {
   useAnimatedListTransition,
-} from '../animation/AnimatedListItem';
+} from '../common/animation/AnimatedListItem';
 import CardBase from '../common/card/CardBase';
 import SaveExploreListItem from './SaveExploreListItem';
 

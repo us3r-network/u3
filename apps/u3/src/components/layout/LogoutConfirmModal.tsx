@@ -13,7 +13,7 @@ import ModalBase, {
   ModalBaseProps,
   ModalBaseTitle,
 } from '../common/modal/ModalBase';
-import { Close } from '../icons/close';
+import { Close } from '../common/icons/close';
 
 type Props = ModalBaseProps & {
   onClose?: () => void;

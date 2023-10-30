@@ -10,12 +10,12 @@ import { ScoresAvg } from '@us3r-network/link';
 import {
   DappExploreListItemResponse,
   DappStatus,
-} from '../../services/types/dapp';
+} from '../../services/dapp/types/dapp';
 import EllipsisText from '../common/text/EllipsisText';
 import ImgDefault from '../common/ImgDefault';
 import CardBase from '../common/card/CardBase';
-import CheckVerifiedSvg from '../common/icons/svgs/check-verified.svg';
-import { formatFilterShowName } from '../../utils/filter';
+import CheckVerifiedSvg from '../common/assets/svgs/check-verified.svg';
+import { formatFilterShowName } from '../../utils/shared/filter';
 import Badge from './Badge';
 
 export type DappExploreListItemData = DappExploreListItemResponse;

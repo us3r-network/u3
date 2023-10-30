@@ -12,22 +12,22 @@ import {
   EntityState,
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { AsyncRequestStatus } from '../../services/types';
+import { AsyncRequestStatus } from '../../services/shared/types';
 import {
   DappEntity,
   DappExploreListItemResponse,
-} from '../../services/types/dapp';
+} from '../../services/dapp/types/dapp';
 import type { RootState } from '../../store/store';
 import {
   favorDapp as favorDappApi,
   unfavorDapp as unfavorDappApi,
-} from '../../services/api/dapp';
+} from '../../services/dapp/api/dapp';
 import {
   addOneWithDapps,
   removeOneWithDapps,
-} from '../favorite/userGroupFavorites';
+} from '../shared/userGroupFavorites';
 import { updateOne as updateOneWithDappExplore } from './dappExploreList';
-import { messages } from '../../utils/message';
+import { messages } from '../../utils/shared/message';
 
 // 为dapp 点赞操作 创建一个执行队列
 export type FavorDappParams = DappExploreListItemResponse;

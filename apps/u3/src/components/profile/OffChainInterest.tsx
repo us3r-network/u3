@@ -6,8 +6,8 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import { Discord } from '../icons/discord';
-import { Twitter } from '../icons/twitter';
+import { Discord } from '../common/icons/discord';
+import { Twitter } from '../common/icons/twitter';
 
 export default function OffChainInterest() {
   return (

@@ -4,7 +4,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import styled from 'styled-components';
 
-import { ERC20TokensQuery } from '../../queries';
+import { ERC20TokensQuery } from '../../services/shared/queries';
 import { TokenType } from './types';
 
 function Token({

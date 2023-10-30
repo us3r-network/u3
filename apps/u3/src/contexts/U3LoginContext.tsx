@@ -12,14 +12,14 @@ import {
   useSession,
 } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
-import { u3login, User } from '../services/api/login';
+import { u3login, User } from '../services/shared/api/login';
 import {
   removeU3ExtensionCookie,
   setU3ExtensionCookie,
   UserAdaptationCookie,
-} from '../utils/cookie';
-import { removeHomeBannerHiddenFromStore } from '../utils/homeStore';
-import { getAddressWithDidPkh } from '../utils/did';
+} from '../utils/shared/cookie';
+import { removeHomeBannerHiddenFromStore } from '../utils/shared/homeStore';
+import { getAddressWithDidPkh } from '../utils/shared/did';
 
 interface U3LoginContextValue {
   user: User | null;

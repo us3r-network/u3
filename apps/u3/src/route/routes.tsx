@@ -33,7 +33,6 @@ export enum RouteKey {
   policy = 'policy',
   web3Today = 'web3Today',
   activity = 'activity',
-  stream = 'stream',
   family = 'family',
   asset = 'asset',
   gallery = 'gallery',
@@ -78,25 +77,13 @@ export const routes: CutomRouteObject[] = [
   },
   {
     path: '/web3-today',
-    element: loadContainerElement('Web3Today'),
+    element: loadContainerElement('news/Web3Today'),
     key: RouteKey.web3Today,
   },
   {
     path: '/activity',
     element: loadContainerElement('Activity'),
     key: RouteKey.activity,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/stream/:streamId',
-    element: loadContainerElement('Stream'),
-    key: RouteKey.stream,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/family/:familyOrApp',
-    element: loadContainerElement('StreamFamily'),
-    key: RouteKey.family,
     permissions: [RoutePermission.login],
   },
   {
@@ -119,7 +106,7 @@ export const routes: CutomRouteObject[] = [
   },
   {
     path: '/favorite',
-    element: loadContainerElement('Favorite'),
+    element: loadContainerElement('news/Favorite'),
     key: RouteKey.favorite,
     permissions: [RoutePermission.login],
   },
@@ -129,58 +116,52 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.save,
     permissions: [RoutePermission.login],
   },
-  // {
-  //   path: '/profile',
-  //   element: loadContainerElement('ProfileRe'),
-  //   key: RouteKey.profile,
-  //   permissions: [RoutePermission.login],
-  // },
   {
     path: '/u',
-    element: loadContainerElement('Profile'),
+    element: loadContainerElement('profile/Profile'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
   },
   {
     path: '/u/:user',
-    element: loadContainerElement('Profile'),
+    element: loadContainerElement('profile/Profile'),
     key: RouteKey.profileByUser,
   },
   {
     path: '/events',
-    element: loadContainerElement('Events'),
+    element: loadContainerElement('news/Events'),
     key: RouteKey.events,
   },
   {
     path: '/events/:id',
-    element: loadContainerElement('Events'),
+    element: loadContainerElement('news/Events'),
     key: RouteKey.events,
   },
   {
     path: '/events/create',
-    element: loadContainerElement('EventCreate'),
+    element: loadContainerElement('news/EventCreate'),
     key: RouteKey.eventCreate,
     permissions: [RoutePermission.login, RoutePermission.admin],
   },
   {
     path: '/events/:id/edit',
-    element: loadContainerElement('EventEdit'),
+    element: loadContainerElement('news/EventEdit'),
     key: RouteKey.eventEdit,
     permissions: [RoutePermission.login, RoutePermission.admin],
   },
   {
     path: '/dapp-store',
-    element: loadContainerElement('Dapps'),
+    element: loadContainerElement('dapp/Dapps'),
     key: RouteKey.dappStore,
   },
   {
     path: '/dapp-store/:id',
-    element: loadContainerElement('Dapp'),
+    element: loadContainerElement('dapp/Dapp'),
     key: RouteKey.dapp,
   },
   {
     path: '/dapp-store/create',
-    element: loadContainerElement('DappCreate'),
+    element: loadContainerElement('dapp/DappCreate'),
     key: RouteKey.dappCreate,
     permissions: [RoutePermission.login, RoutePermission.admin],
   },
@@ -202,19 +183,19 @@ export const routes: CutomRouteObject[] = [
   },
   {
     path: '/contents',
-    element: loadContainerElement('Contents'),
+    element: loadContainerElement('news/Contents'),
     key: RouteKey.contents,
   },
   {
     path: '/contents/:id',
     element: isMobile
-      ? loadContainerElement('Content')
-      : loadContainerElement('Contents'),
+      ? loadContainerElement('news/Content')
+      : loadContainerElement('news/Contents'),
     key: isMobile ? RouteKey.content : RouteKey.contents,
   },
   {
     path: '/contents/create',
-    element: loadContainerElement('ContentCreate'),
+    element: loadContainerElement('news/ContentCreate'),
     key: RouteKey.contentCreate,
     permissions: [RoutePermission.login],
   },
@@ -230,22 +211,22 @@ export const routes: CutomRouteObject[] = [
   },
   {
     path: '/farcaster',
-    element: loadContainerElement('FarcasterLayout'),
+    element: loadContainerElement('social/FarcasterLayout'),
     key: RouteKey.farcaster,
     children: [
       {
         path: '',
-        element: loadContainerElement('FarcasterData'),
+        element: loadContainerElement('social/FarcasterData'),
         key: RouteKey.farcasterData,
       },
       {
         path: 'signup',
-        element: loadContainerElement('FarcasterSignup'),
+        element: loadContainerElement('social/FarcasterSignup'),
         key: RouteKey.farcasterSignup,
       } as CutomRouteObject,
       {
         path: 'profile',
-        element: loadContainerElement('FarcasterProfile'),
+        element: loadContainerElement('social/FarcasterProfile'),
         key: RouteKey.farcasterProfile,
       },
     ],
@@ -253,37 +234,37 @@ export const routes: CutomRouteObject[] = [
 
   {
     path: '/social',
-    element: loadContainerElement('SocialLayout'),
+    element: loadContainerElement('social/SocialLayout'),
     key: RouteKey.socialLayout,
     children: [
       {
         path: '',
-        element: loadContainerElement('Social'),
+        element: loadContainerElement('social/Social'),
         key: RouteKey.social,
       },
       {
         path: 'trends',
-        element: loadContainerElement('SocialTrends'),
+        element: loadContainerElement('social/SocialTrends'),
         key: RouteKey.socialTrendsChannel,
       },
       {
         path: 'channel/:channelName',
-        element: loadContainerElement('SocialChannel'),
+        element: loadContainerElement('social/SocialChannel'),
         key: RouteKey.socialChannel,
       },
       {
         path: 'post-detail/lens/:publicationId',
-        element: loadContainerElement('LensPostDetail'),
+        element: loadContainerElement('social/LensPostDetail'),
         key: RouteKey.socialPostDetailLens,
       } as CutomRouteObject,
       {
         path: 'post-detail/fcast/:castId',
-        element: loadContainerElement('FarcasterPostDetail'),
+        element: loadContainerElement('social/FarcasterPostDetail'),
         key: RouteKey.socialPostDetailFcast,
       },
       {
         path: 'suggest-follow',
-        element: loadContainerElement('SocialSuggestFollow'),
+        element: loadContainerElement('social/SocialSuggestFollow'),
         key: RouteKey.socialSuggestFollow,
       },
     ],

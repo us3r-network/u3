@@ -13,9 +13,9 @@ import { MEDIA_BREAK_POINTS } from '../../constants';
 import {
   PlatformsItemResponse,
   PlatformType,
-} from '../../services/types/common';
+} from '../../services/shared/types/common';
 import ImgDefault from '../common/ImgDefault';
-import { formatFilterShowName } from '../../utils/filter';
+import { formatFilterShowName } from '../../utils/shared/filter';
 import EllipsisText from '../common/text/EllipsisText';
 
 export default function Platform({

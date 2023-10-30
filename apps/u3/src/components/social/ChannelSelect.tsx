@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Channel } from 'src/services/types/farcaster';
+import { Channel } from 'src/services/social/types/farcaster';
 import styled from 'styled-components';
 import {
   Button,
@@ -9,8 +9,8 @@ import {
   Select,
   SelectValue,
 } from 'react-aria-components';
-import ArrowDown from '../icons/ArrowDown';
-import { getChannel } from '../../utils/social/getChannel';
+import ArrowDown from '../common/icons/ArrowDown';
+import { getChannel } from '../../utils/social/farcaster/getChannel';
 
 export default function ChannelSelect({
   channel,

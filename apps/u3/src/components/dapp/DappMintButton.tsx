@@ -4,21 +4,21 @@ import { useNetwork, useSwitchNetwork } from 'wagmi';
 import { TokenInfo, useMint } from '../../hooks/dapp/useMint';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useCreate1155Token } from '../../hooks/dapp/useCreate1155Token';
-import { DappExploreListItemResponse } from '../../services/types/dapp';
-import { storeNFT } from '../../services/api/nftStorage';
+import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
+import { storeNFT } from '../../services/shared/api/nftStorage';
 
-import { updateDappTokenId } from '../../services/api/dapp';
-import useDappCollection from '../../hooks/dapp/useDappCollection';
-import useLogin from '../../hooks/useLogin';
+import { updateDappTokenId } from '../../services/dapp/api/dapp';
+import useDappCollection, { ZoraNFT } from '../../hooks/dapp/useDappCollection';
+import useLogin from '../../hooks/shared/useLogin';
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn, ModalTitle } from '../common/modal/ModalWidgets';
 import {
   zora1155ToMintAddress,
-  zoraDappsNetworkInfo,
+  zoraDappsNetworkName,
   zoraDappsNetworkExplorer,
   ziraChainId,
 } from '../../constants/zora';
-import { shortPubKey } from '../../utils/shortPubKey';
+import { shortPubKey } from '../../utils/shared/shortPubKey';
 import Loading from '../common/loading/Loading';
 
 type DappMintButtonProps = {
@@ -30,14 +30,14 @@ export function DappMintButton(props: DappMintButtonProps) {
   const [dappCollected, setDappCollected] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const { walletAddress, isLogin, login } = useLogin();
-  const { dappCollection, updateDappCollection } =
-    useDappCollection(walletAddress);
+  const { dappCollection, append } = useDappCollection(walletAddress);
   useEffect(() => {
     setDappCollected(
       dappCollection?.filter(
-        (token) => Number(token.tokenId) === dappData.tokenId
+        (dapp) => Number(dapp.tokenId) === dappData.tokenId
       ).length > 0
     );
+    // console.log('dappCollection updated ', dappCollection, dappCollected);
   }, [dappCollection]);
   return isLogin ? (
     <>
@@ -68,7 +68,14 @@ export function DappMintButton(props: DappMintButtonProps) {
         onSuccess={(type, tokenId) => {
           switch (type) {
             case SuccessType.MINT:
-              updateDappCollection();
+              // eslint-disable-next-line no-case-declarations
+              const newNFT: ZoraNFT = {
+                chainId: Number(ziraChainId),
+                contractAddress: zora1155ToMintAddress,
+                tokenId: Number(tokenId),
+              };
+              console.log('newNFT: ', newNFT);
+              append([newNFT]);
               break;
             case SuccessType.NEW_TOKEN:
               dappData.tokenId = Number(tokenId);
@@ -88,26 +95,65 @@ export function DappMintButton(props: DappMintButtonProps) {
 
 type MintButtonProps = {
   tokenId: number;
-  onSuccess?: (tokenId?: bigint) => void;
+  onSuccess?: (tokenId?: number) => void;
 };
 
 function MintButton(props: MintButtonProps) {
   const { tokenId, onSuccess } = props;
   // console.log('tokenId: ', tokenId);
   // hook for collecting already existing token
-  const { write, data, isError, isLoading, isSuccess, status, tokenInfo } =
+  const { write, isLoading, isSuccess, isError, tokenInfo, data } =
     useMint(tokenId);
+
+  // for test without actually minting
+  // const { tokenInfo } = useMint(tokenId);
+  // const [isSuccess, setIsSuccess] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const write = () => {
+  //   setIsLoading(true);
+  //   setIsSuccess(true);
+  //   setIsLoading(false);
+  // };
+
   useEffect(() => {
     if (isSuccess) {
-      onSuccess();
+      onSuccess(tokenId);
     }
   }, [isSuccess]);
   if (isSuccess) {
-    return <MintMessage>Collected</MintMessage>;
+    return (
+      <>
+        <MintMessage messageType={MessageType.SUCCESS}>Collected</MintMessage>
+        <ButtonPrimaryWraper
+          onClick={() =>
+            window.open(
+              `${zoraDappsNetworkExplorer}/tx/${data?.transactionHash}`
+            )
+          }
+        >
+          View Transaction
+        </ButtonPrimaryWraper>
+      </>
+    );
   }
+  if (isError)
+    return (
+      <>
+        <MintMessage messageType={MessageType.ERROR}>
+          Something Wrong!
+        </MintMessage>{' '}
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
+          Try Again
+        </ButtonPrimaryWraper>
+      </>
+    );
   if (isLoading) {
     return (
-      <MintMessage>
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Collecting...
       </MintMessage>
@@ -122,7 +168,11 @@ function MintButton(props: MintButtonProps) {
             <span>{Number((tokenInfo as TokenInfo)?.totalMinted)}</span>
           </NFTInfo>
         )}
-        <ButtonPrimaryWraper onClick={() => write?.()}>
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
           Free Mint & Collect Now
         </ButtonPrimaryWraper>
       </>
@@ -131,7 +181,7 @@ function MintButton(props: MintButtonProps) {
 
 type PrepareNewTokenButtonProps = {
   dappData: DappExploreListItemResponse;
-  onSuccess?: (tokenId: bigint) => void;
+  onSuccess?: (tokenId: number) => void;
 };
 
 function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
@@ -167,7 +217,7 @@ function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
         Mint First & Get Rewards!
       </GoldButtonPrimaryWraper>
     ) : (
-      <MintMessage>
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Uploading Metadata...
       </MintMessage>
@@ -184,32 +234,66 @@ function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
 type NewTokenButtonProps = {
   dappId: string | number;
   metadataUri: string;
-  onSuccess?: (tokenId: bigint) => void;
+  onSuccess?: (tokenId: number) => void;
 };
 function NewTokenButton(props: NewTokenButtonProps) {
   const { dappId, metadataUri, onSuccess } = props;
   // hook for creating new token
-  const { write, data, isError, isLoading, isSuccess, status, nextTokenId } =
+  const { write, isLoading, isSuccess, isError, nextTokenId, data } =
     useCreate1155Token(metadataUri);
   useEffect(() => {
-    if (write) write?.();
+    if (write) {
+      write?.();
+    }
   }, [write]);
   useEffect(() => {
     if (isSuccess) {
       updateDappTokenId(dappId, Number(nextTokenId as bigint));
-      onSuccess(nextTokenId as bigint);
+      onSuccess(Number(nextTokenId as bigint));
     }
   }, [isSuccess]);
-  if (isSuccess) return <MintMessage>New Token Created</MintMessage>;
-  if (isLoading)
+  if (isSuccess)
     return (
-      <MintMessage>
+      <>
+        <MintMessage messageType={MessageType.SUCCESS}>
+          Created New Token
+        </MintMessage>
+        <ButtonPrimaryWraper
+          onClick={() =>
+            window.open(
+              `${zoraDappsNetworkExplorer}/tx/${data?.transactionHash}`
+            )
+          }
+        >
+          View Transaction
+        </ButtonPrimaryWraper>
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <MintMessage messageType={MessageType.ERROR}>
+          Something Wrong!
+        </MintMessage>{' '}
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
+          Try Again
+        </ButtonPrimaryWraper>
+      </>
+    );
+  if (isLoading) {
+    return (
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Creating New Token...
       </MintMessage>
     );
+  }
   return (
-    <MintMessage>
+    <MintMessage messageType={MessageType.LOADING}>
       <Loading scale={0.2} />
       Prepareing New Token...
     </MintMessage>
@@ -225,7 +309,7 @@ type NFTDetailModalProps = {
   open: boolean;
   closeModal: () => void;
   dappData: DappExploreListItemResponse;
-  onSuccess: (type: SuccessType, tokenId?: bigint) => void;
+  onSuccess: (type: SuccessType, tokenId?: number) => void;
 };
 
 function NFTDetailModal({
@@ -250,7 +334,7 @@ function NFTDetailModal({
           {dappData.tokenId ? (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkInfo.chain}</span>
+                <span>Network</span> <span>{zoraDappsNetworkName}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -269,23 +353,23 @@ function NFTDetailModal({
               <NFTInfo>
                 <span>Token ID</span> <span>{dappData.tokenId}</span>
               </NFTInfo>
-              {chain.id === Number(ziraChainId) ? (
+              {chain?.id === Number(ziraChainId) ? (
                 <MintButton
                   tokenId={dappData.tokenId}
                   onSuccess={() => {
-                    onSuccess(SuccessType.MINT);
+                    onSuccess(SuccessType.MINT, dappData.tokenId);
                   }}
                 />
               ) : (
                 <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkInfo.chain}`}
+                  {`Switch to ${zoraDappsNetworkName}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>
           ) : (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkInfo.chain}</span>
+                <span>Network</span> <span>{zoraDappsNetworkName}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -301,13 +385,12 @@ function NFTDetailModal({
                 </a>
               </NFTInfo>
               <NFTInfo>
-                <p>Free mint!</p>
                 <p>
                   First minter has the opportunity{' '}
                   <b>to earn 0.000111 ETH for each NFT minted.</b>
                 </p>
               </NFTInfo>
-              {chain.id === Number(ziraChainId) ? (
+              {chain?.id === Number(ziraChainId) ? (
                 <PrepareNewTokenButton
                   dappData={dappData}
                   onSuccess={(tokenId) => {
@@ -316,7 +399,7 @@ function NFTDetailModal({
                 />
               ) : (
                 <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkInfo.chain}`}
+                  {`Switch to ${zoraDappsNetworkName}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>
@@ -350,8 +433,8 @@ const CloseBtn = styled(ModalCloseBtn)`
 `;
 
 const ModalBody = styled.div`
-  width: 600px;
-  height: 300px;
+  width: 640px;
+  height: 320px;
   /* min-height: 194px; */
   flex-shrink: 0;
 
@@ -372,8 +455,8 @@ const Left = styled.div`
   flex-direction: column;
   gap: 10px;
   img {
-    width: 300px;
-    height: 300px;
+    width: 320px;
+    height: 320px;
   }
 `;
 
@@ -416,17 +499,28 @@ const NFTInfo = styled.div`
     }
   }
 `;
-const MintMessage = styled.div`
+enum MessageType {
+  SUCCESS,
+  ERROR,
+  LOADING,
+}
+const MintMessage = styled.div<{ messageType: MessageType }>`
   width: 100%;
   height: 40px;
   font-size: 16px;
   font-weight: 400;
-  color: #fff;
+  color: ${(props) =>
+    props.messageType === MessageType.SUCCESS
+      ? '#0f0'
+      : props.messageType === MessageType.ERROR
+      ? '#f00'
+      : '#fff'};
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: #fff 1px solid;
+  border: ${(props) =>
+    props.messageType === MessageType.LOADING ? '#fff 1px solid' : 'none'};
   border-radius: 10px;
   gap: 10px;
 `;

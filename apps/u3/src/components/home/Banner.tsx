@@ -6,8 +6,8 @@ import { useAppDispatch } from '../../store/hooks';
 import Carousel from './Carousel';
 import Today from './Today';
 
-import { getTrendingContents } from '../../services/api/home';
-import { ContentListItem } from '../../services/types/contents';
+import { getTrendingContents } from '../../services/shared/api/home';
+import { ContentListItem } from '../../services/news/types/contents';
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';

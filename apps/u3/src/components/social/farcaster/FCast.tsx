@@ -5,14 +5,14 @@ import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 
-import useFarcasterFollowAction from 'src/hooks/farcaster/useFarcasterFollowAction';
-import { useFarcasterCtx } from 'src/contexts/FarcasterCtx';
-import { tweetShare } from 'src/utils/twitter';
-import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/share';
+import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
+import { tweetShare } from 'src/utils/shared/twitter';
+import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
 
-import { FarCast, SocailPlatform } from '../../../api';
-import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
-import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
+import { FarCast, SocailPlatform } from '../../../services/social/types';
+import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
+import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import FCastLike from './FCastLike';
 import FCastRecast from './FCastRecast';
 import FCastComment from './FCastComment';

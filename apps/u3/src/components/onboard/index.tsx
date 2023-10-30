@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { TopicItem } from '../../features/configs/topics';
-import { ContentLang } from '../../services/types/contents';
+import { TopicItem } from '../../features/shared/topics';
+import { ContentLang } from '../../services/news/types/contents';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 
 export type ItemData = {

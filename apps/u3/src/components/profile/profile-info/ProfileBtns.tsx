@@ -3,15 +3,15 @@ import { Profile, useActiveProfile, useFollow } from '@lens-protocol/react-web';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
-import useFarcasterFollowAction from '../../../hooks/farcaster/useFarcasterFollowAction';
+import useFarcasterFollowAction from '../../../hooks/social/farcaster/useFarcasterFollowAction';
 import {
   MessageRoute,
   useXmtpStore,
-} from '../../../contexts/xmtp/XmtpStoreCtx';
+} from '../../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../../contexts/NavCtx';
-import { ReactComponent as MessageChatSquareSvg } from '../../icons/svgs/message-chat-square.svg';
-import useCanMessage from '../../../hooks/xmtp/useCanMessage';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs/message-chat-square.svg';
+import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -37,15 +37,12 @@ export default function ProfileBtns({
     follower: activeProfile,
   });
 
-  const {
-    followAction: fcastFollow,
-    isPending: fcastFollowIsPending,
-    isFollowing: fcastIsFollowingTemp,
-  } = useFarcasterFollowAction();
+  const { followAction: fcastFollow, isPending: fcastFollowIsPending } =
+    useFarcasterFollowAction();
 
   const fcastIsFollowing = useMemo(
-    () => fcastIsFollowingTemp || farcasterFollowings.includes(String(fid)),
-    [fcastIsFollowingTemp, fid, farcasterFollowings]
+    () => farcasterFollowings.includes(String(fid)),
+    [fid, farcasterFollowings]
   );
 
   const onFollow = useCallback(async () => {

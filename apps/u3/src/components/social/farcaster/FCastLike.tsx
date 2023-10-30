@@ -11,8 +11,8 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
-import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
-import useFarcasterCastId from '../../../hooks/farcaster/useFarcasterCastId';
+import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
+import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 // import { getCurrFid } from '../../../utils/farsign-utils';
 import PostLike, {
   PostLikeAvatar,
@@ -20,9 +20,9 @@ import PostLike, {
   PostLikeAvatarsWrapper,
   PostLikeWrapper,
 } from '../PostLike';
-import { FarCast } from '../../../api';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
-import useLogin from '../../../hooks/useLogin';
+import { FarCast } from '../../../services/social/types';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import useLogin from '../../../hooks/shared/useLogin';
 
 export default function FCastLike({
   cast,

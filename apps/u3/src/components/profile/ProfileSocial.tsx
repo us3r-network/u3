@@ -2,13 +2,17 @@ import { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useLoadProfileFeeds } from '../../hooks/useLoadProfileFeeds';
+import { useLoadProfileFeeds } from '../../hooks/social/useLoadProfileFeeds';
 import Loading from '../common/loading/Loading';
 import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
-import { ProfileFeedsGroups } from '../../api/feeds';
-import { LensComment, LensMirror, LensPost } from '../../api/lens';
+import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
+import { ProfileFeedsGroups } from '../../services/social/api/feeds';
+import {
+  LensComment,
+  LensMirror,
+  LensPost,
+} from '../../services/social/api/lens';
 import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
 
@@ -167,9 +171,9 @@ const PostList = styled.div`
   border-top-left-radius: 0; */
   background: #212228;
   overflow: hidden;
-  /* & > *:not(:first-child) { */
-  /* border-top: 1px solid #718096; */
-  /* } */
+  & > *:not(:first-child) {
+    border-top: 1px solid #718096;
+  }
 `;
 const NoActivityWrapper = styled.div`
   .no-item {

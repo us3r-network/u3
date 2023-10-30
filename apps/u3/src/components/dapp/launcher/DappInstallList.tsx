@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-24 17:55:55
+ * @LastEditTime: 2023-10-27 12:14:05
  * @Description: file description
  */
 import {
@@ -21,16 +21,16 @@ import { clamp } from 'lodash';
 import swap from 'lodash-move';
 import { useFavorAction } from '@us3r-network/link';
 import DappSideBarListItem from './DappInstallListItem';
-import useDappWebsite from '../../../hooks/useDappWebsite';
+import useDappWebsite from '../../../hooks/dapp/useDappWebsite';
 import useDappCollection from '../../../hooks/dapp/useDappCollection';
-import useLogin from '../../../hooks/useLogin';
-import InfoCircleSvgUrl from '../../common/icons/svgs/info-circle.svg';
-import TrashSvgUrl from '../../common/icons/svgs/trash.svg';
+import useLogin from '../../../hooks/shared/useLogin';
+import InfoCircleSvgUrl from '../../common/assets/svgs/info-circle.svg';
+import TrashSvgUrl from '../../common/assets/svgs/trash.svg';
 import {
   getDappSideBarOrderForStore,
   setDappSideBarOrderToStore,
-} from '../../../utils/dapp';
-import { fetchDappByTokenId } from '../../../services/api/dapp';
+} from '../../../utils/dapp/dapp';
+import { fetchDappByTokenId } from '../../../services/dapp/api/dapp';
 
 const dragFn =
   (orders: number[], active = false, originalIndex = 0, curIndex = 0, y = 0) =>
@@ -53,8 +53,8 @@ type Props = StyledComponentPropsWithRef<'div'>;
 export default forwardRef(function DappInstallList(props: Props, ref) {
   const navigate = useNavigate();
   const { walletAddress } = useLogin();
-  const { dappCollection } = useDappCollection(walletAddress);
-  const { openDappModalByToken } = useDappWebsite();
+  const { dappCollection, sync } = useDappCollection(walletAddress);
+  const { openDappModal, openDappModalByToken } = useDappWebsite();
 
   const [handlesItemId, setHandlesItemId] = useState<string | number | null>(
     null
@@ -82,7 +82,9 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
       handlesPopperEl.current.style.right = `calc(100vw - ${left}px + 5px)`;
     }
   }, [handlesItem]);
-
+  useEffect(() => {
+    sync();
+  }, [walletAddress]);
   useEffect(() => {
     if (handlesPopperEl.current) {
       handlesPopperEl.current.style.display = handlesItem ? 'flex' : 'none';
@@ -91,6 +93,7 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
   }, [handlesItem]);
   // 点击其它位置隐藏操作框
   useEffect(() => {
+    sync();
     const windowClick = (e: Event) => {
       if (
         handlesPopperEl.current &&
@@ -184,7 +187,13 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
           >
             <DappSideBarListItem
               data={dappCollection[i]}
-              onOpen={() => openDappModalByToken(dappCollection[i].tokenId)}
+              onOpen={() => {
+                if (dappCollection[i].id) {
+                  openDappModal(dappCollection[i].id);
+                } else {
+                  openDappModalByToken(dappCollection[i].tokenId);
+                }
+              }}
               onOpenHandles={() => setHandlesItemId(dappCollection[i].tokenId)}
               ref={(el) => {
                 if (el) {
@@ -230,11 +239,16 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
           <OptionItem
             onClick={() => {
               if (handlesItem) {
-                fetchDappByTokenId(handlesItem.tokenId).then((r) => {
-                  const { id } = r.data.data;
-                  navigate(`/dapp-store/${id}`);
+                if (handlesItem.id) {
+                  navigate(`/dapp-store/${handlesItem.id}`);
                   setHandlesItemId(null);
-                });
+                } else {
+                  fetchDappByTokenId(handlesItem.tokenId).then((r) => {
+                    const { id } = r.data.data;
+                    navigate(`/dapp-store/${id}`);
+                    setHandlesItemId(null);
+                  });
+                }
               }
             }}
           >

@@ -1,6 +1,6 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import MobilePageHeader from '../common/mobile/MobilePageHeader';
+import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 
 export enum FeedsType {
   POSTS = 'posts',

@@ -9,7 +9,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import useWindowSize from '../../../hooks/useWindowSize';
+import useWindowSize from '../../../hooks/shared/useWindowSize';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   row: number;

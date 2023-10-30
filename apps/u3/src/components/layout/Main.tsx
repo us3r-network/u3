@@ -13,23 +13,17 @@ import { useCallback, useEffect } from 'react';
 // import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { CutomRouteObject, RoutePermission, routes } from '../../route/routes';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import useU3Extension from '../../hooks/useU3Extension';
+import useU3Extension from '../../hooks/shared/useU3Extension';
 import {
   selectWebsite,
   setU3ExtensionInstalled,
-} from '../../features/website/websiteSlice';
-import EventCompleteGuideModal from '../event/EventCompleteGuideModal';
-import useLogin from '../../hooks/useLogin';
+} from '../../features/shared/websiteSlice';
+import EventCompleteGuideModal from '../news/event/EventCompleteGuideModal';
+import useLogin from '../../hooks/shared/useLogin';
 import NoLogin from './NoLogin';
 // import usePreference from '../../hooks/usePreference';
 // import OnboardModal from '../onboard/OnboardModal';
 
-// import {
-//   fetchUserKarma,
-//   selectKarmaState,
-//   checkIn,
-// } from '../../features/profile/karma';
-// import { Atom02 } from '../icons/atom';
 // import { store } from '../../store/store';
 
 function Main() {
@@ -45,11 +39,6 @@ function Main() {
   }, [u3ExtensionInstalled]);
 
   // const { preferenceList } = usePreference(user?.token);
-
-  // useEffect(() => {
-  //   if (!user?.token) return;
-  //   dispatch(fetchUserKarma({ token: user?.token }));
-  // }, [user?.token]);
 
   const renderElement = useCallback(
     ({ element, permissions }: CutomRouteObject) => {
@@ -79,7 +68,6 @@ function Main() {
     element: renderElement(item),
   }));
   const renderRoutes = useRoutes(routesMap);
-  // const { checked } = useAppSelector(selectKarmaState);
 
   return (
     <MainWrapper id="main-wrapper">
@@ -104,20 +92,6 @@ function Main() {
           }}
         />
       )} */}
-
-      {/* {!isMobile && !checked && (
-        <KarmaGMBox>
-          <KarmaGM
-            onClick={() => {
-              if (!user?.token) return;
-              store.dispatch(checkIn({ token: user?.token }));
-            }}
-          >
-            <Atom02 />
-            GM
-          </KarmaGM>
-        </KarmaGMBox>
-      )} */}
     </MainWrapper>
   );
 }
@@ -135,31 +109,4 @@ const NoPermission = styled.div`
   align-items: center;
   font-size: 30px;
   color: #ffffff;
-`;
-
-const KarmaGMBox = styled.div`
-  position: absolute;
-  right: 130px;
-`;
-
-const KarmaGM = styled.div`
-  position: fixed;
-  transition: all 0.3s ease-out;
-  bottom: 24px;
-  color: #fff;
-  padding: 4px 8px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  width: 106px;
-  height: 48px;
-  background: linear-gradient(52.42deg, #cd62ff 35.31%, #62aaff 89.64%);
-  border-radius: 10px;
-
-  font-size: 24px;
-  line-height: 28px;
-
-  cursor: pointer;
 `;

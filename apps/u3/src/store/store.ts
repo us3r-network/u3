@@ -7,20 +7,18 @@
  */
 import { configureStore } from '@reduxjs/toolkit';
 
-import websiteReducer from '../features/website/websiteSlice';
-import eventExploreList from '../features/event/eventExploreList';
+import websiteReducer from '../features/shared/websiteSlice';
+import eventExploreList from '../features/news/eventExploreList';
 // eslint-disable-next-line import/no-named-as-default
-import eventCompletedList from '../features/event/eventCompletedList';
+import eventCompletedList from '../features/news/eventCompletedList';
 import projectExploreList from '../features/project/projectExploreList';
 import projectHandles from '../features/project/projectHandles';
 import dappExploreList from '../features/dapp/dappExploreList';
 import dappHandles from '../features/dapp/dappHandles';
 import frensHandles from '../features/frens/frensHandles';
-import userGroupFavorites from '../features/favorite/userGroupFavorites';
-import configsTopics from '../features/configs/topics';
-import configsPlatforms from '../features/configs/platforms';
-
-import karma from '../features/profile/karma';
+import userGroupFavorites from '../features/shared/userGroupFavorites';
+import configsTopics from '../features/shared/topics';
+import configsPlatforms from '../features/shared/platforms';
 
 export const store = configureStore({
   reducer: {
@@ -35,7 +33,6 @@ export const store = configureStore({
     frensHandles,
     configsTopics,
     configsPlatforms,
-    karma,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

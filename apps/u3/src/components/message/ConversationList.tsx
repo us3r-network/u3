@@ -2,10 +2,17 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
-import { MessageRoute, useXmtpStore } from '../../contexts/xmtp/XmtpStoreCtx';
-import { getAttachmentUrl, isAttachment, truncate } from '../../utils/xmtp';
-import useConversationList from '../../hooks/xmtp/useConversationList';
-import { useXmtpClient } from '../../contexts/xmtp/XmtpClientCtx';
+import {
+  MessageRoute,
+  useXmtpStore,
+} from '../../contexts/message/XmtpStoreCtx';
+import {
+  getAttachmentUrl,
+  isAttachment,
+  truncate,
+} from '../../utils/message/xmtp';
+import useConversationList from '../../hooks/message/xmtp/useConversationList';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import Name from './Name';
 import Avatar from './Avatar';
 import Loading from '../common/loading/Loading';

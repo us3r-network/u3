@@ -16,16 +16,16 @@ import {
   selectAll,
   selectState,
 } from '../features/project/projectExploreList';
-import { AsyncRequestStatus } from '../services/types';
+import { AsyncRequestStatus } from '../services/shared/types';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import Loading from '../components/common/loading/Loading';
-import useProjectHandles from '../hooks/useProjectHandles';
-import NoResult from '../components/common/NoResult';
+import useProjectHandles from '../hooks/shared/useProjectHandles';
+import NoResult from '../components/layout/NoResult';
 import ProjectExploreListFilter, {
   defaultProjectExploreListFilterValues,
 } from '../components/project/ProjectExploreListFilter';
 import ProjectExploreList from '../components/project/ProjectExploreList';
-import useProjectWebsite from '../hooks/useProjectWebsite';
+import useProjectWebsite from '../hooks/shared/useProjectWebsite';
 
 export default function Projects() {
   const navigate = useNavigate();

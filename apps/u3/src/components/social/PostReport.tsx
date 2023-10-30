@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { ForwardIcon2 } from '../icons/ForwardIcon';
+import { ForwardIcon2 } from '../common/icons/ForwardIcon';
 
 interface PostReportProps {
   totalReposts: number;

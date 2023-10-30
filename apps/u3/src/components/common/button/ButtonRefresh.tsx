@@ -7,7 +7,7 @@
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ButtonPrimaryLine } from './ButtonBase';
-import RefreshSvg from '../icons/svgs/refresh.svg';
+import RefreshSvg from '../assets/svgs/refresh.svg';
 
 export type ButtonProps = StyledComponentPropsWithRef<'button'>;
 

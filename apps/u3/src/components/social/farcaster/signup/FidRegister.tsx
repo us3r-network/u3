@@ -4,10 +4,10 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from 'wagmi';
-import { IdRegistryABI } from 'src/abi/farcaster/IdRegistryABI';
+import { IdRegistryABI } from 'src/services/social/abi/farcaster/IdRegistryABI';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { shortAddress } from 'src/utils/xmtp';
+import { shortAddress } from 'src/utils/message/xmtp';
 import {
   StepsBox,
   StyledData,

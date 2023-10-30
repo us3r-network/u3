@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-17 21:38:11
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-30 15:02:12
  * @Description: file description
  */
 import styled from 'styled-components';
@@ -11,25 +11,23 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useState } from 'react';
 import LoginButton from './LoginButton';
 import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
-import { ReactComponent as LogoIconSvg } from '../imgs/logo-icon.svg';
+import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
 // import LogoutConfirmModal from './LogoutConfirmModal';
 // import useLogin from '../../hooks/useLogin';
-import { useAppSelector } from '../../store/hooks';
-import { selectKarmaState } from '../../features/profile/karma';
-import { ReactComponent as MessageChatSquareSvg } from '../icons/svgs/message-chat-square.svg';
+import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
   useNotificationStore,
   NotificationStoreProvider,
-} from '../../contexts/NotificationStoreCtx';
+} from '../../contexts/notification/NotificationStoreCtx';
 import {
   useNotificationStore as useNotificationStoreNoLens,
   NotificationStoreProvider as NotificationStoreProviderNoLens,
-} from '../../contexts/NotificationStoreCtx_NoLens';
+} from '../../contexts/notification/NotificationStoreCtx_NoLens';
 import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
-import useFarcasterCurrFid from '../../hooks/farcaster/useFarcasterCurrFid';
+import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { useNav } from '../../contexts/NavCtx';
 
 export default function Menu() {
@@ -37,7 +35,6 @@ export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   // const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
-  const { totalScore } = useAppSelector(selectKarmaState);
 
   const { data: lensProfile } = useActiveProfile();
   const lensProfileId = lensProfile?.id;
@@ -92,7 +89,6 @@ export default function Menu() {
             // onLogout={() => {
             //   setOpenLogoutConfirm(true);
             // }}
-            karmaScore={totalScore}
           />
         </LoginButtonBox>
       </FooterBox>
@@ -162,10 +158,12 @@ function NotificationButton() {
         }}
       >
         <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg fill={unreadCount ? 'red' : 'black'} />
+          {/* <BellSvg fill={unreadCount ? 'red' : 'black'} /> */}
+          <BellSvg />
+          {unreadCount > 0 && <RedDot />}
         </PcNavItemIconBox>
         {renderNavItemText(
-          unreadCount ? `Notification(${unreadCount})` : `Notification`
+          unreadCount > 0 ? `Notification(${unreadCount})` : `Notification`
         )}
       </PcNavItem>
 
@@ -281,3 +279,14 @@ const LoginButtonBox = styled.div`
 //   justify-content: center;
 //   align-items: center;
 // `;
+const RedDot = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: red;
+  font-size: 10px;
+  color: #fff;
+  position: absolute;
+  right: -4px;
+  top: -4px;
+`;

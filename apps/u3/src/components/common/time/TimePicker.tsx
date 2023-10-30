@@ -7,7 +7,7 @@
  */
 import styled from 'styled-components';
 import InputBase, { Props } from '../input/InputBase';
-import ChevronDownSvg from '../icons/svgs/chevron-down.svg';
+import ChevronDownSvg from '../assets/svgs/chevron-down.svg';
 
 const defaultProps = {
   type: 'datetime-local',

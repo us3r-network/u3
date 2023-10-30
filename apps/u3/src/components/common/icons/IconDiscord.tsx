@@ -1,3 +1,3 @@
-import { ReactComponent as IconImage } from './svgs/discord.svg';
+import { ReactComponent as IconImage } from '../assets/svgs/discord.svg';
 
 export default IconImage;

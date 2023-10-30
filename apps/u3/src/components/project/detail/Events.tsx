@@ -6,8 +6,8 @@
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { EventExploreListItemResponse } from '../../../services/types/event';
-import EventExploreGridListItem from '../../event/EventExploreGridListItem';
+import { EventExploreListItemResponse } from '../../../services/news/types/event';
+import EventExploreGridListItem from '../../news/event/EventExploreGridListItem';
 import Card, { CardTitle } from './Card';
 
 type Props = StyledComponentPropsWithRef<'div'> & {

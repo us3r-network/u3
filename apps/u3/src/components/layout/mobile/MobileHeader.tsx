@@ -9,7 +9,7 @@ import useRoute from '../../../route/useRoute';
 import { RouteKey } from '../../../route/routes';
 import MobileHomeHeader from './MobileHomeHeader';
 import MobileSubPageHeader from './MobileSubPageHeader';
-import { capitalizeFirstLetter } from '../../../utils/string';
+import { capitalizeFirstLetter } from '../../../utils/shared/string';
 // import MobileDappHeader from './MobileDappHeader';
 // import MobileContentHeader from './MobileContentHeader';
 

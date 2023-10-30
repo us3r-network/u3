@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import TextTransition, { presets } from 'react-text-transition';
 import Rubiks from '../magic-kube/rubiks/index';
 
-import CarouselBg from '../imgs/carousel-bg.png';
-import InstallU3ExtensionButton from '../business/button/InstallU3ExtensionButton';
-import CloseSvg from '../common/icons/svgs/close.svg';
+import CarouselBg from '../common/assets/imgs/carousel-bg.png';
+import InstallU3ExtensionButton from '../shared/button/InstallU3ExtensionButton';
+import CloseSvg from '../common/assets/svgs/close.svg';
 import { useAppDispatch } from '../../store/hooks';
-import { setHomeBannerHidden } from '../../features/website/websiteSlice';
+import { setHomeBannerHidden } from '../../features/shared/websiteSlice';
 
 const TEXTS = [
   'Identity',

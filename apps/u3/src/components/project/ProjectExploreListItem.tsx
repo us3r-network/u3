@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import styled, { css, StyledComponentPropsWithRef } from 'styled-components';
-import { ProjectExploreListItemResponse } from '../../services/types/project';
+import { ProjectExploreListItemResponse } from '../../services/shared/types/project';
 import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase';
 import EllipsisText from '../common/text/EllipsisText';
 import ImgDefault from '../common/ImgDefault';

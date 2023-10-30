@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import { isMobile } from 'react-device-detect';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
-import { useGAPageView } from '../../hooks/useGoogleAnalytics';
+import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
 import Menu from './menu';
 import DappMenu from '../dapp/launcher/DappMenu';
 import MobileHeader from './mobile/MobileHeader';

@@ -4,11 +4,11 @@ import {
   GalxeDataListItem,
   NooxDataListItem,
   PoapData,
-} from '../../../services/types/profile';
+} from '../../../services/profile/types/profile';
 import NFTShower from './NFTShower';
 import { MEDIA_BREAK_POINTS } from '../../../constants';
-import { sortPubKey } from '../../../utils/solana';
-import { defaultFormatDate } from '../../../utils/time';
+import { sortPubKey } from '../../../utils/shared/solana';
+import { defaultFormatDate } from '../../../utils/shared/time';
 import useInfo from './useInfoCalc';
 
 export function NooxCard({

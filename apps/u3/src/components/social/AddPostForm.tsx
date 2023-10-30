@@ -13,23 +13,23 @@ import styled from 'styled-components';
 import { UserAvatar } from '@us3r-network/profile';
 import { MediaObject, useActiveProfile } from '@lens-protocol/react-web';
 import { ToggleButton } from 'react-aria-components';
-import { useFarcasterCtx } from '../../contexts/FarcasterCtx';
+import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster';
 
-import { SocailPlatform } from '../../api';
-import { useLensCtx } from '../../contexts/AppLensCtx';
-import { useCreateLensPost } from '../../hooks/lens/useCreateLensPost';
+import { SocailPlatform } from '../../services/social/types';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { useCreateLensPost } from '../../hooks/social/lens/useCreateLensPost';
 import ButtonBase from '../common/button/ButtonBase';
 import TextareaBase from '../common/input/TextareaBase';
 import { SocialButtonPrimary } from './button/SocialButton';
-import LensIcon from '../icons/LensIcon';
-import FarcasterIcon from '../icons/FarcasterIcon';
-import EmojiIcon from '../icons/EmojiIcon';
-import ImgIcon from '../icons/ImgIcon';
+import LensIcon from '../common/icons/LensIcon';
+import FarcasterIcon from '../common/icons/FarcasterIcon';
+import EmojiIcon from '../common/icons/EmojiIcon';
+import ImgIcon from '../common/icons/ImgIcon';
 
 import type {
   FilesWithId,
@@ -38,12 +38,12 @@ import type {
 } from '../../utils/social/file';
 import { getImagesData } from '../../utils/social/validation';
 import { ImagePreview } from './ImagePreview';
-import { uploadImage } from '../../services/api/upload';
-import useLogin from '../../hooks/useLogin';
-import getAvatar from '../../utils/lens/getAvatar';
-import { Channel } from '../../services/types/farcaster';
+import { uploadImage } from '../../services/shared/api/upload';
+import useLogin from '../../hooks/shared/useLogin';
+import getAvatar from '../../utils/social/lens/getAvatar';
+import { Channel } from '../../services/social/types/farcaster';
 import ChannelSelect from './ChannelSelect';
-import { getChannelFromName } from '../../utils/social/getChannel';
+import { getChannelFromName } from '../../utils/social/farcaster/getChannel';
 
 export default function AddPostForm({
   onSuccess,

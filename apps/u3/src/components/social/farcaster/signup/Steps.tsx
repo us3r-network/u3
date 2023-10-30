@@ -1,5 +1,5 @@
-import Checked from 'src/components/icons/checked';
-import Unchecked from 'src/components/icons/unchecked';
+import Checked from 'src/components/common/icons/checked';
+import Unchecked from 'src/components/common/icons/unchecked';
 import styled from 'styled-components';
 
 export function StyledTitle({

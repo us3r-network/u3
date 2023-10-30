@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { MessageIcon2, MessageIcon2Color } from '../icons/MessageIcon';
+import { MessageIcon2, MessageIcon2Color } from '../common/icons/MessageIcon';
 
 interface PostReplyProps {
   totalReplies: number;

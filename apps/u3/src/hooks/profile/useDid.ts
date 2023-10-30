@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import { getS3ProfileModel, useProfileState } from '@us3r-network/profile';
-import { getDidPkhWithAddress, isDidPkh } from '../../utils/did';
+import { getDidPkhWithAddress, isDidPkh } from '../../utils/shared/did';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_LENS_NETWORK,

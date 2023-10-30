@@ -7,7 +7,7 @@
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import Card, { CardTitle } from './Card';
-import ComingSoonImgUrl from './imgs/screeshots.png';
+import ComingSoonImgUrl from '../../common/assets/imgs/screeshots.png';
 
 type Props = StyledComponentPropsWithRef<'div'>;
 export default function Screeshots({ ...otherProps }: Props) {

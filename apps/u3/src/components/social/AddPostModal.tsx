@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { isMobile } from 'react-device-detect';
 
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
@@ -12,8 +13,13 @@ export default function AddPostModal({
   closeModal: () => void;
 }) {
   return (
-    <ModalContainer open={open} closeModal={closeModal} zIndex={100}>
-      <ModalBody>
+    <ModalContainer
+      open={open}
+      closeModal={closeModal}
+      zIndex={100}
+      contentTop="30%"
+    >
+      <ModalBody isMobile={isMobile}>
         <CloseBtn onClick={closeModal} />
         <AddPostForm onSuccess={closeModal} />
       </ModalBody>
@@ -21,8 +27,8 @@ export default function AddPostModal({
   );
 }
 
-const ModalBody = styled.div`
-  width: fit-content;
+const ModalBody = styled.div<{ isMobile?: boolean }>`
+  width: ${(props) => (props.isMobile ? 'fit-content' : '600px')};
   /* min-height: 194px; */
   flex-shrink: 0;
 

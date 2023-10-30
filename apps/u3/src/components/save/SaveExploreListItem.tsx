@@ -1,7 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { defaultFormatFromNow } from '../../utils/time';
+import { defaultFormatFromNow } from '../../utils/shared/time';
 import EllipsisText from '../common/text/EllipsisText';
-import LinkBox from '../contents/LinkBox';
+import LinkBox from '../news/contents/LinkBox';
 import type { SaveExploreListItemData } from './SaveExploreList';
 
 export type SaveExploreListItemProps = StyledComponentPropsWithRef<'div'> & {

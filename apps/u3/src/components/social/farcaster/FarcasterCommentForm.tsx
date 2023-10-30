@@ -5,8 +5,8 @@ import { CastId, makeCastAdd } from '@farcaster/hub-web';
 import styled from 'styled-components';
 
 import ReplyForm from '../ReplyForm';
-import useLogin from '../../../hooks/useLogin';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import useLogin from '../../../hooks/shared/useLogin';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 import {
   FARCASTER_NETWORK,

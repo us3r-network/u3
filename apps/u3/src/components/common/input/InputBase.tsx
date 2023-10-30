@@ -8,7 +8,7 @@
 import React, { useCallback } from 'react';
 import { debounce } from 'lodash';
 import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
-import ClearSvg from '../icons/svgs/close.svg';
+import ClearSvg from '../assets/svgs/close.svg';
 
 export const InputBaseCss = css`
   width: 100%;

@@ -3,17 +3,15 @@ import { useState } from 'react';
 
 import { isMobile } from 'react-device-detect';
 import CardBase from '../components/common/card/CardBase';
-import PageTitle from '../components/common/PageTitle';
-import MobilePageHeader from '../components/common/mobile/MobilePageHeader';
+import PageTitle from '../components/layout/PageTitle';
+import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
 import Rss3Content from '../components/fren/Rss3Content';
-import { CurrencyETH } from '../components/icons/currency-eth';
+import { CurrencyETH } from '../components/common/icons/currency-eth';
 import { MainWrapper } from '../components/layout/Index';
-import Streams from '../components/activity/Streams';
 
-const tabs = ['Streams', 'Feeds'];
+const tabs = ['Feeds'];
 function Activity() {
-  const [tab, setTab] = useState<string>('Streams');
-  // const [tab, setTab] = useState<'Feeds' | 'Streams'>('Feeds');
+  const [tab, setTab] = useState<string>('Feeds');
   return (
     <Wrapper>
       {isMobile ? (
@@ -40,7 +38,6 @@ function Activity() {
           <Rss3Content empty={<NoActivity />} />
         </ContentWrapper>
       )}
-      {tab === 'Streams' && <Streams />}
     </Wrapper>
   );
 }

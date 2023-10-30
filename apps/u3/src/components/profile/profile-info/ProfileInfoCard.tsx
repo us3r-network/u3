@@ -5,6 +5,7 @@ import useDid from '../../../hooks/profile/useDid';
 import Loading from '../../common/loading/Loading';
 import U3ProfileInfoCardContainer from './U3ProfileInfoCardContainer';
 import PlatformProfileInfoCardContainer from './PlatformProfileInfoCardContainer';
+import { isDidPkh } from '../../../utils/shared/did';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   identity: string;
@@ -23,16 +24,18 @@ export default function ProfileInfoCard({
   const [hasProfileLoading, setHasProfileLoading] = useState(false);
   useEffect(() => {
     (async () => {
-      if (!didLoading && did) {
+      if (isDidPkh(did)) {
         setHasProfileLoading(true);
         const profile = await getProfileWithDid(did);
         if (profile) {
           setHasProfile(true);
         }
         setHasProfileLoading(false);
+      } else {
+        setHasProfile(false);
       }
     })();
-  }, [didLoading, did]);
+  }, [did]);
 
   if (didLoading || hasProfileLoading) {
     return (
@@ -51,14 +54,17 @@ export default function ProfileInfoCard({
       />
     );
   }
-  return (
-    <PlatformProfileInfoCardContainer
-      identity={identity}
-      clickFollowing={clickFollowing}
-      clickFollowers={clickFollowers}
-      {...wrapperProps}
-    />
-  );
+  if (identity) {
+    return (
+      <PlatformProfileInfoCardContainer
+        identity={identity}
+        clickFollowing={clickFollowing}
+        clickFollowers={clickFollowers}
+        {...wrapperProps}
+      />
+    );
+  }
+  return null;
 }
 
 const LoadingWrapper = styled.div`

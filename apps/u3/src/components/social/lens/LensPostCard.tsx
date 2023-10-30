@@ -11,16 +11,16 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-import { lensPublicationToPostCardData } from '../../../utils/lens-ui-utils';
-import { useCreateLensComment } from '../../../hooks/lens/useCreateLensComment';
-import { useReactionLensUpvote } from '../../../hooks/lens/useReactionLensUpvote';
-import { useCreateLensMirror } from '../../../hooks/lens/useCreateLensMirror';
+import { lensPublicationToPostCardData } from '../../../utils/social/lens/lens-ui-utils';
+import { useCreateLensComment } from '../../../hooks/social/lens/useCreateLensComment';
+import { useReactionLensUpvote } from '../../../hooks/social/lens/useReactionLensUpvote';
+import { useCreateLensMirror } from '../../../hooks/social/lens/useCreateLensMirror';
 import LensPostCardContent from './LensPostCardContent';
-import { useLensCtx } from '../../../contexts/AppLensCtx';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
-import useLogin from '../../../hooks/useLogin';
-import { getSocialDetailShareUrlWithLens } from '../../../utils/share';
-import { tweetShare } from '../../../utils/twitter';
+import useLogin from '../../../hooks/shared/useLogin';
+import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
+import { tweetShare } from '../../../utils/shared/twitter';
 
 export default function LensPostCard({ data }: { data: Post }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();

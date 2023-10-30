@@ -1,7 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useState } from 'react';
 
-import HeartIcon, { HeartIcon2 } from '../icons/HeartIcon';
+import HeartIcon, { HeartIcon2 } from '../common/icons/HeartIcon';
 
 interface PostLikeProps {
   totalLikes: number;

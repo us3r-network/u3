@@ -1,9 +1,9 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import MobilePageHeader from '../common/mobile/MobilePageHeader';
-import { ArrowLeft } from '../icons/ArrowLeft';
+import MobilePageHeader from '../layout/mobile/MobilePageHeader';
+import { ArrowLeft } from '../common/icons/ArrowLeft';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
-import { SocailPlatform } from '../../api';
+import { SocailPlatform } from '../../services/social/types';
 
 export enum FollowType {
   FOLLOWING = 'following',

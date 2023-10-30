@@ -3,17 +3,17 @@ import { useEffect, useMemo } from 'react';
 import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 
 import { PlatformAccountsData } from './PlatformAccounts';
-import { getAddressWithDidPkh } from '../../../utils/did';
-import getAvatar from '../../../utils/lens/getAvatar';
-import { SocailPlatform } from '../../../api';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
-import useFarcasterUserData from '../../../hooks/farcaster/useFarcasterUserData';
-import useUpsertFarcasterUserData from '../../../hooks/farcaster/useUpsertFarcasterUserData';
-import useFarcasterFollowNum from '../../../hooks/farcaster/useFarcasterFollowNum';
+import { getAddressWithDidPkh } from '../../../utils/shared/did';
+import getAvatar from '../../../utils/social/lens/getAvatar';
+import { SocailPlatform } from '../../../services/social/types';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
+import useUpsertFarcasterUserData from '../../../hooks/social/farcaster/useUpsertFarcasterUserData';
+import useFarcasterFollowNum from '../../../hooks/social/farcaster/useFarcasterFollowNum';
 import useBioLinkListWithDid from '../../../hooks/profile/useBioLinkListWithDid';
 import ProfileInfoBaseCard from './ProfileInfoCardLayout';
 import useBioLinkListWithWeb3Bio from '../../../hooks/profile/useBioLinkListWithWeb3Bio';
-import useLazyQueryFidWithAddress from '../../../hooks/farcaster/useLazyQueryFidWithAddress';
+import useLazyQueryFidWithAddress from '../../../hooks/social/farcaster/useLazyQueryFidWithAddress';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
@@ -54,15 +54,18 @@ export default function U3ProfileInfoCardContainer({
     return '';
   }, [lensBioLinkProfiles, fcastBioLinkProfiles]);
 
-  const { lensBioLinks: web3LensBioLinks, fcastBioLinks: web3FcastBioLinks } =
-    useBioLinkListWithWeb3Bio(identity);
+  const {
+    lensBioLinks: web3LensBioLinks,
+    fcastBioLinks: web3FcastBioLinks,
+    recommendAddress,
+  } = useBioLinkListWithWeb3Bio(identity);
 
   const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
-    web3FcastBioLinks?.[0]?.address || ''
+    web3FcastBioLinks?.[0]?.address || recommendAddress
   );
   useEffect(() => {
     fetchFid();
-  }, [web3FcastBioLinks]);
+  }, [fetchFid]);
 
   const { farcasterUserData } = useFarcasterCtx();
 

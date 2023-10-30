@@ -12,22 +12,22 @@ import {
   EntityState,
 } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import { AsyncRequestStatus } from '../../services/types';
+import { AsyncRequestStatus } from '../../services/shared/types';
 import {
   ProjectEntity,
   ProjectExploreListItemResponse,
-} from '../../services/types/project';
+} from '../../services/shared/types/project';
 import type { RootState } from '../../store/store';
 import {
   favorProject as favorProjectApi,
   unfavorProject as unfavorProjectApi,
-} from '../../services/api/project';
+} from '../../services/shared/api/project';
 import {
   addOneWithProjects,
   removeOneWithProjects,
-} from '../favorite/userGroupFavorites';
+} from '../shared/userGroupFavorites';
 import { updateOne as updateOneWithProjectExplore } from './projectExploreList';
-import { messages } from '../../utils/message';
+import { messages } from '../../utils/shared/message';
 
 // 为project 点赞操作 创建一个执行队列
 export type FavorProjectParams = ProjectExploreListItemResponse;

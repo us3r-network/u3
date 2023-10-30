@@ -1,7 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import CardBase from '../card/CardBase';
 import UploadImage from './UploadImage';
-import { ReactComponent as PlusSvg } from '../icons/svgs/plus.svg';
+import { ReactComponent as PlusSvg } from '../assets/svgs/plus.svg';
 import InputBase from '../input/InputBase';
 
 type Props = StyledComponentPropsWithRef<'div'> & {

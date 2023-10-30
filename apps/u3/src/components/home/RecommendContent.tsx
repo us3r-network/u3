@@ -2,19 +2,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { VoteButton } from '@us3r-network/link';
-import { ContentListItem } from '../../services/types/contents';
-import { getContentPlatformLogoWithJsonValue } from '../../utils/content';
+import { ContentListItem } from '../../services/news/types/contents';
+import { getContentPlatformLogoWithJsonValue } from '../../utils/news/content';
 import {
   fetchPlatformImgUrlByLink,
   platformLogoReplaceMap,
-} from '../../utils/platform';
+} from '../../utils/shared/platform';
 import CardBase from '../common/card/CardBase';
 import EllipsisText from '../common/text/EllipsisText';
-import Badge from '../contents/Badge';
-import LinkBox from '../contents/LinkBox';
+import Badge from '../news/contents/Badge';
+import LinkBox from '../news/contents/LinkBox';
 
 import Title from './Title';
-import LinkSvgUrl from '../common/icons/svgs/link.svg';
+import LinkSvgUrl from '../common/assets/svgs/link.svg';
 
 export default function RecommendContent({
   data,

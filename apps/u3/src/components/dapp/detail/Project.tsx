@@ -7,7 +7,7 @@
  */
 import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { ProjectExploreListItemResponse } from '../../../services/types/project';
+import { ProjectExploreListItemResponse } from '../../../services/shared/types/project';
 import ProjectExploreListItem from '../../project/ProjectExploreListItem';
 import Card, { CardTitle } from './Card';
 

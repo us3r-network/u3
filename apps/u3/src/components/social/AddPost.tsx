@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import AddPostModal from './AddPostModal';
-import useLogin from '../../hooks/useLogin';
+import useLogin from '../../hooks/shared/useLogin';
 import { SocialButtonPrimary } from './button/SocialButton';
 
 export default function AddPost() {

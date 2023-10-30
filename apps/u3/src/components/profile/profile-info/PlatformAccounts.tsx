@@ -1,10 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { SocailPlatform } from '../../../api';
-import LensIcon from '../../icons/LensIcon';
-import FarcasterIcon from '../../icons/FarcasterIcon';
+import { SocailPlatform } from '../../../services/social/types';
+import LensIcon from '../../common/icons/LensIcon';
+import FarcasterIcon from '../../common/icons/FarcasterIcon';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
-import { useLensCtx } from '../../../contexts/AppLensCtx';
-import { useFarcasterCtx } from '../../../contexts/FarcasterCtx';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 export type PlatformAccountsData = Array<{
   platform: SocailPlatform;
