@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-17 21:38:11
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-10-30 15:02:12
  * @Description: file description
  */
 import styled from 'styled-components';
@@ -158,10 +158,12 @@ function NotificationButton() {
         }}
       >
         <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg fill={unreadCount ? 'red' : 'black'} />
+          {/* <BellSvg fill={unreadCount ? 'red' : 'black'} /> */}
+          <BellSvg />
+          {unreadCount > 0 && <RedDot />}
         </PcNavItemIconBox>
         {renderNavItemText(
-          unreadCount ? `Notification(${unreadCount})` : `Notification`
+          unreadCount > 0 ? `Notification(${unreadCount})` : `Notification`
         )}
       </PcNavItem>
 
@@ -277,3 +279,14 @@ const LoginButtonBox = styled.div`
 //   justify-content: center;
 //   align-items: center;
 // `;
+const RedDot = styled.div`
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: red;
+  font-size: 10px;
+  color: #fff;
+  position: absolute;
+  right: -4px;
+  top: -4px;
+`;
