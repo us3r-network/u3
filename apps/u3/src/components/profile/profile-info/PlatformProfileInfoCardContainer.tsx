@@ -24,26 +24,24 @@ export default function PlatformProfileInfoCardContainer({
   ...wrapperProps
 }: PlatformProfileInfoCardContainerProps) {
   const {
-    bioLinkList,
     lensBioLinks,
     fcastBioLinks,
+    recommendAddress,
     loading: bioLinkLoading,
   } = useBioLinkListWithWeb3Bio(identity);
   const { farcasterUserData } = useFarcasterCtx();
 
-  const address = bioLinkList.find((item) => !!item.address)?.address;
-
   const { data: lensProfiles } = useProfilesOwnedBy({
-    address: lensBioLinks?.[0]?.address || '',
+    address: lensBioLinks?.[0]?.address || recommendAddress,
   });
   const lensProfileFirst = lensProfiles?.[0];
 
   const { fetch: fetchFid, fid } = useLazyQueryFidWithAddress(
-    fcastBioLinks?.[0]?.address || ''
+    fcastBioLinks?.[0]?.address || recommendAddress
   );
   useEffect(() => {
     fetchFid();
-  }, [fcastBioLinks]);
+  }, [fetchFid]);
 
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
@@ -99,7 +97,7 @@ export default function PlatformProfileInfoCardContainer({
     <ProfileInfoBaseCard
       isU3Profile={false}
       loading={bioLinkLoading}
-      address={address}
+      address={recommendAddress}
       platformAccounts={platformAccounts}
       followersCount={followersCount}
       followingCount={followingCount}

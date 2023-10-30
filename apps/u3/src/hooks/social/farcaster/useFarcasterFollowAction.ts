@@ -11,8 +11,13 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 export default function useFarcasterFollowAction() {
   const [isPending, setIsPending] = useState(false);
   const [isFollowing, setIsFollowing] = useState<boolean>(undefined); // todo: check if following
-  const { encryptedSigner, isConnected, openFarcasterQR, currFid } =
-    useFarcasterCtx();
+  const {
+    encryptedSigner,
+    isConnected,
+    openFarcasterQR,
+    currFid,
+    setFollowing,
+  } = useFarcasterCtx();
 
   const follow = useCallback(
     async (targetFid: number | string) => {
@@ -41,6 +46,7 @@ export default function useFarcasterFollowAction() {
         if (result.isErr()) {
           throw new Error(result.error.message);
         }
+        setFollowing((prev) => [...prev, String(targetFid)]);
         toast.success('successfully followed');
         setIsFollowing(true);
       } catch (error: unknown) {
@@ -78,6 +84,7 @@ export default function useFarcasterFollowAction() {
         if (result.isErr()) {
           throw new Error(result.error.message);
         }
+        setFollowing((prev) => prev.filter((fid) => fid !== String(targetFid)));
         toast.success('successfully unfollowed');
         setIsFollowing(false);
       } catch (error: unknown) {

@@ -85,6 +85,7 @@ export interface FarcasterContextData {
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
   channels: FarcasterChannel[];
   following: string[];
+  setFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   joinChannel: (parent_url: string) => Promise<void>;
   unPinChannel: (parent_url: string) => Promise<void>;
   userChannels: { parent_url: string }[];
@@ -124,9 +125,13 @@ export default function FarcasterProvider({
   const [currFid, setCurrFid] = useState<number>();
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
 
+  const [following, setFollowing] = useState<string[]>([]);
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
   });
+  useEffect(() => {
+    setFollowing(farcasterFollowData?.followingData || []);
+  }, [farcasterFollowData]);
   const { userChannels, getUserChannels, joinChannel, unPinChannel } =
     useFarcasterChannel({
       currFid,
@@ -269,7 +274,8 @@ export default function FarcasterProvider({
         farcasterUserData,
         setFarcasterUserData,
         channels,
-        following: farcasterFollowData.followingData,
+        following,
+        setFollowing,
         userChannels,
         joinChannel,
         unPinChannel,
