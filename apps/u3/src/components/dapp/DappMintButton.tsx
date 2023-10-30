@@ -37,7 +37,7 @@ export function DappMintButton(props: DappMintButtonProps) {
         (dapp) => Number(dapp.tokenId) === dappData.tokenId
       ).length > 0
     );
-    console.log('dappCollection updated ', dappCollection, dappCollected);
+    // console.log('dappCollection updated ', dappCollection, dappCollected);
   }, [dappCollection]);
   return isLogin ? (
     <>
@@ -102,19 +102,58 @@ function MintButton(props: MintButtonProps) {
   const { tokenId, onSuccess } = props;
   // console.log('tokenId: ', tokenId);
   // hook for collecting already existing token
-  const { write, data, isError, isLoading, isSuccess, status, tokenInfo } =
+  const { write, isLoading, isSuccess, isError, tokenInfo, data } =
     useMint(tokenId);
+
+  // for test without actually minting
+  // const { tokenInfo } = useMint(tokenId);
+  // const [isSuccess, setIsSuccess] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  // const write = () => {
+  //   setIsLoading(true);
+  //   setIsSuccess(true);
+  //   setIsLoading(false);
+  // };
+
   useEffect(() => {
     if (isSuccess) {
       onSuccess(tokenId);
     }
   }, [isSuccess]);
   if (isSuccess) {
-    return <MintMessage>Collected</MintMessage>;
+    return (
+      <>
+        <MintMessage messageType={MessageType.SUCCESS}>Collected</MintMessage>
+        <ButtonPrimaryWraper
+          onClick={() =>
+            window.open(
+              `${zoraDappsNetworkExplorer}/tx/${data?.transactionHash}`
+            )
+          }
+        >
+          View Transaction
+        </ButtonPrimaryWraper>
+      </>
+    );
   }
+  if (isError)
+    return (
+      <>
+        <MintMessage messageType={MessageType.ERROR}>
+          Something Wrong!
+        </MintMessage>{' '}
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
+          Try Again
+        </ButtonPrimaryWraper>
+      </>
+    );
   if (isLoading) {
     return (
-      <MintMessage>
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Collecting...
       </MintMessage>
@@ -129,7 +168,11 @@ function MintButton(props: MintButtonProps) {
             <span>{Number((tokenInfo as TokenInfo)?.totalMinted)}</span>
           </NFTInfo>
         )}
-        <ButtonPrimaryWraper onClick={() => write?.()}>
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
           Free Mint & Collect Now
         </ButtonPrimaryWraper>
       </>
@@ -174,7 +217,7 @@ function PrepareNewTokenButton(props: PrepareNewTokenButtonProps) {
         Mint First & Get Rewards!
       </GoldButtonPrimaryWraper>
     ) : (
-      <MintMessage>
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Uploading Metadata...
       </MintMessage>
@@ -196,10 +239,12 @@ type NewTokenButtonProps = {
 function NewTokenButton(props: NewTokenButtonProps) {
   const { dappId, metadataUri, onSuccess } = props;
   // hook for creating new token
-  const { write, data, isError, isLoading, isSuccess, status, nextTokenId } =
+  const { write, isLoading, isSuccess, isError, nextTokenId, data } =
     useCreate1155Token(metadataUri);
   useEffect(() => {
-    if (write) write?.();
+    if (write) {
+      write?.();
+    }
   }, [write]);
   useEffect(() => {
     if (isSuccess) {
@@ -207,16 +252,48 @@ function NewTokenButton(props: NewTokenButtonProps) {
       onSuccess(Number(nextTokenId as bigint));
     }
   }, [isSuccess]);
-  if (isSuccess) return <MintMessage>New Token Created</MintMessage>;
-  if (isLoading)
+  if (isSuccess)
     return (
-      <MintMessage>
+      <>
+        <MintMessage messageType={MessageType.SUCCESS}>
+          Created New Token
+        </MintMessage>
+        <ButtonPrimaryWraper
+          onClick={() =>
+            window.open(
+              `${zoraDappsNetworkExplorer}/tx/${data?.transactionHash}`
+            )
+          }
+        >
+          View Transaction
+        </ButtonPrimaryWraper>
+      </>
+    );
+  if (isError)
+    return (
+      <>
+        <MintMessage messageType={MessageType.ERROR}>
+          Something Wrong!
+        </MintMessage>{' '}
+        <ButtonPrimaryWraper
+          onClick={() => {
+            write?.();
+          }}
+        >
+          Try Again
+        </ButtonPrimaryWraper>
+      </>
+    );
+  if (isLoading) {
+    return (
+      <MintMessage messageType={MessageType.LOADING}>
         <Loading scale={0.2} />
         Creating New Token...
       </MintMessage>
     );
+  }
   return (
-    <MintMessage>
+    <MintMessage messageType={MessageType.LOADING}>
       <Loading scale={0.2} />
       Prepareing New Token...
     </MintMessage>
@@ -308,7 +385,6 @@ function NFTDetailModal({
                 </a>
               </NFTInfo>
               <NFTInfo>
-                <p>Free mint!</p>
                 <p>
                   First minter has the opportunity{' '}
                   <b>to earn 0.000111 ETH for each NFT minted.</b>
@@ -357,8 +433,8 @@ const CloseBtn = styled(ModalCloseBtn)`
 `;
 
 const ModalBody = styled.div`
-  width: 600px;
-  height: 300px;
+  width: 640px;
+  height: 320px;
   /* min-height: 194px; */
   flex-shrink: 0;
 
@@ -379,8 +455,8 @@ const Left = styled.div`
   flex-direction: column;
   gap: 10px;
   img {
-    width: 300px;
-    height: 300px;
+    width: 320px;
+    height: 320px;
   }
 `;
 
@@ -423,17 +499,28 @@ const NFTInfo = styled.div`
     }
   }
 `;
-const MintMessage = styled.div`
+enum MessageType {
+  SUCCESS,
+  ERROR,
+  LOADING,
+}
+const MintMessage = styled.div<{ messageType: MessageType }>`
   width: 100%;
   height: 40px;
   font-size: 16px;
   font-weight: 400;
-  color: #fff;
+  color: ${(props) =>
+    props.messageType === MessageType.SUCCESS
+      ? '#0f0'
+      : props.messageType === MessageType.ERROR
+      ? '#f00'
+      : '#fff'};
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  border: #fff 1px solid;
+  border: ${(props) =>
+    props.messageType === MessageType.LOADING ? '#fff 1px solid' : 'none'};
   border-radius: 10px;
   gap: 10px;
 `;

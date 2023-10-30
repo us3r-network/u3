@@ -146,7 +146,7 @@ export function useCreate1155Token(newTokenURI) {
     abi: ZoraCreator1155ImplAbi,
     functionName: 'nextTokenId',
   });
-  // console.log('nextTokenId', nextTokenId);
+  console.log('nextTokenId', nextTokenId);
   const create1155Calls =
     nextTokenId && newTokenURI !== ''
       ? constructCreate1155Calls({
@@ -165,19 +165,28 @@ export function useCreate1155Token(newTokenURI) {
     enabled: !!create1155Calls,
   });
   // console.log('prepareConfig', prepareConfig);
-  const { write, data: writeData } = useContractWrite(prepareConfig);
-  const { data, isError, isLoading, isSuccess, status } = useWaitForTransaction(
-    {
-      hash: writeData?.hash,
-    }
-  );
+  const {
+    write,
+    data: writeData,
+    isLoading: writing,
+    isError: writeError,
+  } = useContractWrite(prepareConfig);
+  const {
+    data,
+    isError: transationError,
+    isLoading: waiting,
+    isSuccess,
+    status,
+  } = useWaitForTransaction({
+    hash: writeData?.hash,
+  });
 
   return {
     write,
     nextTokenId,
     data,
-    isError,
-    isLoading,
+    isError: writeError || transationError,
+    isLoading: writing || waiting,
     isSuccess,
     status,
   };
