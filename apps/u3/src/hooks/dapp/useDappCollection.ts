@@ -2,12 +2,12 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-10-20 19:08:17
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-27 16:32:34
+ * @LastEditTime: 2023-10-30 13:11:42
  * @FilePath: /u3/apps/u3/src/hooks/dapp/useDappCollection.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import { useEffect, useState } from 'react';
-import { debounce, uniqBy } from 'lodash';
+import { debounce, isEqual, uniqBy } from 'lodash';
 import { ZDK } from '@zoralabs/zdk';
 import {
   zora1155ToMintAddress,
@@ -38,7 +38,7 @@ export default function useDappCollection(owner: string | null) {
   const [loading, setLoading] = useState(false);
   const load = () => {
     if (!owner) return;
-    console.log('load dapp collection: ', owner);
+    // console.log('load dapp collection: ', owner);
     setLoading(true);
     try {
       const nfts = getZoraNFTFromLocalStorage();
@@ -48,7 +48,7 @@ export default function useDappCollection(owner: string | null) {
           Number(item.chainId) === Number(ziraChainId) &&
           item.contractAddress === zora1155ToMintAddress
       );
-      // console.log('dappNtfs: ', dappNtfs);
+      // console.log('dappNtfs from load: ', dappNtfs);
       setDappCollection(dappNtfs.map((nft) => nft.dapp));
     } catch (error) {
       console.error(error);
@@ -72,15 +72,19 @@ export default function useDappCollection(owner: string | null) {
   };
 
   const append = async (newNfts: ZoraNFT[]) => {
-    console.log('append new nfts: ', newNfts);
+    // console.log('append new nfts: ', newNfts);
     const localNfts = getZoraNFTFromLocalStorage();
     const nfts = uniqBy([...localNfts, ...newNfts], (item) => item.tokenId);
+    // console.log('compare nfts: ', localNfts, nfts);
+    if (isEqual(localNfts, nfts)) return;
     await save(nfts);
+    window.dispatchEvent(new Event(MINT_NFT_EVENT_NAME));
     load();
   };
 
   const sync = async () => {
     if (!owner) return;
+    // console.log('sync dapp collection: ', owner);
     setLoading(true);
     try {
       // chainbase方案：目前不支持测试网络，另外chainbase的web3 api有10几秒的延迟，不适合实时性要求高的场景
@@ -119,7 +123,7 @@ export default function useDappCollection(owner: string | null) {
             };
           })
           .filter((item) => item.tokenId !== 1);
-        console.log('remoteNfts: ', remoteNfts);
+        // console.log('remoteNfts: ', remoteNfts);
         append(remoteNfts);
       }
     } catch (error) {
@@ -128,10 +132,17 @@ export default function useDappCollection(owner: string | null) {
       setLoading(false);
     }
   };
-
+  const MINT_NFT_EVENT_NAME = 'addNFT';
+  const storageHandler = () => {
+    // console.log('addNFT Handler: ', e);
+    load();
+  };
   useEffect(() => {
     debounce(load, 500)();
-    window.addEventListener('storage', load);
+    window.addEventListener(MINT_NFT_EVENT_NAME, storageHandler);
+    // remember to remove the listener
+    return () =>
+      window.removeEventListener(MINT_NFT_EVENT_NAME, storageHandler);
   }, [owner]);
 
   return {

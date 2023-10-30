@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-10-20 19:08:17
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-24 19:06:27
+ * @LastEditTime: 2023-10-30 13:40:22
  * @FilePath: /u3/apps/u3/src/hooks/dapp/useMint.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -57,20 +57,29 @@ export function useMint(tokenId) {
     enabled: !!tokenId && !!mintFee,
   });
   // console.log('prepareConfig', prepareConfig, mintFee, tokenInfo);
-  const { write, data: writeData } = useContractWrite(prepareConfig);
+  const {
+    write,
+    data: writeData,
+    isLoading: writing,
+    isError: writeError,
+  } = useContractWrite(prepareConfig);
 
-  const { data, isError, isLoading, isSuccess, status } = useWaitForTransaction(
-    {
-      hash: writeData?.hash,
-    }
-  );
+  const {
+    data,
+    isError: transationError,
+    isLoading: waiting,
+    isSuccess,
+    status,
+  } = useWaitForTransaction({
+    hash: writeData?.hash,
+  });
 
   return {
     tokenInfo,
     write,
     data,
-    isError,
-    isLoading,
+    isError: writeError || transationError,
+    isLoading: writing || waiting,
     isSuccess,
     status,
   };
