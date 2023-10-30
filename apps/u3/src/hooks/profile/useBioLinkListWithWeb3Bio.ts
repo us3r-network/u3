@@ -56,10 +56,28 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
       ) || [],
     [bioLinkList]
   );
+  const recommendAddress = useMemo(() => {
+    if (!identity) return '';
+    const fcastFirstAddress = fcastBioLinks[0]?.address || '';
+    const lensFirstAddress = lensBioLinks[0]?.address || '';
+    if (isFarcasterHandle(identity) && fcastFirstAddress) {
+      return fcastFirstAddress;
+    }
+    if (isLensHandle(identity) && lensFirstAddress) {
+      return lensFirstAddress;
+    }
+    return (
+      fcastFirstAddress ||
+      lensFirstAddress ||
+      bioLinkList.find((item) => !!item.address)?.address ||
+      ''
+    );
+  }, [identity, fcastBioLinks, lensBioLinks, bioLinkList]);
   return {
     bioLinkList,
     loading,
     lensBioLinks,
     fcastBioLinks,
+    recommendAddress,
   };
 }

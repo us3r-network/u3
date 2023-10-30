@@ -37,15 +37,12 @@ export default function ProfileBtns({
     follower: activeProfile,
   });
 
-  const {
-    followAction: fcastFollow,
-    isPending: fcastFollowIsPending,
-    isFollowing: fcastIsFollowingTemp,
-  } = useFarcasterFollowAction();
+  const { followAction: fcastFollow, isPending: fcastFollowIsPending } =
+    useFarcasterFollowAction();
 
   const fcastIsFollowing = useMemo(
-    () => fcastIsFollowingTemp || farcasterFollowings.includes(String(fid)),
-    [fcastIsFollowingTemp, fid, farcasterFollowings]
+    () => farcasterFollowings.includes(String(fid)),
+    [fid, farcasterFollowings]
   );
 
   const onFollow = useCallback(async () => {

@@ -54,15 +54,18 @@ export default function U3ProfileInfoCardContainer({
     return '';
   }, [lensBioLinkProfiles, fcastBioLinkProfiles]);
 
-  const { lensBioLinks: web3LensBioLinks, fcastBioLinks: web3FcastBioLinks } =
-    useBioLinkListWithWeb3Bio(identity);
+  const {
+    lensBioLinks: web3LensBioLinks,
+    fcastBioLinks: web3FcastBioLinks,
+    recommendAddress,
+  } = useBioLinkListWithWeb3Bio(identity);
 
   const { fetch: fetchFid, fid: fetchedFid } = useLazyQueryFidWithAddress(
-    web3FcastBioLinks?.[0]?.address || ''
+    web3FcastBioLinks?.[0]?.address || recommendAddress
   );
   useEffect(() => {
     fetchFid();
-  }, [web3FcastBioLinks]);
+  }, [fetchFid]);
 
   const { farcasterUserData } = useFarcasterCtx();
 
