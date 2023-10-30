@@ -171,9 +171,9 @@ const PostList = styled.div`
   border-top-left-radius: 0; */
   background: #212228;
   overflow: hidden;
-  /* & > *:not(:first-child) { */
-  /* border-top: 1px solid #718096; */
-  /* } */
+  & > *:not(:first-child) {
+    border-top: 1px solid #718096;
+  }
 `;
 const NoActivityWrapper = styled.div`
   .no-item {
