@@ -23,7 +23,7 @@ import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
 
 export default function SocialChannel() {
   const firstRef = useRef(false);
-  const { channelName } = useParams();
+  const { channelId } = useParams();
   const [feeds, setFeeds] = useState([]);
   const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
   const [farcasterUserData, setFarcasterUserData] = useState<{
@@ -39,17 +39,18 @@ export default function SocialChannel() {
 
   const channel = useMemo(() => {
     const channelData = FarcasterChannelData.find(
-      (c) => c.name === channelName || c.channel_description === channelName
+      (c) => c.channel_id === channelId
     );
     return channelData;
-  }, [channelName]);
+  }, [channelId]);
 
   const loadChannelCasts = useCallback(async () => {
     if (!channel) return;
     if (firstRef.current) return;
     firstRef.current = true;
+
     const resp = await getFarcasterChannelFeeds({
-      channelName: channel.name || channel.channel_description,
+      channelId: channel.channel_id,
       pageSize: FEEDS_PAGE_SIZE,
     });
     if (resp.data.code !== 0) {
@@ -76,7 +77,7 @@ export default function SocialChannel() {
     try {
       setMoreLoading(true);
       const resp = await getFarcasterChannelFeeds({
-        channelName: channel.name || channel.channel_description,
+        channelId: channel.channel_id,
         pageSize: FEEDS_PAGE_SIZE,
         endFarcasterCursor: pageInfo?.endFarcasterCursor,
       });
@@ -158,6 +159,7 @@ export default function SocialChannel() {
                     cast={data}
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={farcasterUserData}
+                    showMenuBtn
                   />
                 );
               }

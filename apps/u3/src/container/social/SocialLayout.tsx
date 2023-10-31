@@ -33,7 +33,7 @@ export default function Home() {
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const { channelName } = useParams();
+  const { channelId } = useParams();
 
   const onSearch = useCallback(
     (value: string) => {
@@ -72,8 +72,8 @@ export default function Home() {
     if (location.pathname.includes('social/trends')) {
       return <SocialBackNav title="Trends" />;
     }
-    if (location.pathname.includes('social/channel') && channelName) {
-      return <SocialBackNav title={channelName} isChannel />;
+    if (location.pathname.includes('social/channel') && channelId) {
+      return <SocialBackNav isChannel channelId={channelId} />;
     }
     if (location.pathname.includes('post-detail')) {
       return <SocialBackNav />;
@@ -90,7 +90,7 @@ export default function Home() {
         }}
       />
     );
-  }, [location.pathname, feedsType, socialPlatform, channelName]);
+  }, [location.pathname, feedsType, socialPlatform, channelId]);
 
   const keepAliveSocialOutlet = useMemo(() => {
     const socialCacheKey = getSocialScrollWrapperId(feedsType, socialPlatform);
