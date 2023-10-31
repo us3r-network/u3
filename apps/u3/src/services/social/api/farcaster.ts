@@ -238,11 +238,11 @@ export function getFarcasterRecommendedProfile(
 }
 
 export function getFarcasterChannelFeeds({
-  channelName,
+  channelId,
   endFarcasterCursor,
   pageSize,
 }: {
-  channelName: string;
+  channelId: string;
   endFarcasterCursor?: string;
   pageSize?: number;
 }): AxiosPromise<
@@ -256,7 +256,8 @@ export function getFarcasterChannelFeeds({
     url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel`,
     method: 'get',
     params: {
-      name: channelName,
+      name: '',
+      channelId,
       endFarcasterCursor,
       pageSize,
     },

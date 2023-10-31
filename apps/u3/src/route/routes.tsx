@@ -248,7 +248,7 @@ export const routes: CutomRouteObject[] = [
         key: RouteKey.socialTrendsChannel,
       },
       {
-        path: 'channel/:channelName',
+        path: 'channel/:channelId',
         element: loadContainerElement('social/SocialChannel'),
         key: RouteKey.socialChannel,
       },

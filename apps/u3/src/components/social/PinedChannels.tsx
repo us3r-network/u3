@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getChannelFromUrl } from 'src/utils/social/farcaster/getChannel';
 
-import { PinRed } from '../common/icons/pin-red';
 import PinChannelBtn from './PinChannelBtn';
 
 export default function PinedChannels() {
@@ -27,12 +26,12 @@ function PinedChannelItem({ parent_url }: { parent_url: string }) {
   return (
     <ItemBox
       onClick={() => {
-        navigate(`/social/channel/${item?.name}`);
+        navigate(`/social/channel/${item?.channel_id}`);
       }}
     >
       <div>
-        <img src={item?.image} alt={item?.name} />
-        <div className="name">{item?.name}</div>
+        <img src={item?.image} alt={item?.name || item?.channel_description} />
+        <div className="name">{item?.name || item?.channel_description}</div>
       </div>
       <PinChannelBtn parent_url={item.parent_url} />
     </ItemBox>

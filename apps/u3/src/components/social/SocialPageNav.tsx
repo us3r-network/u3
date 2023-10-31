@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
-import { getChannelFromName } from '../../utils/social/farcaster/getChannel';
+import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import PinChannelBtn from './PinChannelBtn';
 
 export enum FeedsType {
@@ -49,13 +49,15 @@ export default function SocialPageNav({
 
 export function SocialBackNav({
   title = 'Post',
+  channelId,
   isChannel,
 }: {
   title?: string;
   isChannel?: boolean;
+  channelId?: string;
 }) {
   const navigate = useNavigate();
-  const channel = isChannel ? getChannelFromName(title) : null;
+  const channel = isChannel ? getChannelFromId(channelId) : null;
   return (
     <SocialNavWrapper>
       {!isMobile && (
@@ -81,7 +83,9 @@ export function SocialBackNav({
                 <img src={channel.image} alt="" />
               </>
             )}
-            <span>{title}</span>
+            <span>
+              {isChannel ? channel.name || channel.channel_description : title}
+            </span>
           </div>
         </div>
         {isChannel && channel && (

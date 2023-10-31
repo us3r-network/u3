@@ -14,11 +14,7 @@ export default function ChannelItem({
   };
 }) {
   return (
-    <ItemWrapper
-      to={`/social/channel/${encodeURIComponent(
-        data.name || data.channel_description
-      )}`}
-    >
+    <ItemWrapper to={`/social/channel/${data.channel_id}`}>
       <NameWrapper>
         <span>#</span>
         <img src={data.image} alt="" />
