@@ -27,6 +27,7 @@ import {
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
+import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function FCast({
   cast,
@@ -144,7 +145,7 @@ export default function FCast({
               }}
               shareAction={() => {
                 tweetShare(
-                  cast.text,
+                  SOCIAL_SHARE_TITLE,
                   getSocialDetailShareUrlWithFarcaster(userData.fid)
                 );
               }}

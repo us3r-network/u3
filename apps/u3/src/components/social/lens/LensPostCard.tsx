@@ -21,6 +21,7 @@ import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/shared/useLogin';
 import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
 import { tweetShare } from '../../../utils/shared/twitter';
+import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function LensPostCard({ data }: { data: Post }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -222,7 +223,7 @@ export default function LensPostCard({ data }: { data: Post }) {
       }}
       shareAction={() => {
         tweetShare(
-          data.metadata.content,
+          SOCIAL_SHARE_TITLE,
           getSocialDetailShareUrlWithLens(data.id)
         );
       }}

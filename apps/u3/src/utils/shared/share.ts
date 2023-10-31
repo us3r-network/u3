@@ -5,10 +5,10 @@
  * @LastEditTime: 2023-02-27 11:55:12
  * @Description: file description
  */
-import { U3_HOST_URI } from '../../constants';
+import { U3_HOST_URI, SHARE_DOMAIN } from '../../constants';
 
 export const getEventShareUrl = (id: string | number) => {
-  return `${U3_HOST_URI}/events/${id}`;
+  return `${SHARE_DOMAIN}/events/${id}`;
 };
 export const getProjectShareUrl = (id: string | number) => {
   return `${U3_HOST_URI}/projects/${id}`;
@@ -18,13 +18,13 @@ export const getDappShareUrl = (id: string | number) => {
 };
 
 export const getContentShareUrl = (id: string | number) => {
-  return `${U3_HOST_URI}/contents/${id}`;
+  return `${SHARE_DOMAIN}/contents/${id}`;
 };
 
 export const getSocialDetailShareUrlWithLens = (id: string | number) => {
-  return `${U3_HOST_URI}/social/post-detail/lens/${id}`;
+  return `${SHARE_DOMAIN}/social/post-detail/lens/${id}`;
 };
 
 export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
-  return `${U3_HOST_URI}/social/post-detail/fcast/${id}`;
+  return `${SHARE_DOMAIN}/social/post-detail/fcast/${id}`;
 };
