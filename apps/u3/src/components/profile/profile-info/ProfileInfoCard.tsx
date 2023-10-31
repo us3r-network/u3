@@ -1,6 +1,6 @@
 import { useProfileState } from '@us3r-network/profile';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useDid from '../../../hooks/profile/useDid';
 import Loading from '../../common/loading/Loading';
 import U3ProfileInfoCardContainer from './U3ProfileInfoCardContainer';
@@ -9,11 +9,15 @@ import { isDidPkh } from '../../../utils/shared/did';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   identity: string;
+  canNavigateToProfile?: boolean;
+  onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
 }
 export default function ProfileInfoCard({
   identity,
+  canNavigateToProfile,
+  onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
   ...wrapperProps
@@ -37,6 +41,10 @@ export default function ProfileInfoCard({
     })();
   }, [did]);
 
+  const navigateToProfileUrl = useMemo(
+    () => (canNavigateToProfile ? `/u/${identity}` : undefined),
+    [canNavigateToProfile, identity]
+  );
   if (didLoading || hasProfileLoading) {
     return (
       <LoadingWrapper {...wrapperProps}>
@@ -48,6 +56,8 @@ export default function ProfileInfoCard({
     return (
       <U3ProfileInfoCardContainer
         did={did}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
         {...wrapperProps}
@@ -58,6 +68,8 @@ export default function ProfileInfoCard({
     return (
       <PlatformProfileInfoCardContainer
         identity={identity}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
         {...wrapperProps}

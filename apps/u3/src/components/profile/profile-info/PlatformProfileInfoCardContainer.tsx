@@ -14,11 +14,15 @@ import useLazyQueryFidWithAddress from '../../../hooks/social/farcaster/useLazyQ
 interface PlatformProfileInfoCardContainerProps
   extends StyledComponentPropsWithRef<'div'> {
   identity: string;
+  navigateToProfileUrl?: string;
+  onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
 }
 export default function PlatformProfileInfoCardContainer({
   identity,
+  navigateToProfileUrl,
+  onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
   ...wrapperProps
@@ -96,6 +100,8 @@ export default function PlatformProfileInfoCardContainer({
   return (
     <ProfileInfoBaseCard
       isU3Profile={false}
+      navigateToProfileUrl={navigateToProfileUrl}
+      onNavigateToProfileAfter={onNavigateToProfileAfter}
       loading={bioLinkLoading}
       address={recommendAddress}
       platformAccounts={platformAccounts}

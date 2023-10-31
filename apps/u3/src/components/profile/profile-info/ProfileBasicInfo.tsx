@@ -4,10 +4,11 @@ import {
   UserInfoEditForm,
   UserName,
 } from '@us3r-network/profile';
-import styled, { css } from 'styled-components';
+import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
@@ -17,7 +18,15 @@ import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { Copy } from '../../common/icons/copy';
 import ProfileAvatar from './ProfileAvatar';
 
-export function U3ProfileBasicInfo({ did }: { did: string }) {
+export function U3ProfileBasicInfo({
+  did,
+  navigateToProfileUrl,
+  onNavigateToProfileAfter,
+}: {
+  did: string;
+  navigateToProfileUrl?: string;
+  onNavigateToProfileAfter?: () => void;
+}) {
   const address = getAddressWithDidPkh(did);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   return (
@@ -30,6 +39,16 @@ export function U3ProfileBasicInfo({ did }: { did: string }) {
               style={{ width: 'fit-content', height: 'fit-content' }}
             >
               {({ avatarSrc }) => {
+                if (navigateToProfileUrl) {
+                  return (
+                    <NavigateToProfileLink
+                      href={navigateToProfileUrl}
+                      onNavigateToProfileAfter={onNavigateToProfileAfter}
+                    >
+                      <ProfileAvatar src={avatarSrc} />
+                    </NavigateToProfileLink>
+                  );
+                }
                 return (
                   <ProfileAvatar
                     src={avatarSrc}
@@ -43,7 +62,17 @@ export function U3ProfileBasicInfo({ did }: { did: string }) {
               }}
             </UserAvatar>
             <BasicCenter>
-              <U3ProfileName did={did} />
+              {navigateToProfileUrl ? (
+                <NavigateToProfileLink
+                  href={navigateToProfileUrl}
+                  onNavigateToProfileAfter={onNavigateToProfileAfter}
+                >
+                  <U3ProfileName did={did} />
+                </NavigateToProfileLink>
+              ) : (
+                <U3ProfileName did={did} />
+              )}
+
               {address && (
                 <AddressWrapper
                   onClick={() => {
@@ -96,6 +125,8 @@ export function U3ProfileBasicInfo({ did }: { did: string }) {
 
 export function PlatformProfileBasicInfo({
   data,
+  navigateToProfileUrl,
+  onNavigateToProfileAfter,
 }: {
   data: {
     avatar: string;
@@ -103,13 +134,35 @@ export function PlatformProfileBasicInfo({
     address?: string;
     identity?: string | number;
   };
+  navigateToProfileUrl?: string;
+  onNavigateToProfileAfter?: () => void;
 }) {
   const { avatar, name, address, identity = '' } = data;
   return (
     <PlatformProfileBasicInfoWrapper>
-      <ProfileAvatar src={avatar} />
+      {navigateToProfileUrl ? (
+        <NavigateToProfileLink
+          href={navigateToProfileUrl}
+          onNavigateToProfileAfter={onNavigateToProfileAfter}
+        >
+          <ProfileAvatar src={avatar} />
+        </NavigateToProfileLink>
+      ) : (
+        <ProfileAvatar src={avatar} />
+      )}
+
       <BasicCenter>
-        <PlatformProfileName>{name}</PlatformProfileName>
+        {navigateToProfileUrl ? (
+          <NavigateToProfileLink
+            href={navigateToProfileUrl}
+            onNavigateToProfileAfter={onNavigateToProfileAfter}
+          >
+            <PlatformProfileName>{name}</PlatformProfileName>
+          </NavigateToProfileLink>
+        ) : (
+          <PlatformProfileName>{name}</PlatformProfileName>
+        )}
+
         <AddressWrapper
           onClick={() => {
             if (!address) return;
@@ -125,6 +178,42 @@ export function PlatformProfileBasicInfo({
     </PlatformProfileBasicInfoWrapper>
   );
 }
+
+function NavigateToProfileLink({
+  href,
+  children,
+  onNavigateToProfileAfter,
+}: StyledComponentPropsWithRef<'a'> & {
+  onNavigateToProfileAfter?: () => void;
+}) {
+  const navigate = useNavigate();
+  return (
+    <NavigateToProfileLinkWrapper
+      href={href}
+      onClick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        if (href) {
+          navigate(href);
+          onNavigateToProfileAfter?.();
+        }
+      }}
+    >
+      {children}
+    </NavigateToProfileLinkWrapper>
+  );
+}
+const NavigateToProfileLinkWrapper = styled.a`
+  color: #fff;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+  &,
+  & > * {
+    cursor: pointer;
+  }
+`;
 const BaseWrapperCss = css`
   display: flex;
   gap: 20px;

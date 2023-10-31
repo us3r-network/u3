@@ -18,6 +18,8 @@ import { SocailPlatform } from '../../../services/social/types';
 interface ProfileInfoCardLayoutProps
   extends StyledComponentPropsWithRef<'div'> {
   isU3Profile: boolean;
+  navigateToProfileUrl?: string;
+  onNavigateToProfileAfter?: () => void;
   did?: string;
   address: string;
   platformAccounts: PlatformAccountsData;
@@ -31,6 +33,8 @@ interface ProfileInfoCardLayoutProps
 }
 export default function ProfileInfoCardLayout({
   isU3Profile,
+  navigateToProfileUrl,
+  onNavigateToProfileAfter,
   did,
   address,
   platformAccounts,
@@ -74,7 +78,11 @@ export default function ProfileInfoCardLayout({
         {({ isLoginUser }) => {
           return (
             <>
-              <U3ProfileBasicInfo did={did} />
+              <U3ProfileBasicInfo
+                did={did}
+                navigateToProfileUrl={navigateToProfileUrl}
+                onNavigateToProfileAfter={onNavigateToProfileAfter}
+              />
 
               <PlatformAccounts
                 data={platformAccounts}
@@ -124,6 +132,8 @@ export default function ProfileInfoCardLayout({
           address,
           identity: platformAccounts?.[0]?.id,
         }}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
       />
 
       <PlatformAccounts data={platformAccounts} />

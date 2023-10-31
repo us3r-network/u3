@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useActiveProfile, useProfilesOwnedBy } from '@lens-protocol/react-web';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
@@ -46,6 +46,14 @@ import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 export default function Profile() {
   const { user } = useParams();
+  const [searchParams] = useSearchParams();
+  const currSearchParams = useMemo(
+    () => ({
+      followType: searchParams.get('followType') || '',
+    }),
+    [searchParams]
+  );
+  const { followType } = currSearchParams;
   const session = useSession();
 
   const { did, loading: didLoading } = useDid(user);
@@ -179,6 +187,16 @@ export default function Profile() {
       },
     }));
   }, [lensProfileFirst, farcasterFollowData]);
+
+  useEffect(() => {
+    if (followType) {
+      setFollowNavData((prevData) => ({
+        ...prevData,
+        showFollowNav: true,
+        followNavType: followType as FollowType,
+      }));
+    }
+  }, [followType]);
 
   const onlyShowActivities = useMemo(
     () =>
