@@ -1,4 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useEffect } from 'react';
 import { SocialButtonPrimaryLine } from '../social/button/SocialButton';
 import { SocialMessageChatBtn } from '../message/MessageChatBtn';
 import { SocailPlatform } from '../../services/social/types';
@@ -10,6 +11,7 @@ import {
   useXmtpStore,
 } from '../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../contexts/NavCtx';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 
 export type FollowProfileData = {
   handle: string;
@@ -37,6 +39,11 @@ export default function FollowProfileCard({
   unfollowAction,
   ...wrapperProps
 }: FollowProfileCardProps) {
+  const { setCanEnableXmtp } = useXmtpClient();
+  useEffect(() => {
+    setCanEnableXmtp(true);
+  }, []);
+
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
   const { canMessage } = useCanMessage(address);
   const { setMessageRouteParams } = useXmtpStore();
