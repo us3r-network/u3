@@ -25,9 +25,9 @@ export default function FarcasterFollowProfileCard({
   return (
     <FollowProfileCard
       data={{
-        handle: data.display,
+        handle: data.userName,
         address: '',
-        name: data.userName || data.fid,
+        name: data.display || data.fid,
         avatar: data.pfp,
         bio: data.bio,
         isFollowed: followed,

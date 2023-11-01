@@ -1,4 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { useEffect, useMemo } from 'react';
 import { SocialButtonPrimaryLine } from '../social/button/SocialButton';
 import { SocialMessageChatBtn } from '../message/MessageChatBtn';
 import { SocailPlatform } from '../../services/social/types';
@@ -10,6 +11,12 @@ import {
   useXmtpStore,
 } from '../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../contexts/NavCtx';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
+import {
+  farcasterHandleToBioLinkHandle,
+  lensHandleToBioLinkHandle,
+} from '../../utils/profile/biolink';
+import NavigateToProfileLink from './NavigateToProfileLink';
 
 export type FollowProfileData = {
   handle: string;
@@ -37,19 +44,50 @@ export default function FollowProfileCard({
   unfollowAction,
   ...wrapperProps
 }: FollowProfileCardProps) {
+  const { setCanEnableXmtp } = useXmtpClient();
+  useEffect(() => {
+    setCanEnableXmtp(true);
+  }, []);
+
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
   const { canMessage } = useCanMessage(address);
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
 
+  const profileIdentity = useMemo(() => {
+    if (handle.endsWith('.eth')) return handle;
+    const firstPlatform = platforms?.[0];
+    switch (firstPlatform) {
+      case SocailPlatform.Lens:
+        return lensHandleToBioLinkHandle(handle);
+      case SocailPlatform.Farcaster:
+        return farcasterHandleToBioLinkHandle(handle);
+      default:
+        return '';
+    }
+  }, [handle, platforms]);
+
+  const profileUrl = useMemo(() => {
+    if (profileIdentity) {
+      return `/u/${profileIdentity}`;
+    }
+    return '';
+  }, [profileIdentity]);
+
   return (
     <Wrapper {...wrapperProps}>
       <Top>
         <TopLeft>
-          <Avatar src={avatar} />
+          <NavigateToProfileLink href={profileUrl}>
+            <Avatar src={avatar} />
+          </NavigateToProfileLink>
+
           <AccountInfo>
             <AccountName>
-              {name || handle}{' '}
+              <NavigateToProfileLink href={profileUrl}>
+                {name || handle}{' '}
+              </NavigateToProfileLink>
+
               {platforms.map((item) => {
                 switch (item) {
                   case SocailPlatform.Lens:
