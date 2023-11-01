@@ -1,6 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile, useActiveProfile, useFollow } from '@lens-protocol/react-web';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
 import useFarcasterFollowAction from '../../../hooks/social/farcaster/useFarcasterFollowAction';
@@ -12,6 +12,7 @@ import { useNav } from '../../../contexts/NavCtx';
 import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs/message-chat-square.svg';
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import { useXmtpClient } from '../../../contexts/message/XmtpClientCtx';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -28,6 +29,11 @@ export default function ProfileBtns({
   address,
   ...wrapperProps
 }: ProfileBtnsProps) {
+  const { setCanEnableXmtp } = useXmtpClient();
+  useEffect(() => {
+    setCanEnableXmtp(true);
+  }, []);
+
   const { following: farcasterFollowings } = useFarcasterCtx();
   const lensProfileFirst = lensProfiles?.[0];
   const { data: activeProfile } = useActiveProfile();
