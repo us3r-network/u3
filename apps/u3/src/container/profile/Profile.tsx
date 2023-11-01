@@ -198,6 +198,13 @@ export default function Profile() {
     }
   }, [followType]);
 
+  useEffect(() => {
+    setFollowNavData((prevData) => ({
+      ...prevData,
+      showFollowNav: false,
+    }));
+  }, [user]);
+
   const onlyShowActivities = useMemo(
     () =>
       !isLoginUser &&

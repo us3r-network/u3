@@ -4,11 +4,10 @@ import {
   UserInfoEditForm,
   UserName,
 } from '@us3r-network/profile';
-import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Dialog, Heading, Modal } from 'react-aria-components';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
 import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
@@ -17,6 +16,7 @@ import { getAvatarUploadOpts } from '../../../utils/profile/uploadAvatar';
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { Copy } from '../../common/icons/copy';
 import ProfileAvatar from './ProfileAvatar';
+import NavigateToProfileLink from '../NavigateToProfileLink';
 
 export function U3ProfileBasicInfo({
   did,
@@ -179,41 +179,6 @@ export function PlatformProfileBasicInfo({
   );
 }
 
-function NavigateToProfileLink({
-  href,
-  children,
-  onNavigateToProfileAfter,
-}: StyledComponentPropsWithRef<'a'> & {
-  onNavigateToProfileAfter?: () => void;
-}) {
-  const navigate = useNavigate();
-  return (
-    <NavigateToProfileLinkWrapper
-      href={href}
-      onClick={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        if (href) {
-          navigate(href);
-          onNavigateToProfileAfter?.();
-        }
-      }}
-    >
-      {children}
-    </NavigateToProfileLinkWrapper>
-  );
-}
-const NavigateToProfileLinkWrapper = styled.a`
-  color: #fff;
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-  &,
-  & > * {
-    cursor: pointer;
-  }
-`;
 const BaseWrapperCss = css`
   display: flex;
   gap: 20px;
