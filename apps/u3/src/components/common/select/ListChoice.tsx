@@ -1,4 +1,6 @@
 import { isMobile } from 'react-device-detect';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ButtonPrimaryLine } from '../button/ButtonBase';
 import ChoiceCheckedSvg from '../assets/svgs/choice-checked.svg';
@@ -24,6 +26,9 @@ export default function ListChoice({
   onSelectOption,
   ...wrapperProps
 }: Props) {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <ListChoiceWrapper {...wrapperProps}>
       {label && (
@@ -32,18 +37,19 @@ export default function ListChoice({
 
       <OptionsBox className="list-choice-box">
         {options.map((item) => {
-          const isChecked = value === item.value;
           return (
             <OptionItem
               className="option-item"
               key={item.value}
-              isChecked={isChecked}
+              isChecked={
+                location.pathname ===
+                (item.value ? `/social/${item.value}` : `/social`)
+              }
               onClick={() => {
-                if (onSelectOption) {
-                  onSelectOption(item);
-                }
-                if (onChange) {
-                  onChange(item.value);
+                if (item.value) {
+                  navigate(`/social/${item.value}`);
+                } else {
+                  navigate(`/social`);
                 }
               }}
             >

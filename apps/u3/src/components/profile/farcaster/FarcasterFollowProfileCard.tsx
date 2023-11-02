@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import useFarcasterUserData from 'src/hooks/social/farcaster/useFarcasterUserData';
-import { SocailPlatform } from 'src/services/social/types';
+import { SocialPlatform } from 'src/services/social/types';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 
 import FollowProfileCard from '../FollowProfileCard';
@@ -31,7 +31,7 @@ export default function FarcasterFollowProfileCard({
         avatar: data.pfp,
         bio: data.bio,
         isFollowed: followed,
-        platforms: [SocailPlatform.Farcaster],
+        platforms: [SocialPlatform.Farcaster],
       }}
       followPending={followPending}
       unfollowPending={unfollowPending}

@@ -20,7 +20,7 @@ import {
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster';
 
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { useCreateLensPost } from '../../hooks/social/lens/useCreateLensPost';
 import ButtonBase from '../common/button/ButtonBase';
@@ -68,7 +68,7 @@ export default function AddPostForm({
     channel?.name || channel?.channel_description || 'Home'
   );
   const [text, setText] = useState('');
-  const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
+  const [platforms, setPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
 
   const [selectedImages, setSelectedImages] = useState<FilesWithId>([]);
@@ -197,10 +197,10 @@ export default function AddPostForm({
       return;
     }
     setIsPending(true);
-    if (platforms.has(SocailPlatform.Farcaster)) {
+    if (platforms.has(SocialPlatform.Farcaster)) {
       await handleSubmitToFarcaster();
     }
-    if (platforms.has(SocailPlatform.Lens)) {
+    if (platforms.has(SocialPlatform.Lens)) {
       await handleSubmitToLens();
     }
     setIsPending(false);
@@ -223,13 +223,13 @@ export default function AddPostForm({
             <PlatformOption>
               {isLoginFarcaster && farcasterUserInfo ? (
                 <PlatformToggleButton
-                  isSelected={platforms.has(SocailPlatform.Farcaster)}
-                  platform={SocailPlatform.Farcaster}
+                  isSelected={platforms.has(SocialPlatform.Farcaster)}
+                  platform={SocialPlatform.Farcaster}
                   onChange={() => {
-                    if (platforms.has(SocailPlatform.Farcaster)) {
-                      platforms.delete(SocailPlatform.Farcaster);
+                    if (platforms.has(SocialPlatform.Farcaster)) {
+                      platforms.delete(SocialPlatform.Farcaster);
                     } else {
-                      platforms.add(SocailPlatform.Farcaster);
+                      platforms.add(SocialPlatform.Farcaster);
                     }
                     setPlatforms(new Set(platforms));
                   }}
@@ -267,13 +267,13 @@ export default function AddPostForm({
             <PlatformOption>
               {isLoginLens ? (
                 <PlatformToggleButton
-                  isSelected={platforms.has(SocailPlatform.Lens)}
-                  platform={SocailPlatform.Lens}
+                  isSelected={platforms.has(SocialPlatform.Lens)}
+                  platform={SocialPlatform.Lens}
                   onChange={() => {
-                    if (platforms.has(SocailPlatform.Lens)) {
-                      platforms.delete(SocailPlatform.Lens);
+                    if (platforms.has(SocialPlatform.Lens)) {
+                      platforms.delete(SocialPlatform.Lens);
                     } else {
-                      platforms.add(SocailPlatform.Lens);
+                      platforms.add(SocialPlatform.Lens);
                     }
                     setPlatforms(new Set(platforms));
                   }}
@@ -346,8 +346,8 @@ export default function AddPostForm({
           <Description
             hidden={
               !(
-                platforms.has(SocailPlatform.Lens) &&
-                platforms.has(SocailPlatform.Farcaster)
+                platforms.has(SocialPlatform.Lens) &&
+                platforms.has(SocialPlatform.Farcaster)
               )
             }
           >
@@ -428,7 +428,7 @@ const LoginButton = styled(SocialButtonPrimary)`
   font-weight: 400;
 `;
 const PlatformToggleButton = styled(ToggleButton)<{
-  platform?: SocailPlatform;
+  platform?: SocialPlatform;
 }>`
   max-width: 100%;
   cursor: pointer;
@@ -452,9 +452,9 @@ const PlatformToggleButton = styled(ToggleButton)<{
   &[data-selected] {
     border: 1px solid;
     border-color: ${({ platform }) =>
-      platform === SocailPlatform.Lens ? '#9BEA1D' : '#825DC5'};
+      platform === SocialPlatform.Lens ? '#9BEA1D' : '#825DC5'};
     color: ${({ platform }) =>
-      platform === SocailPlatform.Lens ? '#9BEA1D' : '#825DC5'};
+      platform === SocialPlatform.Lens ? '#9BEA1D' : '#825DC5'};
   }
 `;
 const Avatar = styled.img`

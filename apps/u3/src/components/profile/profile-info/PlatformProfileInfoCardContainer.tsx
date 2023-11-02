@@ -2,7 +2,7 @@ import { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo } from 'react';
 import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { PlatformAccountsData } from './PlatformAccounts';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../../../hooks/social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../../../hooks/social/farcaster/useFarcasterFollowNum';
@@ -60,7 +60,7 @@ export default function PlatformProfileInfoCardContainer({
     const accounts = [];
     for (const fcastProfile of fcastBioLinks) {
       accounts.push({
-        platform: SocailPlatform.Farcaster,
+        platform: SocialPlatform.Farcaster,
         avatar: fcastProfile.avatar,
         name: fcastProfile.displayName,
         handle: fcastProfile.identity,
@@ -72,7 +72,7 @@ export default function PlatformProfileInfoCardContainer({
     if (lensProfiles?.length > 0) {
       for (const lensProfile of lensProfiles) {
         accounts.push({
-          platform: SocailPlatform.Lens,
+          platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
           name: lensProfile.name,
           handle: lensProfile.handle,

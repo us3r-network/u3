@@ -5,7 +5,7 @@ import { useProfilesOwnedBy } from '@lens-protocol/react-web';
 import { PlatformAccountsData } from './PlatformAccounts';
 import { getAddressWithDidPkh } from '../../../utils/shared/did';
 import getAvatar from '../../../utils/social/lens/getAvatar';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import useUpsertFarcasterUserData from '../../../hooks/social/farcaster/useUpsertFarcasterUserData';
@@ -103,7 +103,7 @@ export default function U3ProfileInfoCardContainer({
     const accounts: PlatformAccountsData = [];
     if (userData?.fid && userData?.display) {
       accounts.push({
-        platform: SocailPlatform.Farcaster,
+        platform: SocialPlatform.Farcaster,
         avatar: userData.pfp,
         name: userData.userName,
         handle: userData.display,
@@ -115,7 +115,7 @@ export default function U3ProfileInfoCardContainer({
     if (lensProfiles?.length > 0) {
       for (const lensProfile of lensProfiles) {
         accounts.push({
-          platform: SocailPlatform.Lens,
+          platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
           name: lensProfile.name,
           handle: lensProfile.handle,

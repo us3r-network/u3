@@ -12,7 +12,7 @@ import Loading from '../../components/common/loading/Loading';
 import { useLoadFollowingFeeds } from '../../hooks/social/useLoadFollowingFeeds';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { FeedsType } from '../../components/social/SocialPageNav';
-import { SocailPlatform } from '../../services/social/types';
+
 import AddPostForm from '../../components/social/AddPostForm';
 import FollowingDefault from '../../components/social/FollowingDefault';
 import { getSocialScrollWrapperId } from '../../utils/social/keep-alive';
@@ -25,27 +25,43 @@ export default function Home() {
     useActiveProfile();
   const fid = useFarcasterCurrFid();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
-  const {
-    firstLoading: trendingFirstLoading,
-    moreLoading: trendingMoreLoading,
-    feeds: trendingFeeds,
-    pageInfo: trendingPageInfo,
-    loadFirstFeeds: loadTrendingFirstFeeds,
-    loadMoreFeeds: loadTrendingMoreFeeds,
-  } = useLoadTrendingFeeds();
+  // const {
+  //   firstLoading: trendingFirstLoading,
+  //   moreLoading: trendingMoreLoading,
+  //   feeds: trendingFeeds,
+  //   pageInfo: trendingPageInfo,
+  //   loadFirstFeeds: loadTrendingFirstFeeds,
+  //   loadMoreFeeds: loadTrendingMoreFeeds,
+  // } = useLoadTrendingFeeds();
+
+  // const {
+  //   firstLoading: followingFirstLoading,
+  //   moreLoading: followingMoreLoading,
+  //   feeds: followingFeeds,
+  //   pageInfo: followingPageInfo,
+  //   loadFirstFeeds: loadFollowingFirstFeeds,
+  //   loadMoreFeeds: loadFollowingMoreFeeds,
+  // } = useLoadFollowingFeeds();
 
   const {
-    firstLoading: followingFirstLoading,
-    moreLoading: followingMoreLoading,
-    feeds: followingFeeds,
-    pageInfo: followingPageInfo,
-    loadFirstFeeds: loadFollowingFirstFeeds,
-    loadMoreFeeds: loadFollowingMoreFeeds,
-  } = useLoadFollowingFeeds();
-  const { socialPlatform, feedsType } = useOutletContext<{
-    socialPlatform: SocailPlatform | '';
-    feedsType: FeedsType;
-  }>();
+    socialPlatform,
+    feedsType,
+
+    trendingFirstLoading,
+    trendingMoreLoading,
+    trendingFeeds,
+    trendingPageInfo,
+    loadTrendingFirstFeeds,
+    loadTrendingMoreFeeds,
+
+    followingFirstLoading,
+    followingMoreLoading,
+    followingFeeds,
+    followingPageInfo,
+    loadFollowingFirstFeeds,
+    loadFollowingMoreFeeds,
+  } = useOutletContext<any>();
+
   const {
     openFarcasterQR,
     farcasterUserData,
@@ -161,6 +177,9 @@ export default function Home() {
       );
     }
   }
+
+  console.log(feeds, socialPlatform);
+
   return (
     <MainCenter>
       <AddPostFormWrapper>
@@ -168,28 +187,26 @@ export default function Home() {
       </AddPostFormWrapper>
 
       {(() => {
-        if (firstLoading) {
-          return (
-            <LoadingWrapper>
-              <Loading />
-            </LoadingWrapper>
-          );
-        }
+        // if (firstLoading) {
+        //   return (
+        //     <LoadingWrapper>
+        //       <Loading />
+        //     </LoadingWrapper>
+        //   );
+        // }
         return (
           <InfiniteScroll
-            dataLength={feeds.length}
+            dataLength={feeds?.length || 0}
             next={() => {
               if (moreLoading) return;
               loadMoreFeeds();
             }}
-            hasMore={!firstLoading && pageInfo.hasNextPage}
+            hasMore={!firstLoading && pageInfo?.hasNextPage}
             scrollThreshold="1000px"
             loader={
-              moreLoading ? (
-                <LoadingMoreWrapper>
-                  <Loading />
-                </LoadingMoreWrapper>
-              ) : null
+              <LoadingMoreWrapper>
+                <Loading />
+              </LoadingMoreWrapper>
             }
             scrollableTarget={getSocialScrollWrapperId(
               feedsType,
@@ -197,7 +214,7 @@ export default function Home() {
             )}
           >
             <PostList>
-              {feeds.map(({ platform, data }) => {
+              {(feeds || []).map(({ platform, data }) => {
                 if (platform === 'lens') {
                   return <LensPostCard key={data.id} data={data} />;
                 }

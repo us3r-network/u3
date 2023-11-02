@@ -2,7 +2,7 @@ import axios, { AxiosPromise } from 'axios';
 import qs from 'qs';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import { LensComment, LensMirror, LensPost } from './lens';
-import { ApiResp, FarCast, SocailPlatform } from '../types';
+import { ApiResp, FarCast, SocialPlatform } from '../types';
 
 // axios 实例
 const axiosInstance = axios.create();
@@ -23,14 +23,14 @@ axiosInstance.interceptors.request.use(
 );
 
 export type FeedsDataItem =
-  | { data: FarCast; platform: SocailPlatform.Farcaster }
-  | { data: LensPost; platform: SocailPlatform.Lens };
+  | { data: FarCast; platform: SocialPlatform.Farcaster }
+  | { data: LensPost; platform: SocialPlatform.Lens };
 
 export type ProfileFeedsDataItem =
-  | { data: FarCast; platform: SocailPlatform.Farcaster }
-  | { data: LensPost; platform: SocailPlatform.Lens }
-  | { data: LensMirror; platform: SocailPlatform.Lens }
-  | { data: LensComment; platform: SocailPlatform.Lens };
+  | { data: FarCast; platform: SocialPlatform.Farcaster }
+  | { data: LensPost; platform: SocialPlatform.Lens }
+  | { data: LensMirror; platform: SocialPlatform.Lens }
+  | { data: LensComment; platform: SocialPlatform.Lens };
 
 export type FeedsPageInfo = {
   endLensCursor: string;
@@ -60,7 +60,7 @@ export function getFeeds({
   endFarcasterCursor?: string;
   endLensCursor?: string;
   activeLensProfileId?: string;
-  platforms?: SocailPlatform[];
+  platforms?: SocialPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -99,7 +99,7 @@ export function getFollowingFeeds({
   activeLensProfileId?: string;
   address?: string;
   fid?: string;
-  platforms?: SocailPlatform[];
+  platforms?: SocialPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -136,7 +136,7 @@ export function getTrendingFeeds({
   endFarcasterCursor?: string;
   endLensCursor?: string;
   activeLensProfileId?: string;
-  platforms?: SocailPlatform[];
+  platforms?: SocialPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -177,7 +177,7 @@ export function getProfileFeeds({
   activeLensProfileId?: string;
   lensProfileId?: string;
   fid?: string;
-  platforms?: SocailPlatform[];
+  platforms?: SocialPlatform[];
 }): AxiosPromise<
   ApiResp<{
     data: ProfileFeedsDataItem[];

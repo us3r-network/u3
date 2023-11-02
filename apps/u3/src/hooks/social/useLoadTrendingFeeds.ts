@@ -5,27 +5,33 @@ import {
   getTrendingFeeds,
 } from '../../services/social/api/feeds';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 
 export function useLoadTrendingFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
 
-  const [feeds, setFeeds] = useState<Array<FeedsDataItem>>([]);
+  const [feeds, setFeeds] = useState<{ [key: string]: Array<FeedsDataItem> }>(
+    {}
+  );
 
   const [pageInfo, setPageInfo] = useState<FeedsPageInfo>({
     hasNextPage: false,
     endFarcasterCursor: '',
     endLensCursor: '',
   });
+
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
 
   const loadFirstFeeds = useCallback(
-    async (opts?: {
-      keyword?: string;
-      activeLensProfileId?: string;
-      platforms?: SocailPlatform[];
-    }) => {
+    async (
+      parentId: string,
+      opts?: {
+        keyword?: string;
+        activeLensProfileId?: string;
+        platforms?: SocialPlatform[];
+      }
+    ) => {
       setFirstLoading(true);
       try {
         const res = await getTrendingFeeds({
@@ -46,7 +52,7 @@ export function useLoadTrendingFeeds() {
             temp[item.fid] = [item];
           }
         });
-        setFeeds(data);
+        setFeeds((prev) => ({ ...prev, [parentId]: data }));
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(respPageInfo);
       } catch (error) {
@@ -59,11 +65,14 @@ export function useLoadTrendingFeeds() {
   );
 
   const loadMoreFeeds = useCallback(
-    async (opts?: {
-      keyword?: string;
-      activeLensProfileId?: string;
-      platforms?: SocailPlatform[];
-    }) => {
+    async (
+      parentId: string,
+      opts?: {
+        keyword?: string;
+        activeLensProfileId?: string;
+        platforms?: SocialPlatform[];
+      }
+    ) => {
       if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
       setMoreLoading(true);
       try {
@@ -87,7 +96,10 @@ export function useLoadTrendingFeeds() {
             temp[item.fid] = [item];
           }
         });
-        setFeeds((prev) => [...prev, ...data]);
+        setFeeds((prev) => ({
+          ...prev,
+          [parentId]: [...(prev[parentId] || []), ...data],
+        }));
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(newPageInfo);
       } catch (error) {

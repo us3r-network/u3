@@ -12,7 +12,7 @@ import {
 } from '../../constants/farcaster';
 // import { getCurrFid } from '../utils/farsign-utils';
 
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { useCreateLensPost } from './lens/useCreateLensPost';
 
@@ -27,7 +27,7 @@ export default function usePostAdd({
   const { createText: createTextToLens } = useCreateLensPost();
 
   const [text, setText] = useState('');
-  const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
+  const [platforms, setPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
 
   const handleSubmitToFarcaster = useCallback(async () => {
@@ -80,10 +80,10 @@ export default function usePostAdd({
       return;
     }
     setIsPending(true);
-    if (platforms.has(SocailPlatform.Farcaster)) {
+    if (platforms.has(SocialPlatform.Farcaster)) {
       await handleSubmitToFarcaster();
     }
-    if (platforms.has(SocailPlatform.Lens)) {
+    if (platforms.has(SocialPlatform.Lens)) {
       await handleSubmitToLens();
     }
     setIsPending(false);
@@ -97,29 +97,29 @@ export default function usePostAdd({
   ]);
 
   const onSelectPlatform = useCallback(
-    (platform: SocailPlatform) => {
+    (platform: SocialPlatform) => {
       switch (platform) {
-        case SocailPlatform.Farcaster:
+        case SocialPlatform.Farcaster:
           if (!isConnected) {
             openFarcasterQR();
             return;
           }
-          if (platforms.has(SocailPlatform.Farcaster)) {
-            platforms.delete(SocailPlatform.Farcaster);
+          if (platforms.has(SocialPlatform.Farcaster)) {
+            platforms.delete(SocialPlatform.Farcaster);
           } else {
-            platforms.add(SocailPlatform.Farcaster);
+            platforms.add(SocialPlatform.Farcaster);
           }
           setPlatforms(new Set(platforms));
           break;
-        case SocailPlatform.Lens:
+        case SocialPlatform.Lens:
           if (!isLoginLens) {
             setOpenLensLoginModal(true);
             return;
           }
-          if (platforms.has(SocailPlatform.Lens)) {
-            platforms.delete(SocailPlatform.Lens);
+          if (platforms.has(SocialPlatform.Lens)) {
+            platforms.delete(SocialPlatform.Lens);
           } else {
-            platforms.add(SocailPlatform.Lens);
+            platforms.add(SocialPlatform.Lens);
           }
           setPlatforms(new Set(platforms));
           break;
