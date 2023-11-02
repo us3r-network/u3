@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useActiveProfile, useProfilesOwnedBy } from '@lens-protocol/react-web';
+import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useParams, useSearchParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
@@ -30,22 +30,117 @@ import { SocailPlatform } from '../../services/social/types';
 import useFarcasterFollowNum from '../../hooks/social/farcaster/useFarcasterFollowNum';
 import FarcasterFollowing from '../../components/profile/farcaster/FarcasterFollowing';
 import FarcasterFollowers from '../../components/profile/farcaster/FarcasterFollowers';
-import { getAddressWithDidPkh } from '../../utils/shared/did';
+import { isDidPkh } from '../../utils/shared/did';
 import {
   ProfileSocialActivity,
   ProfileSocialPosts,
 } from '../../components/profile/ProfileSocial';
 import Loading from '../../components/common/loading/Loading';
 import useDid from '../../hooks/profile/useDid';
-import useBioLinkListWithDid from '../../hooks/profile/useBioLinkListWithDid';
-import useBioLinkListWithWeb3Bio from '../../hooks/profile/useBioLinkListWithWeb3Bio';
-import useLazyQueryFidWithAddress from '../../hooks/social/farcaster/useLazyQueryFidWithAddress';
 import FollowingDefault from '../../components/social/FollowingDefault';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
+import useU3ProfileInfoData from '../../hooks/profile/useU3ProfileInfoData';
+import usePlatformProfileInfoData from '../../hooks/profile/usePlatformProfileInfoData';
 
 export default function Profile() {
-  const { user } = useParams();
+  const { user: identity } = useParams();
+  const { did, loading: didLoading } = useDid(identity);
+  const { getProfileWithDid } = useProfileState();
+  const [hasProfile, setHasProfile] = useState(false);
+  const [hasProfileLoading, setHasProfileLoading] = useState(false);
+  useEffect(() => {
+    (async () => {
+      if (isDidPkh(did)) {
+        setHasProfileLoading(true);
+        const profile = await getProfileWithDid(did);
+        if (profile) {
+          setHasProfile(true);
+        }
+        setHasProfileLoading(false);
+      } else {
+        setHasProfile(false);
+      }
+    })();
+  }, [did]);
+
+  const session = useSession();
+
+  if (!identity) {
+    return <U3ProfileContainer did={session?.id} />;
+  }
+  if (didLoading || hasProfileLoading) {
+    return null;
+  }
+  if (isDidPkh(did) && hasProfile) {
+    return <U3ProfileContainer did={did} />;
+  }
+  if (identity) {
+    return <PlatformProfileContainer identity={identity} />;
+  }
+  return null;
+}
+
+function U3ProfileContainer({ did }: { did: string }) {
+  const session = useSession();
+  const { fid, address, lensProfileFirst, loading } = useU3ProfileInfoData({
+    did,
+  });
+  if (loading) {
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
+  return (
+    <ProfileView
+      fid={fid}
+      lensProfileFirst={lensProfileFirst}
+      address={address}
+      did={did}
+      identity=""
+      isLoginUser={did === session?.id}
+    />
+  );
+}
+function PlatformProfileContainer({ identity }: { identity: string }) {
+  const { fid, recommendAddress, lensProfileFirst, loading } =
+    usePlatformProfileInfoData({ identity });
+  if (loading) {
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
+  return (
+    <ProfileView
+      fid={fid}
+      lensProfileFirst={lensProfileFirst}
+      address={recommendAddress}
+      did=""
+      identity={identity}
+      isLoginUser={false}
+    />
+  );
+}
+
+type ProfileViewProps = {
+  fid: string;
+  lensProfileFirst: LensProfile;
+  address: string;
+  did: string;
+  identity: string;
+  isLoginUser: boolean;
+};
+function ProfileView({
+  fid,
+  lensProfileFirst,
+  address,
+  did,
+  identity,
+  isLoginUser,
+}: ProfileViewProps) {
   const [searchParams] = useSearchParams();
   const currSearchParams = useMemo(
     () => ({
@@ -54,96 +149,6 @@ export default function Profile() {
     [searchParams]
   );
   const { followType } = currSearchParams;
-  const session = useSession();
-
-  const { did, loading: didLoading } = useDid(user);
-  const isLoginUser = useMemo(
-    () => !user || did === session?.id,
-    [user, did, session]
-  );
-
-  const currProfileDid = useMemo(
-    () => (user ? did : session?.id),
-    [user, did, session]
-  );
-
-  const { getProfileWithDid } = useProfileState();
-  const [hasProfile, setHasProfile] = useState(false);
-  const [hasProfileLoading, setHasProfileLoading] = useState(false);
-  useEffect(() => {
-    (async () => {
-      if (user && !didLoading && did) {
-        setHasProfileLoading(true);
-        const profile = await getProfileWithDid(did);
-        if (profile) {
-          setHasProfile(true);
-        }
-        setHasProfileLoading(false);
-      }
-    })();
-  }, [user, didLoading, did]);
-
-  const {
-    lensBioLinkProfiles: u3BioLinkLensProfiles,
-    fcastBioLinkProfiles: u3BioLinkFcastProfiles,
-    refetchBioLinks: refetchU3BioLinks,
-  } = useBioLinkListWithDid(currProfileDid);
-
-  const {
-    bioLinkList: web3BioProfiles,
-    lensBioLinks: web3BioLinkLensProfiles,
-    fcastBioLinks: web3BioLinkFcastProfiles,
-    loading: web3BioLinkLoading,
-  } = useBioLinkListWithWeb3Bio(user);
-
-  const { currFid } = useFarcasterCtx();
-  const { data: activeLensProfile } = useActiveProfile();
-  const { id: activeLensProfileId } = activeLensProfile || {};
-  useEffect(() => {
-    refetchU3BioLinks();
-  }, [activeLensProfileId, currFid, refetchU3BioLinks]);
-
-  const enabledWeb3BioProfile = useMemo(
-    () => user && (!did || !hasProfile),
-    [user, did, hasProfile]
-  );
-
-  const web3BioAddress = web3BioProfiles.find(
-    (item) => !!item.address
-  )?.address;
-  const address = useMemo(
-    () =>
-      enabledWeb3BioProfile
-        ? web3BioAddress
-        : getAddressWithDidPkh(currProfileDid || ''),
-    [enabledWeb3BioProfile, web3BioAddress, currProfileDid]
-  );
-
-  const { data: lensProfiles, loading: lensProfilesLoading } =
-    useProfilesOwnedBy({
-      address:
-        (enabledWeb3BioProfile
-          ? web3BioLinkLensProfiles?.[0]?.address
-          : u3BioLinkLensProfiles?.[0]?.ownedBy) || address,
-    });
-
-  const lensProfileFirst = lensProfiles?.[0];
-
-  const {
-    fetch: fetchFid,
-    fid: fetchedFid,
-    loading: fidLoading,
-  } = useLazyQueryFidWithAddress(web3BioLinkFcastProfiles?.[0]?.address || '');
-  useEffect(() => {
-    fetchFid();
-  }, [web3BioLinkFcastProfiles]);
-
-  const fid = useMemo(
-    () => (enabledWeb3BioProfile ? fetchedFid : u3BioLinkFcastProfiles[0]?.fid),
-    [enabledWeb3BioProfile, fetchedFid, u3BioLinkFcastProfiles]
-  );
-
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
   const { logout } = useLogin();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
@@ -173,6 +178,8 @@ export default function Profile() {
     followingPlatformCount,
     followersPlatformCount,
   } = followNavData;
+
+  const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
   useEffect(() => {
     setFollowNavData((prevData) => ({
@@ -206,34 +213,15 @@ export default function Profile() {
   }, [user]);
 
   const onlyShowActivities = useMemo(
-    () =>
-      !isLoginUser &&
-      !lensProfileFirst?.id &&
-      !fid &&
-      !lensProfilesLoading &&
-      !fidLoading,
-    [isLoginUser, lensProfileFirst, fid, lensProfilesLoading, fidLoading]
+    () => !isLoginUser && !lensProfileFirst?.id && !fid,
+    [isLoginUser, lensProfileFirst, fid]
   );
-
-  if (user) {
-    if (
-      didLoading ||
-      hasProfileLoading ||
-      (!hasProfile && web3BioLinkLoading)
-    ) {
-      return (
-        <LoadingWrapper>
-          <Loading />
-        </LoadingWrapper>
-      );
-    }
-  }
 
   return (
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
         <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile did={currProfileDid} identity={user} />
+          <ProfileInfoMobile did={did} identity={identity} />
           <LogoutButton
             className="logout-button"
             onClick={() => {
@@ -292,10 +280,16 @@ export default function Profile() {
         return (
           <ProfilePageNav
             feedsType={
-              onlyShowActivities ? FeedsType.ACTIVITIES : profilePageFeedsType
+              onlyShowActivities && address
+                ? FeedsType.ACTIVITIES
+                : profilePageFeedsType
             }
             enabledFeedsTypes={
-              onlyShowActivities ? [FeedsType.ACTIVITIES] : undefined
+              onlyShowActivities
+                ? address
+                  ? [FeedsType.ACTIVITIES]
+                  : []
+                : undefined
             }
             onChangeFeedsType={(type) => {
               dispatch(setProfilePageFeedsType(type));
@@ -308,8 +302,8 @@ export default function Profile() {
         {!isMobile && (
           <MainLeft>
             <ProfileInfo
-              did={currProfileDid}
-              identity={user}
+              did={did}
+              identity={identity}
               clickFollowing={() => {
                 setFollowNavData((prevData) => ({
                   ...prevData,
@@ -326,12 +320,24 @@ export default function Profile() {
               }}
             />
             {isLoginUser && (
-              <LogoutButton
-                className="logout-button"
-                onClick={() => {
-                  setOpenLogoutConfirm(true);
-                }}
-              />
+              <>
+                <LogoutButton
+                  className="logout-button"
+                  onClick={() => {
+                    setOpenLogoutConfirm(true);
+                  }}
+                />
+                <LogoutConfirmModal
+                  isOpen={openLogoutConfirm}
+                  onClose={() => {
+                    setOpenLogoutConfirm(false);
+                  }}
+                  onConfirm={() => {
+                    logout();
+                    setOpenLogoutConfirm(false);
+                  }}
+                />
+              </>
             )}
           </MainLeft>
         )}
@@ -365,8 +371,9 @@ export default function Profile() {
             return null;
           }
           if (
-            onlyShowActivities ||
-            profilePageFeedsType === FeedsType.ACTIVITIES
+            address &&
+            (onlyShowActivities ||
+              profilePageFeedsType === FeedsType.ACTIVITIES)
           ) {
             return (
               <MainCenter>
@@ -375,13 +382,7 @@ export default function Profile() {
             );
           }
 
-          if (
-            isLoginUser &&
-            !lensProfileFirst?.id &&
-            !fid &&
-            !lensProfilesLoading &&
-            !fidLoading
-          ) {
+          if (isLoginUser && !lensProfileFirst?.id && !fid) {
             return (
               <MainCenter>
                 <FollowingDefault />
@@ -408,17 +409,6 @@ export default function Profile() {
 
         {!isMobile && <MainRight />}
       </MainWrapper>
-
-      <LogoutConfirmModal
-        isOpen={openLogoutConfirm}
-        onClose={() => {
-          setOpenLogoutConfirm(false);
-        }}
-        onConfirm={() => {
-          logout();
-          setOpenLogoutConfirm(false);
-        }}
-      />
     </ProfileWrapper>
   );
 }
