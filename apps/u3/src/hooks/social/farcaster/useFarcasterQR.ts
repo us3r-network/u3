@@ -15,6 +15,15 @@ import {
 } from 'src/utils/social/farcaster/farsign-utils';
 import { WARPCAST_API } from 'src/constants/farcaster';
 import { getFarcasterSignature } from 'src/services/social/api/farcaster';
+import { useU3Login } from 'src/contexts/U3LoginContext';
+import {
+  getProfileBiolink,
+  postProfileBiolink,
+} from 'src/services/shared/api/login';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+} from 'src/utils/profile/biolink';
 
 const stopSign = {
   stop: false,
@@ -39,7 +48,14 @@ export type Signer = {
   isConnected: boolean;
 };
 
+export type FarcasterBioLinkData = {
+  privateKey: string;
+  publicKey?: string;
+  signedKeyRequest?: string;
+};
+
 export default function useFarcasterQR() {
+  const { didSessionStr } = useU3Login();
   const [qrFid, setQrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -59,7 +75,7 @@ export default function useFarcasterQR() {
     token: '',
     deepLink: '',
   });
-  const pollForSigner = useCallback(async (token: string) => {
+  const pollForSigner = useCallback(async (token: string, keyPair) => {
     let tries = 0;
 
     let signerSuccess = false;
@@ -88,6 +104,20 @@ export default function useFarcasterQR() {
         setSignedKeyRequest(signedKeyRequest);
         restoreFromQRcode();
         signerSuccess = true;
+        // wirte to u3 db
+        postProfileBiolink(
+          {
+            platform: BIOLINK_PLATFORMS.farcaster,
+            network: String(BIOLINK_FARCASTER_NETWORK),
+            handle: signedKeyRequest.userFid,
+            data: {
+              privateKey: keyPair.privateKey,
+              publicKey: keyPair.publicKey,
+              signedKeyRequest,
+            },
+          },
+          didSessionStr
+        );
         break;
       }
     }
@@ -127,7 +157,7 @@ export default function useFarcasterQR() {
     removeFarsignSigner();
 
     setPrivateKey(keyPair.privateKey);
-    pollForSigner(token);
+    pollForSigner(token, keyPair);
     setToken({ token, deepLink: deeplinkUrl });
     if (isMobile) {
       window.open(deeplinkUrl, '_blank');
@@ -136,11 +166,35 @@ export default function useFarcasterQR() {
     }
   }, [pollForSigner]);
 
-  const restoreFromQRcode = useCallback(() => {
+  const restoreFromQRcode = useCallback(async () => {
     const signer = getSignedKeyRequest();
+    // if NO signer in local storage, try to get from db
+    let signedKeyRequest;
+    if (!signer && didSessionStr) {
+      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+        platform: BIOLINK_PLATFORMS.farcaster,
+        network: String(BIOLINK_FARCASTER_NETWORK),
+      });
+      if (farcasterBiolinks?.data?.data?.length > 0) {
+        const farsignBiolinks = farcasterBiolinks.data.data.filter(
+          (item) => item.data?.signedKeyRequest != null
+        );
+        const farsignBiolinkData = farsignBiolinks[0]
+          .data as FarcasterBioLinkData;
+        if (
+          farsignBiolinkData?.privateKey &&
+          farsignBiolinkData?.signedKeyRequest
+        ) {
+          setPrivateKey(farsignBiolinkData.privateKey);
+          setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
+          signedKeyRequest = farsignBiolinkData.signedKeyRequest;
+        }
+      }
+    } else {
+      signedKeyRequest = JSON.parse(signer);
+    }
 
-    if (signer != null) {
-      const signedKeyRequest = JSON.parse(signer);
+    if (signedKeyRequest != null) {
       setToken({
         token: 'already connected',
         deepLink: 'already connected',
@@ -151,7 +205,7 @@ export default function useFarcasterQR() {
       });
       setQrFid(signedKeyRequest.userFid);
     }
-  }, []);
+  }, [didSessionStr]);
 
   const openFarcasterQR = useCallback(() => {
     if (qrSigner.isConnected) {
@@ -171,7 +225,7 @@ export default function useFarcasterQR() {
 
   useEffect(() => {
     restoreFromQRcode();
-  }, []);
+  }, [didSessionStr]);
 
   return {
     qrFid,

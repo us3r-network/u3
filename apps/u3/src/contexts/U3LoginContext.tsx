@@ -25,11 +25,13 @@ interface U3LoginContextValue {
   user: User | null;
   u3IsLogin: boolean;
   u3logout: () => void;
+  didSessionStr: string | null;
 }
 export const U3LoginContext = createContext<U3LoginContextValue>({
   user: null,
   u3IsLogin: false,
   u3logout: () => {},
+  didSessionStr: null,
 });
 
 export interface U3LoginProviderProps {
@@ -110,6 +112,7 @@ export default function U3LoginProvider({
           user,
           u3IsLogin,
           u3logout,
+          didSessionStr,
         }),
         [user, u3IsLogin, u3logout]
       )}
