@@ -210,7 +210,7 @@ function ProfileView({
       ...prevData,
       showFollowNav: false,
     }));
-  }, [user]);
+  }, [identity]);
 
   const onlyShowActivities = useMemo(
     () => !isLoginUser && !lensProfileFirst?.id && !fid,
