@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { getS3ProfileModel } from '@us3r-network/profile';
+import { isEqual } from 'lodash';
 
 const getBioLinksWithDid = async (did: string) => {
   try {
@@ -108,10 +109,13 @@ export default function useBioLinkActions() {
         );
       });
       if (findBioLink?.id) {
-        updateBioLink({
-          id: findBioLink.id,
-          ...bioLink,
-        });
+        const remoteBioLinkData = JSON.parse(findBioLink.data);
+        const newBioLinkData = JSON.parse(bioLink.data);
+        if (!isEqual(newBioLinkData, remoteBioLinkData))
+          updateBioLink({
+            id: findBioLink.id,
+            ...bioLink,
+          });
       } else {
         createBioLink(bioLink);
       }
