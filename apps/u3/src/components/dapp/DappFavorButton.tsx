@@ -1,6 +1,7 @@
-import { FavorButton, FavorButtonProps } from '@us3r-network/link';
+import { FavorButtonProps } from '@us3r-network/link';
 import styled from 'styled-components';
 import { ButtonPrimaryCss } from '../common/button/ButtonBase';
+import { FavorButtonBase } from '../shared/button/FavorButtonBase';
 
 function DappFavorButton(props: FavorButtonProps) {
   return (
@@ -12,7 +13,7 @@ function DappFavorButton(props: FavorButtonProps) {
   );
 }
 export default DappFavorButton;
-const FavorBtn = styled(FavorButton)`
+const FavorBtn = styled(FavorButtonBase)`
   ${ButtonPrimaryCss}
   background: #fff;
 `;

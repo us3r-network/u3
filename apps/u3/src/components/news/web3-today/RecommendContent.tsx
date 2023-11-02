@@ -14,7 +14,7 @@ import LinkBox from '../contents/LinkBox';
 
 import Title from './Title';
 import LinkSvgUrl from '../../common/assets/svgs/link.svg';
-import { VoteTextButtonStyled } from '../../common/VoteButtonStyled';
+import { VoteTextButtonStyled } from '../../shared/button/VoteTextButtonStyled';
 
 export default function RecommendContent({
   data,

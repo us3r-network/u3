@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { VoteButton } from '@us3r-network/link';
 import { ContentListItem } from '../../services/news/types/contents';
 import { getContentPlatformLogoWithJsonValue } from '../../utils/news/content';
 import {
@@ -15,6 +14,7 @@ import LinkBox from '../news/contents/LinkBox';
 
 import Title from './Title';
 import LinkSvgUrl from '../common/assets/svgs/link.svg';
+import { VoteButtonBase } from '../shared/button/VoteButtonBase';
 
 export default function RecommendContent({
   data,
@@ -107,7 +107,7 @@ function Card({
           <BottomRow>
             {tags?.length > 0 && <Badge text={tags[0]} />}
             <ContentVote>
-              {linkStreamId && <VoteButton linkId={linkStreamId} />}
+              {linkStreamId && <VoteButtonBase linkId={linkStreamId} />}
             </ContentVote>
             {/* <BottomRowLine /> */}
             {/* <ContentLink text={link} /> */}
