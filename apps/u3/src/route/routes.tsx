@@ -1,14 +1,15 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-01 17:01:28
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-03 14:03:21
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
 import loadable from '@loadable/component';
 import React, { ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
+import Banner from 'src/components/home/Banner';
 
 export enum RouteKey {
   home = 'home',
@@ -234,7 +235,12 @@ export const routes: CutomRouteObject[] = [
 
   {
     path: '/social',
-    element: loadContainerElement('social/SocialLayout'),
+    element: (
+      <>
+        {!isMobile && <Banner />}
+        {loadContainerElement('social/SocialLayout')}
+      </>
+    ),
     key: RouteKey.socialLayout,
     children: [
       {
