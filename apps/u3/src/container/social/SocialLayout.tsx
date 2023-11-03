@@ -115,8 +115,6 @@ export default function SocialLayout() {
     );
   }, [location.pathname, feedsType, socialPlatform, channelId]);
 
-  console.log('feedsType', feedsType);
-
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}

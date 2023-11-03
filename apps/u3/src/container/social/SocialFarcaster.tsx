@@ -12,6 +12,9 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
 import { FeedsDataItem } from 'src/services/social/api/feeds';
+import useLogin from 'src/hooks/shared/useLogin';
+import NoLogin from 'src/components/layout/NoLogin';
+import FollowingDefault from 'src/components/social/FollowingDefault';
 
 export default function SocialFarcaster() {
   const {
@@ -33,7 +36,7 @@ export default function SocialFarcaster() {
 
     postScroll,
     setPostScroll,
-  } = useOutletContext<any>();
+  } = useOutletContext<any>(); // TODO: any
 
   const [parentId] = useState('social-farcaster');
   const [firstLoadingDone, setFirstLoadingDone] = useState(false);
@@ -44,7 +47,7 @@ export default function SocialFarcaster() {
     openFarcasterQR,
     farcasterUserData,
   } = useFarcasterCtx();
-
+  const { isLogin } = useLogin();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [searchParams] = useSearchParams();
@@ -134,11 +137,6 @@ export default function SocialFarcaster() {
   );
 
   useEffect(() => {
-    console.log(
-      'feedsType === currentFeedType.current',
-      feedsType,
-      currentFeedType.current
-    );
     if (feedsType === currentFeedType.current) return;
     setFirstLoadingDone(false);
     document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
@@ -151,7 +149,7 @@ export default function SocialFarcaster() {
     if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted]);
+  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
   useEffect(() => {
     setMounted(true);
@@ -160,7 +158,7 @@ export default function SocialFarcaster() {
       id: '',
       top: 0,
     });
-  }, []);
+  }, [parentId]);
 
   useEffect(() => {
     if (postScroll.currentParent !== parentId) return;
@@ -172,6 +170,19 @@ export default function SocialFarcaster() {
     });
     setScrolled(true);
   }, [postScroll, parentId]);
+
+  if (feedsType === FeedsType.FOLLOWING) {
+    if (!isLogin) {
+      return <NoLoginStyled />;
+    }
+    if (!isConnectedFarcaster) {
+      return (
+        <MainCenter>
+          <FollowingDefault farcaster />
+        </MainCenter>
+      );
+    }
+  }
 
   return (
     <FarcasterListBox>
@@ -200,7 +211,7 @@ export default function SocialFarcaster() {
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
-            {(feeds || []).map(({ platform, data }) => {
+            {feeds.map(({ platform, data }) => {
               if (platform === 'farcaster') {
                 const key = Buffer.from(data.hash.data).toString('hex');
                 return (
@@ -228,6 +239,15 @@ export default function SocialFarcaster() {
     </FarcasterListBox>
   );
 }
+
+const MainCenter = styled.div`
+  width: 100%;
+`;
+
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
+`;
 
 const FarcasterListBox = styled.div``;
 

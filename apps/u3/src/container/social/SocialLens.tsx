@@ -3,9 +3,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import Loading from 'src/components/common/loading/Loading';
+import NoLogin from 'src/components/layout/NoLogin';
 import AddPostForm from 'src/components/social/AddPostForm';
+import FollowingDefault from 'src/components/social/FollowingDefault';
 import { FeedsType } from 'src/components/social/SocialPageNav';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
+import useLogin from 'src/hooks/shared/useLogin';
 import { SocialPlatform } from 'src/services/social/types';
 import styled from 'styled-components';
 
@@ -14,7 +17,7 @@ export default function SocialFarcaster() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const currentFeedType = useRef();
-
+  const { isLogin } = useLogin();
   const [firstLoadingDone, setFirstLoadingDone] = useState(false);
   const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
@@ -137,6 +140,7 @@ export default function SocialFarcaster() {
     );
     if (feedsType === currentFeedType.current) return;
     setFirstLoadingDone(false);
+    document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
     currentFeedType.current = feedsType;
   }, [feedsType]);
 
@@ -155,11 +159,12 @@ export default function SocialFarcaster() {
       id: '',
       top: 0,
     });
-  }, []);
+  }, [parentId]);
 
   useEffect(() => {
     if (postScroll.currentParent !== parentId) return;
     const focusPost = document.getElementById(postScroll.id);
+    console.log({ focusPost });
     focusPost?.scrollIntoView({
       behavior: 'instant',
       block: 'center',
@@ -169,6 +174,19 @@ export default function SocialFarcaster() {
   }, [postScroll, parentId]);
 
   console.log('SocialLens', Date.now(), feedsType);
+
+  if (feedsType === FeedsType.FOLLOWING) {
+    if (!isLogin) {
+      return <NoLoginStyled />;
+    }
+    if (!lensProfileOwnedByAddress) {
+      return (
+        <MainCenter>
+          <FollowingDefault lens />
+        </MainCenter>
+      );
+    }
+  }
 
   return (
     <LensListBox>
@@ -197,7 +215,7 @@ export default function SocialFarcaster() {
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
-            {(feeds || []).map(({ platform, data }) => {
+            {feeds.map(({ platform, data }) => {
               if (platform === 'lens') {
                 return (
                   <LensPostCard
@@ -221,6 +239,15 @@ export default function SocialFarcaster() {
     </LensListBox>
   );
 }
+
+const MainCenter = styled.div`
+  width: 100%;
+`;
+
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
+`;
 
 const LensListBox = styled.div``;
 
