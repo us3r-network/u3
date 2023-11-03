@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import PinChannelBtn from '../PinChannelBtn';
 
 export default function ChannelItem({
   data,
@@ -13,28 +14,39 @@ export default function ChannelItem({
   };
 }) {
   return (
-    <ItemWrapper to={`/social/channel/${data.channel_id}`}>
-      <NameWrapper>
-        <span>#</span>
-        <img src={data.image} alt="" />
-        <NameText>{data.name}</NameText>
-      </NameWrapper>
-      <HandleText>{`${data.count} posts today`}</HandleText>
+    <ItemWrapper>
+      <LeftWrapper to={`/social/channel/${data.channel_id}`}>
+        <NameWrapper>
+          <span>#</span>
+          <img src={data.image} alt="" />
+          <NameText>{data.name}</NameText>
+        </NameWrapper>
+        <HandleText>{`${data.count} posts today`}</HandleText>
+      </LeftWrapper>
+      <PinChannelBtn parent_url={data.parent_url} />
     </ItemWrapper>
   );
 }
 
-const ItemWrapper = styled(Link)`
+const ItemWrapper = styled.div`
+  /* width: 100%; */
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  text-decoration: none;
+`;
+const LeftWrapper = styled(Link)`
   /* width: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: start;
   gap: 5px;
-  padding: 20px;
   text-decoration: none;
+  flex-grow: 1;
 `;
-
 const NameWrapper = styled.div`
   width: 100%;
   display: flex;
