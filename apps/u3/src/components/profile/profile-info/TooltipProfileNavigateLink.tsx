@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, LinkProps, TooltipTrigger } from 'react-aria-components';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import TooltipBase from '../../common/tooltip/TooltipBase';
 import ProfileInfoCard from './ProfileInfoCard';
 import { FollowType } from '../ProfilePageFollowNav';
@@ -24,21 +25,17 @@ export default function TooltipProfileNavigateLink({
   }, [identity]);
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <TooltipTrigger
-      delay={1000}
-      isOpen={isOpen}
-      onOpenChange={setIsOpen}
-      {...linkProps}
-    >
-      <Link
+    <TooltipTrigger delay={1000} isOpen={isOpen} onOpenChange={setIsOpen}>
+      <LinkStyled
         href={profileUrl}
         onPress={(e) => {
           e.continuePropagation();
           if (profileUrl) navigate(profileUrl);
         }}
+        {...linkProps}
       >
         {children}
-      </Link>
+      </LinkStyled>
       <TooltipBase placement="bottom">
         <ProfileInfoCard
           identity={identity}
@@ -61,3 +58,9 @@ export default function TooltipProfileNavigateLink({
     </TooltipTrigger>
   );
 }
+const LinkStyled = styled(Link)`
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;
