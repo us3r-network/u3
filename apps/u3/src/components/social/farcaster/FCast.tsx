@@ -146,12 +146,16 @@ export default function FCast({
               shareAction={() => {
                 tweetShare(
                   SOCIAL_SHARE_TITLE,
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
               }}
               copyAction={async () => {
                 await window.navigator.clipboard.writeText(
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
                 toast.success('Copy success');
               }}
