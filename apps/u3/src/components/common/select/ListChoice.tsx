@@ -42,8 +42,10 @@ export default function ListChoice({
               className="option-item"
               key={item.value}
               isChecked={
-                location.pathname ===
-                (item.value ? `/social/${item.value}` : `/social`)
+                item.value
+                  ? location.pathname === `/social/${item.value}`
+                  : location.pathname === `/social` ||
+                    location.pathname === `/social/`
               }
               onClick={() => {
                 if (item.value) {
