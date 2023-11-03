@@ -29,7 +29,7 @@ export default function ChannelSelect({
         image: '/social/imgs/channel-home.png',
       },
       ...getChannel().map((c) => ({
-        name: c.name || c.channel_description,
+        name: c.name,
         image: c.image,
       })),
     ].filter((c) => {

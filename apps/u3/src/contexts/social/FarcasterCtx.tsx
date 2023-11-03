@@ -62,7 +62,6 @@ export type FarcasterUserData = {
 
 export type FarcasterChannel = {
   name?: string;
-  channel_description?: string;
   parent_url: string;
   image: string;
   channel_id: string;

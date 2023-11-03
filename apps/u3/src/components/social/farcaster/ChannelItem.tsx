@@ -6,7 +6,6 @@ export default function ChannelItem({
 }: {
   data: {
     name?: string;
-    channel_description?: string;
     parent_url: string;
     image: string;
     channel_id: string;
@@ -18,7 +17,7 @@ export default function ChannelItem({
       <NameWrapper>
         <span>#</span>
         <img src={data.image} alt="" />
-        <NameText>{data.name || data.channel_description}</NameText>
+        <NameText>{data.name}</NameText>
       </NameWrapper>
       <HandleText>{`${data.count} posts today`}</HandleText>
     </ItemWrapper>

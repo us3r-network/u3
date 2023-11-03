@@ -83,9 +83,7 @@ export function SocialBackNav({
                 <img src={channel.image} alt="" />
               </>
             )}
-            <span>
-              {isChannel ? channel.name || channel.channel_description : title}
-            </span>
+            <span>{isChannel ? channel.name : title}</span>
           </div>
         </div>
         {isChannel && channel && (
