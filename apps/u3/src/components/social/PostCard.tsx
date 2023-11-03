@@ -214,6 +214,9 @@ const TooltipProfileNavigateLinkWrapper = styled(TooltipProfileNavigateLink)`
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  &:hover {
+    text-decoration: none;
+  }
 `;
 const PostCardUserInfoCenter = styled.div`
   display: flex;
