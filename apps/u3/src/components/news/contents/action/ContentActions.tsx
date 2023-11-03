@@ -30,6 +30,7 @@ const Wrapper = styled.div`
   display: flex;
   gap: 10px;
   align-items: center;
+  justify-content: center;
 `;
 
 const ButtonCss = css`
