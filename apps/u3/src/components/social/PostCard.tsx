@@ -15,6 +15,7 @@ import {
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
+import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -50,8 +51,7 @@ interface PostCardProps {
   followPending?: boolean;
   unfollowPending?: boolean;
   followAction?: () => void;
-  shareAction?: () => void;
-  copyAction?: () => void;
+  shareLink?: string;
 }
 export default function PostCard({
   data,
@@ -74,8 +74,7 @@ export default function PostCard({
   followPending,
   unfollowPending,
   followAction,
-  shareAction,
-  copyAction,
+  shareLink,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   return (
@@ -94,8 +93,6 @@ export default function PostCard({
               followPending={followPending}
               unfollowPending={unfollowPending}
               followAction={followAction}
-              shareAction={shareAction}
-              copyAction={copyAction}
             />
           </div>
         )}
@@ -104,34 +101,63 @@ export default function PostCard({
         {contentRender ? contentRender() : data?.content}
       </PostCardContentWrapper>
       {showActions && (
-        <PostCardActionsWrapper>
-          <PostLike
-            disabled={likeDisabled}
-            totalLikes={data?.totalLikes || 0}
-            likeAvatars={[]}
-            liking={liking}
-            liked={liked}
-            likeAction={likeAction}
-          />
-          <PostReply
-            disabled={replyDisabled}
-            totalReplies={data?.totalReplies || 0}
-            replying={replying}
-            replied={replied}
-            replyAction={replyAction}
-          />
-          <PostReport
-            disabled={repostDisabled}
-            totalReposts={data?.totalReposts || 0}
-            reposting={reposting}
-            reposted={reposted}
-            repostAction={repostAction}
-          />
-        </PostCardActionsWrapper>
+        <PostCardFooterWrapper>
+          <PostCardActionsWrapper>
+            <PostLike
+              disabled={likeDisabled}
+              totalLikes={data?.totalLikes || 0}
+              likeAvatars={[]}
+              liking={liking}
+              liked={liked}
+              likeAction={likeAction}
+            />
+            <PostReply
+              disabled={replyDisabled}
+              totalReplies={data?.totalReplies || 0}
+              replying={replying}
+              replied={replied}
+              replyAction={replyAction}
+            />
+            <PostReport
+              disabled={repostDisabled}
+              totalReposts={data?.totalReposts || 0}
+              reposting={reposting}
+              reposted={reposted}
+              repostAction={repostAction}
+            />
+          </PostCardActionsWrapper>
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostShareMenuBtn
+              link={shareLink}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
+          </div>
+        </PostCardFooterWrapper>
       )}
     </PostCardWrapper>
   );
 }
+
+export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
+  border: none;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: none;
+  & > svg {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    path {
+      stroke: #ffffff;
+    }
+  }
+`;
 
 export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   background: #212228;
@@ -148,6 +174,12 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
 export const PostCardHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 10px;
+`;
+export const PostCardFooterWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 10px;
 `;
 

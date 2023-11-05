@@ -18,8 +18,6 @@ import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { LensPost } from '../../../services/social/api/lens';
 import useLogin from '../../../hooks/shared/useLogin';
 import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
-import { tweetShare } from '../../../utils/shared/twitter';
-import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function LensPostDetailCard({ data }: { data: LensPost }) {
   const {
@@ -190,18 +188,7 @@ export default function LensPostDetailCard({ data }: { data: LensPost }) {
             });
         }
       }}
-      shareAction={() => {
-        tweetShare(
-          SOCIAL_SHARE_TITLE,
-          getSocialDetailShareUrlWithLens(data.id)
-        );
-      }}
-      copyAction={async () => {
-        await window.navigator.clipboard.writeText(
-          getSocialDetailShareUrlWithLens(data.id)
-        );
-        toast.success('Copy success');
-      }}
+      shareLink={getSocialDetailShareUrlWithLens(data.id)}
     />
   );
 }

@@ -1,8 +1,6 @@
 import { useRef, useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import PopoverBase from '../common/popover/PopoverBase';
-import CopyIcon from '../common/icons/CopyIcon';
-import { TwitterLine } from '../common/icons/twitter';
 import AddUserIcon from '../common/icons/AddUserIcon';
 import MoreIcon from '../common/icons/MoreIcon';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
@@ -17,8 +15,6 @@ interface PostCardMenuBtnProps extends StyledComponentPropsWithRef<'button'> {
   followPending?: boolean;
   unfollowPending?: boolean;
   followAction?: () => void;
-  shareAction?: () => void;
-  copyAction?: () => void;
 }
 export function PostCardMenuBtn({
   data,
@@ -26,8 +22,6 @@ export function PostCardMenuBtn({
   followPending,
   unfollowPending,
   followAction,
-  shareAction,
-  copyAction,
   ...btnProps
 }: PostCardMenuBtnProps) {
   const [isOpenMenu, setIsOpenMenu] = useState(false);
@@ -70,14 +64,6 @@ export function PostCardMenuBtn({
               @{data?.handle || data?.name}
             </MenuOptionText>
           </MenuOption>
-          <MenuOption onClick={shareAction}>
-            <TwitterLine />
-            <MenuOptionText>Share to Twitter</MenuOptionText>
-          </MenuOption>
-          <MenuOption onClick={copyAction}>
-            <CopyIcon stroke="#fff" />
-            <MenuOptionText>Copy link</MenuOptionText>
-          </MenuOption>
         </MenuWrapper>
       </PopoverBase>
     </>
@@ -90,6 +76,7 @@ const MenuBtn = styled(ButtonPrimaryLine)`
   width: 20px;
   height: 20px;
   border-radius: 50%;
+  background: none;
 `;
 const MenuIcon = styled(MoreIcon)`
   width: 12px;

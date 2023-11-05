@@ -2,7 +2,7 @@ import { Popover, Dialog } from 'react-aria-components';
 import type { PopoverProps } from 'react-aria-components';
 import styled, { keyframes } from 'styled-components';
 
-interface PopoverBaseProps extends Omit<PopoverProps, 'children'> {
+export interface PopoverBaseProps extends Omit<PopoverProps, 'children'> {
   children: React.ReactNode;
 }
 
