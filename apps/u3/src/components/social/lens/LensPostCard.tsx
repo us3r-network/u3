@@ -220,6 +220,9 @@ export default function LensPostCard({ data }: { data: Post }) {
         }
       }}
       shareLink={getSocialDetailShareUrlWithLens(data.id)}
+      shareLinkEmbedTitle={
+        data?.metadata?.description || data?.metadata?.content
+      }
     />
   );
 }

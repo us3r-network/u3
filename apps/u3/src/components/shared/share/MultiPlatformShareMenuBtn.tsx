@@ -14,14 +14,20 @@ import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { tweetShare } from '../../../utils/shared/twitter';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
+import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
+import { SocailPlatform } from '../../../services/social/types';
 
 interface MultiPlatformShareMenuBtnProps
   extends StyledComponentPropsWithRef<'button'> {
-  link: string;
+  shareLink: string;
+  shareLinkDefaultText: string;
+  shareLinkEmbedTitle: string;
   popoverConfig?: Omit<PopoverBaseProps, 'children'>;
 }
 export function MultiPlatformShareMenuBtn({
-  link,
+  shareLink,
+  shareLinkDefaultText,
+  shareLinkEmbedTitle,
   popoverConfig,
   ...btnProps
 }: MultiPlatformShareMenuBtnProps) {
@@ -33,6 +39,8 @@ export function MultiPlatformShareMenuBtn({
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const menuTriggerRef = useRef(null);
+
+  const { openShareLinkModal } = useGlobalModalsCtx();
   return (
     <>
       <MenuBtn
@@ -60,7 +68,12 @@ export function MultiPlatformShareMenuBtn({
                 openFarcasterQR();
                 return;
               }
-              alert('TODO');
+              openShareLinkModal({
+                shareLink,
+                shareLinkDefaultText,
+                shareLinkEmbedTitle,
+                shareLinkDefaultPlatform: SocailPlatform.Farcaster,
+              });
             }}
           >
             <FarcasterIcon />
@@ -72,7 +85,12 @@ export function MultiPlatformShareMenuBtn({
                 setOpenLensLoginModal(true);
                 return;
               }
-              alert('TODO');
+              openShareLinkModal({
+                shareLink,
+                shareLinkDefaultText,
+                shareLinkEmbedTitle,
+                shareLinkDefaultPlatform: SocailPlatform.Lens,
+              });
             }}
           >
             <LensIcon />
@@ -80,7 +98,7 @@ export function MultiPlatformShareMenuBtn({
           </MenuOption>
           <MenuOption
             onClick={() => {
-              tweetShare(SOCIAL_SHARE_TITLE, link);
+              tweetShare(SOCIAL_SHARE_TITLE, shareLink);
             }}
           >
             <TwitterLine />
@@ -88,7 +106,7 @@ export function MultiPlatformShareMenuBtn({
           </MenuOption>
           <MenuOption
             onClick={async () => {
-              await window.navigator.clipboard.writeText(link);
+              await window.navigator.clipboard.writeText(shareLink);
               toast.success('Copied link!');
             }}
           >

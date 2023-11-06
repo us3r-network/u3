@@ -16,6 +16,7 @@ import {
 } from '../../utils/profile/biolink';
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
+import { SOCIAL_SHARE_TITLE } from '../../constants';
 
 export type PostCardData = {
   platform: SocailPlatform;
@@ -52,6 +53,7 @@ interface PostCardProps {
   unfollowPending?: boolean;
   followAction?: () => void;
   shareLink?: string;
+  shareLinkEmbedTitle?: string;
 }
 export default function PostCard({
   data,
@@ -75,6 +77,7 @@ export default function PostCard({
   unfollowPending,
   followAction,
   shareLink,
+  shareLinkEmbedTitle,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   return (
@@ -132,7 +135,9 @@ export default function PostCard({
             }}
           >
             <PostShareMenuBtn
-              link={shareLink}
+              shareLink={shareLink}
+              shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+              shareLinkEmbedTitle={shareLinkEmbedTitle}
               popoverConfig={{ placement: 'top end', offset: 0 }}
             />
           </div>

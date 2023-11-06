@@ -27,6 +27,7 @@ import {
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
+import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function FCast({
   cast,
@@ -194,7 +195,9 @@ export default function FCast({
           }}
         >
           <PostShareMenuBtn
-            link={getSocialDetailShareUrlWithFarcaster(userData.fid)}
+            shareLink={getSocialDetailShareUrlWithFarcaster(userData.fid)}
+            shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+            shareLinkEmbedTitle={cast.text}
             popoverConfig={{ placement: 'top end', offset: 0 }}
           />
         </div>
