@@ -4,6 +4,7 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
+import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
 import LensPostCard from '../../components/social/lens/LensPostCard';
 import FCast from '../../components/social/farcaster/FCast';
@@ -55,6 +56,10 @@ export default function SocialAll() {
     isConnected: isConnectedFarcaster,
   } = useFarcasterCtx();
 
+  const { mounted, firstLoadingDone, setFirstLoadingDone } =
+    useListScroll(parentId);
+  const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
+
   const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
     () => ({
@@ -63,38 +68,10 @@ export default function SocialAll() {
     [searchParams]
   );
 
-  const firstLoading = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING
-        ? trendingFirstLoading
-        : followingFirstLoading,
-    [feedsType, trendingFirstLoading, followingFirstLoading]
-  );
-
-  const moreLoading = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING
-        ? trendingMoreLoading
-        : followingMoreLoading,
-    [feedsType, trendingMoreLoading, followingMoreLoading]
-  );
-
-  const feeds = useMemo(() => {
-    if (feedsType === FeedsType.TRENDING) {
-      return trendingFeeds[parentId] || [];
-    }
-    return followingFeeds[parentId] || [];
-  }, [feedsType, trendingFeeds, followingFeeds, parentId]);
-
-  const pageInfo = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING ? trendingPageInfo : followingPageInfo,
-    [feedsType, trendingPageInfo, followingPageInfo]
-  );
-
-  const loadFirstFeeds = useCallback(() => {
+  const loadFirstFeeds = useCallback(async () => {
+    setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
-      loadFollowingFirstFeeds(parentId, {
+      await loadFollowingFirstFeeds(parentId, {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
         address: lensProfileOwnedByAddress,
@@ -102,12 +79,13 @@ export default function SocialAll() {
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
-      loadTrendingFirstFeeds(parentId, {
+      await loadTrendingFirstFeeds(parentId, {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
+    setFirstLoadingDone(true);
     return loadFollowingFirstFeeds;
   }, [
     parentId,
@@ -122,9 +100,9 @@ export default function SocialAll() {
     isConnectedFarcaster,
   ]);
 
-  const loadMoreFeeds = useCallback(() => {
+  const loadMoreFeeds = useCallback(async () => {
     if (feedsType === FeedsType.FOLLOWING) {
-      loadFollowingMoreFeeds(parentId, {
+      await loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
         address: lensProfileOwnedByAddress,
@@ -132,7 +110,7 @@ export default function SocialAll() {
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
-      loadTrendingMoreFeeds(parentId, {
+      await loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
         platforms: socialPlatform ? [socialPlatform] : undefined,
@@ -151,18 +129,6 @@ export default function SocialAll() {
     isConnectedFarcaster,
   ]);
 
-  // useEffect(() => {
-  //   if (!currentFeedType.current) {
-  //     currentFeedType.current = feedsType;
-  //     return;
-  //   }
-  //   if (feedsType === currentFeedType.current) return;
-  //   setFirstLoadingDone(false);
-  //   document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
-  //   currentFeedType.current = feedsType;
-  // }, [feedsType]);
-  const { mounted, firstLoadingDone } = useListScroll(parentId, feedsType);
-
   useEffect(() => {
     if (firstLoadingDone) return;
     if (feeds.length > 0) return;
@@ -170,26 +136,6 @@ export default function SocialAll() {
 
     loadFirstFeeds();
   }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
-
-  // useEffect(() => {
-  //   setMounted(true);
-  //   setPostScroll({
-  //     currentParent: parentId,
-  //     id: '',
-  //     top: 0,
-  //   });
-  // }, [parentId]);
-
-  // useEffect(() => {
-  //   if (postScroll.currentParent !== parentId) return;
-  //   const focusPost = document.getElementById(postScroll.id);
-  //   focusPost?.scrollIntoView({
-  //     behavior: 'instant',
-  //     block: 'center',
-  //     inline: 'center',
-  //   });
-  //   setScrolled(true);
-  // }, [postScroll, parentId]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {

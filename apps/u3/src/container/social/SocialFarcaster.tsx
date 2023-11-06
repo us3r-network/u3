@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
 
 import AddPostForm from 'src/components/social/AddPostForm';
@@ -15,6 +15,8 @@ import { FeedsDataItem } from 'src/services/social/api/feeds';
 import useLogin from 'src/hooks/shared/useLogin';
 import NoLogin from 'src/components/layout/NoLogin';
 import FollowingDefault from 'src/components/social/FollowingDefault';
+import useListScroll from 'src/hooks/social/useListScroll';
+import useListFeeds from 'src/hooks/social/useListFeeds';
 
 export default function SocialFarcaster() {
   const {
@@ -39,8 +41,7 @@ export default function SocialFarcaster() {
   } = useOutletContext<any>(); // TODO: any
 
   const [parentId] = useState('social-farcaster');
-  const [firstLoadingDone, setFirstLoadingDone] = useState(false);
-  const currentFeedType = useRef();
+
   const fid = useFarcasterCurrFid();
   const {
     isConnected: isConnectedFarcaster,
@@ -48,8 +49,11 @@ export default function SocialFarcaster() {
     farcasterUserData,
   } = useFarcasterCtx();
   const { isLogin } = useLogin();
-  const [scrolled, setScrolled] = useState(false);
-  const [mounted, setMounted] = useState(false);
+
+  const { mounted, firstLoadingDone, setFirstLoadingDone } =
+    useListScroll(parentId);
+  const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
+
   const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
     () => ({
@@ -108,41 +112,6 @@ export default function SocialFarcaster() {
     isConnectedFarcaster,
   ]);
 
-  const feeds = useMemo(() => {
-    if (feedsType === FeedsType.TRENDING) {
-      return trendingFeeds[parentId] || [];
-    }
-    return followingFeeds[parentId] || [];
-  }, [feedsType, trendingFeeds, followingFeeds, parentId]);
-
-  const firstLoading = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING
-        ? trendingFirstLoading
-        : followingFirstLoading,
-    [feedsType, trendingFirstLoading, followingFirstLoading]
-  );
-
-  const pageInfo = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING ? trendingPageInfo : followingPageInfo,
-    [feedsType, trendingPageInfo, followingPageInfo]
-  );
-  const moreLoading = useMemo(
-    () =>
-      feedsType === FeedsType.TRENDING
-        ? trendingMoreLoading
-        : followingMoreLoading,
-    [feedsType, trendingMoreLoading, followingMoreLoading]
-  );
-
-  useEffect(() => {
-    if (feedsType === currentFeedType.current) return;
-    setFirstLoadingDone(false);
-    document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
-    currentFeedType.current = feedsType;
-  }, [feedsType]);
-
   useEffect(() => {
     if (firstLoadingDone) return;
     if (feeds.length > 0) return;
@@ -150,26 +119,6 @@ export default function SocialFarcaster() {
 
     loadFirstFeeds();
   }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
-
-  useEffect(() => {
-    setMounted(true);
-    setPostScroll({
-      currentParent: parentId,
-      id: '',
-      top: 0,
-    });
-  }, [parentId]);
-
-  useEffect(() => {
-    if (postScroll.currentParent !== parentId) return;
-    const focusPost = document.getElementById(postScroll.id);
-    focusPost?.scrollIntoView({
-      behavior: 'instant',
-      block: 'center',
-      inline: 'center',
-    });
-    setScrolled(true);
-  }, [postScroll, parentId]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
