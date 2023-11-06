@@ -202,12 +202,7 @@ const HomeWrapper = styled.div`
     height: 100%;
   }
 `;
-const DetailMainWrapper = styled.div`
-  width: 100%;
-  height: calc(100% - 96px);
-  padding-bottom: 20px;
-  box-sizing: border-box;
-`;
+
 const MainWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 96px);

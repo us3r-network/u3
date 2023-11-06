@@ -2,7 +2,6 @@ import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useActiveProfile } from '@lens-protocol/react-web';
 
 import AddPostForm from 'src/components/social/AddPostForm';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -11,7 +10,6 @@ import { SocialPlatform } from 'src/services/social/types';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
-import { FeedsDataItem } from 'src/services/social/api/feeds';
 import useLogin from 'src/hooks/shared/useLogin';
 import NoLogin from 'src/components/layout/NoLogin';
 import FollowingDefault from 'src/components/social/FollowingDefault';
@@ -20,23 +18,14 @@ import useListFeeds from 'src/hooks/social/useListFeeds';
 
 export default function SocialFarcaster() {
   const {
-    trendingFeeds,
-    followingFeeds,
     feedsType,
 
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    followingFirstLoading,
-    followingPageInfo,
-    followingMoreLoading,
 
-    trendingMoreLoading,
-    trendingPageInfo,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    trendingFirstLoading,
 
-    postScroll,
     setPostScroll,
   } = useOutletContext<any>(); // TODO: any
 

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -8,23 +8,27 @@ import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
 import LensPostCard from '../../components/social/lens/LensPostCard';
 import FCast from '../../components/social/farcaster/FCast';
-import { useLoadTrendingFeeds } from '../../hooks/social/useLoadTrendingFeeds';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import Loading from '../../components/common/loading/Loading';
-import { useLoadFollowingFeeds } from '../../hooks/social/useLoadFollowingFeeds';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { FeedsType } from '../../components/social/SocialPageNav';
 
 import AddPostForm from '../../components/social/AddPostForm';
 import FollowingDefault from '../../components/social/FollowingDefault';
 import useLogin from '../../hooks/shared/useLogin';
-import NoLogin from '../../components/layout/NoLogin';
+import {
+  AddPostFormWrapper,
+  LoadingMoreWrapper,
+  LoadingWrapper,
+  NoLoginStyled,
+  PostList,
+} from './CommonStyles';
 
 export default function SocialAll() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentId, setParentId] = useState('social-all');
   const { isLogin } = useLogin();
-  const { data: activeLensProfile, loading: activeLensProfileLoading } =
-    useActiveProfile();
+  const { data: activeLensProfile } = useActiveProfile();
   const fid = useFarcasterCurrFid();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
@@ -32,23 +36,14 @@ export default function SocialAll() {
     socialPlatform,
     feedsType,
 
-    trendingFirstLoading,
-    trendingMoreLoading,
-    trendingFeeds,
-    trendingPageInfo,
     loadTrendingFirstFeeds,
     loadTrendingMoreFeeds,
 
-    followingFirstLoading,
-    followingMoreLoading,
-    followingFeeds,
-    followingPageInfo,
     loadFollowingFirstFeeds,
     loadFollowingMoreFeeds,
 
-    postScroll,
     setPostScroll,
-  } = useOutletContext<any>();
+  } = useOutletContext<any>(); // TODO: any type
 
   const {
     openFarcasterQR,
@@ -222,47 +217,7 @@ export default function SocialAll() {
     </MainCenter>
   );
 }
-const NoLoginStyled = styled(NoLogin)`
-  height: calc(100vh - 136px);
-  padding: 0;
-`;
+
 const MainCenter = styled.div`
   width: 100%;
-`;
-const LoadingWrapper = styled.div`
-  width: 100%;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const LoadingMoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  background: #212228;
-  overflow: hidden;
-  & > * {
-    border-top: 1px solid #718096;
-  }
-`;
-const AddPostFormWrapper = styled.div`
-  background: #212228;
-  border-radius: 20px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
 `;
