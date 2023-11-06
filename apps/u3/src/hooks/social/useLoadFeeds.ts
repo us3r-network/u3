@@ -5,7 +5,7 @@ import {
   getFeeds,
 } from '../../services/social/api/feeds';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 
 export function useLoadFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
@@ -24,7 +24,7 @@ export function useLoadFeeds() {
     async (opts?: {
       keyword?: string;
       activeLensProfileId?: string;
-      platforms?: SocailPlatform[];
+      platforms?: SocialPlatform[];
     }) => {
       setFirstLoading(true);
       try {
@@ -63,7 +63,7 @@ export function useLoadFeeds() {
     async (opts?: {
       keyword?: string;
       activeLensProfileId?: string;
-      platforms?: SocailPlatform[];
+      platforms?: SocialPlatform[];
     }) => {
       if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
       setMoreLoading(true);

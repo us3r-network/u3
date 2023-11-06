@@ -13,14 +13,10 @@ export default function FarcasterChannel({ url }: { url: string }) {
           e.stopPropagation();
         }}
       >
-        <Link
-          to={`/social/channel/${encodeURIComponent(
-            channel.name || channel.channel_description
-          )}`}
-        >
+        <Link to={`/social/channel/${channel.channel_id}`}>
           <span>#</span>
           <img className="channel-img" src={channel.image} alt="" />
-          <span>{channel.name || channel.channel_description}</span>
+          <span>{channel.name}</span>
         </Link>
       </ChannelBox>
     );

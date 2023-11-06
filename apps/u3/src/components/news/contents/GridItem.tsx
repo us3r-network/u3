@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { MEDIA_BREAK_POINTS } from '../../../constants';
 import { defaultFormatFromNow } from '../../../utils/shared/time';
 import LinkBox from './LinkBox';
 import Badge from './Badge';
@@ -8,7 +7,7 @@ import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content
 import { ContentListItem } from '../../../services/news/types/contents';
 
 import './griditem.css';
-import { VoteTextButtonStyled } from '../../common/VoteButtonStyled';
+import { VoteTextButtonStyled } from '../../shared/button/VoteTextButtonStyled';
 
 export function GridItemHidden({
   undoAction,

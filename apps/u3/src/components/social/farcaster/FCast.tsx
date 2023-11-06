@@ -10,7 +10,7 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { tweetShare } from 'src/utils/shared/twitter';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
 
-import { FarCast, SocailPlatform } from '../../../services/social/types';
+import { FarCast, SocialPlatform } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import FCastLike from './FCastLike';
@@ -27,6 +27,7 @@ import {
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
+import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function FCast({
   cast,
@@ -34,12 +35,14 @@ export default function FCast({
   openFarcasterQR,
   isDetail,
   showMenuBtn,
+  cardClickAction,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
+  cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -105,16 +108,18 @@ export default function FCast({
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
       isDetail={isDetail}
-      onClick={() => {
+      onClick={(e) => {
         if (isDetail) return;
         const id = Buffer.from(castId.hash).toString('hex');
+
+        cardClickAction?.(e);
         navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
       <PostCardHeaderWrapper>
         <PostCardUserInfo
           data={{
-            platform: SocailPlatform.Farcaster,
+            platform: SocialPlatform.Farcaster,
             avatar: userData.pfp,
             name: userData.display,
             handle: userData.userName,
@@ -144,13 +149,17 @@ export default function FCast({
               }}
               shareAction={() => {
                 tweetShare(
-                  cast.text,
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  SOCIAL_SHARE_TITLE,
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
               }}
               copyAction={async () => {
                 await window.navigator.clipboard.writeText(
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
                 toast.success('Copy success');
               }}

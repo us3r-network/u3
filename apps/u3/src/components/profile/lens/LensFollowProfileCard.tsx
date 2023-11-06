@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
 import FollowProfileCard from '../FollowProfileCard';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 import getAvatar from '../../../utils/social/lens/getAvatar';
 
 type LensFollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
@@ -42,7 +42,7 @@ export default function LensFollowProfileCard({
       bio: profile.bio,
       isFollowed:
         isFollowingCard && !isLoginLens ? true : profile.isFollowedByMe,
-      platforms: [SocailPlatform.Lens],
+      platforms: [SocialPlatform.Lens],
     }),
     [profile, isFollowingCard, isLoginLens]
   );

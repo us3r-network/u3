@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, LinkProps, TooltipTrigger } from 'react-aria-components';
 import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
 import TooltipBase from '../../common/tooltip/TooltipBase';
 import ProfileInfoCard from './ProfileInfoCard';
+import { FollowType } from '../ProfilePageFollowNav';
 
 interface TooltipProfileNavigateLinkProps extends Omit<LinkProps, 'children'> {
   children: React.ReactNode;
@@ -21,20 +23,44 @@ export default function TooltipProfileNavigateLink({
     }
     return '';
   }, [identity]);
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <TooltipTrigger delay={0} {...linkProps}>
-      <Link
+    <TooltipTrigger delay={1000} isOpen={isOpen} onOpenChange={setIsOpen}>
+      <LinkStyled
         href={profileUrl}
         onPress={(e) => {
           e.continuePropagation();
           if (profileUrl) navigate(profileUrl);
         }}
+        {...linkProps}
       >
         {children}
-      </Link>
+      </LinkStyled>
       <TooltipBase placement="bottom">
-        <ProfileInfoCard identity={identity} />
+        <ProfileInfoCard
+          identity={identity}
+          canNavigateToProfile
+          onNavigateToProfileAfter={() => setIsOpen(false)}
+          clickFollowers={() => {
+            if (profileUrl) {
+              navigate(`${profileUrl}?followType=${FollowType.FOLLOWERS}`);
+              setIsOpen(false);
+            }
+          }}
+          clickFollowing={() => {
+            if (profileUrl) {
+              navigate(`${profileUrl}?followType=${FollowType.FOLLOWING}`);
+              setIsOpen(false);
+            }
+          }}
+        />
       </TooltipBase>
     </TooltipTrigger>
   );
 }
+const LinkStyled = styled(Link)`
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+`;

@@ -13,11 +13,13 @@ import {
 } from './ProfileBasicInfo';
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 
 interface ProfileInfoCardLayoutProps
   extends StyledComponentPropsWithRef<'div'> {
   isU3Profile: boolean;
+  navigateToProfileUrl?: string;
+  onNavigateToProfileAfter?: () => void;
   did?: string;
   address: string;
   platformAccounts: PlatformAccountsData;
@@ -31,6 +33,8 @@ interface ProfileInfoCardLayoutProps
 }
 export default function ProfileInfoCardLayout({
   isU3Profile,
+  navigateToProfileUrl,
+  onNavigateToProfileAfter,
   did,
   address,
   platformAccounts,
@@ -46,10 +50,10 @@ export default function ProfileInfoCardLayout({
   const session = useSession();
 
   const findLensAccount = platformAccounts?.find(
-    (item) => item.platform === SocailPlatform.Lens
+    (item) => item.platform === SocialPlatform.Lens
   );
   const findFarcasterAccount = platformAccounts?.find(
-    (item) => item.platform === SocailPlatform.Farcaster
+    (item) => item.platform === SocialPlatform.Farcaster
   );
   const showFollowBtn = !!findLensAccount || !!findFarcasterAccount;
   const showMessageBtn = !!address;
@@ -74,7 +78,11 @@ export default function ProfileInfoCardLayout({
         {({ isLoginUser }) => {
           return (
             <>
-              <U3ProfileBasicInfo did={did} />
+              <U3ProfileBasicInfo
+                did={did}
+                navigateToProfileUrl={navigateToProfileUrl}
+                onNavigateToProfileAfter={onNavigateToProfileAfter}
+              />
 
               <PlatformAccounts
                 data={platformAccounts}
@@ -124,6 +132,8 @@ export default function ProfileInfoCardLayout({
           address,
           identity: platformAccounts?.[0]?.id,
         }}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
       />
 
       <PlatformAccounts data={platformAccounts} />

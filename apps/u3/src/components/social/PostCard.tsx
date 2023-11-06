@@ -2,8 +2,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import PostLike from './PostLike';
@@ -17,7 +16,7 @@ import {
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 
 export type PostCardData = {
-  platform: SocailPlatform;
+  platform: SocialPlatform;
   avatar: string;
   name: string;
   handle: string;
@@ -152,7 +151,7 @@ export const PostCardHeaderWrapper = styled.div`
 `;
 
 export type PostCardUserInfoData = {
-  platform: SocailPlatform;
+  platform: SocialPlatform;
   avatar: string;
   name: string;
   handle: string;
@@ -165,12 +164,11 @@ export function PostCardUserInfo({
   data,
   ...wrapperProps
 }: PostCardUserInfoProps) {
-  const navigate = useNavigate();
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
-      case SocailPlatform.Lens:
+      case SocialPlatform.Lens:
         return <LensIcon />;
-      case SocailPlatform.Farcaster:
+      case SocialPlatform.Farcaster:
         return <FarcasterIcon />;
       default:
         return null;
@@ -179,45 +177,29 @@ export function PostCardUserInfo({
   const profileIdentity = useMemo(() => {
     if (data.handle.endsWith('.eth')) return data.handle;
     switch (data.platform) {
-      case SocailPlatform.Lens:
+      case SocialPlatform.Lens:
         return lensHandleToBioLinkHandle(data.handle);
-      case SocailPlatform.Farcaster:
+      case SocialPlatform.Farcaster:
         return farcasterHandleToBioLinkHandle(data.handle);
       default:
         return '';
     }
   }, [data]);
 
-  const profileUrl = useMemo(() => {
-    if (profileIdentity) {
-      return `/u/${profileIdentity}`;
-    }
-    return '';
-  }, [profileIdentity]);
   return (
     <PostCardUserInfoWrapper {...wrapperProps}>
-      <TooltipProfileNavigateLink identity={profileIdentity}>
+      <TooltipProfileNavigateLinkWrapper identity={profileIdentity}>
         <Avatar src={data.avatar} />
-      </TooltipProfileNavigateLink>
-
-      <PostCardUserInfoCenter>
-        <Name>
-          <a
-            href={profileUrl}
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              if (profileUrl) navigate(profileUrl);
-            }}
-          >
+        <PostCardUserInfoCenter>
+          <Name>
             {data.name}
-          </a>{' '}
-          {PlatFormIcon}
-        </Name>
-        <Handle>
-          @{data.handle} . {dayjs(data.createdAt).fromNow()}
-        </Handle>
-      </PostCardUserInfoCenter>
+            {PlatFormIcon}
+          </Name>
+          <Handle>
+            @{data.handle} . {dayjs(data.createdAt).fromNow()}
+          </Handle>
+        </PostCardUserInfoCenter>
+      </TooltipProfileNavigateLinkWrapper>
     </PostCardUserInfoWrapper>
   );
 }
@@ -228,12 +210,19 @@ const PostCardUserInfoWrapper = styled.div`
   align-items: flex-start;
   gap: 10px;
 `;
+const TooltipProfileNavigateLinkWrapper = styled(TooltipProfileNavigateLink)`
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  &:hover {
+    text-decoration: none;
+  }
+`;
 const PostCardUserInfoCenter = styled.div`
-  width: 0;
-  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 5px;
+  align-items: flex-start;
 `;
 const Avatar = styled.img`
   width: 40px;
@@ -253,13 +242,6 @@ const Name = styled.div`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  & > a {
-    color: #fff;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
 `;
 const Handle = styled.div`
   display: flex;

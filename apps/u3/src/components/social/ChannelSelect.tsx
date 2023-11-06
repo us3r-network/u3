@@ -26,10 +26,12 @@ export default function ChannelSelect({
     return [
       {
         name: 'Home',
+        channel_id: 'Home',
         image: '/social/imgs/channel-home.png',
       },
       ...getChannel().map((c) => ({
-        name: c.name || c.channel_description,
+        name: c.name,
+        channel_id: c.channel_id,
         image: c.image,
       })),
     ].filter((c) => {
@@ -61,7 +63,7 @@ export default function ChannelSelect({
         />
         <ListBox items={options}>
           {(item) => (
-            <ItemStyled id={item.name} textValue={item.name}>
+            <ItemStyled id={item.channel_id} textValue={item.name}>
               <div className="item">
                 <span>#</span>
                 <span>

@@ -1,4 +1,4 @@
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import GridSvgUrl from '../common/assets/svgs/grid2.svg';
 import LensIcon from '../common/assets/pngs/lens.png';
 import FarcasterIcon from '../common/assets/pngs/farcaster.png';
@@ -11,12 +11,12 @@ const options = [
     iconUrl: GridSvgUrl,
   },
   {
-    value: SocailPlatform.Farcaster,
+    value: SocialPlatform.Farcaster,
     label: 'Farcaster',
     iconUrl: FarcasterIcon,
   },
   {
-    value: SocailPlatform.Lens,
+    value: SocialPlatform.Lens,
     label: 'Lens',
     iconUrl: LensIcon,
   },
@@ -26,8 +26,8 @@ export default function SocialPlatformChoice({
   platform,
   onChangePlatform,
 }: {
-  platform: SocailPlatform | '';
-  onChangePlatform: (platform: SocailPlatform) => void;
+  platform: SocialPlatform | '';
+  onChangePlatform: (platform: SocialPlatform) => void;
 }) {
   return (
     <ListChoice

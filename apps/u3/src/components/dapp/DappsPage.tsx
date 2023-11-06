@@ -1,13 +1,12 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-23 11:49:06
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-03 14:03:05
  * @Description:
  */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import { MainWrapper } from '../layout/Index';
 import ListScrollBox from '../common/box/ListScrollBox';
 import Loading from '../common/loading/Loading';
@@ -15,9 +14,6 @@ import NoResult from '../layout/NoResult';
 import DappExploreListFilter from './DappExploreListFilter';
 import DappExploreList from './DappExploreList';
 import type { DappsPageProps } from '../../container/dapp/Dapps';
-import { useAppSelector } from '../../store/hooks';
-import { selectWebsite } from '../../features/shared/websiteSlice';
-import Banner from '../home/Banner';
 
 export default function DappsPage({
   // Queries
@@ -32,13 +28,9 @@ export default function DappsPage({
 }: // Others
 DappsPageProps) {
   const navigate = useNavigate();
-  const { homeBannerDisplay } = useAppSelector(selectWebsite);
 
   return (
     <DappsPageWrapper>
-      {!isMobile && <Banner />}
-      {/* {!isMobile && homeBannerDisplay && <Banner />} */}
-
       <MainBox>
         <FilterBox>
           <DappExploreListFilter values={filter} onChange={filterChange} />

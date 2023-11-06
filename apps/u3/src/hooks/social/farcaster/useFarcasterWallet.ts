@@ -5,8 +5,16 @@ import { useEffect, useState } from 'react';
 import { IdRegistryABI } from 'src/services/social/abi/farcaster/IdRegistryABI';
 import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
 import { useAccount, useContractRead, useNetwork } from 'wagmi';
+import { useU3Login } from 'src/contexts/U3LoginContext';
+import { getProfileBiolink } from 'src/services/shared/api/login';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+} from 'src/utils/profile/biolink';
+import { FarcasterBioLinkData } from './useFarcasterQR';
 
 export default function useFarcasterWallet() {
+  const { didSessionStr } = useU3Login();
   const [walletFid, setWalletFid] = useState<number>();
   const [walletSigner, setWalletSigner] = useState<NobleEd25519Signer | null>(
     null
@@ -26,9 +34,39 @@ export default function useFarcasterWallet() {
     chainId: OP_CHAIN_ID,
   });
 
-  const signerCheck = (fid: number) => {
+  const signerCheck = async (fid: number) => {
     if (!fid) return;
-    const privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
+    let privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
+
+    // if NO privateKey in local storage, try to get from db
+    if (!privateKey && didSessionStr) {
+      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+        platform: BIOLINK_PLATFORMS.farcaster,
+        network: String(BIOLINK_FARCASTER_NETWORK),
+        handle: fid,
+      });
+      console.log('farcasterBiolinks of wallet: ', farcasterBiolinks);
+      if (farcasterBiolinks?.data?.data?.length > 0) {
+        const farcasterBiolink = farcasterBiolinks.data.data[0];
+        const farcasterBiolinkData =
+          farcasterBiolink.data as FarcasterBioLinkData;
+        if (
+          farcasterBiolinkData?.privateKey &&
+          farcasterBiolinkData?.publicKey
+        ) {
+          localStorage.setItem(
+            `signerPrivateKey-${fid}`,
+            farcasterBiolinkData.privateKey
+          );
+          localStorage.setItem(
+            `signerPublicKey-${fid}`,
+            farcasterBiolinkData.publicKey
+          );
+          privateKey = farcasterBiolinkData.privateKey;
+        }
+      }
+    }
+
     if (privateKey !== null) {
       const ed25519Signer = new NobleEd25519Signer(
         Buffer.from(privateKey, 'hex')
@@ -97,7 +135,7 @@ export default function useFarcasterWallet() {
           setWalletCheckStatus('done');
         }, 100);
       });
-  }, [walletFid, status]);
+  }, [walletFid, status, didSessionStr]);
 
   useEffect(() => {
     if (idOf) {

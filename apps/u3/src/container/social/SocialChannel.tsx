@@ -14,7 +14,7 @@ import {
   LoadingMoreWrapper,
   LoadingWrapper,
 } from 'src/components/profile/FollowListWidgets';
-import { SocailPlatform } from 'src/services/social/types';
+import { SocialPlatform } from 'src/services/social/types';
 import { FeedsType } from 'src/components/social/SocialPageNav';
 import FarcasterChannelData from 'src/constants/warpcast.json';
 import { getSocialScrollWrapperId } from 'src/utils/social/keep-alive';
@@ -23,7 +23,7 @@ import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
 
 export default function SocialChannel() {
   const firstRef = useRef(false);
-  const { channelName } = useParams();
+  const { channelId } = useParams();
   const [feeds, setFeeds] = useState([]);
   const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
   const [farcasterUserData, setFarcasterUserData] = useState<{
@@ -33,23 +33,24 @@ export default function SocialChannel() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
   const { socialPlatform, feedsType } = useOutletContext<{
-    socialPlatform: SocailPlatform | '';
+    socialPlatform: SocialPlatform | '';
     feedsType: FeedsType;
   }>();
 
   const channel = useMemo(() => {
     const channelData = FarcasterChannelData.find(
-      (c) => c.name === channelName || c.channel_description === channelName
+      (c) => c.channel_id === channelId
     );
     return channelData;
-  }, [channelName]);
+  }, [channelId]);
 
   const loadChannelCasts = useCallback(async () => {
     if (!channel) return;
     if (firstRef.current) return;
     firstRef.current = true;
+
     const resp = await getFarcasterChannelFeeds({
-      channelName: channel.name || channel.channel_description,
+      channelId: channel.channel_id,
       pageSize: FEEDS_PAGE_SIZE,
     });
     if (resp.data.code !== 0) {
@@ -76,7 +77,7 @@ export default function SocialChannel() {
     try {
       setMoreLoading(true);
       const resp = await getFarcasterChannelFeeds({
-        channelName: channel.name || channel.channel_description,
+        channelId: channel.channel_id,
         pageSize: FEEDS_PAGE_SIZE,
         endFarcasterCursor: pageInfo?.endFarcasterCursor,
       });
@@ -146,7 +147,7 @@ export default function SocialChannel() {
               </LoadingMoreWrapper>
             ) : null
           }
-          scrollableTarget={getSocialScrollWrapperId(feedsType, socialPlatform)}
+          scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
             {feeds.map(({ platform, data }) => {
@@ -158,6 +159,7 @@ export default function SocialChannel() {
                     cast={data}
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={farcasterUserData}
+                    showMenuBtn
                   />
                 );
               }

@@ -1,5 +1,5 @@
 import { Comment } from '@lens-protocol/react-web';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 import { LensPost } from '../../../services/social/api/lens';
 import getAvatar from './getAvatar';
 
@@ -7,7 +7,7 @@ export const lensPublicationToPostCardData = (
   publication: LensPost | null | undefined
 ) => {
   return {
-    platform: SocailPlatform.Lens,
+    platform: SocialPlatform.Lens,
     avatar: getAvatar(publication?.profile),
     name: publication?.profile?.name || '',
     handle: publication?.profile?.handle || '',
@@ -24,7 +24,7 @@ export const lensPublicationToReplyCardData = (
   publication: Comment | null | undefined
 ) => {
   return {
-    platform: SocailPlatform.Lens,
+    platform: SocialPlatform.Lens,
     avatar: getAvatar(publication?.profile),
     name: publication?.profile?.name || '',
     handle: publication?.profile?.handle || '',
