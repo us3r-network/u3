@@ -13,7 +13,6 @@ import LensIcon from '../../common/icons/LensIcon';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { tweetShare } from '../../../utils/shared/twitter';
-import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
 import { SocialPlatform } from '../../../services/social/types';
 
@@ -98,7 +97,7 @@ export function MultiPlatformShareMenuBtn({
           </MenuOption>
           <MenuOption
             onClick={() => {
-              tweetShare(SOCIAL_SHARE_TITLE, shareLink);
+              tweetShare(shareLinkDefaultText, shareLink);
             }}
           >
             <TwitterLine />
