@@ -64,9 +64,7 @@ export default function AddPostForm({
   const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
-  const [channelValue, setChannelValue] = useState(
-    channel?.name || channel?.channel_description || 'Home'
-  );
+  const [channelValue, setChannelValue] = useState(channel?.name || 'Home');
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocailPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -211,7 +209,7 @@ export default function AddPostForm({
 
   useEffect(() => {
     if (channel) {
-      setChannelValue(channel.name || channel.channel_description || 'Home');
+      setChannelValue(channel.name || 'Home');
     }
   }, [channel]);
 
