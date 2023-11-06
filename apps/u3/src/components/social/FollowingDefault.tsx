@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import { SocialButtonPrimary } from './button/SocialButton';
@@ -7,7 +8,10 @@ import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 export default function FollowingDefault(
-  props: StyledComponentPropsWithRef<'div'>
+  props: StyledComponentPropsWithRef<'div'> & {
+    lens?: boolean;
+    farcaster?: boolean;
+  }
 ) {
   const { setOpenLensLoginModal, isLoginPending } = useLensCtx();
   const { openFarcasterQR } = useFarcasterCtx();
@@ -19,17 +23,21 @@ export default function FollowingDefault(
         You need at least one handle to view following posts.
       </Description>
       <BtnsWrapper>
-        <LensLoginBtn
-          onClick={() => setOpenLensLoginModal(true)}
-          disabled={isLoginPending}
-        >
-          <LensIcon />
-          <LensLoginText>Lens handle verify</LensLoginText>
-        </LensLoginBtn>
-        <FarcasterLoginBtn onClick={() => openFarcasterQR()}>
-          <FarcasterIcon />
-          <FarcasterLoginText>Farcaster handle verify</FarcasterLoginText>
-        </FarcasterLoginBtn>
+        {props.lens && (
+          <LensLoginBtn
+            onClick={() => setOpenLensLoginModal(true)}
+            disabled={isLoginPending}
+          >
+            <LensIcon />
+            <LensLoginText>Lens handle verify</LensLoginText>
+          </LensLoginBtn>
+        )}
+        {props.farcaster && (
+          <FarcasterLoginBtn onClick={() => openFarcasterQR()}>
+            <FarcasterIcon />
+            <FarcasterLoginText>Farcaster handle verify</FarcasterLoginText>
+          </FarcasterLoginBtn>
+        )}
       </BtnsWrapper>
     </Wrapper>
   );

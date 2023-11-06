@@ -8,7 +8,7 @@ import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFol
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
 
-import { FarCast, SocailPlatform } from '../../../services/social/types';
+import { FarCast, SocialPlatform } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import FCastLike from './FCastLike';
@@ -35,12 +35,14 @@ export default function FCast({
   openFarcasterQR,
   isDetail,
   showMenuBtn,
+  cardClickAction,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
+  cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -106,16 +108,18 @@ export default function FCast({
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
       isDetail={isDetail}
-      onClick={() => {
+      onClick={(e) => {
         if (isDetail) return;
         const id = Buffer.from(castId.hash).toString('hex');
+
+        cardClickAction?.(e);
         navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
       <PostCardHeaderWrapper>
         <PostCardUserInfo
           data={{
-            platform: SocailPlatform.Farcaster,
+            platform: SocialPlatform.Farcaster,
             avatar: userData.pfp,
             name: userData.display,
             handle: userData.userName,

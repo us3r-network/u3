@@ -1,55 +1,43 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useActiveProfile } from '@lens-protocol/react-web';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import useListFeeds from 'src/hooks/social/useListFeeds';
+import AddPostForm from 'src/components/social/AddPostForm';
+import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
+import { FeedsType } from 'src/components/social/SocialPageNav';
+import { SocialPlatform } from 'src/services/social/types';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
+import FCast from 'src/components/social/farcaster/FCast';
+import Loading from 'src/components/common/loading/Loading';
+import useLogin from 'src/hooks/shared/useLogin';
+import NoLogin from 'src/components/layout/NoLogin';
+import FollowingDefault from 'src/components/social/FollowingDefault';
 import useListScroll from 'src/hooks/social/useListScroll';
-import LensPostCard from '../../components/social/lens/LensPostCard';
-import FCast from '../../components/social/farcaster/FCast';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import Loading from '../../components/common/loading/Loading';
-import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
-import { FeedsType } from '../../components/social/SocialPageNav';
+import useListFeeds from 'src/hooks/social/useListFeeds';
 
-import AddPostForm from '../../components/social/AddPostForm';
-import FollowingDefault from '../../components/social/FollowingDefault';
-import useLogin from '../../hooks/shared/useLogin';
-import {
-  AddPostFormWrapper,
-  LoadingMoreWrapper,
-  LoadingWrapper,
-  NoLoginStyled,
-  PostList,
-} from './CommonStyles';
-
-export default function SocialAll() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [parentId, setParentId] = useState('social-all');
-  const { isLogin } = useLogin();
-  const { data: activeLensProfile } = useActiveProfile();
-  const fid = useFarcasterCurrFid();
-  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
-
+export default function SocialFarcaster() {
   const {
-    socialPlatform,
     feedsType,
 
-    loadTrendingFirstFeeds,
+    loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
 
     loadFollowingFirstFeeds,
-    loadFollowingMoreFeeds,
+    loadTrendingFirstFeeds,
 
     setPostScroll,
-  } = useOutletContext<any>(); // TODO: any type
+  } = useOutletContext<any>(); // TODO: any
 
+  const [parentId] = useState('social-farcaster');
+
+  const fid = useFarcasterCurrFid();
   const {
+    isConnected: isConnectedFarcaster,
     openFarcasterQR,
     farcasterUserData,
-    isConnected: isConnectedFarcaster,
   } = useFarcasterCtx();
+  const { isLogin } = useLogin();
 
   const { mounted, firstLoadingDone, setFirstLoadingDone } =
     useListScroll(parentId);
@@ -67,17 +55,15 @@ export default function SocialAll() {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
-        address: lensProfileOwnedByAddress,
         fid: isConnectedFarcaster ? fid : undefined,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Farcaster,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: undefined,
         keyword: currentSearchParams.keyword,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Farcaster,
       });
     }
     setFirstLoadingDone(true);
@@ -86,41 +72,32 @@ export default function SocialAll() {
     parentId,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    activeLensProfile?.id,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
-    socialPlatform,
     isConnectedFarcaster,
   ]);
 
-  const loadMoreFeeds = useCallback(async () => {
+  const loadMoreFeeds = useCallback(() => {
     if (feedsType === FeedsType.FOLLOWING) {
-      await loadFollowingMoreFeeds(parentId, {
+      loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
-        address: lensProfileOwnedByAddress,
         fid: isConnectedFarcaster ? fid : undefined,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Farcaster,
       });
     } else {
-      await loadTrendingMoreFeeds(parentId, {
+      loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Farcaster,
       });
     }
   }, [
     parentId,
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    activeLensProfile?.id,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
-    socialPlatform,
     isConnectedFarcaster,
   ]);
 
@@ -136,21 +113,20 @@ export default function SocialAll() {
     if (!isLogin) {
       return <NoLoginStyled />;
     }
-    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+    if (!isConnectedFarcaster) {
       return (
         <MainCenter>
-          <FollowingDefault farcaster lens />
+          <FollowingDefault farcaster />
         </MainCenter>
       );
     }
   }
 
   return (
-    <MainCenter>
+    <FarcasterListBox>
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
-
       {(firstLoading && (
         <LoadingWrapper>
           <Loading />
@@ -158,38 +134,22 @@ export default function SocialAll() {
       )) || (
         <InfiniteScroll
           style={{ overflow: 'hidden' }}
-          dataLength={feeds?.length || 0}
+          dataLength={feeds.length}
           next={() => {
-            console.log({ moreLoading });
             if (moreLoading) return;
             loadMoreFeeds();
           }}
           hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold="1000px"
           loader={
             <LoadingMoreWrapper>
               <Loading />
             </LoadingMoreWrapper>
           }
+          scrollThreshold="1000px"
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
-            {(feeds || []).map(({ platform, data }) => {
-              if (platform === 'lens') {
-                return (
-                  <LensPostCard
-                    key={data.id}
-                    data={data}
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: data.id,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
+            {feeds.map(({ platform, data }) => {
               if (platform === 'farcaster') {
                 const key = Buffer.from(data.hash.data).toString('hex');
                 return (
@@ -214,10 +174,58 @@ export default function SocialAll() {
           </PostList>
         </InfiniteScroll>
       )}
-    </MainCenter>
+    </FarcasterListBox>
   );
 }
 
 const MainCenter = styled.div`
   width: 100%;
+`;
+
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
+`;
+
+const FarcasterListBox = styled.div``;
+
+const AddPostFormWrapper = styled.div`
+  background: #212228;
+  border-radius: 20px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+`;
+
+const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  border-radius: 20px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  background: #212228;
+  overflow: hidden;
+  & > * {
+    border-top: 1px solid #718096;
+  }
+`;
+
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `;

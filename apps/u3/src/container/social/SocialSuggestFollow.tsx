@@ -17,7 +17,7 @@ import FarcasterIcon from '../../components/common/icons/FarcasterIcon';
 import useFarcasterRecommendedProfile from '../../hooks/social/farcaster/useFarcasterRecommendedProfile';
 import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
 import useLogin from '../../hooks/shared/useLogin';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import Loading from '../../components/common/loading/Loading';
 import {
   farcasterHandleToBioLinkHandle,
@@ -30,7 +30,7 @@ export default function SocialSuggestFollow() {
   const [loading, setLoading] = useState(false);
 
   const { socialPlatform } = useOutletContext<{
-    socialPlatform: SocailPlatform | '';
+    socialPlatform: SocialPlatform | '';
   }>();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens } = useLensCtx();
@@ -66,7 +66,7 @@ export default function SocialSuggestFollow() {
       <Wrapper>
         <FollowListWrapper>
           {fid > 0 &&
-            (socialPlatform === SocailPlatform.Farcaster ||
+            (socialPlatform === SocialPlatform.Farcaster ||
               socialPlatform === '') &&
             farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
             farcasterRecommendedProfileData.recommendedFids.map(
@@ -81,7 +81,7 @@ export default function SocialSuggestFollow() {
               )
             )}
           {isLoginLens &&
-            (socialPlatform === SocailPlatform.Lens || socialPlatform === '') &&
+            (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
             lensRecommendedProfiles &&
             lensRecommendedProfiles.map((profile) => (
               <LensFollowItem key={profile.id} profile={profile} />

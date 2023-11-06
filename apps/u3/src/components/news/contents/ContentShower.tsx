@@ -79,14 +79,12 @@ const ContentWrapper = styled.div`
   box-sizing: border-box;
   overflow-y: scroll;
   position: relative;
-  padding-bottom: 50px;
 `;
 
 const ContentActionsStyled = styled(ContentActions)`
-  position: fixed;
-  bottom: 40px;
-  left: calc(50% + 25px);
-  transform: translateX(-50%);
+  position: sticky;
+  bottom: 0px;
+  left: 50%;
 `;
 const ContentCommentLayoutStyled = styled(ContentCommentLayout)`
   width: 340px;

@@ -13,7 +13,7 @@ import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUs
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import useFarcasterUserData from '../social/farcaster/useFarcasterUserData';
 import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 
 export default function useU3ProfileInfoData({ did }: { did: string }) {
@@ -91,7 +91,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     const accounts: PlatformAccountsData = [];
     if (userData?.fid && userData?.display) {
       accounts.push({
-        platform: SocailPlatform.Farcaster,
+        platform: SocialPlatform.Farcaster,
         avatar: userData.pfp,
         name: userData.userName,
         handle: userData.display,
@@ -103,7 +103,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     if (lensProfiles?.length > 0) {
       for (const lensProfile of lensProfiles) {
         accounts.push({
-          platform: SocailPlatform.Lens,
+          platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
           name: lensProfile.name,
           handle: lensProfile.handle,

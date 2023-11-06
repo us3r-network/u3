@@ -6,7 +6,7 @@ import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 
 export default function usePlatformProfileInfoData({
@@ -54,7 +54,7 @@ export default function usePlatformProfileInfoData({
     const accounts = [];
     for (const fcastProfile of fcastBioLinks) {
       accounts.push({
-        platform: SocailPlatform.Farcaster,
+        platform: SocialPlatform.Farcaster,
         avatar: fcastProfile.avatar,
         name: fcastProfile.displayName,
         handle: fcastProfile.identity,
@@ -66,7 +66,7 @@ export default function usePlatformProfileInfoData({
     if (lensProfiles?.length > 0) {
       for (const lensProfile of lensProfiles) {
         accounts.push({
-          platform: SocailPlatform.Lens,
+          platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
           name: lensProfile.name,
           handle: lensProfile.handle,

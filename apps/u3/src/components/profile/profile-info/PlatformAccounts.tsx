@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 import LensIcon from '../../common/icons/LensIcon';
 import FarcasterIcon from '../../common/icons/FarcasterIcon';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
@@ -7,7 +7,7 @@ import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 export type PlatformAccountsData = Array<{
-  platform: SocailPlatform;
+  platform: SocialPlatform;
   avatar: string;
   name: string;
   handle: string;
@@ -27,10 +27,10 @@ export default function PlatformAccounts({
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
   const { isConnected: isLoginFarcaster, openFarcasterQR } = useFarcasterCtx();
   const findLensAccount = data?.find(
-    (item) => item.platform === SocailPlatform.Lens
+    (item) => item.platform === SocialPlatform.Lens
   );
   const findFarcasterAccount = data?.find(
-    (item) => item.platform === SocailPlatform.Farcaster
+    (item) => item.platform === SocialPlatform.Farcaster
   );
   return (
     <Wrapper {...wrapperProps}>
@@ -68,9 +68,9 @@ export default function PlatformAccounts({
 
           {(() => {
             switch (item.platform) {
-              case SocailPlatform.Lens:
+              case SocialPlatform.Lens:
                 return <LensIcon width="20px" height="20px" />;
-              case SocailPlatform.Farcaster:
+              case SocialPlatform.Farcaster:
                 return <FarcasterIcon width="20px" height="20px" />;
               default:
                 return null;

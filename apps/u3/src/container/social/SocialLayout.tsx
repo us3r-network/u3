@@ -8,32 +8,58 @@ import {
 } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 import { useActiveProfile } from '@lens-protocol/react-web';
-import KeepAlive from 'react-activation';
 
+import { useLoadTrendingFeeds } from 'src/hooks/social/useLoadTrendingFeeds';
+import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
 } from '../../components/social/SocialPageNav';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import SocialPlatformChoice from '../../components/social/SocialPlatformChoice';
 import AddPost from '../../components/social/AddPost';
 import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import SearchInput from '../../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { getSocialScrollWrapperId } from '../../utils/social/keep-alive';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 
-export default function Home() {
+export default function SocialLayout() {
   const location = useLocation();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { data: activeLensProfile, loading: activeLensProfileLoading } =
     useActiveProfile();
   const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
 
+  const [postScroll, setPostScroll] = useState({
+    currentParent: '',
+    id: '',
+    top: 0,
+  });
   const [searchParams, setSearchParams] = useSearchParams();
   const { channelId } = useParams();
+
+  const {
+    firstLoading: trendingFirstLoading,
+    moreLoading: trendingMoreLoading,
+    feeds: trendingFeeds,
+    pageInfo: trendingPageInfo,
+    loadFirstFeeds: loadTrendingFirstFeeds,
+    loadMoreFeeds: loadTrendingMoreFeeds,
+  } = useLoadTrendingFeeds();
+
+  const {
+    firstLoading: followingFirstLoading,
+    moreLoading: followingMoreLoading,
+    feeds: followingFeeds,
+    pageInfo: followingPageInfo,
+    loadFirstFeeds: loadFollowingFirstFeeds,
+    loadMoreFeeds: loadFollowingMoreFeeds,
+  } = useLoadFollowingFeeds();
+
+  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
+  const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
 
   const onSearch = useCallback(
     (value: string) => {
@@ -46,9 +72,6 @@ export default function Home() {
     },
     [searchParams, setSearchParams]
   );
-
-  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
-  const [socialPlatform, setSocialPlatform] = useState<SocailPlatform | ''>('');
 
   const switchedFeedsTypeFirst = useRef(false);
   useEffect(() => {
@@ -92,88 +115,67 @@ export default function Home() {
     );
   }, [location.pathname, feedsType, socialPlatform, channelId]);
 
-  const keepAliveSocialOutlet = useMemo(() => {
-    const socialCacheKey = getSocialScrollWrapperId(feedsType, socialPlatform);
-    return (
-      <KeepAlive cacheKey={socialCacheKey}>
-        <MainWrapper id={socialCacheKey}>
-          {!isMobile && <MainLeft />}
-          <MainCenter>
-            <MainOutletWrapper>
-              <Outlet context={{ socialPlatform, feedsType }} />
-            </MainOutletWrapper>
-          </MainCenter>
-          {!isMobile && <MainRight />}
-        </MainWrapper>
-      </KeepAlive>
-    );
-  }, [socialPlatform, feedsType]);
-
-  const PostDetailOutlet = useMemo(() => {
-    return (
-      <DetailMainWrapper>
-        <MainWrapper>
-          <MainLeft />
-          <MainCenter>
-            <MainOutletWrapper>
-              <Outlet context={{ socialPlatform, feedsType }} />
-            </MainOutletWrapper>
-          </MainCenter>
-          <MainRight />
-        </MainWrapper>
-      </DetailMainWrapper>
-    );
-  }, [socialPlatform, feedsType]);
-
-  const SuggestFollowOutlet = useMemo(() => {
-    return (
-      <DetailMainWrapper>
-        <MainWrapper>
-          <MainLeft />
-          <MainCenter>
-            <MainOutletWrapper>
-              <Outlet context={{ socialPlatform }} />
-            </MainOutletWrapper>
-          </MainCenter>
-          <MainRight />
-        </MainWrapper>
-      </DetailMainWrapper>
-    );
-  }, [socialPlatform]);
-
-  const isPostDetail = location.pathname.includes('post-detail');
-  const isSuggestFollow = location.pathname.includes('suggest-follow');
-
   return (
     <HomeWrapper id="social-wrapper">
       {titleElem}
-      {!isMobile && (
-        <LeftWrapper>
-          <SocialPlatformChoice
-            platform={socialPlatform}
-            onChangePlatform={setSocialPlatform}
-          />
-          <AddPost />
-          <PinedChannels />
-        </LeftWrapper>
-      )}
 
-      {isPostDetail
-        ? PostDetailOutlet
-        : isSuggestFollow
-        ? SuggestFollowOutlet
-        : keepAliveSocialOutlet}
+      <MainWrapper id="social-scroll-wrapper">
+        {!isMobile && (
+          <LeftWrapper>
+            <SocialPlatformChoice
+              platform={socialPlatform}
+              onChangePlatform={setSocialPlatform}
+            />
+            <AddPost />
+            <PinedChannels />
+          </LeftWrapper>
+        )}
 
-      {!isMobile && (
-        <RightWrapper>
-          <SearchInput placeholder="Search" onlyOnKeyDown onSearch={onSearch} />
-          <div className="recommend">
-            <SocialWhoToFollow />
-            <TrendChannel />
-            <br />
-          </div>
-        </RightWrapper>
-      )}
+        <MainCenter id="main-center">
+          <MainOutletWrapper>
+            <Outlet
+              context={{
+                socialPlatform,
+                feedsType,
+
+                trendingFirstLoading,
+                trendingMoreLoading,
+                trendingFeeds,
+                trendingPageInfo,
+                loadTrendingFirstFeeds,
+                loadTrendingMoreFeeds,
+
+                followingFirstLoading,
+                followingMoreLoading,
+                followingFeeds,
+                followingPageInfo,
+                loadFollowingFirstFeeds,
+                loadFollowingMoreFeeds,
+
+                // farcasterScrollTop,
+                // setFarcasterScrollTop,
+                postScroll,
+                setPostScroll,
+              }}
+            />
+          </MainOutletWrapper>
+        </MainCenter>
+
+        {!isMobile && (
+          <RightWrapper>
+            <SearchInput
+              placeholder="Search"
+              onlyOnKeyDown
+              onSearch={onSearch}
+            />
+            <div className="recommend">
+              <SocialWhoToFollow />
+              <TrendChannel />
+              <br />
+            </div>
+          </RightWrapper>
+        )}
+      </MainWrapper>
     </HomeWrapper>
   );
 }
@@ -200,15 +202,10 @@ const HomeWrapper = styled.div`
     height: 100%;
   }
 `;
-const DetailMainWrapper = styled.div`
-  width: 100%;
-  height: calc(100% - 96px);
-  padding-bottom: 20px;
-  box-sizing: border-box;
-`;
+
 const MainWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 96px);
   overflow: scroll;
   display: flex;
   gap: 40px;
@@ -234,8 +231,8 @@ const LeftWrapper = styled(MainLeft)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  position: absolute;
-  top: 116px;
+  position: sticky;
+  top: 26px;
   height: calc(100vh - 96px - 40px);
   overflow: scroll;
 `;
@@ -244,10 +241,9 @@ const RightWrapper = styled(MainRight)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  position: absolute;
-  top: 116px;
-  right: 24px;
-  height: fit-content;
+  position: sticky;
+  top: 26px;
+  height: calc(100vh - 96px - 40px);
 
   > .recommend {
     overflow: scroll;

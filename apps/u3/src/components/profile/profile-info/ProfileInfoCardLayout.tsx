@@ -13,7 +13,7 @@ import {
 } from './ProfileBasicInfo';
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 
 interface ProfileInfoCardLayoutProps
   extends StyledComponentPropsWithRef<'div'> {
@@ -50,10 +50,10 @@ export default function ProfileInfoCardLayout({
   const session = useSession();
 
   const findLensAccount = platformAccounts?.find(
-    (item) => item.platform === SocailPlatform.Lens
+    (item) => item.platform === SocialPlatform.Lens
   );
   const findFarcasterAccount = platformAccounts?.find(
-    (item) => item.platform === SocailPlatform.Farcaster
+    (item) => item.platform === SocialPlatform.Farcaster
   );
   const showFollowBtn = !!findLensAccount || !!findFarcasterAccount;
   const showMessageBtn = !!address;

@@ -2,7 +2,7 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo } from 'react';
 import { SocialButtonPrimaryLine } from '../social/button/SocialButton';
 import { SocialMessageChatBtn } from '../message/MessageChatBtn';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import useCanMessage from '../../hooks/message/xmtp/useCanMessage';
@@ -24,7 +24,7 @@ export type FollowProfileData = {
   name: string;
   address: string;
   bio: string;
-  platforms: SocailPlatform[];
+  platforms: SocialPlatform[];
   isFollowed: boolean;
 };
 
@@ -58,9 +58,9 @@ export default function FollowProfileCard({
     if (handle.endsWith('.eth')) return handle;
     const firstPlatform = platforms?.[0];
     switch (firstPlatform) {
-      case SocailPlatform.Lens:
+      case SocialPlatform.Lens:
         return lensHandleToBioLinkHandle(handle);
-      case SocailPlatform.Farcaster:
+      case SocialPlatform.Farcaster:
         return farcasterHandleToBioLinkHandle(handle);
       default:
         return '';
@@ -90,9 +90,9 @@ export default function FollowProfileCard({
 
               {platforms.map((item) => {
                 switch (item) {
-                  case SocailPlatform.Lens:
+                  case SocialPlatform.Lens:
                     return <LensIcon width="12px" height="12px" />;
-                  case SocailPlatform.Farcaster:
+                  case SocialPlatform.Farcaster:
                     return <FarcasterIcon width="12px" height="12px" />;
                   default:
                     return null;

@@ -6,7 +6,7 @@ import {
   getProfileFeeds,
 } from '../../services/social/api/feeds';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 
 export function useLoadProfileFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
@@ -27,7 +27,7 @@ export function useLoadProfileFeeds() {
       activeLensProfileId?: string;
       lensProfileId?: string;
       fid?: string;
-      platforms?: SocailPlatform[];
+      platforms?: SocialPlatform[];
       group?: ProfileFeedsGroups;
     }) => {
       const { lensProfileId = '', fid = '' } = opts || {};
@@ -73,7 +73,7 @@ export function useLoadProfileFeeds() {
       activeLensProfileId?: string;
       lensProfileId?: string;
       fid?: string;
-      platforms?: SocailPlatform[];
+      platforms?: SocialPlatform[];
       group?: ProfileFeedsGroups;
     }) => {
       const { lensProfileId = '', fid = '' } = opts || {};
