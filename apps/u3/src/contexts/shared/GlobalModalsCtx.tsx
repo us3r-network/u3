@@ -6,12 +6,12 @@ import {
   useState,
 } from 'react';
 
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 
 type ShareLinkModalState = {
   isOpen: boolean;
   shareLink: string;
-  shareLinkDefaultPlatform: SocailPlatform;
+  shareLinkDefaultPlatform: SocialPlatform;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
 };

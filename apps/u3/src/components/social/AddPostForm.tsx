@@ -48,7 +48,7 @@ import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 
 export type ShareData = {
   shareLink: string;
-  shareLinkDefaultPlatform: SocailPlatform;
+  shareLinkDefaultPlatform: SocialPlatform;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
 };

@@ -15,7 +15,7 @@ import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { tweetShare } from '../../../utils/shared/twitter';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
-import { SocailPlatform } from '../../../services/social/types';
+import { SocialPlatform } from '../../../services/social/types';
 
 interface MultiPlatformShareMenuBtnProps
   extends StyledComponentPropsWithRef<'button'> {
@@ -72,7 +72,7 @@ export function MultiPlatformShareMenuBtn({
                 shareLink,
                 shareLinkDefaultText,
                 shareLinkEmbedTitle,
-                shareLinkDefaultPlatform: SocailPlatform.Farcaster,
+                shareLinkDefaultPlatform: SocialPlatform.Farcaster,
               });
             }}
           >
@@ -89,7 +89,7 @@ export function MultiPlatformShareMenuBtn({
                 shareLink,
                 shareLinkDefaultText,
                 shareLinkEmbedTitle,
-                shareLinkDefaultPlatform: SocailPlatform.Lens,
+                shareLinkDefaultPlatform: SocialPlatform.Lens,
               });
             }}
           >
