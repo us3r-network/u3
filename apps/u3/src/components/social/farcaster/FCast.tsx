@@ -27,6 +27,7 @@ import {
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
+import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
 export default function FCast({
   cast,
@@ -148,13 +149,17 @@ export default function FCast({
               }}
               shareAction={() => {
                 tweetShare(
-                  cast.text,
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  SOCIAL_SHARE_TITLE,
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
               }}
               copyAction={async () => {
                 await window.navigator.clipboard.writeText(
-                  getSocialDetailShareUrlWithFarcaster(userData.fid)
+                  getSocialDetailShareUrlWithFarcaster(
+                    Buffer.from(cast.hash.data).toString('hex')
+                  )
                 );
                 toast.success('Copy success');
               }}

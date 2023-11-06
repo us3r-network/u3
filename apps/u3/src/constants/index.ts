@@ -39,3 +39,8 @@ export const AIRSTACK_API_KEY =
 
 export const REACT_APP_API_SOCIAL_URL =
   process.env.REACT_APP_API_SOCIAL_URL || 'https://api.u3.xyz';
+
+export const SHARE_DOMAIN =
+  process.env.REACT_APP_SHARE_DOMAIN || 'https://share.u3.xyz';
+
+export const SOCIAL_SHARE_TITLE = 'I found an interesting viewpoint in U3!';

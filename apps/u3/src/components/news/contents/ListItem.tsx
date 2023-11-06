@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { VoteButton } from '@us3r-network/link';
 import { Share } from '../../common/icons/share';
 // import { EyeClose } from '../icons/eyeClose';
 import { defaultFormatFromNow } from '../../../utils/shared/time';
@@ -8,6 +7,7 @@ import LinkBox from './LinkBox';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
 import type { ContentExploreListItemData } from './ContentList';
+import { VoteButtonBase } from '../../shared/button/VoteButtonBase';
 
 export default function ListItem({
   data,
@@ -66,16 +66,16 @@ export default function ListItem({
     </ContentItem>
   );
 }
-const VoteButtonStyled = styled(VoteButton)`
-  width: 60px !important;
-  height: 60px !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 5px !important;
+const VoteButtonStyled = styled(VoteButtonBase)`
+  width: 60px;
+  height: 60px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   svg {
-    width: 18px !important;
-    height: 18px !important;
+    width: 18px;
+    height: 18px;
   }
 `;
 

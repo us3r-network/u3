@@ -8,7 +8,6 @@
 import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FavorButton } from '@us3r-network/link';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import CannotOpenPlatFormLink from './CannotOpenPlatFormLink';
@@ -23,6 +22,7 @@ import { EventExploreListItemResponse } from '../../../services/news/types/event
 import useAdminEventHandles from '../../../hooks/news/useAdminEventHandles';
 import { Share } from '../../common/icons/share';
 import useEventHandles from '../../../hooks/news/useEventHandles';
+import { FavorButtonBase } from '../../shared/button/FavorButtonBase';
 
 export type EventPreviewDataType = {
   name: string;
@@ -187,9 +187,9 @@ const EventButtonBaseCss = css`
 const EventHandleButton = styled(ButtonPrimaryLine)`
   ${EventButtonBaseCss}
 `;
-const FavorBtn = styled(FavorButton)`
-  padding: 6px !important;
-  height: 32px !important;
+const FavorBtn = styled(FavorButtonBase)`
+  padding: 6px;
+  height: 32px;
   background-color: #1b1e23;
   svg {
     fill: #718096;

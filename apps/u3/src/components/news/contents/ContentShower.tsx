@@ -1,12 +1,13 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import { Comments } from '@us3r-network/link';
 import { ContentListItem } from '../../../services/news/types/contents';
 import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
 import { defaultFormatFromNow } from '../../../utils/shared/time';
 import Badge from './Badge';
 import LinkBox from './LinkBox';
+import ContentCommentLayout from './comment/ContentCommentLayout';
+import ContentActions from './action/ContentActions';
 
 export default function ContentShower({
   data,
@@ -37,7 +38,7 @@ export default function ContentShower({
   );
   return (
     <Shower>
-      <div className="content-container">
+      <ContentWrapper>
         <ContentTitle>
           <div className="title">{title}</div>
           {tags?.length > 0 && (
@@ -54,25 +55,40 @@ export default function ContentShower({
           </div>
         </ContentTitle>
         <ContentBody dangerouslySetInnerHTML={{ __html: contentFix }} />
-        <br />
         {!isMobile && data.linkStreamId && (
-          <Comments linkId={data.linkStreamId} className="comments" />
+          <ContentActionsStyled linkId={data.linkStreamId} />
         )}
-      </div>
+      </ContentWrapper>
+      {!isMobile && data.linkStreamId && (
+        <ContentCommentLayoutStyled linkId={data.linkStreamId} />
+      )}
     </Shower>
   );
 }
 
 const Shower = styled.div`
-  height: calc(100% - 20px);
-  overflow: scroll;
+  height: 100%;
+  display: flex;
+`;
 
-  .content-container {
-    padding: 20px;
-    .comments {
-      margin-top: 20px;
-    }
-  }
+const ContentWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: scroll;
+  position: relative;
+`;
+
+const ContentActionsStyled = styled(ContentActions)`
+  position: sticky;
+  bottom: 0px;
+  left: 50%;
+`;
+const ContentCommentLayoutStyled = styled(ContentCommentLayout)`
+  width: 340px;
+  border-left: 1px solid #39424c;
 `;
 
 const ContentTitle = styled.div`

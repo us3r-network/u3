@@ -20,6 +20,12 @@ import {
   SignerVerifyContract,
 } from 'src/constants/farcaster';
 
+import { postProfileBiolink } from 'src/services/shared/api/login';
+import {
+  BIOLINK_FARCASTER_NETWORK,
+  BIOLINK_PLATFORMS,
+} from 'src/utils/profile/biolink';
+import { useU3Login } from 'src/contexts/U3LoginContext';
 import {
   StepsBox,
   StyledData,
@@ -69,7 +75,7 @@ export default function SignerAdd({
   setSigner: (s: NobleEd25519Signer | null) => void;
 }) {
   const { address } = useAccount();
-
+  const { didSessionStr } = useU3Login();
   // const [setAddSignerTxHash] = useState<string>('');
   const [privateKey, setPrivateKey] = useState<Uint8Array | undefined>();
   const [publicKey, setPublicKey] = useState<`0x${string}` | undefined>();
@@ -197,6 +203,20 @@ export default function SignerAdd({
       localStorage.setItem(
         signerPrivateKeyLocalStorageKey,
         ed.etc.bytesToHex(privateKey)
+      );
+
+      // wirte to u3 db
+      postProfileBiolink(
+        {
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: fid,
+          data: {
+            privateKey: ed.etc.bytesToHex(privateKey),
+            publicKey,
+          },
+        },
+        didSessionStr
       );
 
       const ed25519Signer = new NobleEd25519Signer(privateKey);
