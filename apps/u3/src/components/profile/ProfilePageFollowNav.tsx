@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 
 export enum FollowType {
   FOLLOWING = 'following',
@@ -17,11 +17,11 @@ export default function ProfilePageFollowNav({
   goBack,
 }: {
   followType: FollowType;
-  activePlatform: SocailPlatform;
+  activePlatform: SocialPlatform;
   platformCount: {
-    [platform in SocailPlatform]: number;
+    [platform in SocialPlatform]: number;
   };
-  onChangePlatform: (platform: SocailPlatform) => void;
+  onChangePlatform: (platform: SocialPlatform) => void;
   goBack: () => void;
 }) {
   return (
@@ -66,26 +66,26 @@ function PcFollowPlatformTable({
   onChangePlatform,
 }: {
   followType: FollowType;
-  activePlatform: SocailPlatform;
+  activePlatform: SocialPlatform;
   platformCount: {
-    [platform in SocailPlatform]: number;
+    [platform in SocialPlatform]: number;
   };
-  onChangePlatform: (platform: SocailPlatform) => void;
+  onChangePlatform: (platform: SocialPlatform) => void;
 }) {
   const followTypeText =
     followType.slice(0, 1).toUpperCase() + followType.slice(1);
   const tabs = [
     {
       name: `Farcaster ${followTypeText}(${
-        platformCount[SocailPlatform.Farcaster] || 0
+        platformCount[SocialPlatform.Farcaster] || 0
       })`,
-      value: SocailPlatform.Farcaster,
+      value: SocialPlatform.Farcaster,
     },
     {
       name: `Lens ${followTypeText}(${
-        platformCount[SocailPlatform.Lens] || 0
+        platformCount[SocialPlatform.Lens] || 0
       })`,
-      value: SocailPlatform.Lens,
+      value: SocialPlatform.Lens,
     },
   ];
   return (
@@ -109,26 +109,26 @@ function MobileFollowPlatformTable({
   onChangePlatform,
 }: {
   followType: FollowType;
-  activePlatform: SocailPlatform;
+  activePlatform: SocialPlatform;
   platformCount: {
-    [platform in SocailPlatform]: number;
+    [platform in SocialPlatform]: number;
   };
-  onChangePlatform: (platform: SocailPlatform) => void;
+  onChangePlatform: (platform: SocialPlatform) => void;
 }) {
   const followTypeText =
     followType.slice(0, 1).toUpperCase() + followType.slice(1);
   const options = [
     {
       label: `Farcaster ${followTypeText}(${
-        platformCount[SocailPlatform.Farcaster] || 0
+        platformCount[SocialPlatform.Farcaster] || 0
       })`,
-      value: SocailPlatform.Farcaster,
+      value: SocialPlatform.Farcaster,
     },
     {
       label: `Lens ${followTypeText}(${
-        platformCount[SocailPlatform.Lens] || 0
+        platformCount[SocialPlatform.Lens] || 0
       })`,
-      value: SocailPlatform.Lens,
+      value: SocialPlatform.Lens,
     },
   ];
   return (

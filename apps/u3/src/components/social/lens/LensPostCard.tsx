@@ -23,7 +23,13 @@ import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
 import { tweetShare } from '../../../utils/shared/twitter';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 
-export default function LensPostCard({ data }: { data: Post }) {
+export default function LensPostCard({
+  data,
+  cardClickAction,
+}: {
+  data: Post;
+  cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+}) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const navigate = useNavigate();
   const {
@@ -133,7 +139,9 @@ export default function LensPostCard({ data }: { data: Post }) {
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => <LensPostCardContent publication={publication} />}
-      onClick={() => {
+      id={data.id}
+      onClick={(e) => {
+        cardClickAction?.(e);
         navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}

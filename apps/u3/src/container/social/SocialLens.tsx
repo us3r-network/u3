@@ -1,59 +1,29 @@
-import styled from 'styled-components';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
+import { useOutletContext, useSearchParams } from 'react-router-dom';
+import Loading from 'src/components/common/loading/Loading';
+import AddPostForm from 'src/components/social/AddPostForm';
+import FollowingDefault from 'src/components/social/FollowingDefault';
+import { FeedsType } from 'src/components/social/SocialPageNav';
+import LensPostCard from 'src/components/social/lens/LensPostCard';
+import useLogin from 'src/hooks/shared/useLogin';
 import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
-import LensPostCard from '../../components/social/lens/LensPostCard';
-import FCast from '../../components/social/farcaster/FCast';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import Loading from '../../components/common/loading/Loading';
-import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
-import { FeedsType } from '../../components/social/SocialPageNav';
-
-import AddPostForm from '../../components/social/AddPostForm';
-import FollowingDefault from '../../components/social/FollowingDefault';
-import useLogin from '../../hooks/shared/useLogin';
+import { SocialPlatform } from 'src/services/social/types';
 import {
   AddPostFormWrapper,
+  LensListBox,
   LoadingMoreWrapper,
   LoadingWrapper,
+  MainCenter,
   NoLoginStyled,
   PostList,
 } from './CommonStyles';
 
-export default function SocialAll() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [parentId, setParentId] = useState('social-all');
+export default function SocialFarcaster() {
+  const [parentId] = useState('social-lens');
   const { isLogin } = useLogin();
-  const { data: activeLensProfile } = useActiveProfile();
-  const fid = useFarcasterCurrFid();
-  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
-
-  const {
-    socialPlatform,
-    feedsType,
-
-    loadTrendingFirstFeeds,
-    loadTrendingMoreFeeds,
-
-    loadFollowingFirstFeeds,
-    loadFollowingMoreFeeds,
-
-    setPostScroll,
-  } = useOutletContext<any>(); // TODO: any type
-
-  const {
-    openFarcasterQR,
-    farcasterUserData,
-    isConnected: isConnectedFarcaster,
-  } = useFarcasterCtx();
-
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
-  const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
   const currentSearchParams = useMemo(
@@ -63,6 +33,25 @@ export default function SocialAll() {
     [searchParams]
   );
 
+  const {
+    feedsType,
+
+    loadFollowingMoreFeeds,
+    loadTrendingMoreFeeds,
+
+    loadFollowingFirstFeeds,
+    loadTrendingFirstFeeds,
+
+    setPostScroll,
+  } = useOutletContext<any>(); // TODO: any
+
+  const { mounted, firstLoadingDone, setFirstLoadingDone } =
+    useListScroll(parentId);
+  const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
+
+  const { data: activeLensProfile } = useActiveProfile();
+  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
+
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
@@ -70,65 +59,57 @@ export default function SocialAll() {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
         address: lensProfileOwnedByAddress,
-        fid: isConnectedFarcaster ? fid : undefined,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        fid: undefined,
+        platforms: SocialPlatform.Lens,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
         activeLensProfileId: activeLensProfile?.id,
         keyword: currentSearchParams.keyword,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Lens,
       });
     }
     setFirstLoadingDone(true);
     return loadFollowingFirstFeeds;
   }, [
-    parentId,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
-    fid,
     feedsType,
-    socialPlatform,
-    isConnectedFarcaster,
   ]);
 
-  const loadMoreFeeds = useCallback(async () => {
+  const loadMoreFeeds = useCallback(() => {
     if (feedsType === FeedsType.FOLLOWING) {
-      await loadFollowingMoreFeeds(parentId, {
+      loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
         address: lensProfileOwnedByAddress,
-        fid: isConnectedFarcaster ? fid : undefined,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        fid: undefined,
+        platforms: SocialPlatform.Lens,
       });
     } else {
-      await loadTrendingMoreFeeds(parentId, {
+      loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
         activeLensProfileId: activeLensProfile?.id,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
+        platforms: SocialPlatform.Lens,
       });
     }
   }, [
-    parentId,
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
     activeLensProfile?.id,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
-    fid,
     feedsType,
-    socialPlatform,
-    isConnectedFarcaster,
   ]);
 
   useEffect(() => {
     if (firstLoadingDone) return;
     if (feeds.length > 0) return;
     if (!mounted) return;
-
+    console.log('loadFirstFeeds', Date.now());
     loadFirstFeeds();
   }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
@@ -136,21 +117,20 @@ export default function SocialAll() {
     if (!isLogin) {
       return <NoLoginStyled />;
     }
-    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+    if (!lensProfileOwnedByAddress) {
       return (
         <MainCenter>
-          <FollowingDefault farcaster lens />
+          <FollowingDefault lens />
         </MainCenter>
       );
     }
   }
 
   return (
-    <MainCenter>
+    <LensListBox>
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
-
       {(firstLoading && (
         <LoadingWrapper>
           <Loading />
@@ -158,23 +138,22 @@ export default function SocialAll() {
       )) || (
         <InfiniteScroll
           style={{ overflow: 'hidden' }}
-          dataLength={feeds?.length || 0}
+          dataLength={feeds.length}
           next={() => {
-            console.log({ moreLoading });
             if (moreLoading) return;
             loadMoreFeeds();
           }}
           hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold="1000px"
           loader={
             <LoadingMoreWrapper>
               <Loading />
             </LoadingMoreWrapper>
           }
+          scrollThreshold="1000px"
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
-            {(feeds || []).map(({ platform, data }) => {
+            {feeds.map(({ platform, data }) => {
               if (platform === 'lens') {
                 return (
                   <LensPostCard
@@ -190,34 +169,11 @@ export default function SocialAll() {
                   />
                 );
               }
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex');
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                    showMenuBtn
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: key,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
               return null;
             })}
           </PostList>
         </InfiniteScroll>
       )}
-    </MainCenter>
+    </LensListBox>
   );
 }
-
-const MainCenter = styled.div`
-  width: 100%;
-`;

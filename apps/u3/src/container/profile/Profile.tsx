@@ -26,7 +26,7 @@ import ProfilePageFollowNav, {
 } from '../../components/profile/ProfilePageFollowNav';
 import LensProfileFollowing from '../../components/profile/lens/LensProfileFollowing';
 import LensProfileFollowers from '../../components/profile/lens/LensProfileFollowers';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import useFarcasterFollowNum from '../../hooks/social/farcaster/useFarcasterFollowNum';
 import FarcasterFollowing from '../../components/profile/farcaster/FarcasterFollowing';
 import FarcasterFollowers from '../../components/profile/farcaster/FarcasterFollowers';
@@ -159,15 +159,15 @@ function ProfileView({
   const [followNavData, setFollowNavData] = useState({
     showFollowNav: false,
     followNavType: FollowType.FOLLOWING,
-    followingActivePlatform: SocailPlatform.Farcaster,
-    followersActivePlatform: SocailPlatform.Farcaster,
+    followingActivePlatform: SocialPlatform.Farcaster,
+    followersActivePlatform: SocialPlatform.Farcaster,
     followingPlatformCount: {
-      [SocailPlatform.Lens]: 0,
-      [SocailPlatform.Farcaster]: 0,
+      [SocialPlatform.Lens]: 0,
+      [SocialPlatform.Farcaster]: 0,
     },
     followersPlatformCount: {
-      [SocailPlatform.Lens]: 0,
-      [SocailPlatform.Farcaster]: 0,
+      [SocialPlatform.Lens]: 0,
+      [SocialPlatform.Farcaster]: 0,
     },
   });
   const {
@@ -185,12 +185,12 @@ function ProfileView({
     setFollowNavData((prevData) => ({
       ...prevData,
       followingPlatformCount: {
-        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
-        [SocailPlatform.Farcaster]: farcasterFollowData.following,
+        [SocialPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
+        [SocialPlatform.Farcaster]: farcasterFollowData.following,
       },
       followersPlatformCount: {
-        [SocailPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
-        [SocailPlatform.Farcaster]: farcasterFollowData.followers,
+        [SocialPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
+        [SocialPlatform.Farcaster]: farcasterFollowData.followers,
       },
     }));
   }, [lensProfileFirst, farcasterFollowData]);
@@ -346,25 +346,25 @@ function ProfileView({
           if (showFollowNav) {
             if (
               followNavType === FollowType.FOLLOWING &&
-              followingActivePlatform === SocailPlatform.Lens
+              followingActivePlatform === SocialPlatform.Lens
             ) {
               return <LensProfileFollowing address={address} />;
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
-              followersActivePlatform === SocailPlatform.Lens
+              followersActivePlatform === SocialPlatform.Lens
             ) {
               return <LensProfileFollowers address={address} />;
             }
             if (
               followNavType === FollowType.FOLLOWING &&
-              followingActivePlatform === SocailPlatform.Farcaster
+              followingActivePlatform === SocialPlatform.Farcaster
             ) {
               return <FarcasterFollowing fid={fid} />;
             }
             if (
               followNavType === FollowType.FOLLOWERS &&
-              followersActivePlatform === SocailPlatform.Farcaster
+              followersActivePlatform === SocialPlatform.Farcaster
             ) {
               return <FarcasterFollowers fid={fid} />;
             }

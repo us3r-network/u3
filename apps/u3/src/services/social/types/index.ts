@@ -50,7 +50,7 @@ export type FarCast = {
   comment_count: string | null;
 };
 
-export enum SocailPlatform {
+export enum SocialPlatform {
   Farcaster = 'farcaster',
   Lens = 'lens',
 }

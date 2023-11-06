@@ -45,6 +45,8 @@ export enum RouteKey {
   farcasterProfile = 'farcasterProfile',
   socialLayout = 'socialLayout',
   social = 'social',
+  socialFarcaster = 'socialFarcaster',
+  socialLens = 'socialLens',
   socialChannel = 'socialChannel',
   socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
@@ -244,9 +246,19 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.socialLayout,
     children: [
       {
-        path: '',
+        path: '', // social allPlatform
         element: loadContainerElement('social/Social'),
         key: RouteKey.social,
+      },
+      {
+        path: 'farcaster', // social farcaster platform
+        element: loadContainerElement('social/SocialFarcaster'),
+        key: RouteKey.socialFarcaster,
+      },
+      {
+        path: 'lens', // social Lens platform
+        element: loadContainerElement('social/SocialLens'),
+        key: RouteKey.socialLens,
       },
       {
         path: 'trends',

@@ -14,7 +14,7 @@ import {
   LoadingMoreWrapper,
   LoadingWrapper,
 } from 'src/components/profile/FollowListWidgets';
-import { SocailPlatform } from 'src/services/social/types';
+import { SocialPlatform } from 'src/services/social/types';
 import { FeedsType } from 'src/components/social/SocialPageNav';
 import FarcasterChannelData from 'src/constants/warpcast.json';
 import { getSocialScrollWrapperId } from 'src/utils/social/keep-alive';
@@ -33,7 +33,7 @@ export default function SocialChannel() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
   const { socialPlatform, feedsType } = useOutletContext<{
-    socialPlatform: SocailPlatform | '';
+    socialPlatform: SocialPlatform | '';
     feedsType: FeedsType;
   }>();
 
@@ -147,7 +147,7 @@ export default function SocialChannel() {
               </LoadingMoreWrapper>
             ) : null
           }
-          scrollableTarget={getSocialScrollWrapperId(feedsType, socialPlatform)}
+          scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
             {feeds.map(({ platform, data }) => {

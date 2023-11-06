@@ -11,24 +11,42 @@ export default function useFarcasterUserData({
 }) {
   const { currUserInfo } = useFarcasterCtx();
   const userData = useMemo(() => {
-    const userDataTmp = currUserInfo
-      ? {
-          ...farcasterUserData,
-          ...currUserInfo,
-        }
-      : {
-          ...farcasterUserData,
-        };
-    const data = userDataTmp[fid] || [];
-    const pfp =
-      data.find((item) => item.type === UserDataType.PFP)?.value || '';
-    const display =
-      data.find((item) => item.type === UserDataType.DISPLAY)?.value || '';
-    const bio =
-      data.find((item) => item.type === UserDataType.BIO)?.value || '';
-    const userName =
-      data.find((item) => item.type === UserDataType.USERNAME)?.value || '';
-    const url = data.find((item) => item.type === UserDataType.URL)?.value;
+    let data = [];
+    if (currUserInfo) {
+      data = currUserInfo[fid] || [];
+    }
+    if (farcasterUserData && data.length === 0) {
+      data = farcasterUserData[fid] || [];
+    }
+
+    let pfp = '';
+    let display = '';
+    let bio = '';
+    let userName = '';
+    let url = '';
+
+    data.forEach((item) => {
+      switch (item.type) {
+        case UserDataType.PFP:
+          pfp = item.value;
+          break;
+        case UserDataType.DISPLAY:
+          display = item.value;
+          break;
+        case UserDataType.BIO:
+          bio = item.value;
+          break;
+        case UserDataType.USERNAME:
+          userName = item.value;
+          break;
+        case UserDataType.URL:
+          url = item.value;
+          break;
+        default:
+          break;
+      }
+    });
+
     return {
       fid,
       pfp,

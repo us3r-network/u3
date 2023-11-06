@@ -7,7 +7,7 @@ import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
-import { FarCast, SocailPlatform } from '../../../services/social/types';
+import { FarCast, SocialPlatform } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 
 import ReplyModal from '../ReplyModal';
@@ -77,7 +77,7 @@ export default function FCastCommentPostModal({
       open={open}
       closeModal={closeModal}
       postData={{
-        platform: SocailPlatform.Farcaster,
+        platform: SocialPlatform.Farcaster,
         avatar: userData.pfp,
         name: userData.display,
         handle: userData.fid,

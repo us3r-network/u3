@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { SocailPlatform } from '../../services/social/types';
+import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import PostLike from './PostLike';
@@ -16,7 +16,7 @@ import {
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 
 export type PostCardData = {
-  platform: SocailPlatform;
+  platform: SocialPlatform;
   avatar: string;
   name: string;
   handle: string;
@@ -151,7 +151,7 @@ export const PostCardHeaderWrapper = styled.div`
 `;
 
 export type PostCardUserInfoData = {
-  platform: SocailPlatform;
+  platform: SocialPlatform;
   avatar: string;
   name: string;
   handle: string;
@@ -166,9 +166,9 @@ export function PostCardUserInfo({
 }: PostCardUserInfoProps) {
   const PlatFormIcon = useMemo(() => {
     switch (data.platform) {
-      case SocailPlatform.Lens:
+      case SocialPlatform.Lens:
         return <LensIcon />;
-      case SocailPlatform.Farcaster:
+      case SocialPlatform.Farcaster:
         return <FarcasterIcon />;
       default:
         return null;
@@ -177,9 +177,9 @@ export function PostCardUserInfo({
   const profileIdentity = useMemo(() => {
     if (data.handle.endsWith('.eth')) return data.handle;
     switch (data.platform) {
-      case SocailPlatform.Lens:
+      case SocialPlatform.Lens:
         return lensHandleToBioLinkHandle(data.handle);
-      case SocailPlatform.Farcaster:
+      case SocialPlatform.Farcaster:
         return farcasterHandleToBioLinkHandle(data.handle);
       default:
         return '';
