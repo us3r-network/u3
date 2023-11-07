@@ -153,6 +153,10 @@ export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
   height: 20px;
   border-radius: 50%;
   background: none;
+  &:not(:disabled):hover {
+    border: none;
+    background-color: #14171a;
+  }
   & > svg {
     width: 12px;
     height: 12px;

@@ -18,6 +18,22 @@ import { Copy } from '../../common/icons/copy';
 import ProfileAvatar from './ProfileAvatar';
 import NavigateToProfileLink from '../NavigateToProfileLink';
 
+const extractErrorMessage = (message) => {
+  try {
+    const match = message.match(/{.*}/);
+    if (!match) return message;
+    const jsonStr = match[0];
+
+    const obj = JSON.parse(jsonStr);
+    return (obj.error as string)
+      .replace('Validation Error: ', '')
+      .replaceAll('data/', '');
+  } catch (e) {
+    // 如果转换失败，返回原始消息
+    return message;
+  }
+};
+
 export function U3ProfileBasicInfo({
   did,
   navigateToProfileUrl,
@@ -101,17 +117,24 @@ export function U3ProfileBasicInfo({
                       setIsOpenEdit(false);
                     }}
                   >
-                    <UserInfoEditForm.AvatarField />
+                    {({ errMsg }) => {
+                      return (
+                        <>
+                          <UserInfoEditForm.AvatarField />
 
-                    <UserInfoEditForm.NameInput />
+                          <UserInfoEditForm.NameInput />
 
-                    <UserInfoEditForm.BioTextArea />
+                          <UserInfoEditForm.BioTextArea />
 
-                    <UserInfoEditForm.SubmitButton>
-                      save
-                    </UserInfoEditForm.SubmitButton>
-
-                    <UserInfoEditForm.ErrorMessage />
+                          <UserInfoEditForm.SubmitButton>
+                            save
+                          </UserInfoEditForm.SubmitButton>
+                          <span className="errorMessage">
+                            {extractErrorMessage(errMsg)}
+                          </span>
+                        </>
+                      );
+                    }}
                   </UserInfoEditFormWrapper>
                 </Dialog>
               </Modal>
@@ -273,7 +296,7 @@ const UserInfoEditFormWrapper = styled(UserInfoEditForm)`
   [data-state-element='SubmitButton'] {
     ${ButtonPrimaryLineCss}
   }
-  [data-state-element='ErrorMessage'] {
-    color: red;
+  .errorMessage {
+    color: #e63734;
   }
 `;
