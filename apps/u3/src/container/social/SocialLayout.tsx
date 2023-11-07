@@ -12,6 +12,7 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useLoadTrendingFeeds } from 'src/hooks/social/useLoadTrendingFeeds';
 import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
+import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 
 import SocialPageNav, {
   FeedsType,
@@ -57,6 +58,16 @@ export default function SocialLayout() {
     loadFirstFeeds: loadFollowingFirstFeeds,
     loadMoreFeeds: loadFollowingMoreFeeds,
   } = useLoadFollowingFeeds();
+
+  const {
+    feeds: channelFeeds,
+    channel: currentChannel,
+    firstLoading: channelFirstLoading,
+    moreLoading: channelMoreLoading,
+    loadMoreFeeds: loadChannelMoreFeeds,
+    pageInfo: channelPageInfo,
+    farcasterUserData: channelFarcasterUserData,
+  } = useChannelFeeds();
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
   const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
@@ -156,6 +167,14 @@ export default function SocialLayout() {
                 // setFarcasterScrollTop,
                 postScroll,
                 setPostScroll,
+
+                currentChannel,
+                channelFeeds,
+                channelPageInfo,
+                channelFirstLoading,
+                channelMoreLoading,
+                loadChannelMoreFeeds,
+                channelFarcasterUserData,
               }}
             />
           </MainOutletWrapper>
