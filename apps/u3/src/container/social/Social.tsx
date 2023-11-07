@@ -51,11 +51,11 @@ export default function SocialAll() {
     isConnected: isConnectedFarcaster,
   } = useFarcasterCtx();
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
+  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
+
   const currentSearchParams = useMemo(
     () => ({
       keyword: searchParams.get('keyword') || '',
@@ -125,12 +125,10 @@ export default function SocialAll() {
   ]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
-    if (feeds.length > 0) return;
     if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  }, [loadFirstFeeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {

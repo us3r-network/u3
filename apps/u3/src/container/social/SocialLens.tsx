@@ -45,8 +45,7 @@ export default function SocialFarcaster() {
     setPostScroll,
   } = useOutletContext<any>(); // TODO: any
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
+  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const { data: activeLensProfile } = useActiveProfile();
@@ -106,12 +105,9 @@ export default function SocialFarcaster() {
   ]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
-    if (feeds.length > 0) return;
     if (!mounted) return;
-    console.log('loadFirstFeeds', Date.now());
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  }, [loadFirstFeeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {

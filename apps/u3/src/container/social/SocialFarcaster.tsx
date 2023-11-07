@@ -39,8 +39,7 @@ export default function SocialFarcaster() {
   } = useFarcasterCtx();
   const { isLogin } = useLogin();
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
+  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
@@ -102,12 +101,10 @@ export default function SocialFarcaster() {
   ]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
-    if (feeds.length > 0) return;
     if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  }, [loadFirstFeeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
