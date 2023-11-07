@@ -43,7 +43,7 @@ import useLogin from '../../hooks/shared/useLogin';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { Channel } from '../../services/social/types/farcaster';
 import ChannelSelect from './ChannelSelect';
-import { getChannelFromName } from '../../utils/social/farcaster/getChannel';
+import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 
 export type ShareData = {
@@ -75,7 +75,9 @@ export default function AddPostForm({
   const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
-  const [channelValue, setChannelValue] = useState(channel?.name || 'Home');
+  const [channelValue, setChannelValue] = useState(
+    channel?.channel_id || 'Home'
+  );
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -153,7 +155,7 @@ export default function AddPostForm({
     if (!farcasterUserFid) return;
     let parentUrl;
     if (channelValue !== 'Home') {
-      const ch = getChannelFromName(channelValue);
+      const ch = getChannelFromId(channelValue);
       parentUrl = ch?.parent_url;
     }
     try {
@@ -231,7 +233,7 @@ export default function AddPostForm({
 
   useEffect(() => {
     if (channel) {
-      setChannelValue(channel.name || 'Home');
+      setChannelValue(channel.channel_id || 'Home');
     }
   }, [channel]);
 
@@ -367,9 +369,8 @@ export default function AddPostForm({
           </SendEmojiBtn>
 
           <ChannelSelect
-            channel={channel}
-            selectChannelName={channelValue}
-            setSelectChannelName={(v) => {
+            selectChannelId={channelValue}
+            setSelectChannelId={(v) => {
               setChannelValue(v);
             }}
           />
