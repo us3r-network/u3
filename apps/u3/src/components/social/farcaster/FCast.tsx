@@ -3,11 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
-import { toast } from 'react-toastify';
 
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
-import { tweetShare } from 'src/utils/shared/twitter';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
 
 import { FarCast, SocialPlatform } from '../../../services/social/types';
@@ -19,10 +17,12 @@ import FCastComment from './FCastComment';
 import {
   PostCardActionsWrapper,
   PostCardContentWrapper,
+  PostCardFooterWrapper,
   PostCardHeaderWrapper,
   PostCardShowMoreWrapper,
   PostCardUserInfo,
   PostCardWrapper,
+  PostShareMenuBtn,
 } from '../PostCard';
 import Embed, { isImg } from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
@@ -147,22 +147,6 @@ export default function FCast({
                   followAction(userData.fid);
                 }
               }}
-              shareAction={() => {
-                tweetShare(
-                  SOCIAL_SHARE_TITLE,
-                  getSocialDetailShareUrlWithFarcaster(
-                    Buffer.from(cast.hash.data).toString('hex')
-                  )
-                );
-              }}
-              copyAction={async () => {
-                await window.navigator.clipboard.writeText(
-                  getSocialDetailShareUrlWithFarcaster(
-                    Buffer.from(cast.hash.data).toString('hex')
-                  )
-                );
-                toast.success('Copy success');
-              }}
             />
           </div>
         )}
@@ -187,27 +171,41 @@ export default function FCast({
       )}
       <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
       {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
-      <PostCardActionsWrapper
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <FCastLike
-          openFarcasterQR={openFarcasterQR}
-          cast={cast}
-          farcasterUserData={farcasterUserData}
-        />
-        <FCastComment
-          openFarcasterQR={openFarcasterQR}
-          cast={cast}
-          farcasterUserData={farcasterUserData}
-        />
-        <FCastRecast
-          openFarcasterQR={openFarcasterQR}
-          cast={cast}
-          farcasterUserData={farcasterUserData}
-        />
-      </PostCardActionsWrapper>
+      <PostCardFooterWrapper>
+        <PostCardActionsWrapper
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <FCastLike
+            openFarcasterQR={openFarcasterQR}
+            cast={cast}
+            farcasterUserData={farcasterUserData}
+          />
+          <FCastComment
+            openFarcasterQR={openFarcasterQR}
+            cast={cast}
+            farcasterUserData={farcasterUserData}
+          />
+          <FCastRecast
+            openFarcasterQR={openFarcasterQR}
+            cast={cast}
+            farcasterUserData={farcasterUserData}
+          />
+        </PostCardActionsWrapper>
+        <div
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <PostShareMenuBtn
+            shareLink={getSocialDetailShareUrlWithFarcaster(userData.fid)}
+            shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+            shareLinkEmbedTitle={cast.text}
+            popoverConfig={{ placement: 'top end', offset: 0 }}
+          />
+        </div>
+      </PostCardFooterWrapper>
     </PostCardWrapper>
   );
 }

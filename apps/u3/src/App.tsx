@@ -40,6 +40,8 @@ import { AppLensProvider } from './contexts/social/AppLensCtx';
 import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
+import { GlobalModalsProvider } from './contexts/shared/GlobalModalsCtx';
+import GlobalModals from './components/shared/modal/GlobalModals';
 
 const livepeerClient = createReactClient({
   provider: studioProvider({ apiKey: '' }),
@@ -72,12 +74,15 @@ function App() {
                     <BrowserRouter>
                       <FarcasterProvider>
                         <LivepeerConfig client={livepeerClient}>
-                          <AliveScope>
-                            <NavProvider>
-                              <LensGlobalModals />
-                              <Layout />
-                            </NavProvider>
-                          </AliveScope>
+                          <GlobalModalsProvider>
+                            <AliveScope>
+                              <NavProvider>
+                                <GlobalModals />
+                                <LensGlobalModals />
+                                <Layout />
+                              </NavProvider>
+                            </AliveScope>
+                          </GlobalModalsProvider>
                         </LivepeerConfig>
                       </FarcasterProvider>
                     </BrowserRouter>
