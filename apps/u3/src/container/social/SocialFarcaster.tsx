@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { trim } from 'lodash';
 
 import AddPostForm from 'src/components/social/AddPostForm';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -39,7 +40,8 @@ export default function SocialFarcaster() {
   } = useFarcasterCtx();
   const { isLogin } = useLogin();
 
-  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
+  const { mounted, firstLoadingDone, setFirstLoadingDone } =
+    useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
@@ -102,9 +104,18 @@ export default function SocialFarcaster() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+      return;
+    loadFirstFeeds();
+  }, [currentSearchParams]);
+
+  useEffect(() => {
+    if (firstLoadingDone) return;
+    if (feeds.length > 0) return;
+    if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, mounted]);
+  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {

@@ -2,6 +2,8 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { trim } from 'lodash';
+
 import Loading from 'src/components/common/loading/Loading';
 import AddPostForm from 'src/components/social/AddPostForm';
 import FollowingDefault from 'src/components/social/FollowingDefault';
@@ -45,7 +47,8 @@ export default function SocialFarcaster() {
     setPostScroll,
   } = useOutletContext<any>(); // TODO: any
 
-  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
+  const { mounted, firstLoadingDone, setFirstLoadingDone } =
+    useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const { data: activeLensProfile } = useActiveProfile();
@@ -106,8 +109,18 @@ export default function SocialFarcaster() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+      return;
     loadFirstFeeds();
-  }, [loadFirstFeeds, mounted]);
+  }, [currentSearchParams]);
+
+  useEffect(() => {
+    if (firstLoadingDone) return;
+    if (feeds.length > 0) return;
+    if (!mounted) return;
+
+    loadFirstFeeds();
+  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
