@@ -12,16 +12,18 @@ import {
   LensProvider,
   LensConfig,
   development,
-  useWalletLogin,
-  useWalletLogout,
-  useActiveProfile,
+  useLogin,
+  useLogout,
+  useSession,
   production,
-  useUpdateDispatcherConfig,
+  SessionType,
+  useUpdateProfileManagers,
+  Profile,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useSession as useU3Session } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import {
   BIOLINK_LENS_NETWORK,
@@ -35,6 +37,7 @@ import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
 
 type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
+  sessionProfile: Profile | null;
   isLogin: boolean;
   isLoginPending: boolean;
   lensLogin: () => void;
@@ -48,6 +51,7 @@ interface LensAuthContextValue {
 }
 
 export const LensAuthContext = createContext<LensAuthContextValue>({
+  sessionProfile: null,
   isLogin: false,
   isLoginPending: false,
   lensLogin: () => {},
@@ -79,26 +83,36 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const [commentModalData, setCommentModalData] =
     useState<CommentModalData>(null);
 
-  const { execute: login, isPending: isLoginPending } = useWalletLogin();
-  const { execute: lensLogout } = useWalletLogout();
-  const { data: wallet } = useActiveProfile();
+  const { execute: login, loading: isLoginPending } = useLogin();
+  const { execute: lensLogout } = useLogout();
+  const { data: session } = useSession();
 
   const { openConnectModal } = useConnectModal();
 
-  const { execute: updateDispatcher } = useUpdateDispatcherConfig({
-    profile: wallet,
-  });
+  const sessionProfile = useMemo(() => {
+    if (
+      !!session &&
+      session.type === SessionType.WithProfile &&
+      session.authenticated
+    ) {
+      return session.profile;
+    }
+    return null;
+  }, [session]);
+
+  const isLogin = useMemo(() => !!sessionProfile, [sessionProfile]);
+
+  const { execute: updateProfileManagers } = useUpdateProfileManagers();
 
   const updatedDispatcherFirst = useRef(false);
   useEffect(() => {
     if (updatedDispatcherFirst.current) return;
-    if (!wallet) return;
-    if (!wallet?.dispatcher) {
-      updateDispatcher({ enabled: true }).finally(() => {
-        updatedDispatcherFirst.current = true;
-      });
-    }
-  }, [wallet, updateDispatcher]);
+    if (!isLogin) return;
+    if (sessionProfile?.signless) return;
+    updateProfileManagers({ approveSignless: true }).finally(() => {
+      updatedDispatcherFirst.current = true;
+    });
+  }, [sessionProfile, updateProfileManagers]);
 
   const lensLoginStartRef = useRef(false);
   const lensLoginAdpater = async (connector: Connector) => {
@@ -131,31 +145,35 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [isConnected, openConnectModal, activeConnector, lensLoginAdpater]);
 
-  const isLogin = useMemo(() => !!wallet, [wallet]);
-
   // 每次lens登录成功后，更新lens biolink
-  const session = useSession();
+  const u3Session = useU3Session();
   const { profile } = useProfileState();
   const { upsertBioLink } = useBioLinkActions();
   useEffect(() => {
-    if (!!session?.id && !!profile?.id && !isLoginPending && !!wallet) {
+    if (
+      !!u3Session?.id &&
+      !!profile?.id &&
+      !isLoginPending &&
+      !!sessionProfile
+    ) {
       upsertBioLink({
-        did: session.id,
+        did: u3Session.id,
         bioLink: {
           profileID: profile.id,
           platform: BIOLINK_PLATFORMS.lens,
           network: BIOLINK_LENS_NETWORK,
-          handle: lensHandleToBioLinkHandle(wallet.handle),
-          data: JSON.stringify(wallet),
+          handle: lensHandleToBioLinkHandle(sessionProfile.handle.fullHandle),
+          data: JSON.stringify(sessionProfile),
         },
       });
     }
-  }, [session, profile, isLoginPending, wallet]);
+  }, [u3Session, profile, isLoginPending, sessionProfile]);
 
   return (
     <LensAuthContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
+        sessionProfile,
         isLogin,
         isLoginPending,
         lensLogin,
