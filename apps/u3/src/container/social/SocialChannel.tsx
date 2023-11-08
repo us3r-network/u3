@@ -14,7 +14,7 @@ import AddPostForm from 'src/components/social/AddPostForm';
 
 export default function SocialChannel() {
   const { openFarcasterQR } = useFarcasterCtx();
-
+  const currentChannelId = useRef('');
   const {
     currentChannel: channel,
     channelFeeds: feeds,
@@ -23,9 +23,29 @@ export default function SocialChannel() {
     channelMoreLoading: moreLoading,
     loadChannelMoreFeeds: loadMoreFeeds,
     channelFarcasterUserData: farcasterUserData,
+
+    postScroll,
+    setPostScroll,
   } = useOutletContext<any>();
 
-  console.log('...', { feeds });
+  useEffect(() => {
+    if (!channel?.channel_id) return;
+    if (currentChannelId.current !== channel.channel_id) {
+      document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
+    }
+    currentChannelId.current = channel.channel_id;
+  }, [channel?.channel_id]);
+
+  useEffect(() => {
+    if (!channel?.channel_id) return;
+    if (postScroll.currentParent !== channel?.channel_id) return;
+    const focusPost = document.getElementById(postScroll.id);
+    focusPost?.scrollIntoView({
+      behavior: 'instant',
+      block: 'center',
+      inline: 'center',
+    });
+  }, [postScroll, channel?.channel_id]);
 
   if (!channel) {
     return <div>404</div>;
@@ -69,6 +89,14 @@ export default function SocialChannel() {
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={farcasterUserData}
                     showMenuBtn
+                    cardClickAction={(e) => {
+                      if (channel?.channel_id)
+                        setPostScroll({
+                          currentParent: channel.channel_id,
+                          id: key,
+                          top: (e.target as HTMLDivElement).offsetTop,
+                        });
+                    }}
                   />
                 );
               }
