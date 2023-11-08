@@ -63,4 +63,17 @@ const LinkStyled = styled(Link)`
   &:hover {
     text-decoration: underline;
   }
+  outline: none;
+
+  &[data-hovered] {
+    outline: none;
+  }
+
+  &[data-pressed] {
+    outline: none;
+  }
+
+  &[data-focus-visible] {
+    outline: none;
+  }
 `;
