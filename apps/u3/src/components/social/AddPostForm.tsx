@@ -9,9 +9,7 @@ import {
 import { UserDataType, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-
-import { UserAvatar } from '@us3r-network/profile';
-import { MediaObject, useActiveProfile } from '@lens-protocol/react-web';
+import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
@@ -71,8 +69,11 @@ export default function AddPostForm({
     currUserInfo: farcasterUserInfo,
     openFarcasterQR,
   } = useFarcasterCtx();
-  const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { data: lensUserInfo } = useActiveProfile();
+  const {
+    sessionProfile: lensSessionProfile,
+    isLogin: isLoginLens,
+    setOpenLensLoginModal,
+  } = useLensCtx();
   const { createPost: createPostToLens } = useCreateLensPost();
 
   const [channelValue, setChannelValue] = useState(
@@ -198,9 +199,13 @@ export default function AddPostForm({
     if (!text) return;
     try {
       const media = await uploadSelectedImages();
+      const attachments =
+        media?.map(
+          (item) => ({ item: item.url, type: item.mimeType } as MediaImage)
+        ) || [];
       await createPostToLens(
         isShareForm ? text + shareData.shareLink : text,
-        media as MediaObject[]
+        attachments
       );
       toast.success('successfully posted to lens');
     } catch (error: unknown) {
@@ -307,9 +312,13 @@ export default function AddPostForm({
                     setPlatforms(new Set(platforms));
                   }}
                 >
-                  <Avatar src={getAvatar(lensUserInfo)} />
-                  <UserName>{lensUserInfo.name}</UserName>
-                  <UserHandle>@{lensUserInfo.handle}</UserHandle>
+                  <Avatar src={getAvatar(lensSessionProfile)} />
+                  <UserName>
+                    {lensSessionProfile?.metadata?.displayName}
+                  </UserName>
+                  <UserHandle>
+                    @{lensSessionProfile?.handle.fullHandle}
+                  </UserHandle>
                   <LensIcon />
                 </PlatformToggleButton>
               ) : (

@@ -1,57 +1,57 @@
 import { useCallback } from 'react';
-import {
-  CollectPolicyType,
-  ContentFocus,
-  MediaObject,
-  ReferencePolicyType,
-  useActiveProfile,
-  useCreatePost,
-} from '@lens-protocol/react-web';
+import { useCreatePost } from '@lens-protocol/react-web';
+import { article, textOnly, MediaImage } from '@lens-protocol/metadata';
 import { lensUploadToArweave } from '../../../utils/social/lens/upload';
 
 export function useCreateLensPost() {
-  const { data: publisher } = useActiveProfile();
-  const {
-    execute: create,
-    error,
-    isPending,
-  } = useCreatePost({
-    publisher,
-    upload: lensUploadToArweave,
-  });
+  const { execute, error, loading } = useCreatePost();
 
   const createText = useCallback(
-    async (content: string) =>
-      create({
+    async (content: string) => {
+      const metadata = textOnly({
         content,
-        contentFocus: ContentFocus.TEXT_ONLY,
-        locale: 'en',
-        collect: {
-          type: CollectPolicyType.NO_COLLECT,
-        },
-        reference: {
-          type: ReferencePolicyType.ANYONE,
-        },
-      }),
-    [create]
+      });
+      const uri = await lensUploadToArweave(metadata);
+      const result = await execute({
+        metadata: uri,
+      });
+      if (result.isFailure()) {
+        throw new Error(result.error.message);
+      }
+      // this might take a while, depends on the type of tx (on-chain or Momoka)
+      // and the congestion of the network
+      const completion = await result.value.waitForCompletion();
+
+      if (completion.isFailure()) {
+        throw new Error(completion.error.message);
+      }
+    },
+    [execute]
   );
 
   const createPost = useCallback(
-    async (content: string, media?: MediaObject[]) =>
-      create({
+    async (content: string, attachments?: MediaImage[]) => {
+      const metadata = article({
         content,
-        contentFocus: ContentFocus.ARTICLE,
-        locale: 'en',
-        media: media || [],
-        collect: {
-          type: CollectPolicyType.NO_COLLECT,
-        },
-        reference: {
-          type: ReferencePolicyType.ANYONE,
-        },
-      }),
-    [create]
+        attachments,
+      });
+      const uri = await lensUploadToArweave(metadata);
+      const result = await execute({
+        metadata: uri,
+      });
+      if (result.isFailure()) {
+        throw new Error(result.error.message);
+      }
+      // this might take a while, depends on the type of tx (on-chain or Momoka)
+      // and the congestion of the network
+      const completion = await result.value.waitForCompletion();
+
+      if (completion.isFailure()) {
+        throw new Error(completion.error.message);
+      }
+    },
+    [execute]
   );
 
-  return { createText, createPost, error, isPending };
+  return { createText, createPost, error, isPending: loading };
 }
