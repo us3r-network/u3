@@ -2,10 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useOutletContext, useParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import {
-  FarcasterPageInfo,
-  getFarcasterChannelFeeds,
-} from 'src/services/social/api/farcaster';
 import styled from 'styled-components';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -14,108 +10,42 @@ import {
   LoadingMoreWrapper,
   LoadingWrapper,
 } from 'src/components/profile/FollowListWidgets';
-import { SocialPlatform } from 'src/services/social/types';
-import { FeedsType } from 'src/components/social/SocialPageNav';
-import FarcasterChannelData from 'src/constants/warpcast.json';
-import { getSocialScrollWrapperId } from 'src/utils/social/keep-alive';
 import AddPostForm from 'src/components/social/AddPostForm';
-import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
 
 export default function SocialChannel() {
-  const firstRef = useRef(false);
-  const { channelId } = useParams();
-  const [feeds, setFeeds] = useState([]);
-  const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
-  const [farcasterUserData, setFarcasterUserData] = useState<{
-    [key: string]: { type: number; value: string }[];
-  }>({});
   const { openFarcasterQR } = useFarcasterCtx();
-  const [firstLoading, setFirstLoading] = useState(false);
-  const [moreLoading, setMoreLoading] = useState(false);
-  const { socialPlatform, feedsType } = useOutletContext<{
-    socialPlatform: SocialPlatform | '';
-    feedsType: FeedsType;
-  }>();
+  const currentChannelId = useRef('');
+  const {
+    currentChannel: channel,
+    channelFeeds: feeds,
+    channelPageInfo: pageInfo,
+    channelFirstLoading: firstLoading,
+    channelMoreLoading: moreLoading,
+    loadChannelMoreFeeds: loadMoreFeeds,
+    channelFarcasterUserData: farcasterUserData,
 
-  const channel = useMemo(() => {
-    const channelData = FarcasterChannelData.find(
-      (c) => c.channel_id === channelId
-    );
-    return channelData;
-  }, [channelId]);
-
-  const loadChannelCasts = useCallback(async () => {
-    if (!channel) return;
-    if (firstRef.current) return;
-    firstRef.current = true;
-
-    const resp = await getFarcasterChannelFeeds({
-      channelId: channel.channel_id,
-      pageSize: FEEDS_PAGE_SIZE,
-    });
-    if (resp.data.code !== 0) {
-      console.error('loadChannelCasts error');
-      return;
-    }
-
-    setFeeds(resp.data.data.data);
-    setPageInfo(resp.data.data.pageInfo);
-    const temp: { [key: string]: { type: number; value: string }[] } = {};
-    resp.data.data.farcasterUserData?.forEach((item) => {
-      if (temp[item.fid]) {
-        temp[item.fid].push(item);
-      } else {
-        temp[item.fid] = [item];
-      }
-    });
-    setFarcasterUserData(temp);
-  }, [channel, firstRef]);
-
-  const loadMoreFeeds = useCallback(async () => {
-    console.log('loadMoreFeeds');
-    if (!channel) return;
-    try {
-      setMoreLoading(true);
-      const resp = await getFarcasterChannelFeeds({
-        channelId: channel.channel_id,
-        pageSize: FEEDS_PAGE_SIZE,
-        endFarcasterCursor: pageInfo?.endFarcasterCursor,
-      });
-      if (resp.data.code !== 0) {
-        console.error('loadChannelCasts error');
-        return;
-      }
-      setFeeds((prev) => [...prev, ...resp.data.data.data]);
-      setPageInfo(resp.data.data.pageInfo);
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      resp.data.data.farcasterUserData?.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
-      setFarcasterUserData((pre) => ({ ...pre, ...temp }));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setMoreLoading(false);
-    }
-  }, [pageInfo]);
+    postScroll,
+    setPostScroll,
+  } = useOutletContext<any>();
 
   useEffect(() => {
-    setFirstLoading(true);
-    loadChannelCasts()
-      .catch((err) => {
-        console.error(err);
-      })
-      .finally(() => {
-        setFirstLoading(false);
-      });
-    return () => {
-      firstRef.current = false;
-    };
-  }, [loadChannelCasts]);
+    if (!channel?.channel_id) return;
+    if (currentChannelId.current !== channel.channel_id) {
+      document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
+    }
+    currentChannelId.current = channel.channel_id;
+  }, [channel?.channel_id]);
+
+  useEffect(() => {
+    if (!channel?.channel_id) return;
+    if (postScroll.currentParent !== channel?.channel_id) return;
+    const focusPost = document.getElementById(postScroll.id);
+    focusPost?.scrollIntoView({
+      behavior: 'instant',
+      block: 'center',
+      inline: 'center',
+    });
+  }, [postScroll, channel?.channel_id]);
 
   if (!channel) {
     return <div>404</div>;
@@ -133,6 +63,7 @@ export default function SocialChannel() {
         </LoadingWrapper>
       )) || (
         <InfiniteScroll
+          style={{ overflow: 'hidden' }}
           dataLength={feeds.length}
           next={() => {
             if (moreLoading) return;
@@ -141,11 +72,9 @@ export default function SocialChannel() {
           hasMore={pageInfo?.hasNextPage || false}
           scrollThreshold="1000px"
           loader={
-            moreLoading ? (
-              <LoadingMoreWrapper>
-                <Loading />
-              </LoadingMoreWrapper>
-            ) : null
+            <LoadingMoreWrapper>
+              <Loading />
+            </LoadingMoreWrapper>
           }
           scrollableTarget="social-scroll-wrapper"
         >
@@ -160,6 +89,14 @@ export default function SocialChannel() {
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={farcasterUserData}
                     showMenuBtn
+                    cardClickAction={(e) => {
+                      if (channel?.channel_id)
+                        setPostScroll({
+                          currentParent: channel.channel_id,
+                          id: key,
+                          top: (e.target as HTMLDivElement).offsetTop,
+                        });
+                    }}
                   />
                 );
               }
