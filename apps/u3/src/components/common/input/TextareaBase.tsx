@@ -19,7 +19,7 @@ export const TextareaBaseCss = css`
   outline: none;
   display: flex;
   align-items: center;
-  padding: 0px 12px;
+  padding: 12px;
   box-sizing: border-box;
   background: #1a1e23;
   border: 1px solid #39424c;

@@ -43,14 +43,25 @@ import useLogin from '../../hooks/shared/useLogin';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { Channel } from '../../services/social/types/farcaster';
 import ChannelSelect from './ChannelSelect';
-import { getChannelFromName } from '../../utils/social/farcaster/getChannel';
+import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
+import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 
+export type ShareData = {
+  shareLink: string;
+  shareLinkDefaultPlatform: SocialPlatform;
+  shareLinkDefaultText: string;
+  shareLinkEmbedTitle: string;
+};
 export default function AddPostForm({
   onSuccess,
   channel,
+  isShareForm,
+  shareData,
 }: {
   onSuccess?: () => void;
   channel?: Channel;
+  isShareForm?: boolean;
+  shareData?: ShareData;
 }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const {
@@ -64,7 +75,9 @@ export default function AddPostForm({
   const { data: lensUserInfo } = useActiveProfile();
   const { createPost: createPostToLens } = useCreateLensPost();
 
-  const [channelValue, setChannelValue] = useState(channel?.name || 'Home');
+  const [channelValue, setChannelValue] = useState(
+    channel?.channel_id || 'Home'
+  );
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -142,7 +155,7 @@ export default function AddPostForm({
     if (!farcasterUserFid) return;
     let parentUrl;
     if (channelValue !== 'Home') {
-      const ch = getChannelFromName(channelValue);
+      const ch = getChannelFromId(channelValue);
       parentUrl = ch?.parent_url;
     }
     try {
@@ -151,7 +164,7 @@ export default function AddPostForm({
       const cast = (
         await makeCastAdd(
           {
-            text,
+            text: isShareForm ? text + shareData.shareLink : text,
             embeds: [...uploadedLinks],
             embedsDeprecated: [],
             mentions: [],
@@ -171,19 +184,30 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to farcaster');
     }
-  }, [text, encryptedSigner, channel, channelValue, farcasterUserFid]);
+  }, [
+    text,
+    encryptedSigner,
+    channel,
+    channelValue,
+    farcasterUserFid,
+    isShareForm,
+    shareData,
+  ]);
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
     try {
       const media = await uploadSelectedImages();
-      await createPostToLens(text, media as MediaObject[]);
+      await createPostToLens(
+        isShareForm ? text + shareData.shareLink : text,
+        media as MediaObject[]
+      );
       toast.success('successfully posted to lens');
     } catch (error: unknown) {
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createPostToLens]);
+  }, [text, createPostToLens, isShareForm, shareData]);
 
   const handleSubmit = useCallback(async () => {
     if (!text) {
@@ -209,9 +233,16 @@ export default function AddPostForm({
 
   useEffect(() => {
     if (channel) {
-      setChannelValue(channel.name || 'Home');
+      setChannelValue(channel.channel_id || 'Home');
     }
   }, [channel]);
+
+  useEffect(() => {
+    if (isShareForm) {
+      setText(shareData.shareLinkDefaultText || '');
+      setPlatforms(new Set([shareData.shareLinkDefaultPlatform]));
+    }
+  }, [isShareForm, shareData]);
 
   return (
     <Wrapper>
@@ -315,6 +346,9 @@ export default function AddPostForm({
             )}
           </ContentWrapper>
         </UserPostWrapepr>
+        {isShareForm && shareData && (
+          <ShareEmbedCard title={shareData.shareLinkEmbedTitle} />
+        )}
         <FooterWrapper>
           <input
             type="file"
@@ -335,9 +369,8 @@ export default function AddPostForm({
           </SendEmojiBtn>
 
           <ChannelSelect
-            channel={channel}
-            selectChannelName={channelValue}
-            setSelectChannelName={(v) => {
+            selectChannelId={channelValue}
+            setSelectChannelId={(v) => {
               setChannelValue(v);
             }}
           />

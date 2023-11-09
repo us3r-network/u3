@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useActiveProfile } from '@lens-protocol/react-web';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { trim } from 'lodash';
 
 import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
@@ -56,6 +57,7 @@ export default function SocialAll() {
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
+
   const currentSearchParams = useMemo(
     () => ({
       keyword: searchParams.get('keyword') || '',
@@ -64,7 +66,6 @@ export default function SocialAll() {
   );
 
   const loadFirstFeeds = useCallback(async () => {
-    setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
         activeLensProfileId: activeLensProfile?.id,
@@ -123,6 +124,13 @@ export default function SocialAll() {
     socialPlatform,
     isConnectedFarcaster,
   ]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+      return;
+    loadFirstFeeds();
+  }, [currentSearchParams]);
 
   useEffect(() => {
     if (firstLoadingDone) return;

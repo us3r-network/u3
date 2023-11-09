@@ -1,9 +1,8 @@
 import { useMemo, useState } from 'react';
-import { Channel } from 'src/services/social/types/farcaster';
 import styled from 'styled-components';
 import {
   Button,
-  Item,
+  ListBoxItem,
   ListBox,
   Popover,
   Select,
@@ -13,13 +12,11 @@ import ArrowDown from '../common/icons/ArrowDown';
 import { getChannel } from '../../utils/social/farcaster/getChannel';
 
 export default function ChannelSelect({
-  channel,
-  selectChannelName,
-  setSelectChannelName,
+  selectChannelId,
+  setSelectChannelId,
 }: {
-  channel: Channel;
-  selectChannelName: string;
-  setSelectChannelName: (name: string) => void;
+  selectChannelId: string;
+  setSelectChannelId: (id: string) => void;
 }) {
   const [value, setValue] = useState('');
   const options = useMemo(() => {
@@ -37,16 +34,20 @@ export default function ChannelSelect({
     ].filter((c) => {
       return c.name.toLowerCase().includes(value.toLowerCase());
     });
-  }, [channel, value]);
+  }, [value]);
+
+  const channel = useMemo(() => {
+    return options.find((c) => c.channel_id === selectChannelId);
+  }, [options, selectChannelId]);
 
   return (
     <SelectStyled
-      selectedKey={selectChannelName}
+      selectedKey={channel?.channel_id || 'Home'}
       onSelectionChange={(k) => {
-        setSelectChannelName(k as string);
+        setSelectChannelId(k as string);
         setValue('');
       }}
-      aria-label="Select a channel"
+      aria-label="SelectStyled"
     >
       <ButtonStyled>
         <SelectValue />
@@ -188,7 +189,7 @@ const PopoverStyled = styled(Popover)`
   }
 `;
 
-const ItemStyled = styled(Item)`
+const ItemStyled = styled(ListBoxItem)`
   margin: 0px;
   color: #fff;
   border-radius: 6px;

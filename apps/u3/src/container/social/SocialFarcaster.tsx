@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { trim } from 'lodash';
 
 import AddPostForm from 'src/components/social/AddPostForm';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -100,6 +101,13 @@ export default function SocialFarcaster() {
     feedsType,
     isConnectedFarcaster,
   ]);
+
+  useEffect(() => {
+    if (!mounted) return;
+    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+      return;
+    loadFirstFeeds();
+  }, [currentSearchParams]);
 
   useEffect(() => {
     if (firstLoadingDone) return;

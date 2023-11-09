@@ -2,6 +2,8 @@ import { useActiveProfile } from '@lens-protocol/react-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { trim } from 'lodash';
+
 import Loading from 'src/components/common/loading/Loading';
 import AddPostForm from 'src/components/social/AddPostForm';
 import FollowingDefault from 'src/components/social/FollowingDefault';
@@ -106,10 +108,17 @@ export default function SocialFarcaster() {
   ]);
 
   useEffect(() => {
+    if (!mounted) return;
+    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+      return;
+    loadFirstFeeds();
+  }, [currentSearchParams]);
+
+  useEffect(() => {
     if (firstLoadingDone) return;
     if (feeds.length > 0) return;
     if (!mounted) return;
-    console.log('loadFirstFeeds', Date.now());
+
     loadFirstFeeds();
   }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
