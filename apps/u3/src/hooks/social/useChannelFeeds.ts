@@ -52,7 +52,7 @@ export default function useChannelFeeds() {
           temp[item.fid] = [item];
         }
       });
-      setFarcasterUserData(temp);
+      setFarcasterUserData((pre) => ({ ...pre, ...temp }));
     } catch (error) {
       console.error(error);
       setFeeds((prev) => ({ ...prev, [channel.channel_id]: [] }));
