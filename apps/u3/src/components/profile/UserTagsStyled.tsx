@@ -1,7 +1,7 @@
 import { UserTags, UserTagAddForm, UserTagsProps } from '@us3r-network/profile';
 import styled from 'styled-components';
 import { useState } from 'react';
-import { Dialog, Heading, Item, Modal } from 'react-aria-components';
+import { Dialog, Heading, Modal } from 'react-aria-components';
 import { InputBaseCss } from '../common/input/InputBase';
 import { ButtonPrimaryLineCss } from '../common/button/ButtonBase';
 import { Add } from '../common/icons/add';
