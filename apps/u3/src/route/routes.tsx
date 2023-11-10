@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-03 14:03:21
+ * @LastEditTime: 2023-11-10 09:56:17
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -237,12 +237,7 @@ export const routes: CutomRouteObject[] = [
 
   {
     path: '/social',
-    element: (
-      <>
-        {!isMobile && <Banner />}
-        {loadContainerElement('social/SocialLayout')}
-      </>
-    ),
+    element: loadContainerElement('social/SocialLayout'),
     key: RouteKey.socialLayout,
     children: [
       {
