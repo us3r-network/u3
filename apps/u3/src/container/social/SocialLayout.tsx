@@ -25,14 +25,14 @@ import SearchInput from '../../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialLayout() {
   const location = useLocation();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { loading: lensSessionLoading } = useSession();
-  const { ownedBy: lensProfileOwnedBy } = lensSessionProfile || {};
-  const { address: lensProfileOwnedByAddress } = lensProfileOwnedBy || {};
+  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const [postScroll, setPostScroll] = useState({
     currentParent: '',

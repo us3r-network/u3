@@ -22,6 +22,7 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-lens');
@@ -52,8 +53,8 @@ export default function SocialFarcaster() {
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const { sessionProfile } = useLensCtx();
-  const { ownedBy: lensProfileOwnedByAddress, id: lensSessionProfileId } =
-    sessionProfile || {};
+  const { id: lensSessionProfileId } = sessionProfile || {};
+  const lensProfileOwnedByAddress = getOwnedByAddress(sessionProfile);
 
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
