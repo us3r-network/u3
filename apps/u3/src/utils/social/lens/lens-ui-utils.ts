@@ -12,8 +12,8 @@ export const lensPublicationToPostCardData = (
   return {
     platform: SocialPlatform.Lens,
     avatar: getAvatar(publication?.by),
-    name: getName(publication?.by),
-    handle: getHandle(publication?.by),
+    name: getName(publication?.by) || publication?.by?.id,
+    handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
     totalLikes: publication?.stats?.upvotes || 0,
@@ -29,8 +29,8 @@ export const lensPublicationToReplyCardData = (
   return {
     platform: SocialPlatform.Lens,
     avatar: getAvatar(publication?.by),
-    name: getName(publication?.by),
-    handle: getHandle(publication?.by),
+    name: getName(publication?.by) || publication?.by?.id,
+    handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
     totalLikes: publication?.stats?.upvotes || 0,

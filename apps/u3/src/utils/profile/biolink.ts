@@ -21,7 +21,9 @@ export const isFarcasterHandle = (handle: string) => {
 };
 export const lensHandleToBioLinkHandle = (handle: string) => {
   return handle
-    ? `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_LENS_SUFFIX}`
+    ? `${handle
+        .replace('test/', '')
+        .replace(/\.[^.]+$/, '')}.${BIOLINK_LENS_SUFFIX}`
     : '';
 };
 export const farcasterHandleToBioLinkHandle = (handle: string) => {

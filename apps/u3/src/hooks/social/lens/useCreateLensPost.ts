@@ -31,10 +31,13 @@ export function useCreateLensPost() {
 
   const createPost = useCallback(
     async (content: string, attachments?: MediaImage[]) => {
-      const metadata = article({
+      const metadataAttrs = {
         content,
-        attachments,
-      });
+      };
+      if (attachments && attachments.length > 0) {
+        Object.assign(metadataAttrs, { attachments });
+      }
+      const metadata = article(metadataAttrs);
       const uri = await lensUploadToArweave(metadata);
       const result = await execute({
         metadata: uri,

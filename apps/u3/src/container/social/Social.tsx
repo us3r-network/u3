@@ -24,6 +24,7 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialAll() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -31,8 +32,8 @@ export default function SocialAll() {
   const { isLogin } = useLogin();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const fid = useFarcasterCurrFid();
-  const { ownedBy: lensProfileOwnedByAddress, id: lensSessionProfileId } =
-    lensSessionProfile || {};
+  const { id: lensSessionProfileId } = lensSessionProfile || {};
+  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const {
     socialPlatform,

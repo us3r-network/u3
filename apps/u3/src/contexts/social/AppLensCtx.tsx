@@ -20,6 +20,8 @@ import {
   useUpdateProfileManagers,
   Profile,
   PrimaryPublication,
+  useProfiles,
+  ProfileId,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
@@ -68,6 +70,20 @@ const lensConfig: LensConfig = {
   environment: LENS_ENV === 'production' ? production : development,
 };
 
+// TODO : 兼容v2登录，为了在登录前获取钱包对应的profileID
+
+let walletProfileId = '';
+const getWalletProfileId = (): Promise<ProfileId> => {
+  return new Promise((resolve) => {
+    const intervalId = setInterval(() => {
+      if (walletProfileId) {
+        clearInterval(intervalId);
+        resolve(walletProfileId as ProfileId);
+      }
+    }, 100);
+  });
+};
+
 export function AppLensProvider({ children }: PropsWithChildren) {
   return (
     <LensProvider config={lensConfig}>
@@ -113,6 +129,22 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     });
   }, [sessionProfile, updateProfileManagers]);
 
+  // TODO : 兼容v2登录，为了在登录前获取钱包对应的profileID
+  const [walletAddress, setWalletAddress] = useState<string>(null);
+  const profilesWhere = {};
+  if (walletAddress) {
+    Object.assign(profilesWhere, { ownedBy: [walletAddress] });
+  }
+  const { data: profiles } = useProfiles({
+    where: profilesWhere,
+  });
+  const firstProfile = profiles?.[0] || { id: '' };
+  const { id: firstProfileId } = firstProfile;
+  useEffect(() => {
+    walletProfileId = firstProfileId;
+  }, [firstProfileId]);
+
+  // const { execute: fetchProfile } = useLazyProfile();
   const lensLoginStartRef = useRef(false);
   const lensLoginAdpater = async (connector: Connector) => {
     const chainId = await connector.getChainId();
@@ -123,7 +155,11 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
     const walletClient = await connector.getWalletClient();
     const { address } = walletClient.account;
-    await login({ address });
+    walletProfileId = '';
+    setWalletAddress(address);
+    const profileId = await getWalletProfileId();
+
+    await login({ address, profileId });
   };
 
   const { connector: activeConnector, isConnected } = useAccount({
