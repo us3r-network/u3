@@ -3,7 +3,8 @@
 import { PublicationMetadata } from '@lens-protocol/react-web';
 
 const getContent = (metadata: PublicationMetadata) => {
-  switch (metadata.__typename) {
+  const typename = metadata?.__typename;
+  switch (typename) {
     case 'ArticleMetadataV3':
     case 'TextOnlyMetadataV3':
     case 'LinkMetadataV3':
