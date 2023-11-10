@@ -1,17 +1,27 @@
 /* eslint-disable consistent-return */
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { IdRegistryABI } from 'src/services/social/abi/farcaster/IdRegistryABI';
-import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
-import { useAccount, useContractRead, useNetwork } from 'wagmi';
+import { IdRegistryContract } from 'src/constants/farcaster';
+import { useAccount } from 'wagmi';
+import { createPublicClient, http } from 'viem';
+import { optimism } from 'viem/chains';
+
+import { getFarcasterUserInfo } from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
 import { getProfileBiolink } from 'src/services/shared/api/login';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
 } from 'src/utils/profile/biolink';
+
 import { FarcasterBioLinkData } from './useFarcasterQR';
+
+const opPublicClient = createPublicClient({
+  chain: optimism,
+  transport: http(),
+});
 
 export default function useFarcasterWallet() {
   const { didSessionStr } = useU3Login();
@@ -22,17 +32,11 @@ export default function useFarcasterWallet() {
   const [walletCheckStatus, setWalletCheckStatus] = useState<string>('');
   const [fname, setFname] = useState<string>('');
   const [hasStorage, setHasStorage] = useState<boolean>(false);
-  const { address } = useAccount();
-  const { chain } = useNetwork();
-
-  const { data: idOf, status } = useContractRead({
-    address: IdRegistryContract,
-    abi: IdRegistryABI,
-    functionName: 'idOf',
-    args: [address],
-    enabled: Boolean(address),
-    chainId: OP_CHAIN_ID,
-  });
+  const { address, isConnected } = useAccount();
+  const [mounted, setMounted] = useState(false);
+  const [walletUserData, setWalletUserData] = useState<
+    { type: number; value: string }[]
+  >([]);
 
   const signerCheck = async (fid: number) => {
     if (!fid) return;
@@ -103,47 +107,55 @@ export default function useFarcasterWallet() {
     }
   };
 
-  useEffect(() => {
-    // console.log('wallet check effect', { status, walletFid });
-    if (status === 'idle') {
-      setWalletCheckStatus('idle');
+  const getCurrUserInfo = async (fid: number) => {
+    const resp = await getFarcasterUserInfo([fid]);
+    if (resp.data.code === 0) {
+      setWalletUserData(resp.data.data);
+    }
+    setWalletCheckStatus('valid');
+  };
+
+  const getWalletFid = useCallback(async () => {
+    const data = await opPublicClient.readContract({
+      address: IdRegistryContract,
+      abi: IdRegistryABI,
+      functionName: 'idOf',
+      args: [address],
+    });
+    if (!data) {
+      setWalletCheckStatus('done');
       return;
     }
-    if (status === 'loading') return;
-    if (walletFid === undefined) {
+    const fid = Number(data);
+    const checkResult = await Promise.all([
+      signerCheck(fid),
+      fnameCheck(fid),
+      storageCheck(fid),
+    ]);
+    if (!checkResult[0] || !checkResult[1] || !checkResult[2]) {
       setWalletCheckStatus('done');
       return;
     }
 
-    setWalletCheckStatus('loading');
-    console.log('wallet check start', { walletFid });
-    Promise.all([
-      signerCheck(walletFid),
-      fnameCheck(walletFid),
-      storageCheck(walletFid),
-    ])
-      .then((data) => {
-        setWalletSigner(data[0]);
-        setFname(data[1]);
-        setHasStorage(data[2]);
-        console.log('promise wallet check done', data);
-      })
-      .finally(() => {
-        // TODO: timeout is wait for state to update
-        setTimeout(() => {
-          console.log('wallet check done');
-          setWalletCheckStatus('done');
-        }, 100);
-      });
-  }, [walletFid, status, didSessionStr]);
+    setWalletFid(fid);
+    setWalletSigner(checkResult[0]);
+    setFname(checkResult[1]);
+    setHasStorage(checkResult[2]);
+    getCurrUserInfo(fid);
+  }, [address]);
 
   useEffect(() => {
-    if (idOf) {
-      setWalletFid(Number(idOf));
-    } else if (chain?.id !== 1) {
-      setWalletFid(undefined);
+    if (!mounted) return;
+    if (!isConnected) {
+      setWalletCheckStatus('done');
+      return;
     }
-  }, [chain?.id, idOf]);
+    getWalletFid();
+  }, [getWalletFid, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return {
     walletCheckStatus,
@@ -152,5 +164,6 @@ export default function useFarcasterWallet() {
     fname,
     hasStorage,
     walletFid,
+    walletUserData,
   };
 }

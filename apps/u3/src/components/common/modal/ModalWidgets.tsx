@@ -32,7 +32,6 @@ export const ModalTitle = styled.h3`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  margin: 0;
 `;
 
 export const ModalDescription = styled.p`
