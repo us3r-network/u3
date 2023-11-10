@@ -1,7 +1,7 @@
 import {
   Profile,
   useFollow,
-  useProfilesToFollow,
+  useRecommendedProfiles,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -26,12 +26,17 @@ const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {
   const navigate = useNavigate();
   const { isLogin: isLoginU3 } = useLogin();
-  const { isLogin: isLoginLens } = useLensCtx();
-  const { data: lensProfiles } = useProfilesToFollow();
+  const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
+  const { data: lensProfiles } = useRecommendedProfiles({
+    for: lensProfile.id,
+  });
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
       lensProfiles
-        ?.filter((profile) => profile.name && profile.name !== '')
+        ?.filter(
+          (profile) =>
+            profile.metadata.displayName && profile.metadata.displayName !== ''
+        )
         .slice(0, SUGGEST_NUM),
     [lensProfiles, isLoginLens]
   );
