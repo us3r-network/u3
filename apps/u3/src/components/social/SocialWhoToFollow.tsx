@@ -28,7 +28,7 @@ export default function SocialWhoToFollow() {
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
   const { data: lensProfiles } = useRecommendedProfiles({
-    for: lensProfile.id,
+    for: lensProfile?.id,
   });
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
