@@ -1,5 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { Profile, useActiveProfile, useFollow } from '@lens-protocol/react-web';
+import { Profile, useFollow } from '@lens-protocol/react-web';
 import { useCallback, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
@@ -13,6 +13,7 @@ import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { useXmtpClient } from '../../../contexts/message/XmtpClientCtx';
+import { canFollow, isFollowedByMe } from '../../../utils/social/lens/profile';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -36,12 +37,8 @@ export default function ProfileBtns({
 
   const { following: farcasterFollowings } = useFarcasterCtx();
   const lensProfileFirst = lensProfiles?.[0];
-  const { data: activeProfile } = useActiveProfile();
 
-  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
-    followee: lensProfileFirst || ({ id: '' } as Profile),
-    follower: activeProfile,
-  });
+  const { execute: lensFollow, loading: lensFollowIsPending } = useFollow();
 
   const { followAction: fcastFollow, isPending: fcastFollowIsPending } =
     useFarcasterFollowAction();
@@ -55,11 +52,11 @@ export default function ProfileBtns({
     if (
       !lensFollowIsPending &&
       lensProfileFirst &&
-      !lensProfileFirst.isFollowedByMe &&
-      lensProfileFirst?.followStatus?.canFollow
+      !isFollowedByMe(lensProfileFirst) &&
+      canFollow(lensProfileFirst)
     ) {
       try {
-        await lensFollow();
+        await lensFollow({ profile: lensProfileFirst });
         toast.success('Lens follow success!');
       } catch (error) {
         toast.error(error.message);
@@ -80,9 +77,9 @@ export default function ProfileBtns({
   ]);
 
   const isFollowing =
-    (lensProfileFirst?.isFollowedByMe && fcastIsFollowing) ||
+    (isFollowedByMe(lensProfileFirst) && fcastIsFollowing) ||
     (fid && fcastIsFollowing && !lensProfileFirst) ||
-    (lensProfileFirst && lensProfileFirst?.isFollowedByMe && !fid);
+    (lensProfileFirst && isFollowedByMe(lensProfileFirst) && !fid);
 
   const followActionDisabled =
     lensFollowIsPending || fcastFollowIsPending || isFollowing;
