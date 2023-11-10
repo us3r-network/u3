@@ -1,14 +1,13 @@
 /* eslint-disable no-underscore-dangle */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import {
-  Notification as LensNotification,
-  Post,
-} from '@lens-protocol/react-web';
+import { Notification as LensNotification } from '@lens-protocol/react-web';
 
 import { MessageType, ReactionType } from '@farcaster/hub-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import dayjs from 'dayjs';
+import getContent from 'src/utils/social/lens/getContent';
+import { getHandle, getName } from 'src/utils/social/lens/profile';
 import { useNotificationStore } from '../../contexts/notification/NotificationStoreCtx';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import { FarcasterNotification } from '../../services/social/api/farcaster';
@@ -57,14 +56,6 @@ export default function NotificationModal() {
           >
             <NotificationList>
               {notifications.map((notification) => {
-                if ('notificationId' in notification) {
-                  return (
-                    <LensNotificationItem
-                      key={notification.notificationId}
-                      notification={notification}
-                    />
-                  );
-                }
                 if ('message_hash' in notification) {
                   return (
                     <FarcasterNotificationItem
@@ -73,6 +64,14 @@ export default function NotificationModal() {
                       key={Buffer.from(notification.message_hash).toString(
                         'hex'
                       )}
+                    />
+                  );
+                }
+                if ('id' in notification) {
+                  return (
+                    <LensNotificationItem
+                      key={notification.id}
+                      notification={notification}
                     />
                   );
                 }
@@ -219,12 +218,11 @@ interface LensNotificationItemProps {
 }
 
 enum LensNotificationType {
-  NEW_FOLLOWER = 'NewFollowerNotification',
-  NEW_COLLECT = 'NewCollectNotification',
-  NEW_COMMENT = 'NewCommentNotification',
-  NEW_MIRROR = 'NewMirrorNotification',
-  NEW_MENTION = 'NewMentionNotification',
-  NEW_REACTION = 'NewReactionNotification',
+  NEW_FOLLOWER = 'FollowNotification',
+  NEW_COMMENT = 'CommentNotification',
+  NEW_MIRROR = 'MirrorNotification',
+  NEW_MENTION = 'MentionNotification',
+  NEW_REACTION = 'ReactionNotification',
 }
 
 function LensNotificationItem({
@@ -243,14 +241,19 @@ function LensNotificationItem({
             setOpenNotificationModal(false);
           }}
         >
-          <Avatar src={getAvatar(notification.profile)} />
+          <Avatar src={getAvatar(notification.comment.by)} />
           <UserActionWraper>
             <UserAction>
-              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
+              <u>
+                {getName(notification.comment.by) ||
+                  getHandle(notification.comment.by)}
+              </u>{' '}
               commented on your post
             </UserAction>
-            <PostText>{notification.comment?.metadata?.content}</PostText>
-            <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
+            <PostText>{getContent(notification.comment.metadata)}</PostText>
+            <DateText>
+              {dayjs(notification.comment.createdAt).fromNow()}
+            </DateText>
           </UserActionWraper>
           <LensIcon />
         </NotificationItem>
@@ -264,16 +267,21 @@ function LensNotificationItem({
             setOpenNotificationModal(false);
           }}
         >
-          <Avatar src={getAvatar(notification.profile)} />
+          <Avatar src={getAvatar(notification.reactions[0].profile)} />
           <UserActionWraper>
             <UserAction>
-              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
-              like your cast
+              <u>
+                {getName(notification.reactions[0].profile) ||
+                  getHandle(notification.reactions[0].profile)}
+              </u>{' '}
+              like your post
             </UserAction>
-            <PostText>
-              {(notification.publication as Post)?.metadata?.content}
-            </PostText>
-            <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
+            <PostText>{getContent(notification.publication.metadata)}</PostText>
+            <DateText>
+              {dayjs(
+                notification.reactions[0].reactions[0].reactedAt
+              ).fromNow()}
+            </DateText>
           </UserActionWraper>
           <LensIcon />
         </NotificationItem>
@@ -287,14 +295,19 @@ function LensNotificationItem({
             setOpenNotificationModal(false);
           }}
         >
-          <Avatar src={getAvatar(notification.profile)} />
+          <Avatar src={getAvatar(notification.mirrors[0].profile)} />
           <UserActionWraper>
             <UserAction>
-              <u>{notification.profile.name || notification.profile.handle}</u>{' '}
-              recast your cast
+              <u>
+                {getName(notification.mirrors[0].profile) ||
+                  getHandle(notification.mirrors[0].profile)}
+              </u>{' '}
+              mirror your post
             </UserAction>
-            <PostText>{notification.publication?.metadata?.content}</PostText>
-            <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
+            <PostText>{getContent(notification.publication.metadata)}</PostText>
+            <DateText>
+              {dayjs(notification.mirrors[0].mirroredAt).fromNow()}
+            </DateText>
           </UserActionWraper>
           <LensIcon />
         </NotificationItem>
@@ -303,22 +316,43 @@ function LensNotificationItem({
     case LensNotificationType.NEW_FOLLOWER:
       return (
         <NotificationItem>
-          <Avatar src={getAvatar(notification.wallet.defaultProfile)} />
+          <Avatar src={getAvatar(notification.followers[0])} />
           <UserActionWraper>
             <UserAction>
               <u>
-                {notification.wallet.defaultProfile.name ||
-                  notification.wallet.defaultProfile.handle}
+                {getName(notification.followers[0]) ||
+                  getHandle(notification.followers[0])}
               </u>{' '}
               follows you
             </UserAction>
-            <DateText>{dayjs(notification.createdAt).fromNow()}</DateText>
+            <DateText>
+              {dayjs(notification.followers[0].createdAt).fromNow()}
+            </DateText>
           </UserActionWraper>
           <LensIcon />
         </NotificationItem>
       );
       break;
-    case LensNotificationType.NEW_COLLECT:
+    case LensNotificationType.NEW_MENTION:
+      return (
+        <NotificationItem>
+          <Avatar src={getAvatar(notification.publication.by)} />
+          <UserActionWraper>
+            <UserAction>
+              <u>
+                {getName(notification.publication.by) ||
+                  getHandle(notification.publication.by)}
+              </u>{' '}
+              mentions you
+            </UserAction>
+            <DateText>
+              {dayjs(notification.publication.createdAt).fromNow()}
+            </DateText>
+          </UserActionWraper>
+          <LensIcon />
+        </NotificationItem>
+      );
+      break;
     default:
       return null;
   }
