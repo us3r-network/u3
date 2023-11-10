@@ -51,10 +51,9 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
     };
   }, [isDetail]);
 
-  const embedImgs =
-    publicationData?.asset?.type === 'Image'
-      ? publicationData?.attachments?.filter((m) => m?.type.includes('Image'))
-      : [];
+  const embedImgs = publicationData?.attachments?.filter((m) =>
+    m?.type.includes('Image')
+  );
   const embedAudio =
     publicationData?.asset?.type === 'Audio' ? publicationData.asset : null;
   const embedVideo =
