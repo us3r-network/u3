@@ -7,7 +7,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
+import FarcasterSignerSelectModal from 'src/components/social/farcaster/FarcasterSignerSelectModal';
 import FarcasterVerifyModal from 'src/components/social/farcaster/FarcasterVerifyModal';
 import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
@@ -23,7 +23,6 @@ import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollo
 import useFarcasterChannel from 'src/hooks/social/farcaster/useFarcasterChannel';
 
 import { getPrivateKey } from '../../utils/social/farcaster/farsign-utils';
-import { getFarcasterUserInfo } from '../../services/social/api/farcaster';
 import FarcasterQRModal from '../../components/social/farcaster/FarcasterQRModal';
 import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
 import {
@@ -118,12 +117,13 @@ export default function FarcasterProvider({
     isConnected: false,
   });
 
+  const [encryptedSigner, setEncryptedSigner] = useState<NobleEd25519Signer>();
   const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[];
   }>();
   const [currFid, setCurrFid] = useState<number>();
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
-
+  const [signerSelectModalOpen, setSignerSelectModalOpen] = useState(false);
   const [following, setFollowing] = useState<string[]>([]);
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
@@ -136,8 +136,9 @@ export default function FarcasterProvider({
       currFid,
     });
 
-  const { walletCheckStatus, walletFid, walletSigner, hasStorage } =
+  const { walletCheckStatus, walletUserData, walletFid, walletSigner } =
     useFarcasterWallet();
+
   const {
     qrFid,
     qrSigner,
@@ -149,87 +150,71 @@ export default function FarcasterProvider({
     token,
     warpcastErr,
     setWarpcastErr,
+    qrCheckStatus,
+    qrUserData,
   } = useFarcasterQR();
 
   const { channels } = useFarcasterTrendChannel();
-
-  const getCurrUserInfo = useCallback(async () => {
-    console.log('getCurrentUserInfo', { currFid });
-    if (!currFid) return;
-    const resp = await getFarcasterUserInfo([currFid]);
-    if (resp.data.code === 0) {
-      const data: {
-        [key: string]: { type: number; value: string }[];
-      } = {};
-      data[currFid] = resp.data.data;
-      setCurrUserInfo(data);
-    }
-  }, [currFid]);
-
-  useEffect(() => {
-    if (signer.isConnected) {
-      getCurrUserInfo();
-    }
-  }, [signer.isConnected, getCurrUserInfo]);
-
-  const encryptedSigner = useMemo(() => {
-    if (!walletCheckStatus) return undefined;
-    if (walletCheckStatus === 'idle') {
-      const privateKey = getPrivateKey();
-      if (!privateKey) return undefined;
-      return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
-    }
-
-    if (walletCheckStatus !== 'done') return undefined;
-    if (!signer.isConnected) return undefined;
-    if (walletFid && walletSigner && hasStorage) {
-      return walletSigner;
-    }
-
-    const privateKey = getPrivateKey();
-    if (!privateKey) return undefined;
-    return new NobleEd25519Signer(Buffer.from(privateKey, 'hex'));
-  }, [
-    signer.isConnected,
-    walletCheckStatus,
-    walletFid,
-    walletSigner,
-    hasStorage,
-  ]);
 
   const openFarcasterVerifyModal = useCallback(() => {
     if (signer.isConnected) return;
     setVerifyModalOpen(true);
   }, [signer.isConnected]);
 
-  useEffect(() => {
-    // console.log('walletCheckStatus', { walletCheckStatus });
-    if (!walletCheckStatus) return;
-    if (walletCheckStatus === 'idle') {
-      setCurrFid(qrFid);
-      setSigner(qrSigner);
+  const useQRSigner = useCallback(() => {
+    const privateKey = getPrivateKey();
+    if (!privateKey) {
+      console.error('useQRSigner , no private key');
       return;
     }
-    if (walletCheckStatus !== 'done') return;
-    if (walletFid && walletSigner && hasStorage) {
-      setCurrFid(walletFid);
-      setSigner({
-        SignedKeyRequest: {
-          deeplinkUrl: '',
-          key: '',
-          requestFid: 0,
-          state: 'completed',
-          token: '',
-          userFid: walletFid,
-        },
-        isConnected: true,
-      });
-      return;
-    }
-    console.log('use qr check', { walletFid, walletSigner, hasStorage });
     setCurrFid(qrFid);
     setSigner(qrSigner);
-  }, [walletFid, hasStorage, walletSigner, walletCheckStatus, qrFid, qrSigner]);
+    const data = {
+      [qrFid]: qrUserData,
+    };
+    setCurrUserInfo(data);
+    setEncryptedSigner(new NobleEd25519Signer(Buffer.from(privateKey, 'hex')));
+    setSignerSelectModalOpen(false);
+  }, [qrFid, qrSigner, qrUserData]);
+
+  const useWalletSigner = useCallback(() => {
+    setCurrFid(walletFid);
+    setSigner({
+      SignedKeyRequest: {
+        deeplinkUrl: '',
+        key: '',
+        requestFid: 0,
+        state: 'completed',
+        token: '',
+        userFid: walletFid,
+      },
+      isConnected: true,
+    });
+    const data = {
+      [walletFid]: walletUserData,
+    };
+    setCurrUserInfo(data);
+    setEncryptedSigner(walletSigner);
+    setSignerSelectModalOpen(false);
+  }, [walletFid, walletSigner, walletUserData]);
+
+  useEffect(() => {
+    console.log({ walletCheckStatus, qrCheckStatus });
+    if (!walletCheckStatus || !qrCheckStatus) return;
+    if (walletCheckStatus === 'valid' && qrCheckStatus === 'valid') {
+      setSignerSelectModalOpen(true);
+      return;
+    }
+    if (walletCheckStatus === 'valid') {
+      useWalletSigner();
+      return;
+    }
+    if (qrCheckStatus === 'valid') {
+      useQRSigner();
+      return;
+    }
+    console.log('no valid signer');
+  }, [walletCheckStatus, qrCheckStatus, useQRSigner, useWalletSigner]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
   const session = useSession();
@@ -253,9 +238,6 @@ export default function FarcasterProvider({
       });
     }
   }, [session, profile, signer, currFid, currUserInfo]);
-
-  // console.log({ qrFid, qrSigner });
-  // console.log({ walletFid, walletSigner });
 
   return (
     <FarcasterContext.Provider
@@ -309,6 +291,26 @@ export default function FarcasterProvider({
           setVerifyModalOpen(false);
           navigate('/farcaster/signup');
           // setOpenQR(true);
+        }}
+      />
+      <FarcasterSignerSelectModal
+        open={signerSelectModalOpen}
+        closeModal={() => {
+          setSignerSelectModalOpen(false);
+        }}
+        afterCloseAction={() => {}}
+        qrUserData={qrUserData}
+        walletUserData={walletUserData}
+        confirmAction={(type: 'qr' | 'wallet') => {
+          if (type === 'qr') {
+            useQRSigner();
+            return;
+          }
+          if (type === 'wallet') {
+            useWalletSigner();
+            return;
+          }
+          console.log('confirmAction', { type });
         }}
       />
     </FarcasterContext.Provider>
