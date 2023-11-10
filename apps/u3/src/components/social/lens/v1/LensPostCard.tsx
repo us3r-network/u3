@@ -34,6 +34,7 @@ export default function LensPostCardV1({
         navigate(`/social/post-detail/lens/${data.id}`);
       }}
       data={cardData}
+      likeDisabled
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
       shareLink={getSocialDetailShareUrlWithLens(data.id)}

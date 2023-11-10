@@ -30,7 +30,7 @@ export default function LensFollowProfileCard({
     () => ({
       handle: getHandle(profile),
       address: getOwnedByAddress(profile),
-      name: getName(profile),
+      name: getName(profile) || profile?.id,
       avatar: getAvatar(profile),
       bio: getBio(profile),
       isFollowed:

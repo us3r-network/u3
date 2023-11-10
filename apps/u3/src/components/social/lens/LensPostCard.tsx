@@ -49,13 +49,17 @@ export default function LensPostCard({
     isPending: isPendingReactionUpvote,
   } = useReactionLensUpvote({
     publication,
-    onReactionSuccess: ({ originPublication }) => {
+    onReactionSuccess: ({ originPublication, hasUpvoted: upvoted }) => {
       if (originPublication?.id !== updatedPublication.id) return;
       setUpdatedPublication((prev) => {
         if (!prev) return prev;
-        const { stats } = prev;
+        const { stats, operations } = prev;
         return {
           ...prev,
+          operations: {
+            ...operations,
+            hasUpvoted: upvoted,
+          },
           stats: {
             ...stats,
             upvotes: Number(stats.upvotes) + 1,

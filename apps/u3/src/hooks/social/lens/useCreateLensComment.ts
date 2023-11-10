@@ -50,7 +50,9 @@ export function useCreateLensComment(props?: {
           commentOn: {
             id: publicationId,
           },
-          metadata,
+          metadata: {
+            ...(metadata?.lens || {}),
+          },
         });
         toast.success('Comment successfully!');
       } catch (err) {
