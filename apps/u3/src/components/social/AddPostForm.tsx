@@ -43,6 +43,7 @@ import { Channel } from '../../services/social/types/farcaster';
 import ChannelSelect from './ChannelSelect';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
+import { getHandle, getName } from '../../utils/social/lens/profile';
 
 export type ShareData = {
   shareLink: string;
@@ -313,12 +314,8 @@ export default function AddPostForm({
                   }}
                 >
                   <Avatar src={getAvatar(lensSessionProfile)} />
-                  <UserName>
-                    {lensSessionProfile?.metadata?.displayName}
-                  </UserName>
-                  <UserHandle>
-                    @{lensSessionProfile?.handle.fullHandle}
-                  </UserHandle>
+                  <UserName>{getName(lensSessionProfile)}</UserName>
+                  <UserHandle>@{getHandle(lensSessionProfile)}</UserHandle>
                   <LensIcon />
                 </PlatformToggleButton>
               ) : (

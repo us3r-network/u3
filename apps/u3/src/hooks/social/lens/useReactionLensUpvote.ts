@@ -1,10 +1,9 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import { useCallback, useEffect, useState } from 'react';
 import {
-  ReactionTypes,
-  useActiveProfile,
-  useReaction,
-  Post,
-  Comment,
+  PrimaryPublication,
+  PublicationReactionType,
+  useReactionToggle,
 } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import PubSub from 'pubsub-js';
@@ -14,53 +13,46 @@ export enum LensReactionUpvotePubSubTopic {
   FAILED = 'lens-reaction-upvote-failed',
 }
 export function useReactionLensUpvote(props: {
-  publication: Post | Comment;
+  publication: PrimaryPublication;
   onReactionSuccess?: (data: {
-    originPublication: Post | Comment;
-    hasUpvote: boolean;
+    originPublication: PrimaryPublication;
+    hasUpvoted: boolean;
   }) => void;
   onReactionFailed?: (error: any) => void;
 }) {
   const { publication } = props;
-  const { data: activeProfile } = useActiveProfile();
-  const publisher = activeProfile;
 
-  const { addReaction, removeReaction, isPending } = useReaction({
-    profileId: publisher?.id,
-  });
+  const { execute: toggle, loading: isPending, error } = useReactionToggle();
 
-  const [hasUpvote, setHasUpvote] = useState(false);
-  const { reaction } = publication || {};
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const { hasUpvoted: hasUpvotedDefault } = publication?.operations || {};
   useEffect(() => {
-    setHasUpvote(reaction === ReactionTypes.Upvote);
-  }, [reaction]);
+    setHasUpvoted(hasUpvoted);
+  }, [hasUpvotedDefault]);
 
   const toggleReactionUpvote = useCallback(async () => {
     try {
-      if (hasUpvote) {
-        await removeReaction({
-          reactionType: ReactionTypes.Upvote,
-          publication,
-        });
+      await toggle({
+        reaction: PublicationReactionType.Upvote,
+        publication,
+      });
+      if (hasUpvoted) {
         toast.success('Unlike successfully!');
       } else {
-        await addReaction({
-          reactionType: ReactionTypes.Upvote,
-          publication,
-        });
         toast.success('Like successfully!');
       }
-      setHasUpvote(!hasUpvote);
+      setHasUpvoted(!hasUpvoted);
       PubSub.publish(LensReactionUpvotePubSubTopic.SUCCESS, {
         originPublication: publication,
-        hasUpvote: !hasUpvote,
+        hasUpvoted: !hasUpvoted,
       });
-    } catch (error: any) {
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+    } catch (error) {
       console.error(error?.message);
       PubSub.publish(LensReactionUpvotePubSubTopic.FAILED, error);
       toast.error('Like failed');
     }
-  }, [publication, hasUpvote, removeReaction, addReaction]);
+  }, [publication, hasUpvoted, toggle]);
 
   const { onReactionSuccess, onReactionFailed } = props;
   useEffect(() => {
@@ -88,5 +80,5 @@ export function useReactionLensUpvote(props: {
     };
   }, [onReactionSuccess, onReactionFailed]);
 
-  return { toggleReactionUpvote, hasUpvote, isPending };
+  return { toggleReactionUpvote, hasUpvoted, isPending, error };
 }

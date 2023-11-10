@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { PrimaryPublication } from '@lens-protocol/react-web';
 import { Player } from '@livepeer/react';
 import {
   PostCardAudioWrapper,
@@ -7,27 +6,19 @@ import {
   PostCardImgWrapper,
   PostCardShowMoreWrapper,
   PostCardVideoWrapper,
-} from '../PostCard';
-import Markup from './Markup';
-import ModalImg from '../ModalImg';
-import Audio from '../Audio';
-import sanitizeDStorageUrl from '../../../utils/social/lens/sanitizeDStorageUrl';
-import getPublicationData, {
-  MetadataAsset,
-} from '../../../utils/social/lens/getPublicationData';
+} from '../../PostCard';
+import Markup from '../Markup';
+import ModalImg from '../../ModalImg';
+import Audio from '../../Audio';
+import sanitizeDStorageUrl from '../../../../utils/social/lens/sanitizeDStorageUrl';
 
 type Props = {
-  publication: PrimaryPublication;
+  publication: any;
   isDetail?: boolean;
 };
 export default function LensPostCardContent({ publication, isDetail }: Props) {
   const { metadata } = publication || {};
-  const publicationData = getPublicationData(metadata);
-  const markdownContent = useMemo(
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    () => publicationData?.content || '',
-    [publicationData]
-  );
+  const markdownContent = useMemo(() => metadata?.content || '', [metadata]);
 
   const viewRef = useRef<HTMLDivElement>(null);
   const [showMore, setShowMore] = useState(false);
@@ -52,13 +43,14 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
   }, [isDetail]);
 
   const embedImgs =
-    publicationData?.asset?.type === 'Image'
-      ? publicationData?.attachments?.filter((m) => m?.type.includes('Image'))
-      : [];
-  const embedAudio =
-    publicationData?.asset?.type === 'Audio' ? publicationData.asset : null;
-  const embedVideo =
-    publicationData?.asset?.type === 'Video' ? publicationData.asset : null;
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('image')) ||
+    [];
+  const embedAudios =
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('audio')) ||
+    [];
+  const embedVideos =
+    metadata?.media?.filter((m) => m?.original?.mimeType?.includes('video')) ||
+    [];
 
   return (
     <>
@@ -72,14 +64,16 @@ export default function LensPostCardContent({ publication, isDetail }: Props) {
       )}
       {embedImgs.length > 0 && <EmbedImgs embedImgs={embedImgs} />}
 
-      {embedAudio && <EmbedAudio asset={embedAudio} />}
+      {embedAudios.length > 0 && (
+        <EmbedAudio media={embedAudios[0]} publication={publication} />
+      )}
 
-      {embedVideo && <EmbedVideo asset={embedVideo} />}
+      {embedVideos.length > 0 && <EmbedVideo media={embedVideos[0]} />}
     </>
   );
 }
 
-function EmbedImgs({ embedImgs }: { embedImgs: Array<{ uri: string }> }) {
+function EmbedImgs({ embedImgs }: { embedImgs: any[] }) {
   const [modalImgIdx, setModalImgIdx] = useState(-1);
   return (
     <>
@@ -87,9 +81,9 @@ function EmbedImgs({ embedImgs }: { embedImgs: Array<{ uri: string }> }) {
         {embedImgs.map((img, idx) => (
           // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
           <img
-            src={img.uri}
+            src={img.original.url}
             alt=""
-            key={img.uri}
+            key={img.original.url}
             onClick={(e) => {
               e.stopPropagation();
               setModalImgIdx(idx);
@@ -99,29 +93,42 @@ function EmbedImgs({ embedImgs }: { embedImgs: Array<{ uri: string }> }) {
       </PostCardImgWrapper>
       <ModalImg
         currIdx={modalImgIdx}
-        urls={embedImgs.map((item) => item.uri)}
+        urls={embedImgs.map((item) => item.original.url)}
         onAfterClose={() => setModalImgIdx(-1)}
       />
     </>
   );
 }
 
-function EmbedAudio({ asset }: { asset: MetadataAsset }) {
-  const name = asset?.title || '';
-  const author = asset?.artist || '';
-  const coverImg = sanitizeDStorageUrl(asset?.cover || '');
+function EmbedAudio({ media, publication }: { media: any; publication: any }) {
+  const { metadata } = publication || {};
+  const name = metadata?.name || '';
+  const author =
+    metadata?.attributes.find((attr) => attr.traitType === 'author')?.value ||
+    '';
+  const coverImg = sanitizeDStorageUrl(
+    metadata?.cover?.original?.url ||
+      metadata?.image ||
+      media.original?.cover ||
+      ''
+  );
   return (
     <PostCardAudioWrapper onClick={(e) => e.stopPropagation()}>
-      <Audio src={asset?.uri} cover={coverImg} name={name} author={author} />
+      <Audio
+        src={media.original.url}
+        cover={coverImg}
+        name={name}
+        author={author}
+      />
     </PostCardAudioWrapper>
   );
 }
 
-function EmbedVideo({ asset }: { asset: MetadataAsset }) {
+function EmbedVideo({ media }: { media: any }) {
   return (
     <PostCardVideoWrapper onClick={(e) => e.stopPropagation()}>
       <Player
-        src={asset?.uri}
+        src={media.original.url}
         objectFit="contain"
         showLoadingSpinner
         showPipButton={false}

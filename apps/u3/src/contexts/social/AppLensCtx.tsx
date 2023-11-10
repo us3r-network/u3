@@ -19,6 +19,7 @@ import {
   SessionType,
   useUpdateProfileManagers,
   Profile,
+  PrimaryPublication,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
@@ -32,12 +33,10 @@ import {
 } from '../../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../../constants/lens';
 
-import { LensPost, LensComment } from '../../services/social/api/lens';
 import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
 
-type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
-  sessionProfile: Profile | null;
+  sessionProfile: Profile;
   isLogin: boolean;
   isLoginPending: boolean;
   lensLogin: () => void;
@@ -46,8 +45,8 @@ interface LensAuthContextValue {
   setOpenLensLoginModal: React.Dispatch<React.SetStateAction<boolean>>;
   openCommentModal: boolean;
   setOpenCommentModal: React.Dispatch<React.SetStateAction<boolean>>;
-  commentModalData: CommentModalData;
-  setCommentModalData: React.Dispatch<React.SetStateAction<CommentModalData>>;
+  commentModalData: PrimaryPublication;
+  setCommentModalData: React.Dispatch<React.SetStateAction<PrimaryPublication>>;
 }
 
 export const LensAuthContext = createContext<LensAuthContextValue>({
@@ -81,7 +80,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false);
   const [openCommentModal, setOpenCommentModal] = useState(false);
   const [commentModalData, setCommentModalData] =
-    useState<CommentModalData>(null);
+    useState<PrimaryPublication>(null);
 
   const { execute: login, loading: isLoginPending } = useLogin();
   const { execute: lensLogout } = useLogout();

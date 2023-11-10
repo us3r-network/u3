@@ -1,6 +1,5 @@
 import {
   Profile,
-  useActiveProfile,
   useFollow,
   useProfilesToFollow,
 } from '@lens-protocol/react-web';
@@ -21,6 +20,7 @@ import {
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
+import { getHandle, getName } from '../../utils/social/lens/profile';
 
 const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {
@@ -87,13 +87,10 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
   const navigate = useNavigate();
 
   const [isFollowing, setIsFollowing] = useState(false);
-  const { data: lensActiveProfile } = useActiveProfile();
-  const { execute: follow, isPending } = useFollow({
-    followee: profile,
-    follower: lensActiveProfile,
-  });
-  const { name, handle } = profile;
+  const { execute: follow, loading: followLoading } = useFollow();
 
+  const name = getName(profile);
+  const handle = getHandle(profile);
   const profileIdentity = useMemo(() => {
     if (handle.endsWith('.eth')) return handle;
     return lensHandleToBioLinkHandle(handle);
@@ -126,13 +123,13 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
       {!isFollowing ? (
         <FollowBtn
           onClick={() => {
-            follow().then(() => {
+            follow({ profile }).then(() => {
               setIsFollowing(true);
             });
           }}
-          disabled={isPending}
+          disabled={followLoading}
         >
-          {isPending ? 'Following...' : 'Follow'}
+          {followLoading ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
         <FollowedText>Followed</FollowedText>

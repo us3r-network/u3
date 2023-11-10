@@ -1,16 +1,12 @@
 import { useCallback, useEffect } from 'react';
-import {
-  CollectPolicyType,
-  ContentFocus,
-  CreateCommentArgs,
-  ProfileOwnedByMe,
-  ReferencePolicyType,
-  publicationId,
-  useActiveProfile,
-  useCreateComment,
-} from '@lens-protocol/react-web';
+import { Comment, useCreateComment } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import PubSub from 'pubsub-js';
+import {
+  PublicationId,
+  TextOnlyMetadata,
+  textOnly,
+} from '@lens-protocol/metadata';
 import { lensUploadToArweave } from '../../../utils/social/lens/upload';
 
 export enum LensCommentPubSubTopic {
@@ -18,46 +14,51 @@ export enum LensCommentPubSubTopic {
   FAILED = 'lens-comment-failed',
 }
 export function useCreateLensComment(props?: {
-  onCommentSuccess?: (args: CreateCommentArgs) => void;
+  onCommentSuccess?: (args: {
+    commentOn: {
+      id: PublicationId;
+    };
+    metadata: TextOnlyMetadata;
+  }) => void;
   onCommentFailed?: (error: any) => void;
 }) {
-  const { data: activeProfile } = useActiveProfile();
-  const publisher = activeProfile;
-
-  const {
-    execute: executeComment,
-    isPending,
-    error,
-  } = useCreateComment({
-    publisher,
-    upload: lensUploadToArweave,
-  });
+  const { execute, error, loading: isPending } = useCreateComment();
 
   const createComment = useCallback(
-    async (opts: { publicationId: string; content: string }) => {
-      const { publicationId: pid, content } = opts;
+    async (opts: { publicationId: PublicationId; content: string }) => {
       try {
-        const createCommentArgs: CreateCommentArgs = {
-          publicationId: publicationId(pid),
+        const { publicationId, content } = opts;
+        const metadata = textOnly({
           content,
-          contentFocus: ContentFocus.TEXT_ONLY,
-          locale: 'en',
-          collect: {
-            type: CollectPolicyType.NO_COLLECT,
+        });
+        const uri = await lensUploadToArweave(metadata);
+        const result = await execute({
+          commentOn: publicationId,
+          metadata: uri,
+        });
+        if (result.isFailure()) {
+          throw new Error(result.error.message);
+        }
+        // this might take a while, depends on the type of tx (on-chain or Momoka)
+        // and the congestion of the network
+        const completion = await result.value.waitForCompletion();
+
+        if (completion.isFailure()) {
+          throw new Error(completion.error.message);
+        }
+        PubSub.publish(LensCommentPubSubTopic.SUCCESS, {
+          commentOn: {
+            id: publicationId,
           },
-          reference: {
-            type: ReferencePolicyType.ANYONE,
-          },
-        };
-        await executeComment(createCommentArgs);
-        PubSub.publish(LensCommentPubSubTopic.SUCCESS, createCommentArgs);
+          metadata,
+        });
         toast.success('Comment successfully!');
       } catch (err) {
         PubSub.publish(LensCommentPubSubTopic.FAILED, err);
         toast.error('Comment failed!');
       }
     },
-    [executeComment]
+    [execute]
   );
 
   const { onCommentSuccess, onCommentFailed } = props || {};

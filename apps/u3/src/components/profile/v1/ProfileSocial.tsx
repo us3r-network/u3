@@ -1,16 +1,16 @@
 import { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { Comment, Mirror, Post, useSession } from '@lens-protocol/react-web';
+import { useSession } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useLoadProfileFeeds } from '../../hooks/social/useLoadProfileFeeds';
-import Loading from '../common/loading/Loading';
-import LensPostCard from '../social/lens/LensPostCard';
-import FCast from '../social/farcaster/FCast';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { ProfileFeedsGroups } from '../../services/social/api/feeds';
-import Rss3Content from '../fren/Rss3Content';
-import { NoActivity } from '../../container/Activity';
-import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { useLoadProfileFeeds } from '../../../hooks/social/useLoadProfileFeeds';
+import Loading from '../../common/loading/Loading';
+import LensPostCard from '../../social/lens/v1/LensPostCard';
+import FCast from '../../social/farcaster/FCast';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import { ProfileFeedsGroups } from '../../../services/social/api/feeds';
+import Rss3Content from '../../fren/Rss3Content';
+import { NoActivity } from '../../../container/Activity';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 
 export function ProfileSocialPosts({
   lensProfileId,
@@ -93,13 +93,13 @@ export function ProfileSocialPosts({
                   let d;
                   switch (group) {
                     case ProfileFeedsGroups.POSTS:
-                      d = data as Post;
+                      d = data as any;
                       break;
                     case ProfileFeedsGroups.REPOSTS:
-                      d = (data as Mirror).mirrorOn;
+                      d = (data as any).mirrorOf;
                       break;
                     case ProfileFeedsGroups.REPLIES:
-                      d = (data as Comment).commentOn;
+                      d = (data as any).commentOn;
                       break;
                     default:
                       break;
