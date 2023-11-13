@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Post, useActiveProfile } from '@lens-protocol/react-web';
+import { Post } from '@lens-protocol/react-web';
 // eslint-disable-next-line import/no-cycle
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import ReplyModal from '../ReplyModal';
@@ -14,8 +14,7 @@ export default function LensCommentPostModal({
   open: boolean;
   closeModal: () => void;
 }) {
-  const { commentModalData } = useLensCtx();
-  const { data: activeProfile } = useActiveProfile();
+  const { commentModalData, sessionProfile } = useLensCtx();
   const [content, setContent] = useState('');
 
   const { createComment, isPending } = useCreateLensComment({
@@ -37,7 +36,7 @@ export default function LensCommentPostModal({
       open={open}
       closeModal={closeModal}
       postData={lensPublicationToPostCardData(commentModalData as Post)}
-      avatar={getAvatar(activeProfile)}
+      avatar={getAvatar(sessionProfile)}
       content={content}
       setContent={setContent}
       onSubmit={onSubmit}

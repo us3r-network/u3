@@ -11,3 +11,8 @@ export const ARWEAVE_GATEWAY = 'https://arweave.net/';
 
 // TODO: Do we need to create a service for uploading metadata to decentralized storage?
 export const METADATA_WORKER_URL = 'https://metadata.hey.xyz';
+
+// URLs
+export const STATIC_ASSETS_URL = 'https://static-assets.hey.xyz';
+export const STATIC_IMAGES_URL = `${STATIC_ASSETS_URL}/images`;
+export const PLACEHOLDER_IMAGE = `${STATIC_IMAGES_URL}/placeholder.webp`;

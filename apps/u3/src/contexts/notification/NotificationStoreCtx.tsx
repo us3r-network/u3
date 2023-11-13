@@ -11,9 +11,9 @@ import {
 
 import {
   useNotifications as useLensNotifications,
-  useUnreadNotificationCount as useUnreadLensNotificationCount,
   Notification as LensNotification,
   ProfileId,
+  LimitType,
 } from '@lens-protocol/react-web';
 
 import { debounce } from 'lodash';
@@ -44,6 +44,69 @@ const defaultContextValue: NotificationStoreCtxValue = {
 const DEFAULT_PAGE_SIZE = 10;
 export const NotificationStoreCtx = createContext(defaultContextValue);
 
+// const mergeNotifications = (
+//   lensNotifications: LensNotification[] | undefined,
+//   farcasterNotifications: FarcasterNotification[] | undefined
+// ) => {
+//   if (!lensNotifications && !farcasterNotifications) {
+//     return [] as (LensNotification | FarcasterNotification)[];
+//   }
+//   if (
+//     (!lensNotifications || lensNotifications.length === 0) &&
+//     farcasterNotifications
+//   ) {
+//     return farcasterNotifications as (
+//       | LensNotification
+//       | FarcasterNotification
+//     )[];
+//   }
+//   if (
+//     lensNotifications &&
+//     (!farcasterNotifications || farcasterNotifications.length === 0)
+//   ) {
+//     return lensNotifications as (LensNotification | FarcasterNotification)[];
+//   }
+//   if (
+//     lensNotifications &&
+//     farcasterNotifications &&
+//     lensNotifications.length > 0 &&
+//     farcasterNotifications.length > 0
+//   ) {
+//     const notifications = [];
+//     let lensIndex = 0;
+//     let farcasterIndex = 0;
+//     while (
+//       lensIndex < lensNotifications.length &&
+//       farcasterIndex < farcasterNotifications.length
+//     ) {
+//       if (lensNotifications.length === 0 && farcasterNotifications.length > 0) {
+//         notifications.push(farcasterNotifications[farcasterIndex]);
+//         farcasterIndex++;
+//       } else if (
+//         farcasterNotifications.length === 0 &&
+//         lensNotifications.length > 0
+//       ) {
+//         notifications.push(lensNotifications[lensIndex]);
+//         lensIndex++;
+//       } else if (
+//         lensNotifications[lensIndex].createdAt >
+//         farcasterNotifications[farcasterIndex].message_timestamp
+//       ) {
+//         notifications.push(lensNotifications[lensIndex]);
+//         lensIndex++;
+//       } else {
+//         notifications.push(farcasterNotifications[farcasterIndex]);
+//         farcasterIndex++;
+//       }
+//     }
+//     return notifications;
+//   }
+//   return [] as (LensNotification | FarcasterNotification)[];
+// };
+
+// this is a temp merge function
+// because notification type in lens sdk, which is NOT completed yet, has NO timestamp to compare
+// so we need to merge lens notification and farcaster notification one by one
 const mergeNotifications = (
   lensNotifications: LensNotification[] | undefined,
   farcasterNotifications: FarcasterNotification[] | undefined
@@ -88,10 +151,7 @@ const mergeNotifications = (
       ) {
         notifications.push(lensNotifications[lensIndex]);
         lensIndex++;
-      } else if (
-        lensNotifications[lensIndex].createdAt >
-        farcasterNotifications[farcasterIndex].message_timestamp
-      ) {
+      } else if (lensIndex < farcasterIndex) {
         notifications.push(lensNotifications[lensIndex]);
         lensIndex++;
       } else {
@@ -126,11 +186,14 @@ export function NotificationStoreProvider({
     defaultContextValue.unreadCount
   );
 
-  // get unread notification count
-  const { unreadNotificationCount: unreadLensCount, clear: clearLensUnread } =
-    useUnreadLensNotificationCount({
-      profileId: config.lensProfileId,
-    });
+  let lensPageSize: LimitType;
+  if (config.pageSize > 50) {
+    lensPageSize = LimitType.Fifty;
+  } else if (config.pageSize > 25) {
+    lensPageSize = LimitType.TwentyFive;
+  } else {
+    lensPageSize = LimitType.Ten;
+  }
 
   const {
     data: lensNotifications,
@@ -138,9 +201,7 @@ export function NotificationStoreProvider({
     hasMore: lensNotificationsHasMore,
     next: loadMoreLensNotifications,
   } = useLensNotifications({
-    profileId: config.lensProfileId,
-    limit: config.pageSize || DEFAULT_PAGE_SIZE,
-    highSignalFilter: false,
+    limit: lensPageSize,
   });
 
   // farcaster notifications
@@ -193,20 +254,17 @@ export function NotificationStoreProvider({
   ]);
 
   const clearUnread = useCallback(async () => {
-    if (clearLensUnread) {
-      await clearLensUnread();
-      await clearFarcasterUnread();
-    }
+    await clearFarcasterUnread();
     setUnreadCount(0);
-  }, [clearLensUnread, clearFarcasterUnread]);
+  }, [clearFarcasterUnread]);
 
   useEffect(() => {
     debounce(updateNotifications, 500)();
   }, [updateNotifications, config]);
 
   useEffect(() => {
-    setUnreadCount(unreadLensCount + unreadFarcasterCount);
-  }, [unreadLensCount, unreadFarcasterCount, config]);
+    setUnreadCount(unreadFarcasterCount);
+  }, [unreadFarcasterCount, config]);
 
   return (
     <NotificationStoreCtx.Provider

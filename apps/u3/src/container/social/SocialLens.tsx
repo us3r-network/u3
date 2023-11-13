@@ -1,4 +1,3 @@
-import { useActiveProfile } from '@lens-protocol/react-web';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
@@ -8,7 +7,7 @@ import Loading from 'src/components/common/loading/Loading';
 import AddPostForm from 'src/components/social/AddPostForm';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 import { FeedsType } from 'src/components/social/SocialPageNav';
-import LensPostCard from 'src/components/social/lens/LensPostCard';
+import LensPostCard from 'src/components/social/lens/v1/LensPostCard';
 import useLogin from 'src/hooks/shared/useLogin';
 import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
@@ -22,6 +21,8 @@ import {
   NoLoginStyled,
   PostList,
 } from './CommonStyles';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-lens');
@@ -51,14 +52,15 @@ export default function SocialFarcaster() {
     useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
-  const { data: activeLensProfile } = useActiveProfile();
-  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
+  const { sessionProfile } = useLensCtx();
+  const { id: lensSessionProfileId } = sessionProfile || {};
+  const lensProfileOwnedByAddress = getOwnedByAddress(sessionProfile);
 
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         address: lensProfileOwnedByAddress,
         fid: undefined,
@@ -66,7 +68,7 @@ export default function SocialFarcaster() {
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         platforms: SocialPlatform.Lens,
       });
@@ -76,7 +78,7 @@ export default function SocialFarcaster() {
   }, [
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    activeLensProfile?.id,
+    lensSessionProfileId,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
     feedsType,
@@ -86,7 +88,7 @@ export default function SocialFarcaster() {
     if (feedsType === FeedsType.FOLLOWING) {
       loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         address: lensProfileOwnedByAddress,
         fid: undefined,
         platforms: SocialPlatform.Lens,
@@ -94,14 +96,14 @@ export default function SocialFarcaster() {
     } else {
       loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         platforms: SocialPlatform.Lens,
       });
     }
   }, [
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    activeLensProfile?.id,
+    lensSessionProfileId,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
     feedsType,

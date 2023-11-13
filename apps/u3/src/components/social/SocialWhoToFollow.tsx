@@ -1,8 +1,7 @@
 import {
   Profile,
-  useActiveProfile,
   useFollow,
-  useProfilesToFollow,
+  useRecommendedProfiles,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -21,17 +20,20 @@ import {
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
+import { getHandle, getName } from '../../utils/social/lens/profile';
 
 const SUGGEST_NUM = 3;
 export default function SocialWhoToFollow() {
   const navigate = useNavigate();
   const { isLogin: isLoginU3 } = useLogin();
-  const { isLogin: isLoginLens } = useLensCtx();
-  const { data: lensProfiles } = useProfilesToFollow();
+  const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
+  const { data: lensProfiles } = useRecommendedProfiles({
+    for: lensProfile?.id,
+  });
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
       lensProfiles
-        ?.filter((profile) => profile.name && profile.name !== '')
+        ?.filter((profile) => getName(profile) && getName(profile) !== '')
         .slice(0, SUGGEST_NUM),
     [lensProfiles, isLoginLens]
   );
@@ -87,13 +89,10 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
   const navigate = useNavigate();
 
   const [isFollowing, setIsFollowing] = useState(false);
-  const { data: lensActiveProfile } = useActiveProfile();
-  const { execute: follow, isPending } = useFollow({
-    followee: profile,
-    follower: lensActiveProfile,
-  });
-  const { name, handle } = profile;
+  const { execute: follow, loading: followLoading } = useFollow();
 
+  const name = getName(profile);
+  const handle = getHandle(profile);
   const profileIdentity = useMemo(() => {
     if (handle.endsWith('.eth')) return handle;
     return lensHandleToBioLinkHandle(handle);
@@ -126,13 +125,13 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
       {!isFollowing ? (
         <FollowBtn
           onClick={() => {
-            follow().then(() => {
+            follow({ profile }).then(() => {
               setIsFollowing(true);
             });
           }}
-          disabled={isPending}
+          disabled={followLoading}
         >
-          {isPending ? 'Following...' : 'Follow'}
+          {followLoading ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
         <FollowedText>Followed</FollowedText>

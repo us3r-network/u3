@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useActiveProfile } from '@lens-protocol/react-web';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { trim } from 'lodash';
@@ -24,14 +23,17 @@ import {
   NoLoginStyled,
   PostList,
 } from './CommonStyles';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialAll() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentId, setParentId] = useState('social-all');
   const { isLogin } = useLogin();
-  const { data: activeLensProfile } = useActiveProfile();
+  const { sessionProfile: lensSessionProfile } = useLensCtx();
   const fid = useFarcasterCurrFid();
-  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
+  const { id: lensSessionProfileId } = lensSessionProfile || {};
+  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const {
     socialPlatform,
@@ -68,7 +70,7 @@ export default function SocialAll() {
   const loadFirstFeeds = useCallback(async () => {
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         address: lensProfileOwnedByAddress,
         fid: isConnectedFarcaster ? fid : undefined,
@@ -76,7 +78,7 @@ export default function SocialAll() {
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
@@ -87,7 +89,7 @@ export default function SocialAll() {
     parentId,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    activeLensProfile?.id,
+    lensSessionProfileId,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
     fid,
@@ -100,7 +102,7 @@ export default function SocialAll() {
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         address: lensProfileOwnedByAddress,
         fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
@@ -108,7 +110,7 @@ export default function SocialAll() {
     } else {
       await loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: activeLensProfile?.id,
+        activeLensProfileId: lensSessionProfileId,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
@@ -116,7 +118,7 @@ export default function SocialAll() {
     parentId,
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    activeLensProfile?.id,
+    lensSessionProfileId,
     currentSearchParams.keyword,
     lensProfileOwnedByAddress,
     fid,

@@ -34,7 +34,7 @@ import { isDidPkh } from '../../utils/shared/did';
 import {
   ProfileSocialActivity,
   ProfileSocialPosts,
-} from '../../components/profile/ProfileSocial';
+} from '../../components/profile/v1/ProfileSocial';
 import Loading from '../../components/common/loading/Loading';
 import useDid from '../../hooks/profile/useDid';
 import FollowingDefault from '../../components/social/FollowingDefault';
@@ -185,11 +185,11 @@ function ProfileView({
     setFollowNavData((prevData) => ({
       ...prevData,
       followingPlatformCount: {
-        [SocialPlatform.Lens]: lensProfileFirst?.stats.totalFollowing || 0,
+        [SocialPlatform.Lens]: lensProfileFirst?.stats.following || 0,
         [SocialPlatform.Farcaster]: farcasterFollowData.following,
       },
       followersPlatformCount: {
-        [SocialPlatform.Lens]: lensProfileFirst?.stats.totalFollowers || 0,
+        [SocialPlatform.Lens]: lensProfileFirst?.stats.followers || 0,
         [SocialPlatform.Farcaster]: farcasterFollowData.followers,
       },
     }));

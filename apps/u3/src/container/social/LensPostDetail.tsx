@@ -4,13 +4,15 @@ import styled from 'styled-components';
 import {
   usePublication,
   publicationId,
-  useComments,
-  useActiveProfile,
-  CreateCommentArgs,
+  usePublications,
+  PublicationType,
+  Comment,
+  PrimaryPublication,
+  LimitType,
+  Post,
 } from '@lens-protocol/react-web';
 import { isMobile } from 'react-device-detect';
 
-import { LensPost } from '../../services/social/api/lens';
 import LensCommentPostForm from '../../components/social/lens/LensCommentPostForm';
 import { useCreateLensComment } from '../../hooks/social/lens/useCreateLensComment';
 import LensReplyCard from '../../components/social/lens/LensReplyCard';
@@ -24,37 +26,43 @@ import {
 import Loading from '../../components/common/loading/Loading';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getHandle, getName } from '../../utils/social/lens/profile';
+import { canComment } from '../../utils/social/lens/operations';
 
 export default function LensPostDetail() {
   const { publicationId: pid } = useParams();
 
-  const { data: activeProfile } = useActiveProfile();
+  const { sessionProfile } = useLensCtx();
 
-  const { data, loading } = usePublication({
-    publicationId: publicationId(pid),
-    observerId: activeProfile?.id,
+  const { data: anyPublication, loading } = usePublication({
+    forId: publicationId(pid),
   });
-
-  const publication = { ...data } as unknown as LensPost;
+  const publication = anyPublication as PrimaryPublication;
 
   const {
-    data: comments,
+    data: commentPublications,
     loading: commentsLoading,
     hasMore: hasMoreComments,
     next: loadMoreComments,
-  } = useComments({
-    commentsOf: publicationId(pid),
-    limit: 50,
+  } = usePublications({
+    where: {
+      publicationTypes: [PublicationType.Comment],
+      publicationIds: [publicationId(pid)],
+    },
+    limit: LimitType.Fifty,
   });
+  const comments = commentPublications as Comment[];
 
-  const [createdComments, setCreatedComments] = useState<CreateCommentArgs[]>(
-    []
-  );
+  const [createdComments, setCreatedComments] = useState<Comment[]>([]);
 
   useCreateLensComment({
     onCommentSuccess: (commentArgs) => {
-      if (commentArgs.publicationId !== data?.id) return;
-      setCreatedComments((prev) => [commentArgs, ...prev]);
+      if (commentArgs.commentOn.id !== publication?.id) return;
+      setCreatedComments((prev) => [
+        commentArgs as unknown as Comment,
+        ...prev,
+      ]);
     },
   });
 
@@ -74,10 +82,10 @@ export default function LensPostDetail() {
     scrollToAnchor(window.location.hash.split('#')[1]);
     return (
       <PostDetailWrapper isMobile={isMobile}>
-        <LensPostDetailCard data={publication} />
+        <LensPostDetailCard data={publication as Post} />
         <LensCommentPostForm
           publicationId={publication.id}
-          canComment={!!publication?.canComment?.result}
+          canComment={canComment(publication)}
         />
         {createdComments && createdComments?.length > 0 && (
           <PostDetailCommentsWrapper>
@@ -85,12 +93,12 @@ export default function LensPostDetail() {
               return (
                 <ReplyCard
                   data={{
-                    avatar: getAvatar(activeProfile),
-                    name: activeProfile?.name || '',
-                    handle: activeProfile?.handle || '',
+                    avatar: getAvatar(sessionProfile),
+                    name: getName(sessionProfile),
+                    handle: getHandle(sessionProfile),
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     createdAt: new Date() as any,
-                    content: comment.content,
+                    content: (comment?.metadata as any)?.content,
                   }}
                   // eslint-disable-next-line react/no-array-index-key
                   key={i}

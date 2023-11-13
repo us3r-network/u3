@@ -7,13 +7,13 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
-import { useActiveProfile } from '@lens-protocol/react-web';
 
 import { useLoadTrendingFeeds } from 'src/hooks/social/useLoadTrendingFeeds';
 import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 
+import { useSession } from '@lens-protocol/react-web';
 import { MEDIA_BREAK_POINTS } from 'src/constants';
 import SocialPageNav, {
   FeedsType,
@@ -26,13 +26,15 @@ import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import SearchInput from '../../components/common/input/SearchInput';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialLayout() {
   const location = useLocation();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
-  const { data: activeLensProfile, loading: activeLensProfileLoading } =
-    useActiveProfile();
-  const { ownedBy: lensProfileOwnedByAddress } = activeLensProfile || {};
+  const { sessionProfile: lensSessionProfile } = useLensCtx();
+  const { loading: lensSessionLoading } = useSession();
+  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const [postScroll, setPostScroll] = useState({
     currentParent: '',
@@ -94,14 +96,10 @@ export default function SocialLayout() {
         setFeedsType(FeedsType.FOLLOWING);
       }
     }
-    if (!activeLensProfileLoading) {
+    if (!lensSessionLoading) {
       switchedFeedsTypeFirst.current = true;
     }
-  }, [
-    isConnectedFarcaster,
-    lensProfileOwnedByAddress,
-    activeLensProfileLoading,
-  ]);
+  }, [isConnectedFarcaster, lensProfileOwnedByAddress, lensSessionLoading]);
 
   const titleElem = useMemo(() => {
     if (location.pathname.includes('social/trends')) {

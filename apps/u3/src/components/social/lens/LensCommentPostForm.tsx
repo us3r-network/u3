@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { useActiveProfile } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
+import { PublicationId } from '@lens-protocol/metadata';
 import ReplyForm from '../ReplyForm';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { useCreateLensComment } from '../../../hooks/social/lens/useCreateLensComment';
@@ -11,14 +11,13 @@ export default function LensCommentPostForm({
   publicationId,
   canComment,
 }: {
-  publicationId: string;
+  publicationId: PublicationId;
   canComment?: boolean;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const [content, setContent] = useState('');
 
-  const { isLogin, setOpenLensLoginModal } = useLensCtx();
-  const { data: activeProfile } = useActiveProfile();
+  const { isLogin, setOpenLensLoginModal, sessionProfile } = useLensCtx();
 
   const { createComment, isPending } = useCreateLensComment({
     onCommentSuccess: () => {
@@ -62,7 +61,7 @@ export default function LensCommentPostForm({
     <ReplyForm
       disabled={!canComment}
       onClick={() => {}}
-      avatar={getAvatar(activeProfile)}
+      avatar={getAvatar(sessionProfile)}
       content={content}
       setContent={setContent}
       submitting={isPending}
