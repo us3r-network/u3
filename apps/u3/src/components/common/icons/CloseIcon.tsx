@@ -15,5 +15,5 @@ export default function CloseIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }

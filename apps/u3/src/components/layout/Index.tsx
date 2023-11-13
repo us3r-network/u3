@@ -1,14 +1,15 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-01 15:09:50
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-02 14:34:36
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-13 10:06:11
  * @Description: 站点布局入口
  */
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { isMobile } from 'react-device-detect';
+import { useLocation } from 'react-router-dom';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
@@ -18,6 +19,7 @@ import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';
 
 function Layout() {
+  const location = useLocation();
   useGAPageView();
   return (
     <LayoutWrapper id="layout-wrapper">
@@ -30,9 +32,13 @@ function Layout() {
       ) : (
         <RightBox>
           <RightInner>
-            <MainBox className="main-box">
+            {location.pathname.includes('social') ? (
               <Main />
-            </MainBox>
+            ) : (
+              <MainBox className="main-box">
+                <Main />
+              </MainBox>
+            )}
           </RightInner>
           <DappMenu />
         </RightBox>
@@ -76,14 +82,14 @@ const RightInner = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
 `;
-const MainBox = styled.div`
+export const MainBox = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: 100%;
   }
   @media (min-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: calc(${MEDIA_BREAK_POINTS.xxxl}px - 60px);
   }
-  height: 100%;
+  /* height: 100%; */
   margin: 0 auto;
 `;
 

@@ -14,7 +14,10 @@ import {
   setSignedKeyRequest,
 } from 'src/utils/social/farcaster/farsign-utils';
 import { WARPCAST_API } from 'src/constants/farcaster';
-import { getFarcasterSignature } from 'src/services/social/api/farcaster';
+import {
+  getFarcasterSignature,
+  getFarcasterUserInfo,
+} from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
 import {
   getProfileBiolink,
@@ -75,6 +78,12 @@ export default function useFarcasterQR() {
     token: '',
     deepLink: '',
   });
+  const [mounted, setMounted] = useState(false);
+  const [qrCheckStatus, setQrCheckStatus] = useState<string>('');
+  const [qrUserData, setQrUserData] = useState<
+    { type: number; value: string }[]
+  >([]);
+
   const pollForSigner = useCallback(async (token: string, keyPair) => {
     let tries = 0;
 
@@ -132,6 +141,14 @@ export default function useFarcasterQR() {
       setOpenQR(false);
     }, 500);
   }, []);
+
+  const getCurrUserInfo = async (fid: number) => {
+    const resp = await getFarcasterUserInfo([fid]);
+    if (resp.data.code === 0) {
+      setQrUserData(resp.data.data);
+    }
+    setQrCheckStatus('valid');
+  };
 
   const initWarpcastAuth = useCallback(async () => {
     const keyPair = await generateKeyPair();
@@ -204,6 +221,9 @@ export default function useFarcasterQR() {
         isConnected: true,
       });
       setQrFid(signedKeyRequest.userFid);
+      getCurrUserInfo(signedKeyRequest.userFid);
+    } else {
+      setQrCheckStatus('done');
     }
   }, [didSessionStr]);
 
@@ -224,8 +244,13 @@ export default function useFarcasterQR() {
   }, [qrSigner.isConnected, openQR]);
 
   useEffect(() => {
+    if (!mounted) return;
     restoreFromQRcode();
-  }, [didSessionStr]);
+  }, [restoreFromQRcode, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return {
     qrFid,
@@ -241,5 +266,7 @@ export default function useFarcasterQR() {
     setWarpcastErr,
     restoreFromQRcode,
     openQRModal,
+    qrCheckStatus,
+    qrUserData,
   };
 }
