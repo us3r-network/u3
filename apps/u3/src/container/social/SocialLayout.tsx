@@ -14,6 +14,7 @@ import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 
+import { MEDIA_BREAK_POINTS } from 'src/constants';
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
@@ -128,8 +129,7 @@ export default function SocialLayout() {
 
   return (
     <HomeWrapper id="social-wrapper">
-      {titleElem}
-
+      <HeaderWraper>{titleElem}</HeaderWraper>
       <MainWrapper id="social-scroll-wrapper">
         {!isMobile && (
           <LeftWrapper>
@@ -221,14 +221,26 @@ const HomeWrapper = styled.div`
     height: 100%;
   }
 `;
-
 const MainWrapper = styled.div`
   width: 100%;
   height: calc(100vh - 96px);
   overflow: scroll;
+  width: 100%;
   display: flex;
+  justify-content: center;
   gap: 40px;
 `;
+export const HeaderWraper = styled.div`
+  @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
+    width: 100%;
+  }
+  @media (min-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
+    width: calc(${MEDIA_BREAK_POINTS.xxxl}px - 60px - 40px);
+  }
+  /* height: 100%; */
+  margin: 0 auto;
+`;
+
 const MainLeft = styled.div`
   width: 302px;
 `;
@@ -237,7 +249,7 @@ const MainRight = styled.div`
 `;
 const MainCenter = styled.div`
   width: 600px;
-  padding: 20px 0px;
+  margin: 20px 0px;
   box-sizing: border-box;
 `;
 const MainOutletWrapper = styled.div`
@@ -251,7 +263,7 @@ const LeftWrapper = styled(MainLeft)`
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 26px;
+  top: 24px;
   height: calc(100vh - 96px - 40px);
   overflow: scroll;
 `;
@@ -260,13 +272,11 @@ const RightWrapper = styled(MainRight)`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin: 24px 0px;
   position: sticky;
-  top: 26px;
-  height: calc(100vh - 96px - 40px);
-
+  position: -webkit-sticky;
+  top: min(calc(100vh - 1200px), 20px);
   > .recommend {
-    overflow: scroll;
-    height: calc(100vh - 96px - 40px - 40px);
     display: flex;
     flex-direction: column;
     gap: 20px;
