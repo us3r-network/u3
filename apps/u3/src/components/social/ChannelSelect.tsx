@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import {
   Button,
-  Item,
+  ListBoxItem,
   ListBox,
   Popover,
   Select,
@@ -189,7 +189,7 @@ const PopoverStyled = styled(Popover)`
   }
 `;
 
-const ItemStyled = styled(Item)`
+const ItemStyled = styled(ListBoxItem)`
   margin: 0px;
   color: #fff;
   border-radius: 6px;
