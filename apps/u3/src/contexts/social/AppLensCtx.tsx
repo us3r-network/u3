@@ -75,11 +75,13 @@ const lensConfig: LensConfig = {
 let walletProfileId = '';
 const getWalletProfileId = (): Promise<ProfileId> => {
   return new Promise((resolve) => {
+    let num = 0;
     const intervalId = setInterval(() => {
-      if (walletProfileId) {
+      if (walletProfileId || num === 30) {
         clearInterval(intervalId);
         resolve(walletProfileId as ProfileId);
       }
+      num += 1;
     }, 100);
   });
 };
