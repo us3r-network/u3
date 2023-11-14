@@ -2,14 +2,13 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-10 09:56:17
+ * @LastEditTime: 2023-11-14 17:58:04
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
 import loadable from '@loadable/component';
 import React, { ReactNode } from 'react';
 import { isMobile } from 'react-device-detect';
-import Banner from 'src/components/home/Banner';
 
 export enum RouteKey {
   home = 'home',
@@ -26,6 +25,8 @@ export enum RouteKey {
   contents = 'contents',
   content = 'content',
   contentCreate = 'contentCreate',
+  links = 'links',
+  link = 'link',
   favorite = 'favorite',
   frens = 'frens',
   profile = 'profile',
@@ -201,6 +202,18 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('news/ContentCreate'),
     key: RouteKey.contentCreate,
     permissions: [RoutePermission.login],
+  },
+  {
+    path: '/links',
+    element: loadContainerElement('news/Links'),
+    key: RouteKey.links,
+  },
+  {
+    path: '/links/:url',
+    element: isMobile
+      ? loadContainerElement('news/LinkMobile')
+      : loadContainerElement('news/Links'),
+    key: isMobile ? RouteKey.link : RouteKey.links,
   },
   {
     path: '/frens',

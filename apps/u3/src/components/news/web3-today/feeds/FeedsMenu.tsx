@@ -1,11 +1,11 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-17 16:02:01
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-14 17:03:00
  * @Description: file description
  */
-import { ReactNode, useEffect, useRef } from 'react';
+import { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { getRoute, RouteKey } from '../../../../route/routes';
@@ -14,6 +14,10 @@ import Tab from '../../../common/tab/Tab';
 import ButtonBack from '../../../common/button/ButtonBack';
 
 const FeedsSwitchOptions = [
+  {
+    label: 'Links',
+    value: RouteKey.links,
+  },
   {
     label: 'Contents',
     value: RouteKey.contents,
