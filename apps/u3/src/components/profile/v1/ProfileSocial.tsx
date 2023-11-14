@@ -4,7 +4,8 @@ import { useSession } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useLoadProfileFeeds } from '../../../hooks/social/useLoadProfileFeeds';
 import Loading from '../../common/loading/Loading';
-import LensPostCard from '../../social/lens/v1/LensPostCard';
+import LensPostCardV1 from '../../social/lens/v1/LensPostCard';
+import LensPostCard from '../../social/lens/LensPostCard';
 import FCast from '../../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../../services/social/api/feeds';
@@ -88,9 +89,26 @@ export function ProfileSocialPosts({
             scrollableTarget="profile-wrapper"
           >
             <PostList>
-              {feeds.map(({ platform, data }) => {
+              {feeds.map(({ platform, data, ...args }) => {
                 if (platform === 'lens') {
                   let d;
+                  if ((args as any)?.version === 'v2') {
+                    switch (group) {
+                      case ProfileFeedsGroups.POSTS:
+                        d = data as any;
+                        break;
+                      case ProfileFeedsGroups.REPOSTS:
+                        d = (data as any).mirrorOn;
+                        break;
+                      case ProfileFeedsGroups.REPLIES:
+                        d = (data as any).commentOn;
+                        break;
+                      default:
+                        break;
+                    }
+                    if (!d) return null;
+                    return <LensPostCard key={d.id} data={d} />;
+                  }
                   switch (group) {
                     case ProfileFeedsGroups.POSTS:
                       d = data as any;
@@ -105,7 +123,7 @@ export function ProfileSocialPosts({
                       break;
                   }
                   if (!d) return null;
-                  return <LensPostCard key={d.id} data={d} />;
+                  return <LensPostCardV1 key={d.id} data={d} />;
                 }
                 if (platform === 'farcaster') {
                   const key = Buffer.from(data.hash.data).toString('hex');
