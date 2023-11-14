@@ -45,7 +45,7 @@ export enum ProfileFeedsGroups {
   REPLIES = 'replies',
 }
 
-export const FEEDS_PAGE_SIZE = 30;
+export const FEEDS_PAGE_SIZE = 25;
 
 export function getFeeds({
   pageSize,
