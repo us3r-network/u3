@@ -1,4 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import useUserData from 'src/hooks/social/farcaster/useUserData';
+import SettingIcon from 'src/components/common/icons/setting';
+
 import { SocialPlatform } from '../../../services/social/types';
 import LensIcon from '../../common/icons/LensIcon';
 import FarcasterIcon from '../../common/icons/FarcasterIcon';
@@ -25,13 +28,22 @@ export default function PlatformAccounts({
   ...wrapperProps
 }: PlatformAccountsProps) {
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { isConnected: isLoginFarcaster, openFarcasterQR } = useFarcasterCtx();
+  const {
+    isConnected: isLoginFarcaster,
+    openFarcasterQR,
+    currFid,
+    currUserInfo,
+    setSignerSelectModalOpen,
+  } = useFarcasterCtx();
   const findLensAccount = data?.find(
     (item) => item.platform === SocialPlatform.Lens
   );
   const findFarcasterAccount = data?.find(
     (item) => item.platform === SocialPlatform.Farcaster
   );
+
+  const userInfo = useUserData(currUserInfo?.[currFid]);
+
   return (
     <Wrapper {...wrapperProps}>
       {isLoginUser && !findLensAccount && (
@@ -57,27 +69,54 @@ export default function PlatformAccounts({
         </Row>
       )}
 
-      {data.map((item) => (
-        <Row key={item.handle}>
-          <Line />
-          <Avatar src={item.avatar} />
-          <Center>
-            {!!item.name && <Name>{item.name}</Name>}
-            {!!item.handle && <Handle>@{item.handle}</Handle>}
-          </Center>
+      {data.map((item) => {
+        if (item.platform === SocialPlatform.Farcaster) {
+          return null;
+        }
+        return (
+          <Row key={item.handle}>
+            <Line />
+            <Avatar src={item.avatar} />
+            <Center>
+              {!!item.name && <Name>{item.name}</Name>}
+              {!!item.handle && <Handle>@{item.handle}</Handle>}
+            </Center>
 
-          {(() => {
-            switch (item.platform) {
-              case SocialPlatform.Lens:
-                return <LensIcon width="20px" height="20px" />;
-              case SocialPlatform.Farcaster:
-                return <FarcasterIcon width="20px" height="20px" />;
-              default:
-                return null;
-            }
-          })()}
+            {(() => {
+              switch (item.platform) {
+                case SocialPlatform.Lens:
+                  return <LensIcon width="20px" height="20px" />;
+                // case SocialPlatform.Farcaster:
+                //   return <FarcasterIcon width="20px" height="20px" />;
+                default:
+                  return null;
+              }
+            })()}
+          </Row>
+        );
+      })}
+      {currFid && currUserInfo && (
+        <Row>
+          <Line />
+          <div className="avatar">
+            <Avatar src={userInfo.avatar} />
+            <FarcasterIcon width="20px" height="20px" className="platform" />
+          </div>
+          <Center>
+            {!!userInfo.name && <Name>{userInfo.name}</Name>}
+            {!!userInfo.handle && <Handle>@{userInfo.handle}</Handle>}
+          </Center>
+          <button
+            className="setting"
+            type="button"
+            onClick={() => {
+              setSignerSelectModalOpen(true);
+            }}
+          >
+            <SettingIcon />
+          </button>
         </Row>
-      ))}
+      )}
     </Wrapper>
   );
 }
@@ -91,6 +130,22 @@ const Row = styled.div`
   gap: 20px;
   padding-top: 20px;
   position: relative;
+
+  .avatar {
+    position: relative;
+    > .platform {
+      position: absolute;
+      bottom: 2px;
+      left: 0px;
+    }
+  }
+
+  button.setting {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+  }
 `;
 const Line = styled.div`
   width: 0px;

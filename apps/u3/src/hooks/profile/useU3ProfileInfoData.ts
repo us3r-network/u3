@@ -23,6 +23,8 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     loading: bioLinkLoading,
   } = useBioLinkListWithDid(did);
 
+  const { currFid: fid } = useFarcasterCtx();
+
   const identity = useMemo(() => {
     // 如果绑定了 lens，但没绑定 farcaster，则取 lens 的 identity(address/handle) 去web3.bio查询其它平台信息
     if (lensBioLinkProfiles.length > 0 && fcastBioLinkProfiles.length === 0) {
@@ -47,16 +49,16 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     loading: web3BioLoading,
   } = useBioLinkListWithWeb3Bio(identity);
 
-  const {
-    fetch: fetchFid,
-    fid: fetchedFid,
-    loading: fidLoading,
-  } = useLazyQueryFidWithAddress(
-    web3FcastBioLinks?.[0]?.address || recommendAddress
-  );
-  useEffect(() => {
-    fetchFid();
-  }, [fetchFid]);
+  // const {
+  //   fetch: fetchFid,
+  //   fid: fetchedFid,
+  //   loading: fidLoading,
+  // } = useLazyQueryFidWithAddress(
+  //   web3FcastBioLinks?.[0]?.address || recommendAddress
+  // );
+  // useEffect(() => {
+  //   fetchFid();
+  // }, [fetchFid]);
 
   const { farcasterUserData } = useFarcasterCtx();
 
@@ -72,7 +74,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     });
   const lensProfileFirst = lensProfiles?.[0];
 
-  const fid = fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
+  // const fid = fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
     if (fid && !farcasterUserData[fid]) {
@@ -80,7 +82,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     }
   }, [fid, farcasterUserData]);
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterFollowData } = useFarcasterFollowNum(`${fid}`);
 
   const userData = useFarcasterUserData({
     fid: `${fid}`,
@@ -119,13 +121,13 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
   const followersCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
 
-    return lensFollowersCount + farcasterFollowData.followers;
+    return lensFollowersCount + farcasterFollowData.followers || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.totalFollowing || 0;
 
-    return lensFollowersCount + farcasterFollowData.following;
+    return lensFollowersCount + farcasterFollowData.following || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   return {
@@ -139,9 +141,8 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     farcasterFollowData,
     bioLinkLoading,
     web3BioLoading,
-    fidLoading,
+    // fidLoading: false,
     lensProfilesLoading,
-    loading:
-      bioLinkLoading || web3BioLoading || fidLoading || lensProfilesLoading,
+    loading: bioLinkLoading || web3BioLoading || lensProfilesLoading,
   };
 }

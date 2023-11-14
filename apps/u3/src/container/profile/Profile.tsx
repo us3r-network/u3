@@ -6,6 +6,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import ProfilePageNav, {
   FeedsType,
 } from '../../components/profile/ProfilePageNav';
@@ -82,9 +83,11 @@ export default function Profile() {
 
 function U3ProfileContainer({ did }: { did: string }) {
   const session = useSession();
-  const { fid, address, lensProfileFirst, loading } = useU3ProfileInfoData({
+  const { address, lensProfileFirst, loading } = useU3ProfileInfoData({
     did,
   });
+  const { currFid } = useFarcasterCtx();
+  const fid = useMemo(() => `${currFid}`, [currFid]);
   if (loading) {
     return (
       <LoadingWrapper>
