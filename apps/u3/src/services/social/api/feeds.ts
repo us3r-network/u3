@@ -24,13 +24,13 @@ axiosInstance.interceptors.request.use(
 
 export type FeedsDataItem =
   | { data: FarCast; platform: SocialPlatform.Farcaster }
-  | { data: LensPost; platform: SocialPlatform.Lens };
+  | { data: LensPost; platform: SocialPlatform.Lens; version?: string };
 
 export type ProfileFeedsDataItem =
   | { data: FarCast; platform: SocialPlatform.Farcaster }
-  | { data: LensPost; platform: SocialPlatform.Lens }
-  | { data: LensMirror; platform: SocialPlatform.Lens }
-  | { data: LensComment; platform: SocialPlatform.Lens };
+  | { data: LensPost; platform: SocialPlatform.Lens; version?: string }
+  | { data: LensMirror; platform: SocialPlatform.Lens; version?: string }
+  | { data: LensComment; platform: SocialPlatform.Lens; version?: string };
 
 export type FeedsPageInfo = {
   endLensCursor: string;

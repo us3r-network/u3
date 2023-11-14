@@ -7,7 +7,8 @@ import Loading from 'src/components/common/loading/Loading';
 import AddPostForm from 'src/components/social/AddPostForm';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 import { FeedsType } from 'src/components/social/SocialPageNav';
-import LensPostCard from 'src/components/social/lens/v1/LensPostCard';
+import LensPostCardV1 from 'src/components/social/lens/v1/LensPostCard';
+import LensPostCard from 'src/components/social/lens/LensPostCard';
 import useLogin from 'src/hooks/shared/useLogin';
 import useListFeeds from 'src/hooks/social/useListFeeds';
 import useListScroll from 'src/hooks/social/useListScroll';
@@ -164,10 +165,25 @@ export default function SocialFarcaster() {
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
-            {feeds.map(({ platform, data }) => {
+            {feeds.map(({ platform, data, ...args }) => {
               if (platform === 'lens') {
+                if ((args as any)?.version === 'v2') {
+                  return (
+                    <LensPostCard
+                      key={data.id}
+                      data={data}
+                      cardClickAction={(e) => {
+                        setPostScroll({
+                          currentParent: parentId,
+                          id: data.id,
+                          top: (e.target as HTMLDivElement).offsetTop,
+                        });
+                      }}
+                    />
+                  );
+                }
                 return (
-                  <LensPostCard
+                  <LensPostCardV1
                     key={data.id}
                     data={data}
                     cardClickAction={(e) => {
