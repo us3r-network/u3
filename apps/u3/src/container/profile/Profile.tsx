@@ -34,7 +34,7 @@ import { isDidPkh } from '../../utils/shared/did';
 import {
   ProfileSocialActivity,
   ProfileSocialPosts,
-} from '../../components/profile/v1/ProfileSocial';
+} from '../../components/profile/ProfileSocial';
 import Loading from '../../components/common/loading/Loading';
 import useDid from '../../hooks/profile/useDid';
 import FollowingDefault from '../../components/social/FollowingDefault';
