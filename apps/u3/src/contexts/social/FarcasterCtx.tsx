@@ -15,7 +15,6 @@ import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
 import FarcasterSignerSelectModal from 'src/components/social/farcaster/FarcasterSignerSelectModal';
-import FarcasterVerifyModal from 'src/components/social/farcaster/FarcasterVerifyModal';
 import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/social/farcaster/useFarcasterTrendChannel';
@@ -88,13 +87,10 @@ export interface FarcasterContextData {
   unPinChannel: (parent_url: string) => Promise<void>;
   userChannels: { parent_url: string }[];
   getUserChannels: () => Promise<void>;
+  setSignerSelectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
-
-const stopSign = {
-  stop: false,
-};
 
 export default function FarcasterProvider({
   children,
@@ -121,8 +117,8 @@ export default function FarcasterProvider({
   const [currUserInfo, setCurrUserInfo] = useState<{
     [key: string]: { type: number; value: string }[];
   }>();
+  const [selectType, setSelectType] = useState('');
   const [currFid, setCurrFid] = useState<number>();
-  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
   const [signerSelectModalOpen, setSignerSelectModalOpen] = useState(false);
   const [following, setFollowing] = useState<string[]>([]);
   const { farcasterFollowData } = useFarcasterFollowData({
@@ -156,11 +152,26 @@ export default function FarcasterProvider({
 
   const { channels } = useFarcasterTrendChannel();
 
-  const openFarcasterVerifyModal = useCallback(() => {
-    if (signer.isConnected) return;
-    setVerifyModalOpen(true);
-  }, [signer.isConnected]);
+  const openFarcasterSelectModal = useCallback(() => {
+    setSignerSelectModalOpen(true);
+  }, []);
 
+  const resetSigner = useCallback(() => {
+    setCurrFid(undefined);
+    setSigner({
+      SignedKeyRequest: {
+        deeplinkUrl: '',
+        key: '',
+        requestFid: 0,
+        state: 'pending',
+        token: '',
+        userFid: 0,
+      },
+      isConnected: false,
+    });
+    setCurrUserInfo(undefined);
+    setEncryptedSigner(undefined);
+  }, []);
   const useQRSigner = useCallback(() => {
     const privateKey = getPrivateKey();
     if (!privateKey) {
@@ -174,7 +185,6 @@ export default function FarcasterProvider({
     };
     setCurrUserInfo(data);
     setEncryptedSigner(new NobleEd25519Signer(Buffer.from(privateKey, 'hex')));
-    setSignerSelectModalOpen(false);
   }, [qrFid, qrSigner, qrUserData]);
 
   const useWalletSigner = useCallback(() => {
@@ -195,49 +205,35 @@ export default function FarcasterProvider({
     };
     setCurrUserInfo(data);
     setEncryptedSigner(walletSigner);
-    setSignerSelectModalOpen(false);
   }, [walletFid, walletSigner, walletUserData]);
 
   useEffect(() => {
-    console.log({ walletCheckStatus, qrCheckStatus });
     if (!walletCheckStatus || !qrCheckStatus) return;
-    if (walletCheckStatus === 'valid' && qrCheckStatus === 'valid') {
-      setSignerSelectModalOpen(true);
-      return;
-    }
-    if (walletCheckStatus === 'valid') {
-      useWalletSigner();
-      return;
-    }
-    if (qrCheckStatus === 'valid') {
-      useQRSigner();
-      return;
-    }
-    console.log('no valid signer');
+    setSignerSelectModalOpen(true);
   }, [walletCheckStatus, qrCheckStatus, useQRSigner, useWalletSigner]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
-  const session = useSession();
-  const { profile } = useProfileState();
-  const { upsertBioLink } = useBioLinkActions();
-  useEffect(() => {
-    const findUserInfo = currUserInfo?.[currFid]?.find(
-      (item) => item.type === UserDataType.USERNAME
-    );
-    const handle = findUserInfo?.value || '';
-    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
-      upsertBioLink({
-        did: session.id,
-        bioLink: {
-          profileID: profile.id,
-          platform: BIOLINK_PLATFORMS.farcaster,
-          network: String(BIOLINK_FARCASTER_NETWORK),
-          handle: farcasterHandleToBioLinkHandle(handle),
-          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
-        },
-      });
-    }
-  }, [session, profile, signer, currFid, currUserInfo]);
+  // const session = useSession();
+  // const { profile } = useProfileState();
+  // const { upsertBioLink } = useBioLinkActions();
+  // useEffect(() => {
+  //   const findUserInfo = currUserInfo?.[currFid]?.find(
+  //     (item) => item.type === UserDataType.USERNAME
+  //   );
+  //   const handle = findUserInfo?.value || '';
+  //   if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+  //     upsertBioLink({
+  //       did: session.id,
+  //       bioLink: {
+  //         profileID: profile.id,
+  //         platform: BIOLINK_PLATFORMS.farcaster,
+  //         network: String(BIOLINK_FARCASTER_NETWORK),
+  //         handle: farcasterHandleToBioLinkHandle(handle),
+  //         data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+  //       },
+  //     });
+  //   }
+  // }, [session, profile, signer, currFid, currUserInfo]);
 
   return (
     <FarcasterContext.Provider
@@ -251,7 +247,7 @@ export default function FarcasterProvider({
         isConnected: signer.isConnected,
         token,
         encryptedSigner,
-        openFarcasterQR: openFarcasterVerifyModal,
+        openFarcasterQR: openFarcasterSelectModal,
         farcasterUserData,
         setFarcasterUserData,
         channels,
@@ -261,6 +257,7 @@ export default function FarcasterProvider({
         joinChannel,
         unPinChannel,
         getUserChannels,
+        setSignerSelectModalOpen,
       }}
     >
       {children}
@@ -275,25 +272,12 @@ export default function FarcasterProvider({
         token={token}
         afterCloseAction={() => {
           setShowQR(false);
-          stopSign.stop = true;
         }}
       />
-      <FarcasterVerifyModal
-        open={verifyModalOpen}
-        closeAction={() => {
-          setVerifyModalOpen(false);
-        }}
-        addCountAction={() => {
-          setVerifyModalOpen(false);
-          openFarcasterQR();
-        }}
-        registerAction={() => {
-          setVerifyModalOpen(false);
-          navigate('/farcaster/signup');
-          // setOpenQR(true);
-        }}
-      />
+
       <FarcasterSignerSelectModal
+        walletCheckStatus={walletCheckStatus}
+        qrCheckStatus={qrCheckStatus}
         open={signerSelectModalOpen}
         closeModal={() => {
           setSignerSelectModalOpen(false);
@@ -301,6 +285,9 @@ export default function FarcasterProvider({
         afterCloseAction={() => {}}
         qrUserData={qrUserData}
         walletUserData={walletUserData}
+        resetAction={() => {
+          resetSigner();
+        }}
         confirmAction={(type: 'qr' | 'wallet') => {
           if (type === 'qr') {
             useQRSigner();
@@ -311,6 +298,18 @@ export default function FarcasterProvider({
             return;
           }
           console.log('confirmAction', { type });
+        }}
+        addAccountAction={() => {
+          setSignerSelectModalOpen(false);
+          openFarcasterQR();
+        }}
+        registerAction={() => {
+          setSignerSelectModalOpen(false);
+          navigate('/farcaster/signup');
+        }}
+        selectType={selectType}
+        setSelectType={(type: string) => {
+          setSelectType(type);
         }}
       />
     </FarcasterContext.Provider>

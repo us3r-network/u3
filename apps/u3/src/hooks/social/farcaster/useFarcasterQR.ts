@@ -183,35 +183,38 @@ export default function useFarcasterQR() {
     }
   }, [pollForSigner]);
 
-  const restoreFromQRcode = useCallback(async () => {
+  const restoreFromQRcode = useCallback(() => {
     const signer = getSignedKeyRequest();
     // if NO signer in local storage, try to get from db
     let signedKeyRequest;
-    if (!signer && didSessionStr) {
-      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
-        platform: BIOLINK_PLATFORMS.farcaster,
-        network: String(BIOLINK_FARCASTER_NETWORK),
-      });
-      if (farcasterBiolinks?.data?.data?.length > 0) {
-        const farsignBiolinks = farcasterBiolinks.data.data.filter(
-          (item) => item.data?.signedKeyRequest != null
-        );
-        const farsignBiolinkData = farsignBiolinks[0]
-          .data as FarcasterBioLinkData;
-        if (
-          farsignBiolinkData?.privateKey &&
-          farsignBiolinkData?.signedKeyRequest
-        ) {
-          setPrivateKey(farsignBiolinkData.privateKey);
-          setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
-          signedKeyRequest = farsignBiolinkData.signedKeyRequest;
-        }
-      }
-    } else {
+    // if (!signer && didSessionStr) {
+    //   const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+    //     platform: BIOLINK_PLATFORMS.farcaster,
+    //     network: String(BIOLINK_FARCASTER_NETWORK),
+    //   });
+    //   if (farcasterBiolinks?.data?.data?.length > 0) {
+    //     const farsignBiolinks = farcasterBiolinks.data.data.filter(
+    //       (item) => item.data?.signedKeyRequest != null
+    //     );
+    //     const farsignBiolinkData = farsignBiolinks[0]
+    //       .data as FarcasterBioLinkData;
+    //     if (
+    //       farsignBiolinkData?.privateKey &&
+    //       farsignBiolinkData?.signedKeyRequest
+    //     ) {
+    //       setPrivateKey(farsignBiolinkData.privateKey);
+    //       setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
+    //       signedKeyRequest = farsignBiolinkData.signedKeyRequest;
+    //     }
+    //   }
+    // } else {
+    //   signedKeyRequest = JSON.parse(signer);
+    // }
+    if (signer) {
       signedKeyRequest = JSON.parse(signer);
     }
 
-    if (signedKeyRequest != null) {
+    if (signedKeyRequest) {
       setToken({
         token: 'already connected',
         deepLink: 'already connected',
@@ -228,18 +231,12 @@ export default function useFarcasterQR() {
   }, [didSessionStr]);
 
   const openFarcasterQR = useCallback(() => {
-    if (qrSigner.isConnected) {
-      return;
-    }
     stopSign.stop = false;
     initWarpcastAuth();
     setOpenQR(true);
-  }, [initWarpcastAuth, qrSigner.isConnected]);
+  }, [initWarpcastAuth, setOpenQR]);
 
   const openQRModal = useMemo(() => {
-    if (qrSigner.isConnected) {
-      return false;
-    }
     return openQR;
   }, [qrSigner.isConnected, openQR]);
 

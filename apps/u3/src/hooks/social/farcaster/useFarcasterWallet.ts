@@ -38,40 +38,40 @@ export default function useFarcasterWallet() {
     { type: number; value: string }[]
   >([]);
 
-  const signerCheck = async (fid: number) => {
+  const signerCheck = (fid: number) => {
     if (!fid) return;
-    let privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
+    const privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
 
     // if NO privateKey in local storage, try to get from db
-    if (!privateKey && didSessionStr) {
-      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
-        platform: BIOLINK_PLATFORMS.farcaster,
-        network: String(BIOLINK_FARCASTER_NETWORK),
-        handle: fid,
-      });
-      console.log('farcasterBiolinks of wallet: ', farcasterBiolinks);
-      if (farcasterBiolinks?.data?.data?.length > 0) {
-        const farcasterBiolink = farcasterBiolinks.data.data[0];
-        const farcasterBiolinkData =
-          farcasterBiolink.data as FarcasterBioLinkData;
-        if (
-          farcasterBiolinkData?.privateKey &&
-          farcasterBiolinkData?.publicKey
-        ) {
-          localStorage.setItem(
-            `signerPrivateKey-${fid}`,
-            farcasterBiolinkData.privateKey
-          );
-          localStorage.setItem(
-            `signerPublicKey-${fid}`,
-            farcasterBiolinkData.publicKey
-          );
-          privateKey = farcasterBiolinkData.privateKey;
-        }
-      }
-    }
+    // if (!privateKey && didSessionStr) {
+    //   const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+    //     platform: BIOLINK_PLATFORMS.farcaster,
+    //     network: String(BIOLINK_FARCASTER_NETWORK),
+    //     handle: fid,
+    //   });
+    //   console.log('farcasterBiolinks of wallet: ', farcasterBiolinks);
+    //   if (farcasterBiolinks?.data?.data?.length > 0) {
+    //     const farcasterBiolink = farcasterBiolinks.data.data[0];
+    //     const farcasterBiolinkData =
+    //       farcasterBiolink.data as FarcasterBioLinkData;
+    //     if (
+    //       farcasterBiolinkData?.privateKey &&
+    //       farcasterBiolinkData?.publicKey
+    //     ) {
+    //       localStorage.setItem(
+    //         `signerPrivateKey-${fid}`,
+    //         farcasterBiolinkData.privateKey
+    //       );
+    //       localStorage.setItem(
+    //         `signerPublicKey-${fid}`,
+    //         farcasterBiolinkData.publicKey
+    //       );
+    //       privateKey = farcasterBiolinkData.privateKey;
+    //     }
+    //   }
+    // }
 
-    if (privateKey !== null) {
+    if (privateKey) {
       const ed25519Signer = new NobleEd25519Signer(
         Buffer.from(privateKey, 'hex')
       );

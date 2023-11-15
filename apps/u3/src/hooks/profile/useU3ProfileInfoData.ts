@@ -22,12 +22,20 @@ import {
   getOwnedByAddress,
 } from '../../utils/social/lens/profile';
 
-export default function useU3ProfileInfoData({ did }: { did: string }) {
+export default function useU3ProfileInfoData({
+  did,
+  isSelf,
+}: {
+  did: string;
+  isSelf: boolean;
+}) {
   const {
     lensBioLinkProfiles,
     fcastBioLinkProfiles,
     loading: bioLinkLoading,
   } = useBioLinkListWithDid(did);
+
+  const { currFid } = useFarcasterCtx();
 
   const identity = useMemo(() => {
     // 如果绑定了 lens，但没绑定 farcaster，则取 lens 的 identity(address/handle) 去web3.bio查询其它平台信息
@@ -80,7 +88,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
   });
   const lensProfileFirst = lensProfiles?.[0];
 
-  const fid = fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
+  const fid = isSelf ? currFid : fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
     if (fid && !farcasterUserData[fid]) {
@@ -88,7 +96,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     }
   }, [fid, farcasterUserData]);
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterFollowData } = useFarcasterFollowNum(`${fid}`);
 
   const userData = useFarcasterUserData({
     fid: `${fid}`,
@@ -127,13 +135,13 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
   const followersCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.followers || 0;
 
-    return lensFollowersCount + farcasterFollowData.followers;
+    return lensFollowersCount + farcasterFollowData.followers || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
     const lensFollowersCount = lensProfileFirst?.stats.following || 0;
 
-    return lensFollowersCount + farcasterFollowData.following;
+    return lensFollowersCount + farcasterFollowData.following || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   return {
