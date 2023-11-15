@@ -21,8 +21,10 @@ export type PlatformAccountsData = Array<{
 interface PlatformAccountsProps extends StyledComponentPropsWithRef<'div'> {
   data: PlatformAccountsData;
   isLoginUser?: boolean;
+  isSelf: boolean;
 }
 export default function PlatformAccounts({
+  isSelf,
   data,
   isLoginUser,
   ...wrapperProps
@@ -70,7 +72,7 @@ export default function PlatformAccounts({
       )}
 
       {data.map((item) => {
-        if (item.platform === SocialPlatform.Farcaster) {
+        if (isSelf && item.platform === SocialPlatform.Farcaster) {
           return null;
         }
         return (
@@ -86,8 +88,8 @@ export default function PlatformAccounts({
               switch (item.platform) {
                 case SocialPlatform.Lens:
                   return <LensIcon width="20px" height="20px" />;
-                // case SocialPlatform.Farcaster:
-                //   return <FarcasterIcon width="20px" height="20px" />;
+                case SocialPlatform.Farcaster:
+                  return <FarcasterIcon width="20px" height="20px" />;
                 default:
                   return null;
               }
@@ -95,7 +97,7 @@ export default function PlatformAccounts({
           </Row>
         );
       })}
-      {currFid && currUserInfo && (
+      {isSelf && currFid && currUserInfo && (
         <Row>
           <Line />
           <div className="avatar">

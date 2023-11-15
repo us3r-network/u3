@@ -29,7 +29,7 @@ export default function useLazyQueryFidWithAddress(address) {
   `;
   const [fetch, { data, loading, error }] = useLazyQuery(query);
   const { Social } = data?.Socials || {};
-  console.log('Social', address, Social);
+
   // TODO 先对比userId 取最小的那个，后续返回fids
   const fid = useMemo(
     () =>

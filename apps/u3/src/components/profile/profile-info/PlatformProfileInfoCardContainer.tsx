@@ -1,5 +1,5 @@
 import { StyledComponentPropsWithRef } from 'styled-components';
-import ProfileInfoBaseCard from './ProfileInfoCardLayout';
+import ProfileInfoCardLayout from './ProfileInfoCardLayout';
 import usePlatformProfileInfoData from '../../../hooks/profile/usePlatformProfileInfoData';
 
 interface PlatformProfileInfoCardContainerProps
@@ -9,9 +9,11 @@ interface PlatformProfileInfoCardContainerProps
   onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
+  isSelf: boolean;
 }
 export default function PlatformProfileInfoCardContainer({
   identity,
+  isSelf,
   navigateToProfileUrl,
   onNavigateToProfileAfter,
   clickFollowing,
@@ -29,7 +31,8 @@ export default function PlatformProfileInfoCardContainer({
   } = usePlatformProfileInfoData({ identity });
 
   return (
-    <ProfileInfoBaseCard
+    <ProfileInfoCardLayout
+      isSelf={isSelf}
       isU3Profile={false}
       navigateToProfileUrl={navigateToProfileUrl}
       onNavigateToProfileAfter={onNavigateToProfileAfter}

@@ -65,29 +65,44 @@ export default function Profile() {
   }, [did]);
 
   const session = useSession();
+  const isSelf = useMemo(() => {
+    return !identity;
+  }, [identity]);
 
   if (!identity) {
-    return <U3ProfileContainer did={session?.id} />;
+    return <U3ProfileContainer did={session?.id} isSelf={isSelf} />;
   }
   if (didLoading || hasProfileLoading) {
     return null;
   }
   if (isDidPkh(did) && hasProfile) {
-    return <U3ProfileContainer did={did} />;
+    return <U3ProfileContainer did={did} isSelf={isSelf} />;
   }
   if (identity) {
-    return <PlatformProfileContainer identity={identity} />;
+    return <PlatformProfileContainer identity={identity} isSelf={isSelf} />;
   }
   return null;
 }
 
-function U3ProfileContainer({ did }: { did: string }) {
+function U3ProfileContainer({ did, isSelf }: { did: string; isSelf: boolean }) {
   const session = useSession();
-  const { address, lensProfileFirst, loading } = useU3ProfileInfoData({
+  const {
+    fid: u3ProfileFid,
+    address,
+    lensProfileFirst,
+    loading,
+  } = useU3ProfileInfoData({
     did,
+    isSelf,
   });
   const { currFid } = useFarcasterCtx();
-  const fid = useMemo(() => `${currFid}`, [currFid]);
+  const fid = useMemo(() => {
+    if (isSelf) {
+      return `${currFid || ''}`;
+    }
+    return `${u3ProfileFid || ''}`;
+  }, [currFid, isSelf, u3ProfileFid]);
+
   if (loading) {
     return (
       <LoadingWrapper>
@@ -95,9 +110,11 @@ function U3ProfileContainer({ did }: { did: string }) {
       </LoadingWrapper>
     );
   }
+
   return (
     <ProfileView
       fid={fid}
+      isSelf={isSelf}
       lensProfileFirst={lensProfileFirst}
       address={address}
       did={did}
@@ -106,9 +123,16 @@ function U3ProfileContainer({ did }: { did: string }) {
     />
   );
 }
-function PlatformProfileContainer({ identity }: { identity: string }) {
+function PlatformProfileContainer({
+  identity,
+  isSelf,
+}: {
+  identity: string;
+  isSelf: boolean;
+}) {
   const { fid, recommendAddress, lensProfileFirst, loading } =
     usePlatformProfileInfoData({ identity });
+
   if (loading) {
     return (
       <LoadingWrapper>
@@ -118,6 +142,7 @@ function PlatformProfileContainer({ identity }: { identity: string }) {
   }
   return (
     <ProfileView
+      isSelf={isSelf}
       fid={fid}
       lensProfileFirst={lensProfileFirst}
       address={recommendAddress}
@@ -135,6 +160,7 @@ type ProfileViewProps = {
   did: string;
   identity: string;
   isLoginUser: boolean;
+  isSelf: boolean;
 };
 function ProfileView({
   fid,
@@ -143,6 +169,7 @@ function ProfileView({
   did,
   identity,
   isLoginUser,
+  isSelf,
 }: ProfileViewProps) {
   const [searchParams] = useSearchParams();
   const currSearchParams = useMemo(
@@ -224,7 +251,7 @@ function ProfileView({
     <ProfileWrapper id="profile-wrapper">
       {isMobile && (
         <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile did={did} identity={identity} />
+          <ProfileInfoMobile did={did} identity={identity} isSelf={isSelf} />
           <LogoutButton
             className="logout-button"
             onClick={() => {
@@ -305,6 +332,7 @@ function ProfileView({
         {!isMobile && (
           <MainLeft>
             <ProfileInfo
+              isSelf={isSelf}
               did={did}
               identity={identity}
               clickFollowing={() => {
@@ -392,6 +420,7 @@ function ProfileView({
               </MainCenter>
             );
           }
+
           return (
             <KeepAlive
               cacheKey={`${RouteKey.profile}_social_${
@@ -421,16 +450,19 @@ function ProfileInfo({
   clickFollowers,
   did,
   identity,
+  isSelf,
   ...props
 }: StyledComponentPropsWithRef<'div'> & {
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   did: string;
   identity: string;
+  isSelf: boolean;
 }) {
   return (
     <ProfileInfoWrap {...props}>
       <ProfileInfoCard
+        isSelf={isSelf}
         identity={identity || did}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}

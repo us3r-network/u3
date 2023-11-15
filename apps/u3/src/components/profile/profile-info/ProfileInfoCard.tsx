@@ -8,6 +8,7 @@ import PlatformProfileInfoCardContainer from './PlatformProfileInfoCardContainer
 import { isDidPkh } from '../../../utils/shared/did';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
+  isSelf?: boolean;
   identity: string;
   canNavigateToProfile?: boolean;
   onNavigateToProfileAfter?: () => void;
@@ -16,6 +17,7 @@ interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
 }
 export default function ProfileInfoCard({
   identity,
+  isSelf,
   canNavigateToProfile,
   onNavigateToProfileAfter,
   clickFollowing,
@@ -55,6 +57,7 @@ export default function ProfileInfoCard({
   if (did && hasProfile) {
     return (
       <U3ProfileInfoCardContainer
+        isSelf={isSelf}
         did={did}
         navigateToProfileUrl={navigateToProfileUrl}
         onNavigateToProfileAfter={onNavigateToProfileAfter}
@@ -67,6 +70,7 @@ export default function ProfileInfoCard({
   if (identity) {
     return (
       <PlatformProfileInfoCardContainer
+        isSelf={isSelf}
         identity={identity}
         navigateToProfileUrl={navigateToProfileUrl}
         onNavigateToProfileAfter={onNavigateToProfileAfter}
