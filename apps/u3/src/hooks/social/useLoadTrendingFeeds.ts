@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import {
   FeedsDataItem,
   FeedsPageInfo,
@@ -23,21 +24,21 @@ export function useLoadTrendingFeeds() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
 
+  const lensAccessToken = useLensAccessToken();
   const loadFirstFeeds = useCallback(
     async (
       parentId: string,
       opts?: {
         keyword?: string;
-        activeLensProfileId?: string;
         platforms?: SocialPlatform[];
       }
     ) => {
       setFirstLoading(true);
       try {
         const res = await getTrendingFeeds({
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -61,7 +62,7 @@ export function useLoadTrendingFeeds() {
         setFirstLoading(false);
       }
     },
-    []
+    [lensAccessToken]
   );
 
   const loadMoreFeeds = useCallback(
@@ -69,7 +70,6 @@ export function useLoadTrendingFeeds() {
       parentId: string,
       opts?: {
         keyword?: string;
-        activeLensProfileId?: string;
         platforms?: SocialPlatform[];
       }
     ) => {
@@ -79,9 +79,9 @@ export function useLoadTrendingFeeds() {
         const res = await getTrendingFeeds({
           endFarcasterCursor: pageInfo.endFarcasterCursor,
           endLensCursor: pageInfo.endLensCursor,
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -108,7 +108,7 @@ export function useLoadTrendingFeeds() {
         setMoreLoading(false);
       }
     },
-    [pageInfo, firstLoading, moreLoading]
+    [pageInfo, firstLoading, moreLoading, lensAccessToken]
   );
 
   return {

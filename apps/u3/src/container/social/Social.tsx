@@ -24,7 +24,6 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
-import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialAll() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,7 +32,6 @@ export default function SocialAll() {
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const fid = useFarcasterCurrFid();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
-  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const {
     socialPlatform,
@@ -70,15 +68,13 @@ export default function SocialAll() {
   const loadFirstFeeds = useCallback(async () => {
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
-        address: lensProfileOwnedByAddress,
         fid: isConnectedFarcaster ? fid : undefined,
+        lensProfileId: lensSessionProfileId,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
@@ -89,28 +85,25 @@ export default function SocialAll() {
     parentId,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
     isConnectedFarcaster,
+    lensSessionProfileId,
   ]);
 
   const loadMoreFeeds = useCallback(async () => {
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
-        address: lensProfileOwnedByAddress,
+        lensProfileId: lensSessionProfileId,
         fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       await loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
@@ -118,13 +111,12 @@ export default function SocialAll() {
     parentId,
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
     isConnectedFarcaster,
+    lensSessionProfileId,
   ]);
 
   useEffect(() => {
@@ -146,7 +138,7 @@ export default function SocialAll() {
     if (!isLogin) {
       return <NoLoginStyled />;
     }
-    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+    if (!isConnectedFarcaster && !lensSessionProfileId) {
       return (
         <MainCenter>
           <FollowingDefault farcaster lens />

@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-import { Comment } from '@lens-protocol/react-web';
+import { Post, Comment } from '@lens-protocol/react-web';
 import { SocialPlatform } from '../../../services/social/types';
-import { LensPost } from '../../../services/social/api/lens';
 import getAvatar from './getAvatar';
 import getContent from './getContent';
 import { getHandle, getName } from './profile';
 
 export const lensPublicationToPostCardData = (
-  publication: LensPost | null | undefined
+  publication: Post | null | undefined
 ) => {
   return {
     platform: SocialPlatform.Lens,
