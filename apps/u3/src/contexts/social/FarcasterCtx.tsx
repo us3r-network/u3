@@ -213,27 +213,27 @@ export default function FarcasterProvider({
   }, [walletCheckStatus, qrCheckStatus, useQRSigner, useWalletSigner]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
-  // const session = useSession();
-  // const { profile } = useProfileState();
-  // const { upsertBioLink } = useBioLinkActions();
-  // useEffect(() => {
-  //   const findUserInfo = currUserInfo?.[currFid]?.find(
-  //     (item) => item.type === UserDataType.USERNAME
-  //   );
-  //   const handle = findUserInfo?.value || '';
-  //   if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
-  //     upsertBioLink({
-  //       did: session.id,
-  //       bioLink: {
-  //         profileID: profile.id,
-  //         platform: BIOLINK_PLATFORMS.farcaster,
-  //         network: String(BIOLINK_FARCASTER_NETWORK),
-  //         handle: farcasterHandleToBioLinkHandle(handle),
-  //         data: JSON.stringify({ fid: currFid, ...findUserInfo }),
-  //       },
-  //     });
-  //   }
-  // }, [session, profile, signer, currFid, currUserInfo]);
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    const findUserInfo = currUserInfo?.[currFid]?.find(
+      (item) => item.type === UserDataType.USERNAME
+    );
+    const handle = findUserInfo?.value || '';
+    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: farcasterHandleToBioLinkHandle(handle),
+          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+        },
+      });
+    }
+  }, [session, profile, signer, currFid, currUserInfo]);
 
   return (
     <FarcasterContext.Provider

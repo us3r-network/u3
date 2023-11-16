@@ -75,6 +75,11 @@ export function getProfileBiolink(didSessionStr, params) {
   });
 }
 
+export enum FarcasterSignerType {
+  QR = 'qr',
+  WALLET = 'wallet',
+}
+
 export function postProfileBiolink(
   data: {
     platform;
