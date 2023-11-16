@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import {
   FeedsDataItem,
   FeedsPageInfo,
@@ -20,18 +21,15 @@ export function useLoadFeeds() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
 
+  const lensAccessToken = useLensAccessToken();
   const loadFirstFeeds = useCallback(
-    async (opts?: {
-      keyword?: string;
-      activeLensProfileId?: string;
-      platforms?: SocialPlatform[];
-    }) => {
+    async (opts?: { keyword?: string; platforms?: SocialPlatform[] }) => {
       setFirstLoading(true);
       try {
         const res = await getFeeds({
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -56,24 +54,20 @@ export function useLoadFeeds() {
         setFirstLoading(false);
       }
     },
-    []
+    [lensAccessToken]
   );
 
   const loadMoreFeeds = useCallback(
-    async (opts?: {
-      keyword?: string;
-      activeLensProfileId?: string;
-      platforms?: SocialPlatform[];
-    }) => {
+    async (opts?: { keyword?: string; platforms?: SocialPlatform[] }) => {
       if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
       setMoreLoading(true);
       try {
         const res = await getFeeds({
           endFarcasterCursor: pageInfo.endFarcasterCursor,
           endLensCursor: pageInfo.endLensCursor,
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -97,7 +91,7 @@ export function useLoadFeeds() {
         setMoreLoading(false);
       }
     },
-    [pageInfo, firstLoading, moreLoading]
+    [pageInfo, firstLoading, moreLoading, lensAccessToken]
   );
 
   return {

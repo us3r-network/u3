@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import {
   ProfileFeedsDataItem,
   FeedsPageInfo,
@@ -21,10 +22,10 @@ export function useLoadProfileFeeds() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
 
+  const lensAccessToken = useLensAccessToken();
   const loadFirstFeeds = useCallback(
     async (opts?: {
       keyword?: string;
-      activeLensProfileId?: string;
       lensProfileId?: string;
       fid?: string;
       platforms?: SocialPlatform[];
@@ -34,12 +35,12 @@ export function useLoadProfileFeeds() {
       setFirstLoading(true);
       try {
         const res = await getProfileFeeds({
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           lensProfileId,
           fid,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
           group: opts?.group,
+          lensAccessToken,
         });
         const {
           data,
@@ -64,13 +65,12 @@ export function useLoadProfileFeeds() {
         setFirstLoading(false);
       }
     },
-    []
+    [lensAccessToken]
   );
 
   const loadMoreFeeds = useCallback(
     async (opts?: {
       keyword?: string;
-      activeLensProfileId?: string;
       lensProfileId?: string;
       fid?: string;
       platforms?: SocialPlatform[];
@@ -83,12 +83,12 @@ export function useLoadProfileFeeds() {
         const res = await getProfileFeeds({
           endFarcasterCursor: pageInfo.endFarcasterCursor,
           endLensCursor: pageInfo.endLensCursor,
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
           lensProfileId,
           fid,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
           group: opts?.group,
+          lensAccessToken,
         });
         const {
           data,
@@ -112,7 +112,7 @@ export function useLoadProfileFeeds() {
         setMoreLoading(false);
       }
     },
-    [pageInfo, firstLoading, moreLoading]
+    [pageInfo, firstLoading, moreLoading, lensAccessToken]
   );
 
   return {

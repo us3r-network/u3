@@ -61,7 +61,6 @@ export default function SocialFarcaster() {
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: undefined,
         keyword: currentSearchParams.keyword,
         platforms: SocialPlatform.Farcaster,
       });

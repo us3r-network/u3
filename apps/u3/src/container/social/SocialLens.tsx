@@ -22,7 +22,6 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
-import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-lens');
@@ -54,21 +53,18 @@ export default function SocialFarcaster() {
 
   const { sessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = sessionProfile || {};
-  const lensProfileOwnedByAddress = getOwnedByAddress(sessionProfile);
 
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
-        address: lensProfileOwnedByAddress,
         fid: undefined,
         platforms: SocialPlatform.Lens,
+        lensProfileId: lensSessionProfileId,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         platforms: SocialPlatform.Lens,
       });
@@ -78,35 +74,31 @@ export default function SocialFarcaster() {
   }, [
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     feedsType,
+    lensSessionProfileId,
   ]);
 
   const loadMoreFeeds = useCallback(() => {
     if (feedsType === FeedsType.FOLLOWING) {
       loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
-        address: lensProfileOwnedByAddress,
         fid: undefined,
         platforms: SocialPlatform.Lens,
+        lensProfileId: lensSessionProfileId,
       });
     } else {
       loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
         platforms: SocialPlatform.Lens,
       });
     }
   }, [
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     feedsType,
+    lensSessionProfileId,
   ]);
 
   useEffect(() => {
@@ -128,7 +120,7 @@ export default function SocialFarcaster() {
     if (!isLogin) {
       return <NoLoginStyled />;
     }
-    if (!lensProfileOwnedByAddress) {
+    if (!lensSessionProfileId) {
       return (
         <MainCenter>
           <FollowingDefault lens />
