@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useProfilesOwnedBy } from '@lens-protocol/react-web';
+import { useProfiles } from '@lens-protocol/react-web';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
 import useLazyQueryFidWithAddress from '../social/farcaster/useLazyQueryFidWithAddress';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
@@ -8,6 +8,12 @@ import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
+import {
+  getBio,
+  getHandle,
+  getName,
+  getOwnedByAddress,
+} from '../../utils/social/lens/profile';
 
 export default function usePlatformProfileInfoData({
   identity,
@@ -22,10 +28,11 @@ export default function usePlatformProfileInfoData({
   } = useBioLinkListWithWeb3Bio(identity);
   const { farcasterUserData } = useFarcasterCtx();
 
-  const { data: lensProfiles, loading: lensProfilesLoading } =
-    useProfilesOwnedBy({
-      address: lensBioLinks?.[0]?.address || recommendAddress,
-    });
+  const { data: lensProfiles, loading: lensProfilesLoading } = useProfiles({
+    where: {
+      ownedBy: [lensBioLinks?.[0]?.address || recommendAddress],
+    },
+  });
   const lensProfileFirst = lensProfiles?.[0];
 
   const fetchFidWithAddress = fcastBioLinks?.[0]?.address || recommendAddress;
@@ -68,11 +75,11 @@ export default function usePlatformProfileInfoData({
         accounts.push({
           platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
-          name: lensProfile.name,
-          handle: lensProfile.handle,
+          name: getName(lensProfile),
+          handle: getHandle(lensProfile),
           id: lensProfile.id,
-          bio: lensProfile.bio,
-          address: lensProfile.ownedBy,
+          bio: getBio(lensProfile),
+          address: getOwnedByAddress(lensProfile),
         });
       }
     }
@@ -80,13 +87,13 @@ export default function usePlatformProfileInfoData({
   }, [lensProfiles, fcastBioLinks, fid]);
 
   const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
+    const lensFollowersCount = lensProfileFirst?.stats.followers || 0;
 
     return lensFollowersCount + farcasterFollowData.followers;
   }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.totalFollowing || 0;
+    const lensFollowersCount = lensProfileFirst?.stats.following || 0;
 
     return lensFollowersCount + farcasterFollowData.following;
   }, [lensProfileFirst, farcasterFollowData]);

@@ -1,12 +1,4 @@
-import {
-  Post,
-  ProfileOwnedByMe,
-  useActiveProfile,
-  useFollow,
-  useUnfollow,
-  useProfilesOwnedBy,
-  Profile,
-} from '@lens-protocol/react-web';
+import { Post, useFollow, useUnfollow } from '@lens-protocol/react-web';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +12,11 @@ import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/shared/useLogin';
 import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
+import {
+  canComment,
+  canMirror,
+  isFollowedByMe,
+} from '../../../utils/social/lens/operations';
 
 export default function LensPostCard({
   data,
@@ -39,9 +36,8 @@ export default function LensPostCard({
 
   const publication = data;
 
-  const [updatedPublication, setUpdatedPublication] = useState<Post | null>(
-    null
-  );
+  const [updatedPublication, setUpdatedPublication] =
+    useState<Post>(publication);
 
   useEffect(() => {
     setUpdatedPublication(publication);
@@ -49,20 +45,24 @@ export default function LensPostCard({
 
   const {
     toggleReactionUpvote,
-    hasUpvote,
+    hasUpvoted,
     isPending: isPendingReactionUpvote,
   } = useReactionLensUpvote({
     publication,
-    onReactionSuccess: ({ originPublication }) => {
-      if (originPublication?.id !== data.id) return;
+    onReactionSuccess: ({ originPublication, hasUpvoted: upvoted }) => {
+      if (originPublication?.id !== updatedPublication.id) return;
       setUpdatedPublication((prev) => {
         if (!prev) return prev;
-        const { stats } = prev;
+        const { stats, operations } = prev;
         return {
           ...prev,
+          operations: {
+            ...operations,
+            hasUpvoted: upvoted,
+          },
           stats: {
             ...stats,
-            totalUpvotes: Number(stats.totalUpvotes) + 1,
+            upvotes: Number(stats.upvotes) + 1,
           },
         };
       });
@@ -72,7 +72,7 @@ export default function LensPostCard({
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
     publication,
     onMirrorSuccess: (originPublication) => {
-      if (originPublication?.id !== data.id) return;
+      if (originPublication?.id !== updatedPublication.id) return;
       setUpdatedPublication((prev) => {
         if (!prev) return prev;
         const { stats } = prev;
@@ -80,7 +80,7 @@ export default function LensPostCard({
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfMirrors: Number(stats.totalAmountOfMirrors) + 1,
+            mirrors: Number(stats.mirrors) + 1,
           },
         };
       });
@@ -89,7 +89,7 @@ export default function LensPostCard({
 
   useCreateLensComment({
     onCommentSuccess: (commentArgs) => {
-      if (commentArgs.publicationId !== data.id) return;
+      if (commentArgs.commentOn.id !== updatedPublication.id) return;
       setUpdatedPublication((prev) => {
         if (!prev) return prev;
         const { stats } = prev;
@@ -97,7 +97,7 @@ export default function LensPostCard({
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: Number(stats.totalAmountOfComments) + 1,
+            comments: Number(stats.comments) + 1,
           },
         };
       });
@@ -110,42 +110,29 @@ export default function LensPostCard({
   );
 
   const replyDisabled = useMemo(
-    () => isLogin && !publication?.canComment?.result,
+    () => isLogin && !canComment(publication),
     [isLogin, publication]
   );
   const repostDisabled = useMemo(
-    () => isLogin && !publication?.canMirror?.result,
+    () => isLogin && !canMirror(publication),
     [isLogin, publication]
   );
 
-  const { data: lensProfiles } = useProfilesOwnedBy({
-    address: publication?.profile?.ownedBy || '',
-  });
-  const lensProfileFirst = lensProfiles?.[0];
-  const { data: lensActiveProfile } = useActiveProfile();
-  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
-    followee: (lensProfileFirst || { id: '' }) as Profile,
-    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
-  });
-  const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
-    {
-      followee: (lensProfileFirst || { id: '' }) as Profile,
-      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
-    }
-  );
+  const { execute: follow, loading: followLoading } = useFollow();
+  const { execute: unfollow, loading: unfollowLoading } = useUnfollow();
   return (
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => <LensPostCardContent publication={publication} />}
-      id={data.id}
+      id={updatedPublication.id}
       onClick={(e) => {
         cardClickAction?.(e);
-        navigate(`/social/post-detail/lens/${data.id}`);
+        navigate(`/social/post-detail/lens/${updatedPublication.id}`);
       }}
       data={cardData}
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
-      liked={isLoginU3 && hasUpvote}
+      liked={isLoginU3 && hasUpvoted}
       liking={isPendingReactionUpvote}
       likeAction={() => {
         if (!isLoginU3) {
@@ -168,7 +155,7 @@ export default function LensPostCard({
           setOpenLensLoginModal(true);
           return;
         }
-        if (!data?.canComment?.result) {
+        if (!canComment(data)) {
           toast.error('No comment permission');
           return;
         }
@@ -185,16 +172,16 @@ export default function LensPostCard({
           setOpenLensLoginModal(true);
           return;
         }
-        if (!data?.canMirror?.result) {
+        if (!canMirror(data)) {
           toast.error('No mirror permission');
           return;
         }
         createMirror();
       }}
       showMenuBtn
-      isFollowed={lensProfileFirst?.followStatus?.isFollowedByMe}
-      followPending={lensFollowIsPending}
-      unfollowPending={lensUnfollowPending}
+      isFollowed={isFollowedByMe(updatedPublication.by)}
+      followPending={followLoading}
+      unfollowPending={unfollowLoading}
       followAction={() => {
         if (!isLoginU3) {
           loginU3();
@@ -204,11 +191,11 @@ export default function LensPostCard({
           setOpenLensLoginModal(true);
           return;
         }
-        if (lensFollowIsPending || lensUnfollowPending) {
+        if (followLoading || unfollowLoading) {
           return;
         }
-        if (lensProfileFirst?.followStatus?.isFollowedByMe) {
-          lensUnfollow()
+        if (isFollowedByMe(updatedPublication.by)) {
+          unfollow({ profile: updatedPublication.by })
             .then(() => {
               toast.success('Unfollow success');
             })
@@ -217,8 +204,8 @@ export default function LensPostCard({
               toast.error('Unfollow failed');
             });
         } else {
-          lensFollow()
-            .then(() => {
+          follow({ profile: updatedPublication.by })
+            .then((res) => {
               toast.success('Follow success');
             })
             .catch((err) => {
@@ -227,9 +214,9 @@ export default function LensPostCard({
             });
         }
       }}
-      shareLink={getSocialDetailShareUrlWithLens(data.id)}
+      shareLink={getSocialDetailShareUrlWithLens(updatedPublication.id)}
       shareLinkEmbedTitle={
-        data?.metadata?.description || data?.metadata?.content
+        (data?.metadata as any)?.title || (data?.metadata as any)?.content
       }
     />
   );

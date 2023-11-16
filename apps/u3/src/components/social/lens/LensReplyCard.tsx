@@ -10,6 +10,7 @@ import { useCreateLensMirror } from '../../../hooks/social/lens/useCreateLensMir
 import LensPostCardContent from './LensPostCardContent';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import useLogin from '../../../hooks/shared/useLogin';
+import { canComment, canMirror } from '../../../utils/social/lens/operations';
 
 export default function LensReplyCard({ data }: { data: Comment }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -24,7 +25,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
 
   const {
     toggleReactionUpvote,
-    hasUpvote,
+    hasUpvoted,
     isPending: isPendingReactionUpvote,
   } = useReactionLensUpvote({
     publication: data,
@@ -34,9 +35,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
     publication: data,
   });
 
-  const [updatedPublication, setUpdatedPublication] = useState<Comment | null>(
-    null
-  );
+  const [updatedPublication, setUpdatedPublication] = useState<Comment>(data);
 
   useEffect(() => {
     setUpdatedPublication(data);
@@ -44,7 +43,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
 
   useCreateLensComment({
     onCommentSuccess: (commentArgs) => {
-      if (commentArgs.publicationId !== data.id) return;
+      if (commentArgs.commentOn.id !== data.id) return;
       setUpdatedPublication((prev) => {
         if (!prev) return prev;
         const { stats } = prev;
@@ -52,7 +51,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
           ...prev,
           stats: {
             ...stats,
-            totalAmountOfComments: Number(stats.totalAmountOfComments) + 1,
+            comments: Number(stats.comments) + 1,
           },
         };
       });
@@ -65,11 +64,11 @@ export default function LensReplyCard({ data }: { data: Comment }) {
   );
 
   const replyDisabled = useMemo(
-    () => isLogin && !data?.canComment?.result,
+    () => isLogin && !canComment(data),
     [isLogin, data]
   );
   const repostDisabled = useMemo(
-    () => isLogin && !data?.canMirror?.result,
+    () => isLogin && !canMirror(data),
     [isLogin, data]
   );
   return (
@@ -85,7 +84,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
       data={cardData}
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
-      liked={isLoginU3 && hasUpvote}
+      liked={isLoginU3 && hasUpvoted}
       liking={isPendingReactionUpvote}
       likeAction={() => {
         if (!isLoginU3) {
@@ -108,7 +107,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
           setOpenLensLoginModal(true);
           return;
         }
-        if (!data?.canComment?.result) {
+        if (!canComment(data)) {
           toast.error('No comment permission');
           return;
         }
@@ -125,7 +124,7 @@ export default function LensReplyCard({ data }: { data: Comment }) {
           setOpenLensLoginModal(true);
           return;
         }
-        if (!data?.canMirror?.result) {
+        if (!canMirror(data)) {
           toast.error('No mirror permission');
           return;
         }

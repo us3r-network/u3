@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useProfilesOwnedBy } from '@lens-protocol/react-web';
+import { useProfiles } from '@lens-protocol/react-web';
 import useBioLinkListWithDid from './useBioLinkListWithDid';
 import {
   farcasterHandleToBioLinkHandle,
@@ -15,20 +15,34 @@ import useFarcasterUserData from '../social/farcaster/useFarcasterUserData';
 import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
+import {
+  getBio,
+  getHandle,
+  getName,
+  getOwnedByAddress,
+} from '../../utils/social/lens/profile';
 
-export default function useU3ProfileInfoData({ did }: { did: string }) {
+export default function useU3ProfileInfoData({
+  did,
+  isSelf,
+}: {
+  did: string;
+  isSelf: boolean;
+}) {
   const {
     lensBioLinkProfiles,
     fcastBioLinkProfiles,
     loading: bioLinkLoading,
   } = useBioLinkListWithDid(did);
 
+  const { currFid } = useFarcasterCtx();
+
   const identity = useMemo(() => {
     // 如果绑定了 lens，但没绑定 farcaster，则取 lens 的 identity(address/handle) 去web3.bio查询其它平台信息
     if (lensBioLinkProfiles.length > 0 && fcastBioLinkProfiles.length === 0) {
       return (
-        lensBioLinkProfiles[0]?.ownedBy ||
-        lensHandleToBioLinkHandle(lensBioLinkProfiles[0]?.handle) ||
+        getOwnedByAddress(lensBioLinkProfiles[0]) ||
+        lensHandleToBioLinkHandle(getHandle(lensBioLinkProfiles[0])) ||
         ''
       );
     }
@@ -62,17 +76,19 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
 
   const address = getAddressWithDidPkh(did);
 
-  const { data: lensProfiles, loading: lensProfilesLoading } =
-    useProfilesOwnedBy({
-      address:
-        lensBioLinkProfiles?.[0]?.ownedBy ||
-        web3LensBioLinks?.[0]?.address ||
-        address ||
-        '',
-    });
+  const ownedBy =
+    getOwnedByAddress(lensBioLinkProfiles?.[0]) ||
+    web3LensBioLinks?.[0]?.address ||
+    address ||
+    '';
+  const { data: lensProfiles, loading: lensProfilesLoading } = useProfiles({
+    where: {
+      ownedBy: [ownedBy],
+    },
+  });
   const lensProfileFirst = lensProfiles?.[0];
 
-  const fid = fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
+  const fid = isSelf ? currFid : fcastBioLinkProfiles?.[0]?.fid || fetchedFid;
   const { upsertFarcasterUserData } = useUpsertFarcasterUserData();
   useEffect(() => {
     if (fid && !farcasterUserData[fid]) {
@@ -80,7 +96,7 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
     }
   }, [fid, farcasterUserData]);
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterFollowData } = useFarcasterFollowNum(`${fid}`);
 
   const userData = useFarcasterUserData({
     fid: `${fid}`,
@@ -105,11 +121,11 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
         accounts.push({
           platform: SocialPlatform.Lens,
           avatar: getAvatar(lensProfile),
-          name: lensProfile.name,
-          handle: lensProfile.handle,
+          name: getName(lensProfile),
+          handle: getHandle(lensProfile),
           id: lensProfile.id,
-          bio: lensProfile.bio,
-          address: lensProfile.ownedBy,
+          bio: getBio(lensProfile),
+          address: getOwnedByAddress(lensProfile),
         });
       }
     }
@@ -117,15 +133,15 @@ export default function useU3ProfileInfoData({ did }: { did: string }) {
   }, [lensProfiles, userData, web3FcastBioLinks]);
 
   const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.totalFollowers || 0;
+    const lensFollowersCount = lensProfileFirst?.stats.followers || 0;
 
-    return lensFollowersCount + farcasterFollowData.followers;
+    return lensFollowersCount + farcasterFollowData.followers || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.totalFollowing || 0;
+    const lensFollowersCount = lensProfileFirst?.stats.following || 0;
 
-    return lensFollowersCount + farcasterFollowData.following;
+    return lensFollowersCount + farcasterFollowData.following || 0;
   }, [lensProfileFirst, farcasterFollowData]);
 
   return {

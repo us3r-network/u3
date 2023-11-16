@@ -1,6 +1,7 @@
 import {
-  useActiveProfile,
+  LimitType,
   useProfileFollowing,
+  useProfiles,
 } from '@lens-protocol/react-web';
 import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -14,16 +15,20 @@ import {
 } from '../FollowListWidgets';
 
 export default function LensProfileFollowing({ address }: { address: string }) {
-  const { data: lensActiveProfile } = useActiveProfile();
+  const { data: lensProfiles } = useProfiles({
+    where: {
+      ownedBy: [address],
+    },
+  });
+  const lensProfile = lensProfiles?.[0];
   const {
     data: followingData,
     loading: firstLoading,
     hasMore,
     next,
   } = useProfileFollowing({
-    limit: 20,
-    observerId: lensActiveProfile?.id,
-    walletAddress: address,
+    limit: LimitType.TwentyFive,
+    for: lensProfile?.id,
   });
 
   const [moreLoading, setMoreLoading] = useState(false);
@@ -68,7 +73,7 @@ export default function LensProfileFollowing({ address }: { address: string }) {
           >
             <FollowList>
               {(followingData || []).map((item) => (
-                <LensFollowProfileCard profile={item.profile} isFollowingCard />
+                <LensFollowProfileCard profile={item} isFollowingCard />
               ))}
             </FollowList>
           </InfiniteScroll>

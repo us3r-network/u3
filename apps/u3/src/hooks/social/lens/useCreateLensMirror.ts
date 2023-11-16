@@ -1,11 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import {
-  ProfileOwnedByMe,
-  useActiveProfile,
-  useCreateMirror,
-  Post,
-  Comment,
-} from '@lens-protocol/react-web';
+import { PrimaryPublication, useCreateMirror } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import PubSub from 'pubsub-js';
 
@@ -13,26 +7,32 @@ export enum LensMirrorPubSubTopic {
   SUCCESS = 'lens-mirror-success',
   FAILED = 'lens-mirror-failed',
 }
-export function useCreateLensMirror(props: {
-  publication: Post | Comment;
-  onMirrorSuccess?: (originPublication: Post | Comment) => void;
+export function useCreateLensMirror({
+  publication,
+  onMirrorSuccess,
+  onMirrorFailed,
+}: {
+  publication: PrimaryPublication;
+  onMirrorSuccess?: (originPublication: PrimaryPublication) => void;
   onMirrorFailed?: (error: any) => void;
 }) {
-  const { publication } = props;
-  const { data: activeProfile } = useActiveProfile();
-  const publisher = activeProfile;
-
-  const {
-    execute: executeMirror,
-    error,
-    isPending,
-  } = useCreateMirror({ publisher });
+  const { execute, error, loading: isPending } = useCreateMirror();
 
   const createMirror = useCallback(async () => {
     try {
-      await executeMirror({
-        publication,
+      const result = await execute({
+        mirrorOn: publication.id, // the publication ID to mirror
       });
+      if (result.isFailure()) {
+        throw new Error(result.error.message);
+      }
+      // this might take a while, depends on the type of tx (on-chain or Momoka)
+      // and the congestion of the network
+      const completion = await result.value.waitForCompletion();
+
+      if (completion.isFailure()) {
+        throw new Error(completion.error.message);
+      }
       PubSub.publish(LensMirrorPubSubTopic.SUCCESS, publication);
       toast.success('Mirror successfully');
     } catch (err: any) {
@@ -40,9 +40,8 @@ export function useCreateLensMirror(props: {
       PubSub.publish(LensMirrorPubSubTopic.FAILED, err);
       toast.error('Mirror failed');
     }
-  }, [executeMirror, publication]);
+  }, [execute, publication]);
 
-  const { onMirrorSuccess, onMirrorFailed } = props || {};
   useEffect(() => {
     let successToken: any;
     let failedToken: any;

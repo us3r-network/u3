@@ -7,7 +7,6 @@
  */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useActiveProfile } from '@lens-protocol/react-web';
 import { useState } from 'react';
 import LoginButton from './LoginButton';
 import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
@@ -29,6 +28,7 @@ import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { useNav } from '../../contexts/NavCtx';
+import { useLensCtx } from '../../contexts/social/AppLensCtx';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -36,8 +36,8 @@ export default function Menu() {
   const navigate = useNavigate();
   // const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
 
-  const { data: lensProfile } = useActiveProfile();
-  const lensProfileId = lensProfile?.id;
+  const { sessionProfile: lensSessionProfile } = useLensCtx();
+  const { id: lensSessionProfileId } = lensSessionProfile || {};
   const fid = Number(useFarcasterCurrFid());
 
   return (
@@ -61,11 +61,11 @@ export default function Menu() {
         Profile的情况下，无法使用Lens的useUnreadLensNotificationCount，所以这里使用了两套Notification组件，
         等Lens Hooks V2这里需要重构 */}
         <NavWrapper>
-          {lensProfileId ? (
+          {lensSessionProfileId ? (
             <NotificationStoreProvider
               config={{
                 fid,
-                lensProfileId,
+                lensProfileId: lensSessionProfileId,
               }}
             >
               <NotificationButton />

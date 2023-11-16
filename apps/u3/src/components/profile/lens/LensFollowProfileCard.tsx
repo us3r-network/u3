@@ -1,16 +1,17 @@
-import {
-  Profile,
-  ProfileOwnedByMe,
-  useActiveProfile,
-  useFollow,
-  useUnfollow,
-} from '@lens-protocol/react-web';
+import { Profile, useFollow, useUnfollow } from '@lens-protocol/react-web';
 import { useMemo } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
 import FollowProfileCard from '../FollowProfileCard';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { SocialPlatform } from '../../../services/social/types';
 import getAvatar from '../../../utils/social/lens/getAvatar';
+import {
+  getBio,
+  getHandle,
+  getName,
+  getOwnedByAddress,
+} from '../../../utils/social/lens/profile';
+import { isFollowedByMe } from '../../../utils/social/lens/operations';
 
 type LensFollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
   profile?: Profile;
@@ -22,26 +23,18 @@ export default function LensFollowProfileCard({
   ...wrapperProps
 }: LensFollowProfileCardProps) {
   const { isLogin: isLoginLens, setOpenLensLoginModal } = useLensCtx();
-  const { data: lensActiveProfile } = useActiveProfile();
-  const { execute: lensFollow, isPending: lensFollowIsPending } = useFollow({
-    followee: profile,
-    follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
-  });
-  const { execute: lensUnfollow, isPending: lensUnfollowPending } = useUnfollow(
-    {
-      followee: profile,
-      follower: (lensActiveProfile || { ownedBy: '' }) as ProfileOwnedByMe,
-    }
-  );
+
+  const { execute: follow, loading: followLoading } = useFollow();
+  const { execute: unfollow, loading: unfollowLoading } = useUnfollow();
   const viewData = useMemo(
     () => ({
-      handle: profile.handle,
-      address: profile.ownedBy,
-      name: profile.name,
+      handle: getHandle(profile),
+      address: getOwnedByAddress(profile),
+      name: getName(profile) || profile?.id,
       avatar: getAvatar(profile),
-      bio: profile.bio,
+      bio: getBio(profile),
       isFollowed:
-        isFollowingCard && !isLoginLens ? true : profile.isFollowedByMe,
+        isFollowingCard && !isLoginLens ? true : isFollowedByMe(profile),
       platforms: [SocialPlatform.Lens],
     }),
     [profile, isFollowingCard, isLoginLens]
@@ -50,21 +43,21 @@ export default function LensFollowProfileCard({
   return (
     <FollowProfileCard
       data={viewData}
-      followPending={lensFollowIsPending}
-      unfollowPending={lensUnfollowPending}
+      followPending={followLoading}
+      unfollowPending={unfollowLoading}
       followAction={() => {
         if (!isLoginLens) {
           setOpenLensLoginModal(true);
           return;
         }
-        lensFollow();
+        follow({ profile });
       }}
       unfollowAction={() => {
         if (!isLoginLens) {
           setOpenLensLoginModal(true);
           return;
         }
-        lensUnfollow();
+        unfollow({ profile });
       }}
       {...wrapperProps}
     />

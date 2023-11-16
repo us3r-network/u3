@@ -1,9 +1,9 @@
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { toast } from 'react-toastify';
 import ModalContainer from '../../common/modal/ModalContainer';
 import InputBase from '../../common/input/InputBase';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
-import { toast } from 'react-toastify';
 import { useCreateLensPost } from '../../../hooks/social/lens/useCreateLensPost';
 
 export default function LensCommentPostModal({

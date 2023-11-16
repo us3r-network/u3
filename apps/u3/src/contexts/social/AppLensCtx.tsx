@@ -12,16 +12,21 @@ import {
   LensProvider,
   LensConfig,
   development,
-  useWalletLogin,
-  useWalletLogout,
-  useActiveProfile,
+  useLogin,
+  useLogout,
+  useSession,
   production,
-  useUpdateDispatcherConfig,
+  SessionType,
+  useUpdateProfileManagers,
+  Profile,
+  PrimaryPublication,
+  useProfiles,
+  ProfileId,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
 import { Connector, useAccount } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useSession as useU3Session } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import {
   BIOLINK_LENS_NETWORK,
@@ -30,11 +35,10 @@ import {
 } from '../../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../../constants/lens';
 
-import { LensPost, LensComment } from '../../services/social/api/lens';
 import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
 
-type CommentModalData = LensPost | LensComment | null;
 interface LensAuthContextValue {
+  sessionProfile: Profile;
   isLogin: boolean;
   isLoginPending: boolean;
   lensLogin: () => void;
@@ -43,11 +47,12 @@ interface LensAuthContextValue {
   setOpenLensLoginModal: React.Dispatch<React.SetStateAction<boolean>>;
   openCommentModal: boolean;
   setOpenCommentModal: React.Dispatch<React.SetStateAction<boolean>>;
-  commentModalData: CommentModalData;
-  setCommentModalData: React.Dispatch<React.SetStateAction<CommentModalData>>;
+  commentModalData: PrimaryPublication;
+  setCommentModalData: React.Dispatch<React.SetStateAction<PrimaryPublication>>;
 }
 
 export const LensAuthContext = createContext<LensAuthContextValue>({
+  sessionProfile: null,
   isLogin: false,
   isLoginPending: false,
   lensLogin: () => {},
@@ -65,6 +70,22 @@ const lensConfig: LensConfig = {
   environment: LENS_ENV === 'production' ? production : development,
 };
 
+// TODO : 兼容v2登录，为了在登录前获取钱包对应的profileID
+
+let walletProfileId = '';
+const getWalletProfileId = (): Promise<ProfileId> => {
+  return new Promise((resolve) => {
+    let num = 0;
+    const intervalId = setInterval(() => {
+      if (walletProfileId || num === 30) {
+        clearInterval(intervalId);
+        resolve(walletProfileId as ProfileId);
+      }
+      num += 1;
+    }, 100);
+  });
+};
+
 export function AppLensProvider({ children }: PropsWithChildren) {
   return (
     <LensProvider config={lensConfig}>
@@ -77,29 +98,55 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
   const [openLensLoginModal, setOpenLensLoginModal] = useState(false);
   const [openCommentModal, setOpenCommentModal] = useState(false);
   const [commentModalData, setCommentModalData] =
-    useState<CommentModalData>(null);
+    useState<PrimaryPublication>(null);
 
-  const { execute: login, isPending: isLoginPending } = useWalletLogin();
-  const { execute: lensLogout } = useWalletLogout();
-  const { data: wallet } = useActiveProfile();
+  const { execute: login, loading: isLoginPending } = useLogin();
+  const { execute: lensLogout } = useLogout();
+  const { data: session } = useSession();
 
   const { openConnectModal } = useConnectModal();
 
-  const { execute: updateDispatcher } = useUpdateDispatcherConfig({
-    profile: wallet,
-  });
+  const sessionProfile = useMemo(() => {
+    if (
+      !!session &&
+      session.type === SessionType.WithProfile &&
+      session.authenticated
+    ) {
+      return session.profile;
+    }
+    return null;
+  }, [session]);
+
+  const isLogin = useMemo(() => !!sessionProfile, [sessionProfile]);
+
+  const { execute: updateProfileManagers } = useUpdateProfileManagers();
 
   const updatedDispatcherFirst = useRef(false);
   useEffect(() => {
     if (updatedDispatcherFirst.current) return;
-    if (!wallet) return;
-    if (!wallet?.dispatcher) {
-      updateDispatcher({ enabled: true }).finally(() => {
-        updatedDispatcherFirst.current = true;
-      });
-    }
-  }, [wallet, updateDispatcher]);
+    if (!isLogin) return;
+    if (sessionProfile?.signless) return;
+    updateProfileManagers({ approveSignless: true }).finally(() => {
+      updatedDispatcherFirst.current = true;
+    });
+  }, [sessionProfile, updateProfileManagers]);
 
+  // TODO : 兼容v2登录，为了在登录前获取钱包对应的profileID
+  const [walletAddress, setWalletAddress] = useState<string>(null);
+  const profilesWhere = {};
+  if (walletAddress) {
+    Object.assign(profilesWhere, { ownedBy: [walletAddress] });
+  }
+  const { data: profiles } = useProfiles({
+    where: profilesWhere,
+  });
+  const firstProfile = profiles?.[0] || { id: '' };
+  const { id: firstProfileId } = firstProfile;
+  useEffect(() => {
+    walletProfileId = firstProfileId;
+  }, [firstProfileId]);
+
+  // const { execute: fetchProfile } = useLazyProfile();
   const lensLoginStartRef = useRef(false);
   const lensLoginAdpater = async (connector: Connector) => {
     const chainId = await connector.getChainId();
@@ -110,7 +157,11 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
     const walletClient = await connector.getWalletClient();
     const { address } = walletClient.account;
-    await login({ address });
+    walletProfileId = '';
+    setWalletAddress(address);
+    const profileId = await getWalletProfileId();
+
+    await login({ address, profileId });
   };
 
   const { connector: activeConnector, isConnected } = useAccount({
@@ -131,31 +182,35 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     }
   }, [isConnected, openConnectModal, activeConnector, lensLoginAdpater]);
 
-  const isLogin = useMemo(() => !!wallet, [wallet]);
-
   // 每次lens登录成功后，更新lens biolink
-  const session = useSession();
+  const u3Session = useU3Session();
   const { profile } = useProfileState();
   const { upsertBioLink } = useBioLinkActions();
   useEffect(() => {
-    if (!!session?.id && !!profile?.id && !isLoginPending && !!wallet) {
+    if (
+      !!u3Session?.id &&
+      !!profile?.id &&
+      !isLoginPending &&
+      !!sessionProfile
+    ) {
       upsertBioLink({
-        did: session.id,
+        did: u3Session.id,
         bioLink: {
           profileID: profile.id,
           platform: BIOLINK_PLATFORMS.lens,
           network: BIOLINK_LENS_NETWORK,
-          handle: lensHandleToBioLinkHandle(wallet.handle),
-          data: JSON.stringify(wallet),
+          handle: lensHandleToBioLinkHandle(sessionProfile.handle.fullHandle),
+          data: JSON.stringify(sessionProfile),
         },
       });
     }
-  }, [session, profile, isLoginPending, wallet]);
+  }, [u3Session, profile, isLoginPending, sessionProfile]);
 
   return (
     <LensAuthContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
+        sessionProfile,
         isLogin,
         isLoginPending,
         lensLogin,

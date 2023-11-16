@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { useActiveProfile } from '@lens-protocol/react-web';
+import { Comment, Mirror, Post, useSession } from '@lens-protocol/react-web';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useLoadProfileFeeds } from '../../hooks/social/useLoadProfileFeeds';
 import Loading from '../common/loading/Loading';
@@ -8,11 +8,6 @@ import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
-import {
-  LensComment,
-  LensMirror,
-  LensPost,
-} from '../../services/social/api/lens';
 import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
 
@@ -26,8 +21,7 @@ export function ProfileSocialPosts({
   group: ProfileFeedsGroups;
 }) {
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
-  const { data: activeLensProfile, loading: activeLensProfileLoading } =
-    useActiveProfile();
+  const { loading: activeLensProfileLoading } = useSession();
 
   const {
     firstLoading,
@@ -40,21 +34,19 @@ export function ProfileSocialPosts({
 
   const loadFirstSocialFeeds = useCallback(() => {
     loadFirstFeeds({
-      activeLensProfileId: activeLensProfile?.id,
       lensProfileId,
       fid,
       group,
     });
-  }, [loadFirstFeeds, activeLensProfile?.id, fid, group, lensProfileId]);
+  }, [loadFirstFeeds, fid, group, lensProfileId]);
 
   const loadMoreSocialFeeds = useCallback(() => {
     loadMoreFeeds({
-      activeLensProfileId: activeLensProfile?.id,
       lensProfileId,
       fid,
       group,
     });
-  }, [loadMoreFeeds, activeLensProfile?.id, fid, group, lensProfileId]);
+  }, [loadMoreFeeds, fid, group, lensProfileId]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;
@@ -95,13 +87,13 @@ export function ProfileSocialPosts({
                   let d;
                   switch (group) {
                     case ProfileFeedsGroups.POSTS:
-                      d = data as LensPost;
+                      d = data as Post;
                       break;
                     case ProfileFeedsGroups.REPOSTS:
-                      d = (data as LensMirror).mirrorOf;
+                      d = (data as Mirror).mirrorOn;
                       break;
                     case ProfileFeedsGroups.REPLIES:
-                      d = (data as LensComment).commentOn;
+                      d = (data as Comment).commentOn;
                       break;
                     default:
                       break;
