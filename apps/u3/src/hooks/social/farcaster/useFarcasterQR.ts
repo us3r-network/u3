@@ -20,6 +20,7 @@ import {
 } from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
 import {
+  FarcasterSignerType,
   getProfileBiolink,
   postProfileBiolink,
 } from 'src/services/shared/api/login';
@@ -120,6 +121,7 @@ export default function useFarcasterQR() {
             network: String(BIOLINK_FARCASTER_NETWORK),
             handle: signedKeyRequest.userFid,
             data: {
+              farcasterSignerType: FarcasterSignerType.QR,
               privateKey: keyPair.privateKey,
               publicKey: keyPair.publicKey,
               signedKeyRequest,
@@ -183,33 +185,34 @@ export default function useFarcasterQR() {
     }
   }, [pollForSigner]);
 
-  const restoreFromQRcode = useCallback(() => {
+  const restoreFromQRcode = useCallback(async () => {
     const signer = getSignedKeyRequest();
     // if NO signer in local storage, try to get from db
     let signedKeyRequest;
-    // if (!signer && didSessionStr) {
-    //   const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
-    //     platform: BIOLINK_PLATFORMS.farcaster,
-    //     network: String(BIOLINK_FARCASTER_NETWORK),
-    //   });
-    //   if (farcasterBiolinks?.data?.data?.length > 0) {
-    //     const farsignBiolinks = farcasterBiolinks.data.data.filter(
-    //       (item) => item.data?.signedKeyRequest != null
-    //     );
-    //     const farsignBiolinkData = farsignBiolinks[0]
-    //       .data as FarcasterBioLinkData;
-    //     if (
-    //       farsignBiolinkData?.privateKey &&
-    //       farsignBiolinkData?.signedKeyRequest
-    //     ) {
-    //       setPrivateKey(farsignBiolinkData.privateKey);
-    //       setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
-    //       signedKeyRequest = farsignBiolinkData.signedKeyRequest;
-    //     }
-    //   }
-    // } else {
-    //   signedKeyRequest = JSON.parse(signer);
-    // }
+    if (!signer && didSessionStr) {
+      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+        platform: BIOLINK_PLATFORMS.farcaster,
+        network: String(BIOLINK_FARCASTER_NETWORK),
+      });
+      // console.log('farcasterBiolinks', farcasterBiolinks);
+      if (farcasterBiolinks?.data?.data?.length > 0) {
+        const farsignBiolinks = farcasterBiolinks.data.data.filter(
+          (item) => item.data?.farcasterSignerType === FarcasterSignerType.QR
+        );
+        const farsignBiolinkData = farsignBiolinks[0]
+          ?.data as FarcasterBioLinkData;
+        if (
+          farsignBiolinkData?.privateKey &&
+          farsignBiolinkData?.signedKeyRequest
+        ) {
+          setPrivateKey(farsignBiolinkData.privateKey);
+          setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
+          signedKeyRequest = farsignBiolinkData.signedKeyRequest;
+        }
+      }
+    } else {
+      signedKeyRequest = JSON.parse(signer);
+    }
     if (signer) {
       signedKeyRequest = JSON.parse(signer);
     }
