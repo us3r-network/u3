@@ -10,20 +10,23 @@ import {
   useAuthentication,
   useSession,
 } from '@us3r-network/auth-with-rainbowkit';
+import { useDisconnect } from 'wagmi';
 import { useU3Login } from '../../contexts/U3LoginContext';
 import { RoleType } from '../../services/shared/api/login';
 import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import { getAddressWithDidPkh } from '../../utils/shared/did';
 
 export default () => {
+  const { disconnect } = useDisconnect();
   const session = useSession();
   const { user, u3IsLogin, u3logout } = useU3Login();
   const { disconnectXmtp } = useXmtpClient();
 
   const { signIn, signOut } = useAuthentication();
   const login = useCallback(async () => {
+    disconnect();
     await signIn();
-  }, [signIn]);
+  }, [signIn, disconnect]);
 
   const logout = useCallback(() => {
     signOut();
