@@ -113,7 +113,6 @@ export default function SocialFarcaster() {
   }, [currentSearchParams]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
     if (feeds.length > 0) return;
     if (!mounted) return;
 
