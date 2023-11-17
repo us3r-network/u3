@@ -55,7 +55,6 @@ export default function ConversationList(
 }
 const ConversationListWrap = styled.div`
   width: 100%;
-  min-height: 100%;
 `;
 const LoadingWrapper = styled.div`
   display: flex;
