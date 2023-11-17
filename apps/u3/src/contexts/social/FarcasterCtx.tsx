@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
+import useLogin from 'src/hooks/shared/useLogin';
 import FarcasterSignerSelectModal from 'src/components/social/farcaster/FarcasterSignerSelectModal';
 import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
@@ -101,6 +102,7 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
+  const { isLogin } = useLogin();
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
       deeplinkUrl: '',
@@ -209,8 +211,9 @@ export default function FarcasterProvider({
 
   useEffect(() => {
     if (!walletCheckStatus || !qrCheckStatus) return;
+    if (isLogin) return;
     setSignerSelectModalOpen(true);
-  }, [walletCheckStatus, qrCheckStatus, useQRSigner, useWalletSigner]);
+  }, [walletCheckStatus, qrCheckStatus, isLogin]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
   const session = useSession();
