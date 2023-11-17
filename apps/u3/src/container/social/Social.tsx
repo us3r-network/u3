@@ -65,11 +65,19 @@ export default function SocialAll() {
   );
 
   const loadFirstFeeds = useCallback(async () => {
+    setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
+      const fidParam = isConnectedFarcaster ? fid : undefined;
+      const lensSessionProfileIdParam = lensSessionProfileId;
+      if (!fidParam && !lensSessionProfileIdParam) {
+        setFirstLoadingDone(true);
+        return;
+      }
+
       await loadFollowingFirstFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        fid: isConnectedFarcaster ? fid : undefined,
-        lensProfileId: lensSessionProfileId,
+        fid: fidParam,
+        lensProfileId: lensSessionProfileIdParam,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
@@ -79,7 +87,6 @@ export default function SocialAll() {
       });
     }
     setFirstLoadingDone(true);
-    return loadFollowingFirstFeeds;
   }, [
     parentId,
     loadFollowingFirstFeeds,
