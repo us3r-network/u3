@@ -57,11 +57,16 @@ export default function SocialFarcaster() {
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
+      const lensSessionProfileIdParam = lensSessionProfileId;
+      if (!lensSessionProfileIdParam) {
+        setFirstLoadingDone(true);
+        return;
+      }
       await loadFollowingFirstFeeds(parentId, {
         keyword: currentSearchParams.keyword,
         fid: undefined,
         platforms: SocialPlatform.Lens,
-        lensProfileId: lensSessionProfileId,
+        lensProfileId: lensSessionProfileIdParam,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
@@ -70,7 +75,6 @@ export default function SocialFarcaster() {
       });
     }
     setFirstLoadingDone(true);
-    return loadFollowingFirstFeeds;
   }, [
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
