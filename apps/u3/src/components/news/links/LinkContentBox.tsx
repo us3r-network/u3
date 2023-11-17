@@ -1,15 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
+import { contentParse } from 'src/services/news/api/contents';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import ExtensionSupport from '../../layout/ExtensionSupport';
 import Loading from '../../common/loading/Loading';
-import ContentShower from './LinkShower';
+import LinkReaderView from './LinkReaderView';
 
 export type Tab = 'original' | 'readerView';
 
-export default function LinkShowerBox({
+export default function LinkContentBox({
   selectLink,
   tab,
 }: {
@@ -23,14 +24,14 @@ export default function LinkShowerBox({
     setIframeLoaded(false);
   }, [selectLink?.url]);
 
-  const contentValue = useMemo(() => {
-    if (!selectLink?.value) return '';
-    try {
-      const content = JSON.parse(selectLink?.value);
-      return content.content as string;
-    } catch (error) {
-      return selectLink?.value;
-    }
+  useEffect(() => {
+    if (!selectLink.readerView)
+      contentParse(selectLink?.url).then((resp) => {
+        console.log(resp);
+        selectLink.readerView = resp.data.data;
+        selectLink.supportReaderView = true;
+        return selectLink.readerView;
+      });
   }, [selectLink]);
 
   return (
@@ -47,7 +48,7 @@ export default function LinkShowerBox({
                   </LoadingBox>
                 )}
                 <iframe
-                  title={selectLink?.title}
+                  title={selectLink?.metadata?.title}
                   src={selectLink?.url}
                   style={{
                     opacity: iframeLoaded ? 1 : 0,
@@ -63,19 +64,19 @@ export default function LinkShowerBox({
             <ExtensionSupport
               btns
               url={selectLink.url}
-              title={selectLink.title}
+              title={selectLink.metadata?.title}
             />
           );
         }
         if (tab === 'readerView') {
-          if (contentValue) {
-            return <ContentShower data={selectLink} />;
+          if (selectLink.readerView) {
+            return <LinkReaderView data={selectLink} />;
           }
         }
         return (
           <ExtensionSupport
             url={selectLink.url}
-            title={selectLink.title}
+            title={selectLink.metadata?.title}
             msg="Reader view is not supported for this page! Please view it in the original tab."
           />
         );
@@ -84,13 +85,7 @@ export default function LinkShowerBox({
   );
 }
 
-export const ContentBoxContainer = styled.div`
-  height: 100%;
-  width: calc(100% - 360px);
-`;
-
 export const ContentBox = styled.div`
-  height: calc(100%);
   width: 100%;
 
   overflow-x: hidden;

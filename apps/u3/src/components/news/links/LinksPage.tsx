@@ -2,13 +2,14 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 18:24:21
+ * @LastEditTime: 2023-11-16 15:47:27
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LinkListItem } from 'src/services/news/types/links';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 import SearchInput from '../../common/input/SearchInput';
@@ -23,11 +24,11 @@ import {
   getContentsLayoutFromLocal,
   setContentsLayoutToLocal,
 } from '../../../utils/news/localLayout';
-import LinkList from './list/LinkList';
 import useLogin from '../../../hooks/shared/useLogin';
 import LinkOrderBySelect from './LinkOrderBySelect';
 import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
+import LinkList from './list/LinkList';
 
 export type LinksPageProps = {
   // Queries
@@ -69,18 +70,13 @@ export default function LinksPage({
   const [isActiveFilter, setIsActiveFilter] = useState(false);
 
   const selectLink: LinkListItem | null = useMemo(
-    () => links.find((item) => item?.url === link),
-    [links, link]
-  );
-
-  const renderMoreLoading = useMemo(
     () =>
-      loading && links.length > 0 ? (
-        <MoreLoading>loading ...</MoreLoading>
-      ) : !hasMore ? (
-        <MoreLoading>No other links</MoreLoading>
-      ) : null,
-    [loading, hasMore, links]
+      link
+        ? links.find(
+            (item) => item?.url === Buffer.from(link, 'base64').toString('utf8')
+          )
+        : null,
+    [links, link]
   );
 
   useEffect(() => {
@@ -174,17 +170,35 @@ export default function LinksPage({
           case Layout.LIST:
             return (
               <LinksWrapper>
-                <ListBox onScrollBottom={getMore}>
-                  <LinkList
-                    data={links}
-                    activeLink={selectLink}
-                    onItemClick={(item) => {
-                      navigate(
-                        `/links/${item?.url}?${searchParams.toString()}`
-                      );
+                <ListBox id="links-scroll-wrapper">
+                  <InfiniteScroll
+                    style={{ overflow: 'hidden' }}
+                    dataLength={links?.length || 0}
+                    next={() => {
+                      if (loading) return;
+                      getMore();
                     }}
-                  />
-                  {renderMoreLoading}
+                    hasMore={hasMore}
+                    scrollThreshold="600px"
+                    loader={
+                      <LoadingMoreWrapper>
+                        <Loading />
+                      </LoadingMoreWrapper>
+                    }
+                    scrollableTarget="links-scroll-wrapper"
+                  >
+                    <LinkList
+                      data={links}
+                      activeLink={selectLink}
+                      onItemClick={(item) => {
+                        navigate(
+                          `/links/${Buffer.from(item?.url, 'utf8').toString(
+                            'base64'
+                          )}}`
+                        );
+                      }}
+                    />
+                  </InfiniteScroll>
                 </ListBox>
                 <LinkBoxContainer>
                   {selectLink && <LinkPreview data={selectLink} />}
@@ -193,15 +207,34 @@ export default function LinksPage({
             );
           case Layout.GRID:
             return (
-              <GrideListBox onScrollBottom={getMore}>
-                <LinkGridList
-                  data={links}
-                  // activeLink={selectLink}
-                  onItemClick={(item) => {
-                    navigate(`/links/${item?.url}?${searchParams.toString()}`);
+              <GrideListBox id="links-scroll-wrapper">
+                <InfiniteScroll
+                  style={{ overflow: 'hidden' }}
+                  dataLength={links?.length || 0}
+                  next={() => {
+                    if (loading) return;
+                    getMore();
                   }}
-                />
-                {renderMoreLoading}
+                  hasMore={hasMore}
+                  scrollThreshold="600px"
+                  loader={
+                    <LoadingMoreWrapper>
+                      <Loading />
+                    </LoadingMoreWrapper>
+                  }
+                  scrollableTarget="links-scroll-wrapper"
+                >
+                  <LinkGridList
+                    data={links}
+                    onItemClick={(item) => {
+                      navigate(
+                        `/links/${Buffer.from(item?.url, 'utf8').toString(
+                          'base64'
+                        )}}`
+                      );
+                    }}
+                  />
+                </InfiniteScroll>
               </GrideListBox>
             );
           default:
@@ -257,7 +290,6 @@ const ListBox = styled(ListScrollBox)`
   min-width: 360px;
   width: 360px;
   height: calc(100%);
-  overflow: scroll;
   border-right: 1px solid #39424c;
 
   & .load-more {
@@ -282,13 +314,15 @@ const GrideListBox = styled(ListScrollBox)`
   overflow-y: auto;
 `;
 
-const MoreLoading = styled.div`
-  padding: 20px;
-  text-align: center;
-  color: #748094;
-`;
-
-export const LinkBoxContainer = styled.div`
+const LinkBoxContainer = styled.div`
   height: 100%;
   width: calc(100% - 360px);
+`;
+
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `;

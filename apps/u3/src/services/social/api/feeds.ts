@@ -201,3 +201,41 @@ export function getProfileFeeds({
     },
   });
 }
+
+export function getLinkFeeds({
+  link,
+  pageSize,
+  keyword,
+  endFarcasterCursor,
+  endLensCursor,
+  activeLensProfileId,
+  platforms,
+}: {
+  link: string;
+  pageSize?: number;
+  keyword?: string;
+  endFarcasterCursor?: string;
+  endLensCursor?: string;
+  activeLensProfileId?: string;
+  platforms?: SocialPlatform[];
+}): AxiosPromise<
+  ApiResp<{
+    data: FeedsDataItem[];
+    farcasterUserData: { fid: string; type: number; value: string }[];
+    pageInfo: FeedsPageInfo;
+  }>
+> {
+  return axiosInstance({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/castWithEmbedLinks`,
+    method: 'get',
+    params: {
+      link,
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
+      keyword,
+      endCursor: endFarcasterCursor,
+      endLensCursor,
+      activeLensProfileId,
+      platforms,
+    },
+  });
+}

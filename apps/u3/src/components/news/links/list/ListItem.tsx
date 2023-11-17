@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { LinkListItem } from 'src/services/news/types/links';
 import LinkBox from '../LinkBox';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
-import { getContentPlatformLogoWithJsonValue } from '../../../../utils/news/content';
 
 export default function ListItem({
   data,
@@ -14,7 +13,7 @@ export default function ListItem({
   isActive: boolean;
   clickAction: () => void;
 }) {
-  const { value, url, timestamp, title } = data;
+  const { metadata, url, timestamp } = data;
   const itemRef = useRef<HTMLDivElement & { isActive: boolean }>();
   const [classNames, setClassNames] = useState('');
   useEffect(() => {
@@ -24,10 +23,7 @@ export default function ListItem({
       setClassNames('');
     }
   }, [isActive]);
-  const platformLogo = useMemo(
-    () => getContentPlatformLogoWithJsonValue(value),
-    [value]
-  );
+  const platformLogo = useMemo(() => metadata?.icon || '', [metadata]);
 
   return (
     <Item
@@ -38,7 +34,7 @@ export default function ListItem({
     >
       <ItemInner isActive={isActive}>
         <div className={isActive ? 'right active' : 'right'}>
-          <p>{title}</p>
+          <p>{metadata?.title}</p>
           <ItemTitle>
             <div>
               <LinkBox text={url} logo={platformLogo} />
@@ -57,8 +53,8 @@ const Item = styled.div<{ isActive: boolean }>`
   gap: 10px;
   border-bottom: 1px solid #39424c;
   cursor: pointer;
-  border-bottom: 1px do lightgray;
   background: inherit;
+  position: relative;
   &:hover {
     & > * {
       transform: scale(1.05);
@@ -115,7 +111,7 @@ const ItemInner = styled.div<{ isActive: boolean }>`
       height: 100%;
       position: absolute;
       width: 2px;
-      background-color: #ffffff;
+      /* background-color: #ffffff; */
     }
     &.hidden {
       font-size: 0;
@@ -143,7 +139,7 @@ const ItemInner = styled.div<{ isActive: boolean }>`
   }
 
   & div.right {
-    width: calc(100% - 62px);
+    width: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;

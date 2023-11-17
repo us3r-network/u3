@@ -2,12 +2,12 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-03-01 10:08:00
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 17:44:37
+ * @LastEditTime: 2023-11-15 16:43:21
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
-import { getContentPlatformLogoWithJsonValue } from '../../../../utils/news/content';
+import { useMemo } from 'react';
 import Badge from '../Badge';
 import LinkBox from '../LinkBox';
 import EllipsisText from '../../../common/text/EllipsisText';
@@ -16,11 +16,11 @@ type Props = StyledComponentPropsWithRef<'div'> & {
   data: LinkListItem;
 };
 export default function ContentListItemMobile({ data, ...otherProps }: Props) {
-  const { tags, url, title, value } = data;
-  const platformLogo = getContentPlatformLogoWithJsonValue(value);
+  const { tags, url, metadata } = data;
+  const platformLogo = useMemo(() => metadata?.icon || '', [metadata]);
   return (
     <Wrapper {...otherProps}>
-      <Title row={2}>{title}</Title>
+      <Title row={2}>{metadata.title}</Title>
       <BottomWrapper>
         {tags?.length > 0 && <Badge text={tags[0]} className="tag" />}
         <LinkBox text={url} logo={platformLogo} />

@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
+import { useMemo } from 'react';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
 import LinkBox from '../LinkBox';
 import Badge from '../Badge';
-import { getContentPlatformLogoWithJsonValue } from '../../../../utils/news/content';
 
 export default function GridItem({
   data,
@@ -12,8 +12,8 @@ export default function GridItem({
   data: LinkListItem;
   clickAction?: () => void;
 }) {
-  const { tags, value, url, timestamp, title } = data;
-  const platformLogo = getContentPlatformLogoWithJsonValue(value);
+  const { tags, metadata, url, timestamp } = data;
+  const platformLogo = useMemo(() => metadata?.icon || '', [metadata]);
   return (
     <Box
       onClick={() => {
@@ -25,7 +25,7 @@ export default function GridItem({
           <LinkBox text={url} logo={platformLogo} />
         </div>
 
-        <h2>{title}</h2>
+        <h2>{metadata?.title}</h2>
         <div className="row">
           {tags?.length > 0 && <LinkBadge text={tags[0]} />}
           <div className="date">{defaultFormatFromNow(timestamp)}</div>

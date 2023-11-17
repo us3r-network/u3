@@ -2,20 +2,19 @@ import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
-import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
 import { defaultFormatFromNow } from '../../../utils/shared/time';
 import Badge from './Badge';
 import LinkBox from './LinkBox';
 // import ContentCommentLayout from './comment/ContentCommentLayout';
 // import ContentActions from './action/ContentActions';
 
-export default function LinkShower({ data }: { data: LinkListItem }) {
-  const { title, tags, timestamp, url, value } = data;
+export default function LinkReaderView({ data }: { data: LinkListItem }) {
+  const { tags, timestamp, url, metadata, readerView } = data;
 
   const contentFix = useMemo(() => {
-    if (!url) return value;
+    if (!url || !readerView) return null;
     const placeholder = document.createElement('div');
-    placeholder.innerHTML = value;
+    placeholder.innerHTML = readerView.content;
     const imgs = placeholder.getElementsByTagName('img');
     const linkUrl = new URL(url);
     for (let i = 0; i < imgs.length; i++) {
@@ -26,17 +25,15 @@ export default function LinkShower({ data }: { data: LinkListItem }) {
       }
     }
     return placeholder.innerHTML;
-  }, [value, url]);
+  }, [readerView, url]);
 
-  const platformLogo = useMemo(
-    () => getContentPlatformLogoWithJsonValue(value),
-    [value]
-  );
+  const platformLogo = useMemo(() => metadata.icon || '', [metadata]);
+
   return (
     <Shower>
       <ContentWrapper>
         <ContentTitle>
-          <div className="title">{title}</div>
+          <div className="title">{readerView?.title}</div>
           {tags?.length > 0 && (
             <div className="tags">
               {tags.map((tag) => (

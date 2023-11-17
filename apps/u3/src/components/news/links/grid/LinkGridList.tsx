@@ -2,42 +2,29 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-01 15:42:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 11:40:06
+ * @LastEditTime: 2023-11-15 14:47:04
  * @Description: file description
  */
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
-import AnimatedListItem, {
-  useAnimatedListTransition,
-} from '../../../common/animation/AnimatedListItem';
 import { MEDIA_BREAK_POINTS } from '../../../../constants';
 import GridItem from './GridItem';
 
 export type LinkGridListProps = {
   data: LinkListItem[];
-  // activeLink: LinkListItem | null;
   onItemClick?: (item: LinkListItem) => void;
 };
 
-export default function LinkGridList({
-  data,
-  // activeLink,
-  onItemClick,
-}: LinkGridListProps) {
-  const transitions = useAnimatedListTransition(data);
+export default function LinkGridList({ data, onItemClick }: LinkGridListProps) {
   return (
     <ContentGridListWrapper>
-      {transitions((styles, item) => {
-        // const isActive = item.url === activeLink.url;
-        return (
-          <AnimatedListItem key={item.url} styles={{ ...styles }}>
-            <GridItem
-              data={item}
-              clickAction={() => onItemClick && onItemClick(item)}
-            />
-          </AnimatedListItem>
-        );
-      })}
+      {data.map((item) => (
+        <GridItem
+          key={item.url}
+          data={item}
+          clickAction={() => onItemClick && onItemClick(item)}
+        />
+      ))}
     </ContentGridListWrapper>
   );
 }

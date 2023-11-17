@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import { MainWrapper } from 'src/components/layout/Index';
 import Loading from 'src/components/common/loading/Loading';
-import LinkShowerBox from 'src/components/news/links/LinkShowerBox';
+import LinkShowerBox from 'src/components/news/links/LinkContentBox';
 import { getLinkCast } from '../../services/news/api/links';
 
 export default function LinkMobile() {

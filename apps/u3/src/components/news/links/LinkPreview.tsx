@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 16:57:16
+ * @LastEditTime: 2023-11-16 16:30:41
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -11,7 +11,8 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import useFullScreen from '../../../hooks/shared/useFullScreen';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
-import LinkShowerBox, { Tab } from './LinkShowerBox';
+import LinkContentBox, { Tab } from './LinkContentBox';
+import LinkPost from './LinkPost';
 
 export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: LinkListItem;
@@ -43,7 +44,8 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
             </HeaderRight>
           </Header>
           <PreviewBox ref={ref}>
-            <LinkShowerBox selectLink={data} tab={tab} />
+            <LinkContentBox selectLink={data} tab={tab} />
+            <LinkPost url={data.url} />
             {isFullscreen && (
               <ContentPreviewFullscreen
                 isFullscreen={isFullscreen}
@@ -87,6 +89,8 @@ const PreviewBox = styled.div`
   height: 0;
   flex: 1;
   position: relative;
+  display: flex;
+  flex-direction: row;
 `;
 const ContentPreviewFullscreen = styled(ButtonFullScreen)`
   z-index: 1;

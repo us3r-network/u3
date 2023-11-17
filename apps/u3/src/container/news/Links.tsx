@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 18:39:42
+ * @LastEditTime: 2023-11-15 17:15:48
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,15 +15,17 @@ import LinksPage from 'src/components/news/links/LinksPage';
 import LinksPageMobile from 'src/components/news/links/mobile/LinksPageMobile';
 import useLinksSearchParams from 'src/hooks/news/useLinksSearchParams';
 import useLogin from 'src/hooks/shared/useLogin';
+import { getFarcasterEmbedMetadata } from 'src/services/social/api/farcaster';
+import { contentParse } from 'src/services/news/api/contents';
 
 function Links() {
   const { user } = useLogin();
-  const { link } = useParams();
-
-  const linkCache = useRef('');
-  useEffect(() => {
-    linkCache.current = link === ':link' ? '' : link;
-  }, [link]);
+  // const { link } = useParams();
+  // console.log({ link });
+  // const linkCache = useRef('');
+  // useEffect(() => {
+  //   linkCache.current = link === ':link' ? '' : link;
+  // }, [link]);
 
   const { currentSearchParams, searchParamsChange } = useLinksSearchParams();
 
@@ -48,7 +50,23 @@ function Links() {
         },
         user?.token
       );
-      setLinks(Array.from(new Set([...links, ...data.data.data])));
+      const newLinks = data.data.data;
+      const res = await getFarcasterEmbedMetadata(newLinks.map((l) => l.url));
+      const { metadata: metadatas } = res.data.data;
+      console.log(newLinks, metadatas);
+      newLinks.forEach((l) => {
+        const metadata = metadatas.find((m) => m?.url === l?.url);
+        l.metadata = metadata;
+        l.supportIframe = true;
+      });
+      setLinks(
+        Array.from(
+          new Set([
+            ...links,
+            ...newLinks.filter((l) => l.metadata && l.metadata?.title),
+          ])
+        )
+      );
       setEndCursor(data.data.pageInfo.endFarcasterCursor);
       setHasMore(data.data.pageInfo.hasNextPage);
     } catch (error) {

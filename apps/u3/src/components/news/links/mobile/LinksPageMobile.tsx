@@ -2,12 +2,12 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 17:45:09
+ * @LastEditTime: 2023-11-14 19:26:45
  * @Description: 首页任务看板
  */
-import { useMemo } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../../../common/loading/Loading';
 import ListScrollBox from '../../../common/box/ListScrollBox';
 import { MainWrapper } from '../../../layout/Index';
@@ -24,16 +24,6 @@ export default function LinksPageMobile({
   getMore,
 }: LinksPageProps) {
   const navigate = useNavigate();
-
-  const renderMoreLoading = useMemo(
-    () =>
-      loading && links.length > 0 ? (
-        <MoreLoading>loading ...</MoreLoading>
-      ) : !hasMore ? (
-        <MoreLoading>No other contents</MoreLoading>
-      ) : null,
-    [loading, hasMore]
-  );
 
   return (
     <Box>
@@ -56,14 +46,30 @@ export default function LinksPageMobile({
         }
 
         return (
-          <ListBox onScrollBottom={getMore}>
-            <LinkListMobile
-              data={links}
-              onItemClick={(item) => {
-                navigate(`/links/${item?.url}`);
+          <ListBox id="links-scroll-wrapper">
+            <InfiniteScroll
+              style={{ overflow: 'hidden' }}
+              dataLength={links?.length || 0}
+              next={() => {
+                if (loading) return;
+                getMore();
               }}
-            />
-            {renderMoreLoading}
+              hasMore={hasMore}
+              scrollThreshold="600px"
+              loader={
+                <LoadingMoreWrapper>
+                  <Loading />
+                </LoadingMoreWrapper>
+              }
+              scrollableTarget="links-scroll-wrapper"
+            >
+              <LinkListMobile
+                data={links}
+                onItemClick={(item) => {
+                  navigate(`/links/${item?.url}`);
+                }}
+              />
+            </InfiniteScroll>
           </ListBox>
         );
       })()}
@@ -112,8 +118,10 @@ const ListBox = styled(ListScrollBox)`
   }
 `;
 
-const MoreLoading = styled.div`
-  padding: 20px;
-  text-align: center;
-  color: #748094;
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `;

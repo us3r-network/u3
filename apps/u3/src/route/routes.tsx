@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 17:58:04
+ * @LastEditTime: 2023-11-15 15:49:25
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -209,7 +209,7 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.links,
   },
   {
-    path: '/links/:url',
+    path: '/links/:link',
     element: isMobile
       ? loadContainerElement('news/LinkMobile')
       : loadContainerElement('news/Links'),

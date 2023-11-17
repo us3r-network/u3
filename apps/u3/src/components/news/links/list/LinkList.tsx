@@ -2,14 +2,11 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-08 14:04:04
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 18:44:39
+ * @LastEditTime: 2023-11-15 14:46:22
  * @Description: file description
  */
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
-import AnimatedListItem, {
-  useAnimatedListTransition,
-} from '../../../common/animation/AnimatedListItem';
 import ListItem from './ListItem';
 
 export type LinkListProps = {
@@ -22,18 +19,16 @@ export default function LinkList({
   activeLink,
   onItemClick,
 }: LinkListProps) {
-  const transitions = useAnimatedListTransition(data);
   return (
     <LinkListWrapper>
-      {transitions((styles, item) => {
+      {data.map((item) => {
         return (
-          <AnimatedListItem key={item.url} styles={{ ...styles }}>
-            <ListItem
-              data={item}
-              isActive={item.url === activeLink?.url}
-              clickAction={() => onItemClick && onItemClick(item)}
-            />
-          </AnimatedListItem>
+          <ListItem
+            key={item.url}
+            data={item}
+            isActive={item.url === activeLink?.url}
+            clickAction={() => onItemClick && onItemClick(item)}
+          />
         );
       })}
     </LinkListWrapper>

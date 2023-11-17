@@ -2,11 +2,13 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-12 18:42:59
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 11:38:41
+ * @LastEditTime: 2023-11-15 17:08:26
  * @Description: file description
  */
 import { FarcasterPageInfo } from 'src/services/social/api/farcaster';
+import { FarCastEmbedMeta } from 'src/services/social/types';
 import { ApiResp } from '../../shared/types';
+import { URLParseData } from './contents';
 
 export type LinkListItem = {
   url: string;
@@ -14,8 +16,8 @@ export type LinkListItem = {
   timestamp: string;
   supportReaderView?: boolean;
   supportIframe?: boolean;
-  title?: string;
-  value?: string;
+  metadata?: FarCastEmbedMeta;
+  readerView?: URLParseData;
   tags?: string[];
 };
 
