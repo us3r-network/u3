@@ -63,12 +63,13 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
   const [loadingConversations, setLoadingConversations] = useState(false);
 
   const loadConversations = useCallback(async () => {
+    setLoadingConversations(true);
     if (!xmtpClient) {
       setConversations(defaultContextValue.conversations);
+      setLoadingConversations(false);
       return;
     }
     try {
-      setLoadingConversations(true);
       const convos = (await xmtpClient.conversations.list()).filter(
         (conversation) => !conversation.context?.conversationId
       );

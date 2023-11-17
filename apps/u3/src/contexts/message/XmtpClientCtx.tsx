@@ -8,19 +8,21 @@ import {
   useMemo,
   useCallback,
 } from 'react';
-import { useWalletClient } from 'wagmi';
+import { useAccount, useWalletClient } from 'wagmi';
 import {
   AttachmentCodec,
   RemoteAttachmentCodec,
 } from '@xmtp/content-type-remote-attachment';
 import { isMobile } from 'react-device-detect';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { loadKeys, storeKeys } from '../../utils/message/xmtp';
 import { XMTP_ENV } from '../../constants/xmtp';
 
 interface XmtpClientCtxValue {
   xmtpClient: Client | null;
   enablingXmtp: boolean;
-  enableXmtp: (signer: Signer) => Promise<void>;
+  enableXmtp: () => Promise<void>;
+  enableXmtpWithSigner: (signer: Signer) => Promise<void>;
   disconnectXmtp: () => void;
   canEnableXmtp: boolean;
   setCanEnableXmtp: (canEnable: boolean) => void;
@@ -30,6 +32,7 @@ const defaultContextValue: XmtpClientCtxValue = {
   xmtpClient: null,
   enablingXmtp: false,
   enableXmtp: async () => {},
+  enableXmtpWithSigner: async () => {},
   disconnectXmtp: () => {},
   canEnableXmtp: false,
   setCanEnableXmtp: () => {},
@@ -42,6 +45,8 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   const [enablingXmtp, setEnablingXmtp] = useState(false);
   const [canEnableXmtp, setCanEnableXmtp] = useState(false);
   const { data } = useWalletClient();
+  const { isConnected } = useAccount();
+  const { openConnectModal } = useConnectModal();
 
   /**
    * // TODO wagmi 的 wallet对象中getAddress, signMessage方法不符合xmtp-js的Signer定义要求，这里是临时方案
@@ -50,7 +55,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
    */
   const signer = useMemo(
     () =>
-      canEnableXmtp && data && !!data.account && !!(data as any)?.signMessage
+      data && !!data.account && !!(data as any)?.signMessage
         ? {
             getAddress: async (): Promise<string> => {
               const address = await (data.account.address as any);
@@ -65,10 +70,10 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
             },
           }
         : null,
-    [data, canEnableXmtp]
+    [data]
   );
 
-  const enableXmtp = useCallback(async (walletSigner: Signer) => {
+  const enableXmtpWithSigner = useCallback(async (walletSigner: Signer) => {
     if (!walletSigner) {
       return;
     }
@@ -97,18 +102,28 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
     }
   }, []);
 
+  const enableXmtp = useCallback(async () => {
+    if (!isConnected || !signer) {
+      openConnectModal();
+      return;
+    }
+    await enableXmtpWithSigner(signer);
+  }, [signer, enableXmtpWithSigner, openConnectModal]);
+
   const disconnectXmtp = useCallback(() => {
     setXmtpClient(null);
   }, []);
 
   useEffect(() => {
     if (isMobile) return;
-    if (!signer) {
-      setXmtpClient(null);
-      return;
+    if (canEnableXmtp) {
+      if (signer) {
+        enableXmtpWithSigner(signer);
+        return;
+      }
     }
-    enableXmtp(signer);
-  }, [signer, enableXmtp, isMobile]);
+    setXmtpClient(null);
+  }, [signer, enableXmtpWithSigner, isMobile, canEnableXmtp]);
 
   return (
     <XmtpClientCtx.Provider
@@ -117,6 +132,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
           xmtpClient,
           enablingXmtp,
           enableXmtp,
+          enableXmtpWithSigner,
           disconnectXmtp,
           canEnableXmtp,
           setCanEnableXmtp,
@@ -125,6 +141,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
           xmtpClient,
           enablingXmtp,
           enableXmtp,
+          enableXmtpWithSigner,
           disconnectXmtp,
           canEnableXmtp,
           setCanEnableXmtp,
