@@ -51,42 +51,44 @@ export default function FarcasterSignerSelectModal({
           </button>
         </ModalHeader>
 
-        <ModalContent>
-          {qrCheckStatus === 'valid' && (
-            <UserData
-              type={'qr'}
-              selectType={selectType}
-              userData={qrUserData}
-              onSelect={() => {
-                setSelectType('qr');
-              }}
-              useAction={(type) => {
-                confirmAction(type);
-              }}
-              resetAction={() => {
-                resetAction();
-                setSelectType('');
-              }}
-            />
-          )}
-          {walletCheckStatus === 'valid' && (
-            <UserData
-              type={'wallet'}
-              selectType={selectType}
-              userData={walletUserData}
-              onSelect={() => {
-                setSelectType('wallet');
-              }}
-              useAction={(type) => {
-                confirmAction(type);
-              }}
-              resetAction={() => {
-                resetAction();
-                setSelectType('');
-              }}
-            />
-          )}
-        </ModalContent>
+        {qrCheckStatus === 'valid' && walletCheckStatus === 'valid' && (
+          <ModalContent>
+            {qrCheckStatus === 'valid' && (
+              <UserData
+                type={'qr'}
+                selectType={selectType}
+                userData={qrUserData}
+                onSelect={() => {
+                  setSelectType('qr');
+                }}
+                useAction={(type) => {
+                  confirmAction(type);
+                }}
+                resetAction={() => {
+                  resetAction();
+                  setSelectType('');
+                }}
+              />
+            )}
+            {walletCheckStatus === 'valid' && (
+              <UserData
+                type={'wallet'}
+                selectType={selectType}
+                userData={walletUserData}
+                onSelect={() => {
+                  setSelectType('wallet');
+                }}
+                useAction={(type) => {
+                  confirmAction(type);
+                }}
+                resetAction={() => {
+                  resetAction();
+                  setSelectType('');
+                }}
+              />
+            )}
+          </ModalContent>
+        )}
       </ModalBody>
       <Ops>
         {qrCheckStatus !== 'valid' && (
