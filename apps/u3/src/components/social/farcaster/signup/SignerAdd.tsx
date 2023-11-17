@@ -19,8 +19,10 @@ import {
   SignerAddContract,
   SignerVerifyContract,
 } from 'src/constants/farcaster';
-
-import { postProfileBiolink } from 'src/services/shared/api/login';
+import {
+  FarcasterSignerType,
+  postProfileBiolink,
+} from 'src/services/shared/api/login';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
@@ -212,6 +214,7 @@ export default function SignerAdd({
           network: String(BIOLINK_FARCASTER_NETWORK),
           handle: fid,
           data: {
+            farcasterSignerType: FarcasterSignerType.WALLET,
             privateKey: ed.etc.bytesToHex(privateKey),
             publicKey,
           },

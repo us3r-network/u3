@@ -60,7 +60,9 @@ export function useLoadFollowingFeeds() {
             temp[item.fid] = [item];
           }
         });
-        setFeeds((prev) => ({ ...prev, [parentId]: data }));
+        if (data.length > 0) {
+          setFeeds((prev) => ({ ...prev, [parentId]: data }));
+        }
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(respPageInfo);
       } catch (error) {
@@ -112,10 +114,12 @@ export function useLoadFollowingFeeds() {
           }
         });
 
-        setFeeds((prev) => ({
-          ...prev,
-          [parentId]: [...(prev[parentId] || []), ...data],
-        }));
+        if (data.length > 0) {
+          setFeeds((prev) => ({
+            ...prev,
+            [parentId]: [...(prev[parentId] || []), ...data],
+          }));
+        }
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(newPageInfo);
       } catch (error) {

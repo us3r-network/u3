@@ -54,9 +54,14 @@ export default function SocialFarcaster() {
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
+      const fidParam = isConnectedFarcaster ? fid : undefined;
+      if (!fidParam) {
+        setFirstLoadingDone(true);
+        return;
+      }
       await loadFollowingFirstFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        fid: isConnectedFarcaster ? fid : undefined,
+        fid: fidParam,
         platforms: SocialPlatform.Farcaster,
       });
     } else {
@@ -66,7 +71,6 @@ export default function SocialFarcaster() {
       });
     }
     setFirstLoadingDone(true);
-    return loadFollowingFirstFeeds;
   }, [
     parentId,
     loadFollowingFirstFeeds,

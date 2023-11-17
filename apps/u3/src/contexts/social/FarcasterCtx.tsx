@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
+import useLogin from 'src/hooks/shared/useLogin';
 import FarcasterSignerSelectModal from 'src/components/social/farcaster/FarcasterSignerSelectModal';
 import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
@@ -101,6 +102,7 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
+  const { isLogin } = useLogin();
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
       deeplinkUrl: '',
@@ -209,31 +211,32 @@ export default function FarcasterProvider({
 
   useEffect(() => {
     if (!walletCheckStatus || !qrCheckStatus) return;
+    if (isLogin) return;
     setSignerSelectModalOpen(true);
-  }, [walletCheckStatus, qrCheckStatus, useQRSigner, useWalletSigner]);
+  }, [walletCheckStatus, qrCheckStatus, isLogin]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
-  // const session = useSession();
-  // const { profile } = useProfileState();
-  // const { upsertBioLink } = useBioLinkActions();
-  // useEffect(() => {
-  //   const findUserInfo = currUserInfo?.[currFid]?.find(
-  //     (item) => item.type === UserDataType.USERNAME
-  //   );
-  //   const handle = findUserInfo?.value || '';
-  //   if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
-  //     upsertBioLink({
-  //       did: session.id,
-  //       bioLink: {
-  //         profileID: profile.id,
-  //         platform: BIOLINK_PLATFORMS.farcaster,
-  //         network: String(BIOLINK_FARCASTER_NETWORK),
-  //         handle: farcasterHandleToBioLinkHandle(handle),
-  //         data: JSON.stringify({ fid: currFid, ...findUserInfo }),
-  //       },
-  //     });
-  //   }
-  // }, [session, profile, signer, currFid, currUserInfo]);
+  const session = useSession();
+  const { profile } = useProfileState();
+  const { upsertBioLink } = useBioLinkActions();
+  useEffect(() => {
+    const findUserInfo = currUserInfo?.[currFid]?.find(
+      (item) => item.type === UserDataType.USERNAME
+    );
+    const handle = findUserInfo?.value || '';
+    if (!!session?.id && !!profile?.id && signer?.isConnected && !!handle) {
+      upsertBioLink({
+        did: session.id,
+        bioLink: {
+          profileID: profile.id,
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: farcasterHandleToBioLinkHandle(handle),
+          data: JSON.stringify({ fid: currFid, ...findUserInfo }),
+        },
+      });
+    }
+  }, [session, profile, signer, currFid, currUserInfo]);
 
   return (
     <FarcasterContext.Provider

@@ -10,7 +10,10 @@ import { optimism } from 'viem/chains';
 
 import { getFarcasterUserInfo } from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
-import { getProfileBiolink } from 'src/services/shared/api/login';
+import {
+  FarcasterSignerType,
+  getProfileBiolink,
+} from 'src/services/shared/api/login';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
@@ -38,38 +41,41 @@ export default function useFarcasterWallet() {
     { type: number; value: string }[]
   >([]);
 
-  const signerCheck = (fid: number) => {
+  const signerCheck = async (fid: number) => {
     if (!fid) return;
-    const privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
+    let privateKey = localStorage.getItem(`signerPrivateKey-${fid}`);
 
     // if NO privateKey in local storage, try to get from db
-    // if (!privateKey && didSessionStr) {
-    //   const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
-    //     platform: BIOLINK_PLATFORMS.farcaster,
-    //     network: String(BIOLINK_FARCASTER_NETWORK),
-    //     handle: fid,
-    //   });
-    //   console.log('farcasterBiolinks of wallet: ', farcasterBiolinks);
-    //   if (farcasterBiolinks?.data?.data?.length > 0) {
-    //     const farcasterBiolink = farcasterBiolinks.data.data[0];
-    //     const farcasterBiolinkData =
-    //       farcasterBiolink.data as FarcasterBioLinkData;
-    //     if (
-    //       farcasterBiolinkData?.privateKey &&
-    //       farcasterBiolinkData?.publicKey
-    //     ) {
-    //       localStorage.setItem(
-    //         `signerPrivateKey-${fid}`,
-    //         farcasterBiolinkData.privateKey
-    //       );
-    //       localStorage.setItem(
-    //         `signerPublicKey-${fid}`,
-    //         farcasterBiolinkData.publicKey
-    //       );
-    //       privateKey = farcasterBiolinkData.privateKey;
-    //     }
-    //   }
-    // }
+    if (!privateKey && didSessionStr) {
+      const farcasterBiolinks = await getProfileBiolink(didSessionStr, {
+        platform: BIOLINK_PLATFORMS.farcaster,
+        network: String(BIOLINK_FARCASTER_NETWORK),
+        handle: fid,
+      });
+      // console.log('farcasterBiolinks of wallet: ', farcasterBiolinks);
+      if (farcasterBiolinks?.data?.data?.length > 0) {
+        const farcasterBiolink = farcasterBiolinks.data.data.filter(
+          (item) =>
+            item.data?.farcasterSignerType === FarcasterSignerType.WALLET
+        );
+        const farcasterBiolinkData = farcasterBiolink[0]
+          ?.data as FarcasterBioLinkData;
+        if (
+          farcasterBiolinkData?.privateKey &&
+          farcasterBiolinkData?.publicKey
+        ) {
+          localStorage.setItem(
+            `signerPrivateKey-${fid}`,
+            farcasterBiolinkData.privateKey
+          );
+          localStorage.setItem(
+            `signerPublicKey-${fid}`,
+            farcasterBiolinkData.publicKey
+          );
+          privateKey = farcasterBiolinkData.privateKey;
+        }
+      }
+    }
 
     if (privateKey) {
       const ed25519Signer = new NobleEd25519Signer(
