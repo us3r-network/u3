@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-16 15:47:27
+ * @LastEditTime: 2023-11-17 17:08:56
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -102,8 +102,8 @@ export default function LinksPage({
       <FeedsMenu
         rightEl={
           <FeedsMenuRight
-            displayFilterButton
-            isActiveFilter={isActiveFilter}
+            // displayFilterButton
+            // isActiveFilter={isActiveFilter}
             onChangeActiveFilter={setIsActiveFilter}
             orderByEl={
               <LinkOrderBySelect
@@ -115,16 +115,16 @@ export default function LinksPage({
                 }
               />
             }
-            searchEl={
-              <SearchInput
-                debounceMs={1000}
-                onSearch={(value) => {
-                  searchParamsChange({
-                    keywords: value,
-                  });
-                }}
-              />
-            }
+            // searchEl={
+            //   <SearchInput
+            //     debounceMs={1000}
+            //     onSearch={(value) => {
+            //       searchParamsChange({
+            //         keywords: value,
+            //       });
+            //     }}
+            //   />
+            // }
             multiLayout
             layout={layout}
             setLayout={(l) => {
@@ -137,16 +137,16 @@ export default function LinksPage({
             }}
           />
         }
-        bottomEl={
-          <FeedsFilterBox open={isActiveFilter}>
-            <Filter
-              values={currentSearchParams as { channels: string[] }}
-              filterAction={(data) => {
-                searchParamsChange(data);
-              }}
-            />
-          </FeedsFilterBox>
-        }
+        // bottomEl={
+        //   <FeedsFilterBox open={isActiveFilter}>
+        //     <Filter
+        //       values={currentSearchParams as { channels: string[] }}
+        //       filterAction={(data) => {
+        //         searchParamsChange(data);
+        //       }}
+        //     />
+        //   </FeedsFilterBox>
+        // }
       />
       {(() => {
         if (loading && links.length === 0) {

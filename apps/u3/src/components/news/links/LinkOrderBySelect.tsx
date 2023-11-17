@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-16 14:18:38
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-13 17:00:12
+ * @LastEditTime: 2023-11-17 17:10:30
  * @Description: file description
  */
 import Select, { SelectOption } from '../../common/select/Select';
@@ -10,14 +10,14 @@ import OrderBySvg from '../../common/assets/svgs/activity-heart.svg';
 import { OrderBy } from '../../../services/shared/types/common';
 
 const orderByOptions: Array<SelectOption> = [
-  {
-    value: OrderBy.FORU,
-    label: 'For U',
-  },
-  {
-    value: OrderBy.TRENDING,
-    label: 'Trending',
-  },
+  // {
+  //   value: OrderBy.FORU,
+  //   label: 'For U',
+  // },
+  // {
+  //   value: OrderBy.TRENDING,
+  //   label: 'Trending',
+  // },
   {
     value: OrderBy.NEWEST,
     label: 'Newest',

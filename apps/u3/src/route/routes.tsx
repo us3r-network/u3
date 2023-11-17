@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-15 15:49:25
+ * @LastEditTime: 2023-11-17 18:17:33
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -26,6 +26,8 @@ export enum RouteKey {
   content = 'content',
   contentCreate = 'contentCreate',
   links = 'links',
+  linksTwitter = 'links-twitter',
+  linksOther = 'links-other',
   link = 'link',
   favorite = 'favorite',
   frens = 'frens',
@@ -207,6 +209,16 @@ export const routes: CutomRouteObject[] = [
     path: '/links',
     element: loadContainerElement('news/Links'),
     key: RouteKey.links,
+  },
+  {
+    path: '/links?includeDomains=https://twitter.com,https://x.com',
+    element: loadContainerElement('news/Links'),
+    key: RouteKey.linksTwitter,
+  },
+  {
+    path: '/links?excludeDomains=https://twitter.com,https://x.com',
+    element: loadContainerElement('news/Links'),
+    key: RouteKey.linksOther,
   },
   {
     path: '/links/:link',

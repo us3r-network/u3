@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-16 16:30:41
+ * @LastEditTime: 2023-11-17 16:58:26
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -30,32 +30,31 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   }, [data]);
 
   return (
-    <PreviewWrapper {...otherProps}>
-      {data && (
-        <>
-          <Header>
-            <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
-            <HeaderRight>
-              <ButtonFullScreen
-                className="content-fullscreen-button"
-                isFullscreen={isFullscreen}
-                onClick={onToggle}
-              />
-            </HeaderRight>
-          </Header>
-          <PreviewBox ref={ref}>
-            <LinkContentBox selectLink={data} tab={tab} />
-            <LinkPost url={data.url} />
-            {isFullscreen && (
-              <ContentPreviewFullscreen
-                isFullscreen={isFullscreen}
-                onClick={onToggle}
-              />
-            )}
-          </PreviewBox>
-        </>
-      )}
-    </PreviewWrapper>
+    data && (
+      <PreviewWrapper {...otherProps}>
+        <Header>
+          <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
+          <HeaderRight>
+            <ButtonFullScreen
+              className="content-fullscreen-button"
+              isFullscreen={isFullscreen}
+              onClick={onToggle}
+            />
+            {otherProps.children}
+          </HeaderRight>
+        </Header>
+        <PreviewBox ref={ref}>
+          <LinkContentBox selectLink={data} tab={tab} />
+          <LinkPost url={data.url} />
+          {isFullscreen && (
+            <ContentPreviewFullscreen
+              isFullscreen={isFullscreen}
+              onClick={onToggle}
+            />
+          )}
+        </PreviewBox>
+      </PreviewWrapper>
+    )
   );
 }
 
@@ -86,7 +85,7 @@ const HeaderRight = styled.div`
 
 const PreviewBox = styled.div`
   width: 100%;
-  height: 0;
+  height: 90%;
   flex: 1;
   position: relative;
   display: flex;

@@ -2,11 +2,10 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-15 17:15:48
+ * @LastEditTime: 2023-11-17 18:09:31
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 import { fetchLinks } from 'src/services/news/api/links';
 import { LinkListItem } from 'src/services/news/types/links';
@@ -16,7 +15,6 @@ import LinksPageMobile from 'src/components/news/links/mobile/LinksPageMobile';
 import useLinksSearchParams from 'src/hooks/news/useLinksSearchParams';
 import useLogin from 'src/hooks/shared/useLogin';
 import { getFarcasterEmbedMetadata } from 'src/services/social/api/farcaster';
-import { contentParse } from 'src/services/news/api/contents';
 
 function Links() {
   const { user } = useLogin();
@@ -35,6 +33,7 @@ function Links() {
   const [endCursor, setEndCursor] = useState('');
 
   const load = useCallback(async () => {
+    console.log('currentSearchParams: ', currentSearchParams);
     const { keywords, channels, includeDomains, excludeDomains, orderBy } =
       currentSearchParams;
     try {
@@ -53,7 +52,7 @@ function Links() {
       const newLinks = data.data.data;
       const res = await getFarcasterEmbedMetadata(newLinks.map((l) => l.url));
       const { metadata: metadatas } = res.data.data;
-      console.log(newLinks, metadatas);
+      // console.log(newLinks, metadatas);
       newLinks.forEach((l) => {
         const metadata = metadatas.find((m) => m?.url === l?.url);
         l.metadata = metadata;
@@ -67,7 +66,7 @@ function Links() {
           ])
         )
       );
-      setEndCursor(data.data.pageInfo.endFarcasterCursor);
+      setEndCursor(data.data.pageInfo.endCursor);
       setHasMore(data.data.pageInfo.hasNextPage);
     } catch (error) {
       console.error(error.message || messages.common.error);

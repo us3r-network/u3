@@ -75,9 +75,8 @@ export default function LinkPost({ url }: { url: string }) {
               switch (platform) {
                 case SocialPlatform.Farcaster:
                   return (
-                    <ItemWraper>
+                    <ItemWraper key={data.id}>
                       <FCast
-                        key={data.id}
                         cast={data}
                         openFarcasterQR={openFarcasterQR}
                         farcasterUserData={farcasterUserData}
@@ -87,8 +86,8 @@ export default function LinkPost({ url }: { url: string }) {
                   );
                 case SocialPlatform.Lens:
                   return (
-                    <ItemWraper>
-                      <LensPostCard key={data.id} data={data} />
+                    <ItemWraper key={data.id}>
+                      <LensPostCard data={data} />
                     </ItemWraper>
                   );
                 default:

@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 17:03:00
+ * @LastEditTime: 2023-11-17 17:30:43
  * @Description: file description
  */
 import { ReactNode } from 'react';
@@ -15,8 +15,12 @@ import ButtonBack from '../../../common/button/ButtonBack';
 
 const FeedsSwitchOptions = [
   {
+    label: 'Twitter Select',
+    value: RouteKey.linksTwitter,
+  },
+  {
     label: 'Links',
-    value: RouteKey.links,
+    value: RouteKey.linksOther,
   },
   {
     label: 'Contents',
