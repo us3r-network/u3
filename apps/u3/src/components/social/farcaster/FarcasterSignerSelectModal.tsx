@@ -51,7 +51,7 @@ export default function FarcasterSignerSelectModal({
           </button>
         </ModalHeader>
 
-        {qrCheckStatus === 'valid' && walletCheckStatus === 'valid' && (
+        {(qrCheckStatus === 'valid' || walletCheckStatus === 'valid') && (
           <ModalContent>
             {qrCheckStatus === 'valid' && (
               <UserData
