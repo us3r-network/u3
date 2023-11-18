@@ -12,6 +12,7 @@ export const FARCASTER_SUFFIXS = ['fcast', 'fc', 'farcaster'];
 export const BIOLINK_LENS_SUFFIX =
   BIOLINK_LENS_NETWORK === 'dev' ? 'lens-testnet' : 'lens';
 export const BIOLINK_FARCASTER_SUFFIX = 'fcast';
+export const LENS_NAMESPACE = BIOLINK_LENS_NETWORK === 'dev' ? 'test' : 'lens';
 
 export const isLensHandle = (handle: string) => {
   return LENS_SUFFIXS.some((suffix) => handle.endsWith(`.${suffix}`));
@@ -22,7 +23,7 @@ export const isFarcasterHandle = (handle: string) => {
 export const lensHandleToBioLinkHandle = (handle: string) => {
   return handle
     ? `${handle
-        .replace('test/', '')
+        .replace(`${LENS_NAMESPACE}/`, '')
         .replace(/\.[^.]+$/, '')}.${BIOLINK_LENS_SUFFIX}`
     : '';
 };
