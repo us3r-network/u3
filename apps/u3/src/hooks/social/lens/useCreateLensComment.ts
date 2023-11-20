@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Comment, useCreateComment } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import PubSub from 'pubsub-js';
@@ -22,11 +22,13 @@ export function useCreateLensComment(props?: {
   }) => void;
   onCommentFailed?: (error: any) => void;
 }) {
-  const { execute, error, loading: isPending } = useCreateComment();
+  const { execute, error } = useCreateComment();
+  const [isPending, setIsPending] = useState(false);
 
   const createComment = useCallback(
     async (opts: { publicationId: PublicationId; content: string }) => {
       try {
+        setIsPending(true);
         const { publicationId, content } = opts;
         const metadata = textOnly({
           content,
@@ -41,11 +43,11 @@ export function useCreateLensComment(props?: {
         }
         // this might take a while, depends on the type of tx (on-chain or Momoka)
         // and the congestion of the network
-        const completion = await result.value.waitForCompletion();
+        // const completion = await result.value.waitForCompletion();
 
-        if (completion.isFailure()) {
-          throw new Error(completion.error.message);
-        }
+        // if (completion.isFailure()) {
+        //   throw new Error(completion.error.message);
+        // }
         PubSub.publish(LensCommentPubSubTopic.SUCCESS, {
           commentOn: {
             id: publicationId,
@@ -58,6 +60,8 @@ export function useCreateLensComment(props?: {
       } catch (err) {
         PubSub.publish(LensCommentPubSubTopic.FAILED, err);
         toast.error('Comment failed!');
+      } finally {
+        setIsPending(false);
       }
     },
     [execute]

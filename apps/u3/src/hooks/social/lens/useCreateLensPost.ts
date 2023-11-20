@@ -20,11 +20,11 @@ export function useCreateLensPost() {
       }
       // this might take a while, depends on the type of tx (on-chain or Momoka)
       // and the congestion of the network
-      const completion = await result.value.waitForCompletion();
+      // const completion = await result.value.waitForCompletion();
 
-      if (completion.isFailure()) {
-        throw new Error(completion.error.message);
-      }
+      // if (completion.isFailure()) {
+      //   throw new Error(completion.error.message);
+      // }
     },
     [execute]
   );
@@ -47,11 +47,11 @@ export function useCreateLensPost() {
       }
       // this might take a while, depends on the type of tx (on-chain or Momoka)
       // and the congestion of the network
-      const completion = await result.value.waitForCompletion();
+      // const completion = await result.value.waitForCompletion();
 
-      if (completion.isFailure()) {
-        throw new Error(completion.error.message);
-      }
+      // if (completion.isFailure()) {
+      //   throw new Error(completion.error.message);
+      // }
     },
     [execute]
   );
