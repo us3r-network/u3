@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import CloseIcon from 'src/components/common/icons/CloseIcon';
 import FarcasterIcon from 'src/components/common/icons/FarcasterIcon';
 import WarpcastIcon from 'src/components/common/icons/warpcast';
 import useUserData from 'src/hooks/social/farcaster/useUserData';
+import { getDefaultFarcaster } from 'src/utils/social/farcaster/farcaster-default';
 
 import LogoutSvg from '../../common/assets/svgs/logout.svg';
 import ModalContainer from '../../common/modal/ModalContainer';
@@ -22,6 +24,8 @@ export default function FarcasterSignerSelectModal({
   resetAction,
   selectType,
   setSelectType,
+  qrFid,
+  walletFid,
 }: {
   open: boolean;
   closeModal: () => void;
@@ -36,7 +40,22 @@ export default function FarcasterSignerSelectModal({
   qrCheckStatus: string;
   selectType: string;
   setSelectType: (type: string) => void;
+  qrFid?: number;
+  walletFid?: number;
 }) {
+  const defaultFid = getDefaultFarcaster();
+  useEffect(() => {
+    if (!qrFid && !walletFid) {
+      setSelectType('');
+      return;
+    }
+    if (defaultFid === `${qrFid}`) {
+      setSelectType('qr');
+    }
+    if (defaultFid === `${walletFid}`) {
+      setSelectType('wallet');
+    }
+  }, [qrFid, walletFid]);
   return (
     <ModalContainer
       open={open}
