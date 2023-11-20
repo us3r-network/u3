@@ -391,7 +391,7 @@ export default function AddPostForm({
             Post to more than one protocol cannot mention other users
           </Description>
           <SubmitBtn
-            disabled={text === '' || platforms.size === 0}
+            disabled={text === '' || platforms.size === 0 || isPending}
             onClick={() => {
               if (!isLoginU3) {
                 login();
