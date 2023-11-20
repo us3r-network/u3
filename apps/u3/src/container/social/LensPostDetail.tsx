@@ -28,7 +28,7 @@ import getAvatar from '../../utils/social/lens/getAvatar';
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { getHandle, getName } from '../../utils/social/lens/profile';
-import { canComment } from '../../utils/social/lens/operations';
+import { canComment } from '../../utils/social/lens/publication';
 
 export default function LensPostDetail() {
   const { publicationId: pid } = useParams();
@@ -47,8 +47,9 @@ export default function LensPostDetail() {
     next: loadMoreComments,
   } = usePublications({
     where: {
-      publicationTypes: [PublicationType.Comment],
-      publicationIds: [publicationId(pid)],
+      commentOn: {
+        id: publicationId(pid),
+      },
     },
     limit: LimitType.Fifty,
   });
