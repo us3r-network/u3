@@ -27,12 +27,17 @@ export default function LinkContentBox({
 
   useEffect(() => {
     if (!selectLink.readerView)
-      contentParse(selectLink?.url).then((resp) => {
-        // console.log(resp);
-        selectLink.readerView = resp.data.data;
-        selectLink.supportReaderView = true;
-        return selectLink.readerView;
-      });
+      contentParse(selectLink?.url)
+        .then((resp) => {
+          // console.log(resp);
+          selectLink.readerView = resp.data.data;
+          selectLink.supportReaderView = true;
+        })
+        .catch((reason) => {
+          selectLink.readerView = null;
+          selectLink.supportReaderView = false;
+          console.log(reason.message);
+        });
   }, [selectLink]);
 
   return (
