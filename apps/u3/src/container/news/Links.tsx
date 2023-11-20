@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-20 17:02:58
+ * @LastEditTime: 2023-11-20 17:07:22
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -55,7 +55,8 @@ function Links() {
       const { metadata: metadatas } = res.data.data;
       newLinks.forEach((item, index) => {
         const metadata = metadatas[index];
-        item.metadata = metadata ? processMetadata(metadata) : null;
+        item.metadata =
+          metadata && metadata.title ? processMetadata(metadata) : null;
         item.supportIframe = true;
       });
       // setLinks(

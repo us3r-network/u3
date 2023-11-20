@@ -49,7 +49,19 @@ export default function LinkContentBox({
                     <Tweet id={tweetId} />
                   </div>
                 );
-            } else if (u3ExtensionInstalled || selectLink?.supportIframe) {
+              return (
+                <div className="info">
+                  <p>{selectLink?.metadata?.title}</p>
+                  <p>OTERH Twitter Page Preview is NOT supported yet!</p>
+                  <p>
+                    <a href={selectLink.url} target="_blank" rel="noreferrer">
+                      Open in New Tab
+                    </a>
+                  </p>
+                </div>
+              );
+            }
+            if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
                   {!iframeLoaded && (
@@ -69,31 +81,32 @@ export default function LinkContentBox({
                   />
                 </div>
               );
-            } else {
-              return (
-                <ExtensionSupport
-                  btns
-                  url={selectLink.url}
-                  title={selectLink.metadata?.title}
-                />
-              );
             }
+            return (
+              <ExtensionSupport
+                btns
+                url={selectLink.url}
+                title={selectLink.metadata?.title}
+              />
+            );
+
             break;
           case 'readerView':
             if (selectLink.readerView) {
               return <LinkReaderView data={selectLink} />;
             }
+            return (
+              <ExtensionSupport
+                url={selectLink.url}
+                title={selectLink.metadata?.title}
+                msg="Reader view is not supported for this page! Please view it in the original tab."
+              />
+            );
             break;
           default:
             return null;
         }
-        return (
-          <ExtensionSupport
-            url={selectLink.url}
-            title={selectLink.metadata?.title}
-            msg="Reader view is not supported for this page! Please view it in the original tab."
-          />
-        );
+        return null;
       })()}
     </ContentBox>
   );
@@ -131,6 +144,12 @@ export const ContentBox = styled.div`
     /* & div {
       overflow: scroll;
     } */
+  }
+
+  & .info {
+    padding: 20px;
+    font-size: 14px;
+    color: #fff;
   }
 `;
 
