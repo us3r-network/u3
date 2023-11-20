@@ -156,11 +156,11 @@ const ItemInner = styled.div<{ isActive: boolean }>`
       overflow: hidden;
       text-overflow: ellipsis;
       -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
+      -webkit-line-clamp: 2;
     }
     &.active {
       > p {
-        display: block;
+        -webkit-line-clamp: 4;
       }
     }
   }

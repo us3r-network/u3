@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-20 16:11:02
+ * @LastEditTime: 2023-11-20 16:40:01
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -34,7 +34,7 @@ function Links() {
   const [endCursor, setEndCursor] = useState('');
 
   const load = useCallback(async () => {
-    console.log('currentSearchParams: ', currentSearchParams);
+    // console.log('currentSearchParams: ', currentSearchParams);
     const { keywords, channels, includeDomains, excludeDomains, orderBy } =
       currentSearchParams;
     try {
@@ -66,7 +66,13 @@ function Links() {
       //     ])
       //   )
       // );
-      setLinks(unionBy(links, newLinks, (l) => l.url));
+      setLinks(
+        unionBy(
+          links,
+          newLinks.filter((l) => l.metadata && l.metadata?.title),
+          (l) => l.url
+        )
+      );
       setEndCursor(data.data.pageInfo.endCursor);
       setHasMore(data.data.pageInfo.hasNextPage);
     } catch (error) {
@@ -111,7 +117,7 @@ export default Links;
 function processLinks(links) {
   return links.map((link) => {
     const url = link.url
-      .replace('https://twitter.com', 'https://x.com')
+      // .replace('https://twitter.com', 'https://x.com')
       .split('?')[0];
     return {
       ...link,

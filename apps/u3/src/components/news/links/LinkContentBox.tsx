@@ -28,7 +28,7 @@ export default function LinkContentBox({
   useEffect(() => {
     if (!selectLink.readerView)
       contentParse(selectLink?.url).then((resp) => {
-        console.log(resp);
+        // console.log(resp);
         selectLink.readerView = resp.data.data;
         selectLink.supportReaderView = true;
         return selectLink.readerView;
@@ -41,7 +41,7 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink.metadata.twitter) {
+            if (selectLink?.metadata?.twitter) {
               const tweetId = selectLink.url.split('/status/')[1];
               if (tweetId)
                 return (

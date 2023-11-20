@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-20 12:04:15
+ * @LastEditTime: 2023-11-20 16:28:27
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -74,8 +74,8 @@ export default function LinksPage({
       link
         ? links.find(
             (item) => item?.url === Buffer.from(link, 'base64').toString('utf8')
-          )
-        : null,
+          ) || links[0]
+        : links[0],
     [links, link]
   );
 
@@ -194,7 +194,7 @@ export default function LinksPage({
                         navigate(
                           `/links/${Buffer.from(item?.url, 'utf8').toString(
                             'base64'
-                          )}}`
+                          )}}?${searchParams.toString()}`
                         );
                       }}
                     />
@@ -230,7 +230,7 @@ export default function LinksPage({
                       navigate(
                         `/links/${Buffer.from(item?.url, 'utf8').toString(
                           'base64'
-                        )}}`
+                        )}}?${searchParams.toString()}`
                       );
                     }}
                   />
