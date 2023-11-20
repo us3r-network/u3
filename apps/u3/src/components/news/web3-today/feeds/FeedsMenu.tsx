@@ -2,25 +2,29 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 17:30:43
+ * @LastEditTime: 2023-11-20 12:01:51
  * @Description: file description
  */
-import { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { ReactNode, useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { getRoute, RouteKey } from '../../../../route/routes';
 import useRoute from '../../../../route/useRoute';
 import Tab from '../../../common/tab/Tab';
 import ButtonBack from '../../../common/button/ButtonBack';
 
+const TWITTER_SEARCH_PARAMS =
+  'includeDomains=https://twitter.com,https://x.com';
+const OTHER_SEARCH_PARAMS = 'excludeDomains=https://twitter.com,https://x.com';
+
 const FeedsSwitchOptions = [
   {
     label: 'Twitter Select',
-    value: RouteKey.linksTwitter,
+    value: `${RouteKey.links}?${TWITTER_SEARCH_PARAMS}`,
   },
   {
     label: 'Links',
-    value: RouteKey.linksOther,
+    value: `${RouteKey.links}?${OTHER_SEARCH_PARAMS}`,
   },
   {
     label: 'Contents',
@@ -38,7 +42,15 @@ type FeedsMenuProps = StyledComponentPropsWithRef<'div'> & {
 export default function FeedsMenu({ rightEl, bottomEl }: FeedsMenuProps) {
   const navigate = useNavigate();
   const { firstRouteMeta } = useRoute();
-
+  const location = useLocation();
+  const [tabValue, setTabValue] = useState('');
+  useEffect(() => {
+    if (location.search) {
+      setTabValue(`${RouteKey.links}${decodeURIComponent(location.search)}`);
+    } else {
+      setTabValue(firstRouteMeta.key);
+    }
+  }, [location, firstRouteMeta]);
   return (
     <FeedsMenuWrapper>
       <TopBox>
@@ -46,8 +58,23 @@ export default function FeedsMenu({ rightEl, bottomEl }: FeedsMenuProps) {
           <ButtonBack onClick={() => navigate('/web3-today')} />
           <TabSwitch
             options={FeedsSwitchOptions}
-            value={firstRouteMeta.key}
-            onChange={(value) => navigate(getRoute(value).path)}
+            value={tabValue}
+            onChange={(value) => {
+              switch (value) {
+                case FeedsSwitchOptions[0].value:
+                  navigate(
+                    `${getRoute(RouteKey.links).path}?${TWITTER_SEARCH_PARAMS}`
+                  );
+                  break;
+                case FeedsSwitchOptions[1].value:
+                  navigate(
+                    `${getRoute(RouteKey.links).path}?${OTHER_SEARCH_PARAMS}`
+                  );
+                  break;
+                default:
+                  navigate(getRoute(value).path);
+              }
+            }}
           />
         </LeftBox>
         {rightEl && <RightBox>{rightEl}</RightBox>}

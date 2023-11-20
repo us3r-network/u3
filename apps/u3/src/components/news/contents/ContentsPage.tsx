@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-07 16:11:03
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-17 18:21:33
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -116,7 +116,7 @@ export default function ContentsPage({
                     })
                   }
                 />
-                <NewestButton
+                {/* <NewestButton
                   isActive={currentSearchParams.orderBy === 'NEWEST'}
                   onClick={() => {
                     searchParamsChange({
@@ -126,7 +126,7 @@ export default function ContentsPage({
                 >
                   Mempool
                   {hasNewest && <HasNewestTag />}
-                </NewestButton>
+                </NewestButton> */}
               </>
             }
             searchEl={

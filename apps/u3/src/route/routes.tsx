@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 18:17:33
+ * @LastEditTime: 2023-11-20 12:03:14
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -209,16 +209,6 @@ export const routes: CutomRouteObject[] = [
     path: '/links',
     element: loadContainerElement('news/Links'),
     key: RouteKey.links,
-  },
-  {
-    path: '/links?includeDomains=https://twitter.com,https://x.com',
-    element: loadContainerElement('news/Links'),
-    key: RouteKey.linksTwitter,
-  },
-  {
-    path: '/links?excludeDomains=https://twitter.com,https://x.com',
-    element: loadContainerElement('news/Links'),
-    key: RouteKey.linksOther,
   },
   {
     path: '/links/:link',

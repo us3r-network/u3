@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 17:08:56
+ * @LastEditTime: 2023-11-20 12:04:15
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -104,7 +104,7 @@ export default function LinksPage({
           <FeedsMenuRight
             // displayFilterButton
             // isActiveFilter={isActiveFilter}
-            onChangeActiveFilter={setIsActiveFilter}
+            // onChangeActiveFilter={setIsActiveFilter}
             orderByEl={
               <LinkOrderBySelect
                 value={currentSearchParams.orderBy}
@@ -131,10 +131,10 @@ export default function LinksPage({
               setContentsLayoutToLocal(l);
               setLayout(l);
             }}
-            displaySubmitButton={isAdmin}
-            submitButtonOnClick={() => {
-              navigate('/links/create');
-            }}
+            // displaySubmitButton={isAdmin}
+            // submitButtonOnClick={() => {
+            //   navigate('/links/create');
+            // }}
           />
         }
         // bottomEl={
