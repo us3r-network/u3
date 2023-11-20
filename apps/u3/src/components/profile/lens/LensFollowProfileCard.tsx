@@ -10,8 +10,8 @@ import {
   getHandle,
   getName,
   getOwnedByAddress,
+  isFollowedByMe,
 } from '../../../utils/social/lens/profile';
-import { isFollowedByMe } from '../../../utils/social/lens/operations';
 
 type LensFollowProfileCardProps = StyledComponentPropsWithRef<'div'> & {
   profile?: Profile;
