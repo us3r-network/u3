@@ -21,6 +21,10 @@ import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/social/farcaster/useFarcasterTrendChannel';
 import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
 import useFarcasterChannel from 'src/hooks/social/farcaster/useFarcasterChannel';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from 'src/utils/social/farcaster/farcaster-default';
 
 import { getPrivateKey } from '../../utils/social/farcaster/farsign-utils';
 import FarcasterQRModal from '../../components/social/farcaster/FarcasterQRModal';
@@ -180,6 +184,8 @@ export default function FarcasterProvider({
       console.error('useQRSigner , no private key');
       return;
     }
+
+    if (qrFid) setDefaultFarcaster(`${qrFid}`);
     setCurrFid(qrFid);
     setSigner(qrSigner);
     const data = {
@@ -190,6 +196,7 @@ export default function FarcasterProvider({
   }, [qrFid, qrSigner, qrUserData]);
 
   const useWalletSigner = useCallback(() => {
+    if (walletFid) setDefaultFarcaster(`${walletFid}`);
     setCurrFid(walletFid);
     setSigner({
       SignedKeyRequest: {
@@ -211,8 +218,17 @@ export default function FarcasterProvider({
 
   useEffect(() => {
     if (!walletCheckStatus || !qrCheckStatus) return;
-    if (isLogin) return;
-    setSignerSelectModalOpen(true);
+    const defaultFid = getDefaultFarcaster();
+    if (!defaultFid) {
+      return;
+    }
+    if (defaultFid === `${qrFid}`) {
+      useQRSigner();
+      return;
+    }
+    if (defaultFid === `${walletFid}`) {
+      useWalletSigner();
+    }
   }, [walletCheckStatus, qrCheckStatus, isLogin]);
 
   // 每次farcaster登录成功后，更新farcaster biolink
@@ -279,6 +295,8 @@ export default function FarcasterProvider({
       />
 
       <FarcasterSignerSelectModal
+        qrFid={qrFid}
+        walletFid={walletFid}
         walletCheckStatus={walletCheckStatus}
         qrCheckStatus={qrCheckStatus}
         open={signerSelectModalOpen}
