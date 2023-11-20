@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-10 09:56:17
+ * @LastEditTime: 2023-11-20 18:29:43
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -26,6 +26,10 @@ export enum RouteKey {
   contents = 'contents',
   content = 'content',
   contentCreate = 'contentCreate',
+  links = 'links',
+  linksTwitter = 'links-twitter',
+  linksOther = 'links-other',
+  link = 'link',
   favorite = 'favorite',
   frens = 'frens',
   profile = 'profile',
@@ -203,6 +207,18 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('news/ContentCreate'),
     key: RouteKey.contentCreate,
     permissions: [RoutePermission.login],
+  },
+  {
+    path: '/links',
+    element: loadContainerElement('news/Links'),
+    key: RouteKey.links,
+  },
+  {
+    path: '/links/:link',
+    element: isMobile
+      ? loadContainerElement('news/LinkMobile')
+      : loadContainerElement('news/Links'),
+    key: isMobile ? RouteKey.link : RouteKey.links,
   },
   {
     path: '/frens',

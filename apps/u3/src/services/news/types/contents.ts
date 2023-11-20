@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-12 18:42:59
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-06 18:43:03
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-15 17:09:18
  * @Description: file description
  */
 import { ApiResp } from '../../shared/types';
@@ -86,7 +86,7 @@ export type ContentListItem = {
 
 export type ContentsListResponse = ApiResp<Array<ContentListItem>>;
 
-export type URLParseResponse = ApiResp<{
+export type URLParseData = {
   title: string;
   content: string;
   // byline: null;
@@ -96,7 +96,9 @@ export type URLParseResponse = ApiResp<{
   length: number;
   // siteName: null;
   textContent: string;
-}>;
+};
+
+export type URLParseResponse = ApiResp<URLParseData>;
 
 export type Project = {
   favored: boolean;

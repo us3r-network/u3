@@ -99,11 +99,9 @@ const Box = styled.div`
       font-weight: 500;
       font-size: 16px;
       line-height: 24px;
-
       text-align: center;
-
       color: #718096;
-
+      cursor: pointer;
       &.chrome {
         width: 245px;
         height: 48px;
