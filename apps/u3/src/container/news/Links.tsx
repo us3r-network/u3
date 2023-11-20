@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-20 16:40:01
+ * @LastEditTime: 2023-11-20 17:02:58
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -73,7 +73,7 @@ function Links() {
           (l) => l.url
         )
       );
-      setEndCursor(data.data.pageInfo.endCursor);
+      setEndCursor(data.data.pageInfo.endFarcasterCursor);
       setHasMore(data.data.pageInfo.hasNextPage);
     } catch (error) {
       console.error(error.message || messages.common.error);

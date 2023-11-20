@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-12 18:42:59
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 18:14:10
+ * @LastEditTime: 2023-11-20 17:02:49
  * @Description: file description
  */
 import { FarCastEmbedMeta } from 'src/services/social/types';
@@ -21,7 +21,7 @@ export type LinkListItem = {
 };
 
 export type PageInfo = {
-  endCursor: string;
+  endFarcasterCursor: string;
   hasNextPage: boolean;
 };
 
