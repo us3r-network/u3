@@ -25,6 +25,7 @@ export type FarCastEmbedMeta = {
   nftSchema: string | undefined;
   creatorAddress: string | undefined;
   contractAddress: string | undefined;
+  twitter?: string;
 };
 
 export type FarCast = {

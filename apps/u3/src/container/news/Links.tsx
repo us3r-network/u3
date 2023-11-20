@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 18:09:31
+ * @LastEditTime: 2023-11-20 16:11:02
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,6 +15,7 @@ import LinksPageMobile from 'src/components/news/links/mobile/LinksPageMobile';
 import useLinksSearchParams from 'src/hooks/news/useLinksSearchParams';
 import useLogin from 'src/hooks/shared/useLogin';
 import { getFarcasterEmbedMetadata } from 'src/services/social/api/farcaster';
+import { unionBy } from 'lodash';
 
 function Links() {
   const { user } = useLogin();
@@ -49,23 +50,23 @@ function Links() {
         },
         user?.token
       );
-      const newLinks = data.data.data;
+      const newLinks = processLinks(data.data.data);
       const res = await getFarcasterEmbedMetadata(newLinks.map((l) => l.url));
       const { metadata: metadatas } = res.data.data;
-      // console.log(newLinks, metadatas);
-      newLinks.forEach((l) => {
-        const metadata = metadatas.find((m) => m?.url === l?.url);
-        l.metadata = metadata;
-        l.supportIframe = true;
+      newLinks.forEach((item, index) => {
+        const metadata = metadatas[index];
+        item.metadata = metadata ? processMetadata(metadata) : null;
+        item.supportIframe = true;
       });
-      setLinks(
-        Array.from(
-          new Set([
-            ...links,
-            ...newLinks.filter((l) => l.metadata && l.metadata?.title),
-          ])
-        )
-      );
+      // setLinks(
+      //   Array.from(
+      //     new Set([
+      //       ...links,
+      //       ...newLinks.filter((l) => l.metadata && l.metadata?.title),
+      //     ])
+      //   )
+      // );
+      setLinks(unionBy(links, newLinks, (l) => l.url));
       setEndCursor(data.data.pageInfo.endCursor);
       setHasMore(data.data.pageInfo.hasNextPage);
     } catch (error) {
@@ -106,3 +107,21 @@ function Links() {
   );
 }
 export default Links;
+
+function processLinks(links) {
+  return links.map((link) => {
+    const url = link.url
+      .replace('https://twitter.com', 'https://x.com')
+      .split('?')[0];
+    return {
+      ...link,
+      url,
+    };
+  });
+}
+
+function processMetadata(metadata) {
+  if (metadata.twitter)
+    metadata.title = `${metadata.title}: ${metadata.description}`;
+  return metadata;
+}
