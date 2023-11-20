@@ -16,6 +16,7 @@ import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import Name from './Name';
 import Avatar from './Avatar';
 import Loading from '../common/loading/Loading';
+import NoConversations from './NoConversations';
 
 export default function ConversationList(
   props: StyledComponentPropsWithRef<'div'>
@@ -30,7 +31,7 @@ export default function ConversationList(
         <LoadingWrapper>
           <Loading />
         </LoadingWrapper>
-      ) : (
+      ) : conversationList.length > 0 ? (
         <CardListWrap>
           {conversationList.map(({ conversation, latestMessage }) => (
             <ConversationCard
@@ -46,13 +47,14 @@ export default function ConversationList(
             />
           ))}
         </CardListWrap>
+      ) : (
+        <NoConversations />
       )}
     </ConversationListWrap>
   );
 }
 const ConversationListWrap = styled.div`
   width: 100%;
-  min-height: 100%;
 `;
 const LoadingWrapper = styled.div`
   display: flex;

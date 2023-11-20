@@ -41,7 +41,7 @@ export default function StartNewConversation() {
             setErrMsg('');
           }}
         />
-        <SubmitButton type="submit" disabled={isStarting}>
+        <SubmitButton type="submit" disabled={!convoAddress || isStarting}>
           Start
         </SubmitButton>
       </StartFormWrap>

@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useNav } from '../../contexts/NavCtx';
+import { SocialButtonPrimary } from '../social/button/SocialButton';
+import { FollowType } from '../profile/ProfilePageFollowNav';
 
 export default function NoConversations() {
   const navigate = useNavigate();
@@ -11,20 +12,19 @@ export default function NoConversations() {
       <NoConvosImg src="/message/imgs/no-convos.png" />
       <Description>There is nothing here.</Description>
       <Description>Send a message to your friend?</Description>
-      <ButtonPrimary
-        disabled
+      <SocialButtonPrimary
         onClick={() => {
           setOpenMessageModal(false);
-          navigate('/');
+          navigate(`/u?followType=${FollowType.FOLLOWERS}`);
         }}
       >
-        find from my following/ follower list (Comming soon)
-      </ButtonPrimary>
+        Find from my following/follower list
+      </SocialButtonPrimary>
     </Wrapper>
   );
 }
 const Wrapper = styled.div`
-  padding-top: 42px;
+  padding-top: 20px;
   width: 100%;
   display: flex;
   flex-direction: column;

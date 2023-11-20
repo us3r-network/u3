@@ -4,6 +4,7 @@ import { SocialPlatform } from '../../../services/social/types';
 import getAvatar from './getAvatar';
 import getContent from './getContent';
 import { getHandle, getName } from './profile';
+import { getComments, getMirrors, getUpvotes } from './publication';
 
 export const lensPublicationToPostCardData = (
   publication: Post | null | undefined
@@ -15,9 +16,9 @@ export const lensPublicationToPostCardData = (
     handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
-    totalLikes: publication?.stats?.upvotes || 0,
-    totalReplies: publication?.stats?.comments || 0,
-    totalReposts: publication?.stats?.mirrors || 0,
+    totalLikes: getUpvotes(publication),
+    totalReplies: getComments(publication),
+    totalReposts: getMirrors(publication),
     likeAvatars: [],
   };
 };
@@ -32,9 +33,9 @@ export const lensPublicationToReplyCardData = (
     handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
-    totalLikes: publication?.stats?.upvotes || 0,
-    totalReplies: publication?.stats?.comments || 0,
-    totalReposts: publication?.stats?.mirrors || 0,
+    totalLikes: getUpvotes(publication),
+    totalReplies: getComments(publication),
+    totalReposts: getMirrors(publication),
     likeAvatars: [],
   };
 };

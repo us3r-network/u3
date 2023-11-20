@@ -10,7 +10,7 @@ export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
 export const ARWEAVE_GATEWAY = 'https://arweave.net/';
 
 // TODO: Do we need to create a service for uploading metadata to decentralized storage?
-export const METADATA_WORKER_URL = 'https://metadata.hey.xyz';
+export const METADATA_WORKER_URL = 'https://api.hey.xyz/metadata';
 
 // URLs
 export const STATIC_ASSETS_URL = 'https://static-assets.hey.xyz';

@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { ButtonPrimary } from '../common/button/ButtonBase';
+import { useAccount } from 'wagmi';
 import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import MessageModalCloseBtn from './MessageModalCloseBtn';
+import { SocialButtonPrimary } from '../social/button/SocialButton';
 
 export default function NoEnableXmtp() {
-  const { openConnectModal } = useConnectModal();
-  const { xmtpClient, enablingXmtp } = useXmtpClient();
+  const { isConnected, isConnecting } = useAccount();
+  const { xmtpClient, enablingXmtp, enableXmtp } = useXmtpClient();
   return (
     <>
       <Header>
@@ -17,12 +17,36 @@ export default function NoEnableXmtp() {
           if (!xmtpClient) {
             return (
               <>
-                <Description>You do not have message enabled yet.</Description>
+                <Description>
+                  {(() => {
+                    if (enablingXmtp) {
+                      return 'Enabling your XMTP identity...';
+                    }
+                    if (isConnecting) {
+                      return 'Connecting Wallet...';
+                    }
+                    if (!isConnected) {
+                      return 'Connect Your Wallet';
+                    }
+                    return '';
+                  })()}
+                </Description>
                 <LoginButton
-                  disabled={enablingXmtp}
-                  onClick={() => openConnectModal && openConnectModal()}
+                  disabled={isConnecting || enablingXmtp}
+                  onClick={() => enableXmtp()}
                 >
-                  {enablingXmtp ? 'Applying ...' : 'Apply'}
+                  {(() => {
+                    if (enablingXmtp) {
+                      return 'Enabling...';
+                    }
+                    if (isConnecting) {
+                      return 'Connecting...';
+                    }
+                    if (!isConnected) {
+                      return 'Connect';
+                    }
+                    return '';
+                  })()}
                 </LoginButton>
               </>
             );
@@ -55,6 +79,6 @@ const Description = styled.span`
   line-height: normal;
 `;
 
-const LoginButton = styled(ButtonPrimary)`
+const LoginButton = styled(SocialButtonPrimary)`
   width: 240px;
 `;
