@@ -24,7 +24,6 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
-import { getOwnedByAddress } from '../../utils/social/lens/profile';
 
 export default function SocialAll() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -33,7 +32,6 @@ export default function SocialAll() {
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const fid = useFarcasterCurrFid();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
-  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const {
     socialPlatform,
@@ -54,8 +52,7 @@ export default function SocialAll() {
     isConnected: isConnectedFarcaster,
   } = useFarcasterCtx();
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
+  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
@@ -68,49 +65,51 @@ export default function SocialAll() {
   );
 
   const loadFirstFeeds = useCallback(async () => {
+    setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
+      const fidParam = isConnectedFarcaster ? fid : undefined;
+      const lensSessionProfileIdParam = lensSessionProfileId;
+      if (!fidParam && !lensSessionProfileIdParam) {
+        setFirstLoadingDone(true);
+        return;
+      }
+
       await loadFollowingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
-        address: lensProfileOwnedByAddress,
-        fid: isConnectedFarcaster ? fid : undefined,
+        fid: fidParam,
+        lensProfileId: lensSessionProfileIdParam,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: lensSessionProfileId,
         keyword: currentSearchParams.keyword,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
     setFirstLoadingDone(true);
-    return loadFollowingFirstFeeds;
   }, [
     parentId,
     loadFollowingFirstFeeds,
     loadTrendingFirstFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
     isConnectedFarcaster,
+    lensSessionProfileId,
   ]);
 
   const loadMoreFeeds = useCallback(async () => {
     if (feedsType === FeedsType.FOLLOWING) {
       await loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
-        address: lensProfileOwnedByAddress,
+        lensProfileId: lensSessionProfileId,
         fid: isConnectedFarcaster ? fid : undefined,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     } else {
       await loadTrendingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        activeLensProfileId: lensSessionProfileId,
         platforms: socialPlatform ? [socialPlatform] : undefined,
       });
     }
@@ -118,13 +117,12 @@ export default function SocialAll() {
     parentId,
     loadFollowingMoreFeeds,
     loadTrendingMoreFeeds,
-    lensSessionProfileId,
     currentSearchParams.keyword,
-    lensProfileOwnedByAddress,
     fid,
     feedsType,
     socialPlatform,
     isConnectedFarcaster,
+    lensSessionProfileId,
   ]);
 
   useEffect(() => {
@@ -135,18 +133,18 @@ export default function SocialAll() {
   }, [currentSearchParams]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
+    // if (firstLoadingDone) return;
     if (feeds.length > 0) return;
     if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  }, [loadFirstFeeds, feeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
       return <NoLoginStyled />;
     }
-    if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
+    if (!isConnectedFarcaster && !lensSessionProfileId) {
       return (
         <MainCenter>
           <FollowingDefault farcaster lens />

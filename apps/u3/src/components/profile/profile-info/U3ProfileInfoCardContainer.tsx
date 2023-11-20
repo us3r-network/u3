@@ -1,10 +1,11 @@
 import { StyledComponentPropsWithRef } from 'styled-components';
-import ProfileInfoBaseCard from './ProfileInfoCardLayout';
+import ProfileInfoCardLayout from './ProfileInfoCardLayout';
 import useU3ProfileInfoData from '../../../hooks/profile/useU3ProfileInfoData';
 
 interface U3ProfileInfoCardContainerProps
   extends StyledComponentPropsWithRef<'div'> {
   did: string;
+  isSelf?: boolean;
   navigateToProfileUrl?: string;
   onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
@@ -12,6 +13,7 @@ interface U3ProfileInfoCardContainerProps
 }
 export default function U3ProfileInfoCardContainer({
   did,
+  isSelf,
   navigateToProfileUrl,
   onNavigateToProfileAfter,
   clickFollowing,
@@ -26,10 +28,11 @@ export default function U3ProfileInfoCardContainer({
     followersCount,
     followingCount,
     bioLinkLoading,
-  } = useU3ProfileInfoData({ did });
+  } = useU3ProfileInfoData({ did, isSelf: !!isSelf });
 
   return (
-    <ProfileInfoBaseCard
+    <ProfileInfoCardLayout
+      isSelf={isSelf}
       isU3Profile
       navigateToProfileUrl={navigateToProfileUrl}
       onNavigateToProfileAfter={onNavigateToProfileAfter}

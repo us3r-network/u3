@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-redundant-type-constituents */
-import { Comment } from '@lens-protocol/react-web';
+import { Post, Comment } from '@lens-protocol/react-web';
 import { SocialPlatform } from '../../../services/social/types';
-import { LensPost } from '../../../services/social/api/lens';
 import getAvatar from './getAvatar';
 import getContent from './getContent';
 import { getHandle, getName } from './profile';
+import { getComments, getMirrors, getUpvotes } from './publication';
 
 export const lensPublicationToPostCardData = (
-  publication: LensPost | null | undefined
+  publication: Post | null | undefined
 ) => {
   return {
     platform: SocialPlatform.Lens,
@@ -16,9 +16,9 @@ export const lensPublicationToPostCardData = (
     handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
-    totalLikes: publication?.stats?.upvotes || 0,
-    totalReplies: publication?.stats?.comments || 0,
-    totalReposts: publication?.stats?.mirrors || 0,
+    totalLikes: getUpvotes(publication),
+    totalReplies: getComments(publication),
+    totalReposts: getMirrors(publication),
     likeAvatars: [],
   };
 };
@@ -33,9 +33,9 @@ export const lensPublicationToReplyCardData = (
     handle: getHandle(publication?.by) || publication?.by?.id,
     createdAt: publication?.createdAt || '',
     content: getContent(publication?.metadata),
-    totalLikes: publication?.stats?.upvotes || 0,
-    totalReplies: publication?.stats?.comments || 0,
-    totalReposts: publication?.stats?.mirrors || 0,
+    totalLikes: getUpvotes(publication),
+    totalReplies: getComments(publication),
+    totalReposts: getMirrors(publication),
     likeAvatars: [],
   };
 };

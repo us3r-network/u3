@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import {
   FeedsDataItem,
   FeedsPageInfo,
@@ -24,27 +25,27 @@ export function useLoadFollowingFeeds() {
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
 
+  const lensAccessToken = useLensAccessToken();
   const loadFirstFeeds = useCallback(
     async (
       parentId: string,
       opts?: {
         keyword?: string;
-        activeLensProfileId?: string;
-        address?: string;
         fid?: string;
+        lensProfileId?: string;
         platforms?: SocialPlatform[];
       }
     ) => {
-      const { address = '', fid = '' } = opts || {};
+      const { fid = '', lensProfileId = '' } = opts || {};
       setFirstLoading(true);
       setPageInfo(DefaultPageInfo);
       try {
         const res = await getFollowingFeeds({
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
-          address,
           fid,
+          lensProfileId,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -59,7 +60,9 @@ export function useLoadFollowingFeeds() {
             temp[item.fid] = [item];
           }
         });
-        setFeeds((prev) => ({ ...prev, [parentId]: data }));
+        if (data.length > 0) {
+          setFeeds((prev) => ({ ...prev, [parentId]: data }));
+        }
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(respPageInfo);
       } catch (error) {
@@ -69,7 +72,7 @@ export function useLoadFollowingFeeds() {
         setFirstLoading(false);
       }
     },
-    []
+    [lensAccessToken]
   );
 
   const loadMoreFeeds = useCallback(
@@ -77,13 +80,12 @@ export function useLoadFollowingFeeds() {
       parentId: string,
       opts?: {
         keyword?: string;
-        activeLensProfileId?: string;
-        address?: string;
         fid?: string;
+        lensProfileId?: string;
         platforms?: SocialPlatform[];
       }
     ) => {
-      const { address = '', fid = '' } = opts || {};
+      const { fid = '', lensProfileId = '' } = opts || {};
       if (firstLoading || moreLoading || !pageInfo.hasNextPage) return;
 
       setMoreLoading(true);
@@ -92,11 +94,11 @@ export function useLoadFollowingFeeds() {
         const res = await getFollowingFeeds({
           endFarcasterCursor: pageInfo.endFarcasterCursor,
           endLensCursor: pageInfo.endLensCursor,
-          activeLensProfileId: opts?.activeLensProfileId,
           keyword: opts?.keyword,
-          address,
           fid,
+          lensProfileId,
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
+          lensAccessToken,
         });
         const {
           data,
@@ -112,10 +114,12 @@ export function useLoadFollowingFeeds() {
           }
         });
 
-        setFeeds((prev) => ({
-          ...prev,
-          [parentId]: [...(prev[parentId] || []), ...data],
-        }));
+        if (data.length > 0) {
+          setFeeds((prev) => ({
+            ...prev,
+            [parentId]: [...(prev[parentId] || []), ...data],
+          }));
+        }
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(newPageInfo);
       } catch (error) {
@@ -124,7 +128,7 @@ export function useLoadFollowingFeeds() {
         setMoreLoading(false);
       }
     },
-    [pageInfo, firstLoading, moreLoading]
+    [pageInfo, firstLoading, moreLoading, lensAccessToken]
   );
 
   return {

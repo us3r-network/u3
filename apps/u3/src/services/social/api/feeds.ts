@@ -52,15 +52,15 @@ export function getFeeds({
   keyword,
   endFarcasterCursor,
   endLensCursor,
-  activeLensProfileId,
   platforms,
+  lensAccessToken,
 }: {
   pageSize?: number;
   keyword?: string;
   endFarcasterCursor?: string;
   endLensCursor?: string;
-  activeLensProfileId?: string;
   platforms?: SocialPlatform[];
+  lensAccessToken?: string;
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -76,8 +76,10 @@ export function getFeeds({
       keyword,
       endFarcasterCursor,
       endLensCursor,
-      activeLensProfileId,
       platforms,
+    },
+    headers: {
+      'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     },
   });
 }
@@ -87,19 +89,19 @@ export function getFollowingFeeds({
   keyword,
   endFarcasterCursor,
   endLensCursor,
-  activeLensProfileId,
-  address,
+  lensProfileId,
   fid,
   platforms,
+  lensAccessToken,
 }: {
   pageSize?: number;
   keyword?: string;
   endFarcasterCursor?: string;
   endLensCursor?: string;
-  activeLensProfileId?: string;
-  address?: string;
+  lensProfileId?: string;
   fid?: string;
   platforms?: SocialPlatform[];
+  lensAccessToken?: string;
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -115,10 +117,12 @@ export function getFollowingFeeds({
       keyword,
       endFarcasterCursor,
       endLensCursor,
-      activeLensProfileId,
-      address,
+      lensProfileId,
       fid,
       platforms,
+    },
+    headers: {
+      'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     },
   });
 }
@@ -128,15 +132,15 @@ export function getTrendingFeeds({
   keyword,
   endFarcasterCursor,
   endLensCursor,
-  activeLensProfileId,
   platforms,
+  lensAccessToken,
 }: {
   pageSize?: number;
   keyword?: string;
   endFarcasterCursor?: string;
   endLensCursor?: string;
-  activeLensProfileId?: string;
   platforms?: SocialPlatform[];
+  lensAccessToken?: string;
 }): AxiosPromise<
   ApiResp<{
     data: FeedsDataItem[];
@@ -152,8 +156,10 @@ export function getTrendingFeeds({
       keyword,
       endFarcasterCursor,
       endLensCursor,
-      activeLensProfileId,
       platforms,
+    },
+    headers: {
+      'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     },
   });
 }
@@ -164,20 +170,20 @@ export function getProfileFeeds({
   group,
   endFarcasterCursor,
   endLensCursor,
-  activeLensProfileId,
   lensProfileId,
   fid,
   platforms,
+  lensAccessToken,
 }: {
   pageSize?: number;
   keyword?: string;
   group?: ProfileFeedsGroups;
   endFarcasterCursor?: string;
   endLensCursor?: string;
-  activeLensProfileId?: string;
   lensProfileId?: string;
   fid?: string;
   platforms?: SocialPlatform[];
+  lensAccessToken?: string;
 }): AxiosPromise<
   ApiResp<{
     data: ProfileFeedsDataItem[];
@@ -194,10 +200,12 @@ export function getProfileFeeds({
       group,
       endFarcasterCursor,
       endLensCursor,
-      activeLensProfileId,
       lensProfileId,
       fid,
       platforms,
+    },
+    headers: {
+      'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
     },
   });
 }

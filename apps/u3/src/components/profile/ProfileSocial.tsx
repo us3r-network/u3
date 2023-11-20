@@ -10,7 +10,6 @@ import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
 import Rss3Content from '../fren/Rss3Content';
 import { NoActivity } from '../../container/Activity';
-import { useLensCtx } from '../../contexts/social/AppLensCtx';
 
 export function ProfileSocialPosts({
   lensProfileId,
@@ -23,9 +22,6 @@ export function ProfileSocialPosts({
 }) {
   const { openFarcasterQR, farcasterUserData } = useFarcasterCtx();
   const { loading: activeLensProfileLoading } = useSession();
-  const { sessionProfile: lensSessionProfile } = useLensCtx();
-
-  const { id: lensSessionProfileId } = lensSessionProfile || {};
 
   const {
     firstLoading,
@@ -38,21 +34,19 @@ export function ProfileSocialPosts({
 
   const loadFirstSocialFeeds = useCallback(() => {
     loadFirstFeeds({
-      activeLensProfileId: lensSessionProfileId,
       lensProfileId,
       fid,
       group,
     });
-  }, [loadFirstFeeds, lensSessionProfileId, fid, group, lensProfileId]);
+  }, [loadFirstFeeds, fid, group, lensProfileId]);
 
   const loadMoreSocialFeeds = useCallback(() => {
     loadMoreFeeds({
-      activeLensProfileId: lensSessionProfileId,
       lensProfileId,
       fid,
       group,
     });
-  }, [loadMoreFeeds, lensSessionProfileId, fid, group, lensProfileId]);
+  }, [loadMoreFeeds, fid, group, lensProfileId]);
 
   useEffect(() => {
     if (activeLensProfileLoading) return;

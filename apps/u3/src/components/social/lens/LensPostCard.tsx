@@ -1,5 +1,5 @@
 import { Post, useFollow, useUnfollow } from '@lens-protocol/react-web';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,10 +13,12 @@ import PostCard, { PostCardData } from '../PostCard';
 import useLogin from '../../../hooks/shared/useLogin';
 import { getSocialDetailShareUrlWithLens } from '../../../utils/shared/share';
 import {
+  backendPublicationToLensPublication,
   canComment,
   canMirror,
-  isFollowedByMe,
-} from '../../../utils/social/lens/operations';
+  hasUpvoted,
+} from '../../../utils/social/lens/publication';
+import { isFollowedByMe } from '../../../utils/social/lens/profile';
 
 export default function LensPostCard({
   data,
@@ -34,43 +36,38 @@ export default function LensPostCard({
     setOpenCommentModal,
   } = useLensCtx();
 
-  const publication = data;
-
-  const [updatedPublication, setUpdatedPublication] =
-    useState<Post>(publication);
+  const [updatedPublication, setUpdatedPublication] = useState<Post>(data);
 
   useEffect(() => {
-    setUpdatedPublication(publication);
-  }, [publication]);
+    setUpdatedPublication(backendPublicationToLensPublication(data));
+  }, [data]);
 
-  const {
-    toggleReactionUpvote,
-    hasUpvoted,
-    isPending: isPendingReactionUpvote,
-  } = useReactionLensUpvote({
-    publication,
-    onReactionSuccess: ({ originPublication, hasUpvoted: upvoted }) => {
-      if (originPublication?.id !== updatedPublication.id) return;
-      setUpdatedPublication((prev) => {
-        if (!prev) return prev;
-        const { stats, operations } = prev;
-        return {
-          ...prev,
-          operations: {
-            ...operations,
-            hasUpvoted: upvoted,
-          },
-          stats: {
-            ...stats,
-            upvotes: Number(stats.upvotes) + 1,
-          },
-        };
-      });
-    },
-  });
+  const { toggleReactionUpvote, isPending: isPendingReactionUpvote } =
+    useReactionLensUpvote({
+      publication: updatedPublication,
+      onReactionSuccess: ({ originPublication, hasUpvoted: upvoted }) => {
+        if (originPublication?.id !== updatedPublication.id) return;
+        setUpdatedPublication((prev) => {
+          if (!prev) return prev;
+          const { stats, operations } = prev;
+          const { upvotes = 0 } = stats || {};
+          return {
+            ...prev,
+            operations: {
+              ...operations,
+              hasUpvoted: upvoted,
+            },
+            stats: {
+              ...stats,
+              upvotes: upvoted ? upvotes + 1 : upvotes > 0 ? upvotes - 1 : 0,
+            },
+          };
+        });
+      },
+    });
 
   const { createMirror, isPending: isPendingMirror } = useCreateLensMirror({
-    publication,
+    publication: updatedPublication,
     onMirrorSuccess: (originPublication) => {
       if (originPublication?.id !== updatedPublication.id) return;
       setUpdatedPublication((prev) => {
@@ -110,20 +107,52 @@ export default function LensPostCard({
   );
 
   const replyDisabled = useMemo(
-    () => isLogin && !canComment(publication),
-    [isLogin, publication]
+    () => isLogin && !canComment(updatedPublication),
+    [isLogin, updatedPublication]
   );
   const repostDisabled = useMemo(
-    () => isLogin && !canMirror(publication),
-    [isLogin, publication]
+    () => isLogin && !canMirror(updatedPublication),
+    [isLogin, updatedPublication]
+  );
+  const upvoted = useMemo(
+    () => isLogin && hasUpvoted(updatedPublication),
+    [isLogin, updatedPublication]
   );
 
   const { execute: follow, loading: followLoading } = useFollow();
   const { execute: unfollow, loading: unfollowLoading } = useUnfollow();
+  const setIsFollowedByMe = useCallback(
+    (followedByMe: boolean) => {
+      setUpdatedPublication((prev) => {
+        if (!prev) return prev;
+        const { by } = updatedPublication;
+        const { operations } = by || {};
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        const { isFollowedByMe } = operations || {};
+
+        return {
+          ...prev,
+          by: {
+            ...by,
+            operations: {
+              ...operations,
+              isFollowedByMe: {
+                ...isFollowedByMe,
+                value: followedByMe,
+              },
+            },
+          },
+        };
+      });
+    },
+    [updatedPublication]
+  );
   return (
     <PostCard
       // eslint-disable-next-line react/no-unstable-nested-components
-      contentRender={() => <LensPostCardContent publication={publication} />}
+      contentRender={() => (
+        <LensPostCardContent publication={updatedPublication} />
+      )}
       id={updatedPublication.id}
       onClick={(e) => {
         cardClickAction?.(e);
@@ -132,7 +161,7 @@ export default function LensPostCard({
       data={cardData}
       replyDisabled={replyDisabled}
       repostDisabled={repostDisabled}
-      liked={isLoginU3 && hasUpvoted}
+      liked={isLoginU3 && upvoted}
       liking={isPendingReactionUpvote}
       likeAction={() => {
         if (!isLoginU3) {
@@ -197,6 +226,7 @@ export default function LensPostCard({
         if (isFollowedByMe(updatedPublication.by)) {
           unfollow({ profile: updatedPublication.by })
             .then(() => {
+              setIsFollowedByMe(false);
               toast.success('Unfollow success');
             })
             .catch((err) => {
@@ -206,6 +236,7 @@ export default function LensPostCard({
         } else {
           follow({ profile: updatedPublication.by })
             .then((res) => {
+              setIsFollowedByMe(true);
               toast.success('Follow success');
             })
             .catch((err) => {

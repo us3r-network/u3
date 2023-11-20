@@ -42,13 +42,11 @@ export default function FCastRecast({
 
   const recast = useCallback(
     async (castId: CastId) => {
-      if (!currFid) return;
       if (!isConnected) {
         openFarcasterQR();
         return;
       }
       if (!encryptedSigner) return;
-      // const currFid = getCurrFid();
       try {
         const cast = await makeReactionAdd(
           {

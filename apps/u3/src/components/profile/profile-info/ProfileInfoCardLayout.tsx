@@ -30,6 +30,7 @@ interface ProfileInfoCardLayoutProps
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   loading?: boolean;
+  isSelf: boolean;
 }
 export default function ProfileInfoCardLayout({
   isU3Profile,
@@ -45,6 +46,7 @@ export default function ProfileInfoCardLayout({
   clickFollowing,
   clickFollowers,
   loading,
+  isSelf,
   ...wrapperProps
 }: ProfileInfoCardLayoutProps) {
   const session = useSession();
@@ -85,6 +87,7 @@ export default function ProfileInfoCardLayout({
               />
 
               <PlatformAccounts
+                isSelf={isSelf}
                 data={platformAccounts}
                 isLoginUser={isLoginUser}
               />
@@ -136,7 +139,7 @@ export default function ProfileInfoCardLayout({
         onNavigateToProfileAfter={onNavigateToProfileAfter}
       />
 
-      <PlatformAccounts data={platformAccounts} />
+      <PlatformAccounts data={platformAccounts} isSelf={isSelf} />
 
       <PlatformBio>
         {platformAccounts.length > 0

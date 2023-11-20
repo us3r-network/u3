@@ -20,6 +20,7 @@ import {
 } from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
 import {
+  FarcasterSignerType,
   getProfileBiolink,
   postProfileBiolink,
 } from 'src/services/shared/api/login';
@@ -120,6 +121,7 @@ export default function useFarcasterQR() {
             network: String(BIOLINK_FARCASTER_NETWORK),
             handle: signedKeyRequest.userFid,
             data: {
+              farcasterSignerType: FarcasterSignerType.QR,
               privateKey: keyPair.privateKey,
               publicKey: keyPair.publicKey,
               signedKeyRequest,
@@ -192,12 +194,13 @@ export default function useFarcasterQR() {
         platform: BIOLINK_PLATFORMS.farcaster,
         network: String(BIOLINK_FARCASTER_NETWORK),
       });
+      // console.log('farcasterBiolinks', farcasterBiolinks);
       if (farcasterBiolinks?.data?.data?.length > 0) {
         const farsignBiolinks = farcasterBiolinks.data.data.filter(
-          (item) => item.data?.signedKeyRequest != null
+          (item) => item.data?.farcasterSignerType === FarcasterSignerType.QR
         );
         const farsignBiolinkData = farsignBiolinks[0]
-          .data as FarcasterBioLinkData;
+          ?.data as FarcasterBioLinkData;
         if (
           farsignBiolinkData?.privateKey &&
           farsignBiolinkData?.signedKeyRequest
@@ -210,8 +213,11 @@ export default function useFarcasterQR() {
     } else {
       signedKeyRequest = JSON.parse(signer);
     }
+    if (signer) {
+      signedKeyRequest = JSON.parse(signer);
+    }
 
-    if (signedKeyRequest != null) {
+    if (signedKeyRequest) {
       setToken({
         token: 'already connected',
         deepLink: 'already connected',
@@ -228,18 +234,12 @@ export default function useFarcasterQR() {
   }, [didSessionStr]);
 
   const openFarcasterQR = useCallback(() => {
-    if (qrSigner.isConnected) {
-      return;
-    }
     stopSign.stop = false;
     initWarpcastAuth();
     setOpenQR(true);
-  }, [initWarpcastAuth, qrSigner.isConnected]);
+  }, [initWarpcastAuth, setOpenQR]);
 
   const openQRModal = useMemo(() => {
-    if (qrSigner.isConnected) {
-      return false;
-    }
     return openQR;
   }, [qrSigner.isConnected, openQR]);
 

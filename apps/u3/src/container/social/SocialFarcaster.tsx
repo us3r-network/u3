@@ -40,8 +40,7 @@ export default function SocialFarcaster() {
   } = useFarcasterCtx();
   const { isLogin } = useLogin();
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
+  const { mounted, setFirstLoadingDone } = useListScroll(parentId);
   const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const [searchParams] = useSearchParams();
@@ -55,20 +54,23 @@ export default function SocialFarcaster() {
   const loadFirstFeeds = useCallback(async () => {
     setFirstLoadingDone(false);
     if (feedsType === FeedsType.FOLLOWING) {
+      const fidParam = isConnectedFarcaster ? fid : undefined;
+      if (!fidParam) {
+        setFirstLoadingDone(true);
+        return;
+      }
       await loadFollowingFirstFeeds(parentId, {
         keyword: currentSearchParams.keyword,
-        fid: isConnectedFarcaster ? fid : undefined,
+        fid: fidParam,
         platforms: SocialPlatform.Farcaster,
       });
     } else {
       await loadTrendingFirstFeeds(parentId, {
-        activeLensProfileId: undefined,
         keyword: currentSearchParams.keyword,
         platforms: SocialPlatform.Farcaster,
       });
     }
     setFirstLoadingDone(true);
-    return loadFollowingFirstFeeds;
   }, [
     parentId,
     loadFollowingFirstFeeds,
@@ -110,12 +112,11 @@ export default function SocialFarcaster() {
   }, [currentSearchParams]);
 
   useEffect(() => {
-    if (firstLoadingDone) return;
     if (feeds.length > 0) return;
     if (!mounted) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  }, [loadFirstFeeds, feeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
