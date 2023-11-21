@@ -1,19 +1,14 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
-import LensPostCard from 'src/components/social/lens/LensPostCard';
+// import LensPostCard from 'src/components/social/lens/LensPostCard';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
-import { FeedsType } from 'src/components/social/SocialPageNav';
 
-import AddPostForm from 'src/components/social/AddPostForm';
 import useLogin from 'src/hooks/shared/useLogin';
-import { useLensCtx } from 'src/contexts/social/AppLensCtx';
-import { getOwnedByAddress } from 'src/utils/social/lens/profile';
 import { SocialPlatform } from 'src/services/social/types';
 import { useLoadLinkFeeds } from 'src/hooks/social/useLoadLinkFeeds';
 import AddPost from 'src/components/social/AddPost';
@@ -22,10 +17,7 @@ export default function LinkPost({ url }: { url: string }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentId, setParentId] = useState('social-all');
   const { isLogin } = useLogin();
-  const { sessionProfile: lensSessionProfile } = useLensCtx();
   const fid = useFarcasterCurrFid();
-  const { id: lensSessionProfileId } = lensSessionProfile || {};
-  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
 
   const {
     firstLoading,
@@ -84,12 +76,12 @@ export default function LinkPost({ url }: { url: string }) {
                       />
                     </ItemWraper>
                   );
-                case SocialPlatform.Lens:
-                  return (
-                    <ItemWraper key={data.id}>
-                      <LensPostCard data={data} />
-                    </ItemWraper>
-                  );
+                // case SocialPlatform.Lens:
+                //   return (
+                //     <ItemWraper key={data.id}>
+                //       <LensPostCard data={data} />
+                //     </ItemWraper>
+                //   );
                 default:
                   return null;
               }
