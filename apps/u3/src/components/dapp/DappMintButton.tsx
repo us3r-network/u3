@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { useNetwork, useSwitchNetwork, useWalletClient } from 'wagmi';
 import { TokenInfo, useMint } from '../../hooks/dapp/useMint';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useCreate1155Token } from '../../hooks/dapp/useCreate1155Token';
@@ -14,7 +14,7 @@ import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn, ModalTitle } from '../common/modal/ModalWidgets';
 import {
   zora1155ToMintAddress,
-  zoraDappsNetworkName,
+  zoraDappsNetwork,
   zoraDappsNetworkExplorer,
   ziraChainId,
 } from '../../constants/zora';
@@ -320,6 +320,11 @@ function NFTDetailModal({
 }: NFTDetailModalProps) {
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const { data: walletClient } = useWalletClient();
+  const switchChain = () => {
+    walletClient.addChain({ chain: zoraDappsNetwork });
+    switchNetwork(ziraChainId);
+  };
   return (
     <ModalContainer open={open} closeModal={closeModal} zIndex={100}>
       <ModalHeader>
@@ -334,7 +339,7 @@ function NFTDetailModal({
           {dappData.tokenId ? (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkName}</span>
+                <span>Network</span> <span>{zoraDappsNetwork.name}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -361,15 +366,15 @@ function NFTDetailModal({
                   }}
                 />
               ) : (
-                <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkName}`}
+                <ButtonPrimaryWraper onClick={() => switchChain()}>
+                  {`Switch to ${zoraDappsNetwork.name}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>
           ) : (
             <NFTContent>
               <NFTInfo>
-                <span>Network</span> <span>{zoraDappsNetworkName}</span>
+                <span>Network</span> <span>{zoraDappsNetwork.name}</span>
               </NFTInfo>
               <NFTInfo>
                 <span>Standard</span> <span>ERC1155</span>
@@ -398,8 +403,8 @@ function NFTDetailModal({
                   }}
                 />
               ) : (
-                <ButtonPrimaryWraper onClick={() => switchNetwork(ziraChainId)}>
-                  {`Switch to ${zoraDappsNetworkName}`}
+                <ButtonPrimaryWraper onClick={() => switchChain()}>
+                  {`Switch to ${zoraDappsNetwork.name}`}
                 </ButtonPrimaryWraper>
               )}
             </NFTContent>
