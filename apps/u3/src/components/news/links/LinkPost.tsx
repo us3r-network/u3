@@ -17,6 +17,7 @@ import { getOwnedByAddress } from 'src/utils/social/lens/profile';
 import { SocialPlatform } from 'src/services/social/types';
 import { useLoadLinkFeeds } from 'src/hooks/social/useLoadLinkFeeds';
 import AddPost from 'src/components/social/AddPost';
+import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 
 export default function LinkPost({ url }: { url: string }) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -62,7 +63,7 @@ export default function LinkPost({ url }: { url: string }) {
             loadMoreFeeds(url);
           }}
           hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold="1000px"
+          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
           loader={
             <LoadingMoreWrapper>
               <Loading />

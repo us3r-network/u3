@@ -11,6 +11,7 @@ import {
   LoadingWrapper,
 } from 'src/components/profile/FollowListWidgets';
 import AddPostForm from 'src/components/social/AddPostForm';
+import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 
 export default function SocialChannel() {
   const { openFarcasterQR } = useFarcasterCtx();
@@ -70,7 +71,7 @@ export default function SocialChannel() {
             loadMoreFeeds();
           }}
           hasMore={pageInfo?.hasNextPage || false}
-          scrollThreshold="1000px"
+          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
           loader={
             <LoadingMoreWrapper>
               <Loading />

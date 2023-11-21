@@ -155,7 +155,7 @@ export default function SocialFarcaster() {
               <Loading />
             </LoadingMoreWrapper>
           }
-          scrollThreshold="1000px"
+          scrollThreshold="5000px"
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
