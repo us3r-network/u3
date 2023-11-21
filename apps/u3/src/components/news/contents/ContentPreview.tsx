@@ -17,6 +17,7 @@ import ContentShowerBox, {
   Tab,
 } from './ContentShowerBox';
 import { ContentItemActions } from './ListItem';
+import { getContentShareUrl } from '../../../utils/shared/share';
 
 export type ContentPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: ContentListItem;
@@ -57,7 +58,10 @@ export default function ContentPreview({
                 id={data.id}
                 editorScore={data.editorScore}
                 hiddenAction={onHidden}
-                shareAction={onShare}
+                shareLink={getContentShareUrl(data.id)}
+                shareLinkEmbedTitle={
+                  data?.title || data?.description || data?.value
+                }
               />
               <ContentShowerHandles
                 showAdminOps={showAdminOps}

@@ -8,6 +8,8 @@ import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
 import type { ContentExploreListItemData } from './ContentList';
 import { VoteButtonBase } from '../../shared/button/VoteButtonBase';
+import { MultiPlatformShareMenuBtn } from '../../shared/share/MultiPlatformShareMenuBtn';
+import { CONTENT_SHARE_TITLE } from '../../../constants';
 
 export default function ListItem({
   data,
@@ -84,15 +86,17 @@ export function ContentItemActions({
   isActive,
   editorScore,
   hiddenAction,
-  shareAction,
+  shareLink,
+  shareLinkEmbedTitle,
 }: // withVote,
 {
   id: number;
   isActive?: boolean;
   editorScore: number;
-  shareAction?: () => void;
   hiddenAction?: () => void;
   // withVote?: boolean;
+  shareLink: string;
+  shareLinkEmbedTitle: string;
 }) {
   return (
     <ContentItemActionsWrapper>
@@ -107,17 +111,16 @@ export function ContentItemActions({
         <EyeClose />
       </ContentHandleButton> */}
 
-      <ContentHandleButton
-        onClick={(e) => {
-          e.stopPropagation();
-          if (shareAction) shareAction();
-        }}
-      >
-        <Share />
-      </ContentHandleButton>
+      <ContentShareMenuBtn
+        shareLink={shareLink}
+        shareLinkDefaultText={CONTENT_SHARE_TITLE}
+        shareLinkEmbedTitle={shareLinkEmbedTitle}
+        popoverConfig={{ placement: 'bottom end', offset: 0 }}
+      />
     </ContentItemActionsWrapper>
   );
 }
+export const ContentShareMenuBtn = styled(MultiPlatformShareMenuBtn)``;
 
 export function ListItemHidden({
   undoAction,

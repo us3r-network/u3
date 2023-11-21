@@ -18,7 +18,7 @@ export default function MultiPlatformShareModal({
     <ModalContainer
       open={open}
       closeModal={closeModal}
-      zIndex={100}
+      zIndex={300}
       contentTop="30%"
     >
       <ModalBody isMobile={isMobile}>
