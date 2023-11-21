@@ -47,6 +47,8 @@ export enum ProfileFeedsGroups {
 
 export const FEEDS_PAGE_SIZE = 25;
 
+export const FEEDS_SCROLL_THRESHOLD = `${FEEDS_PAGE_SIZE * 200}px`;
+
 export function getFeeds({
   pageSize,
   keyword,

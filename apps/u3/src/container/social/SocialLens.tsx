@@ -22,6 +22,7 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { FEEDS_SCROLL_THRESHOLD } from '../../services/social/api/feeds';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-lens');
@@ -155,7 +156,7 @@ export default function SocialFarcaster() {
               <Loading />
             </LoadingMoreWrapper>
           }
-          scrollThreshold="1000px"
+          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>
