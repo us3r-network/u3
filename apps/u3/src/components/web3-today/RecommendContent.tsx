@@ -1,20 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { ContentListItem } from '../../../services/news/types/contents';
-import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
+import { ContentListItem } from '../../services/news/types/contents';
+import { getContentPlatformLogoWithJsonValue } from '../../utils/news/content';
 import {
   fetchPlatformImgUrlByLink,
   platformLogoReplaceMap,
-} from '../../../utils/shared/platform';
-import CardBase from '../../common/card/CardBase';
-import EllipsisText from '../../common/text/EllipsisText';
-import Badge from '../contents/Badge';
-import LinkBox from '../contents/LinkBox';
+} from '../../utils/shared/platform';
+import CardBase from '../common/card/CardBase';
+import EllipsisText from '../common/text/EllipsisText';
+import Badge from '../news/contents/Badge';
+import LinkBox from '../news/contents/LinkBox';
 
 import Title from './Title';
-import LinkSvgUrl from '../../common/assets/svgs/link.svg';
-import { VoteTextButtonStyled } from '../../shared/button/VoteTextButtonStyled';
+import LinkSvgUrl from '../common/assets/svgs/link.svg';
+import { VoteTextButtonStyled } from '../shared/button/VoteTextButtonStyled';
 
 export default function RecommendContent({
   data,

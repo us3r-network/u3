@@ -1,21 +1,16 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-28 09:41:30
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 15:02:34
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
 import { ReactComponent as CompassSvg } from './svgs/compass.svg';
-import { ReactComponent as LineChartUpSvg } from './svgs/line-chart-up.svg';
-import { ReactComponent as HeartSvg } from './svgs/heart.svg';
-import { ReactComponent as WalletSvg } from './svgs/wallet.svg';
-import { ReactComponent as ImageSvg } from './svgs/image.svg';
-// import { ReactComponent as BellSvg } from './svgs/bell.svg';
-// import { ReactComponent as UserCircleSvg } from './svgs/user-circle.svg';
-// import { ReactComponent as SocialSvg } from './svgs/social.svg';
-import { ReactComponent as HomeSvg } from './svgs/home.svg';
 import { ReactComponent as NewsSvg } from './svgs/news.svg';
+import { ReactComponent as SocialSvg } from './svgs/social.svg';
+import { ReactComponent as DappSvg } from './svgs/dapp.svg';
+import { ReactComponent as BookmarkSvg } from './svgs/bookmark.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
 
@@ -29,20 +24,14 @@ export type CustomNavObject = {
 };
 export const navs: CustomNavObject[] = [
   {
-    name: 'social',
-    activeRouteKeys: [
-      RouteKey.social,
-      RouteKey.socialLayout,
-      RouteKey.socialPostDetailFcast,
-      RouteKey.socialPostDetailLens,
-    ],
-    icon: React.createElement(HomeSvg),
-    route: getRoute(RouteKey.social),
+    name: 'home',
+    activeRouteKeys: [RouteKey.web3Today],
+    icon: React.createElement(CompassSvg),
+    route: getRoute(RouteKey.web3Today),
   },
   {
     name: 'news',
     activeRouteKeys: [
-      RouteKey.web3Today,
       RouteKey.contents,
       RouteKey.content,
       RouteKey.contentCreate,
@@ -50,15 +39,34 @@ export const navs: CustomNavObject[] = [
       RouteKey.event,
       RouteKey.eventCreate,
       RouteKey.eventEdit,
+      RouteKey.links,
+      RouteKey.link,
     ],
     icon: React.createElement(NewsSvg),
-    route: getRoute(RouteKey.web3Today),
+    route: getRoute(RouteKey.links),
+  },
+  {
+    name: 'social',
+    activeRouteKeys: [
+      RouteKey.social,
+      RouteKey.socialLayout,
+      RouteKey.socialPostDetailFcast,
+      RouteKey.socialPostDetailLens,
+    ],
+    icon: React.createElement(SocialSvg),
+    route: getRoute(RouteKey.social),
   },
   {
     name: 'dapp store',
     activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
-    icon: React.createElement(CompassSvg),
+    icon: React.createElement(DappSvg),
     route: getRoute(RouteKey.dappStore),
+  },
+  {
+    name: 'save',
+    activeRouteKeys: [RouteKey.save],
+    icon: React.createElement(BookmarkSvg),
+    route: getRoute(RouteKey.save),
   },
   // {
   //   name: 'profile',
@@ -71,12 +79,6 @@ export const navs: CustomNavObject[] = [
   //   activeRouteKeys: [RouteKey.activity],
   //   icon: React.createElement(LineChartUpSvg),
   //   route: getRoute(RouteKey.activity),
-  // },
-  // {
-  //   name: 'save',
-  //   activeRouteKeys: [RouteKey.save],
-  //   icon: React.createElement(HeartSvg),
-  //   route: getRoute(RouteKey.save),
   // },
   // {
   //   name: 'asset',

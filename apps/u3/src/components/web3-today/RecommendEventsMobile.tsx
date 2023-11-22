@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import styled from 'styled-components';
-import { EventExploreListItemResponse } from '../../../services/news/types/event';
-import isUrl from '../../../utils/shared/isUrl';
-import EllipsisText from '../../common/text/EllipsisText';
-import RewardTag from '../event/RewardTag';
+import { EventExploreListItemResponse } from '../../services/news/types/event';
+import isUrl from '../../utils/shared/isUrl';
+import EllipsisText from '../common/text/EllipsisText';
+import RewardTag from '../news/event/RewardTag';
 
 import TitleMobile from './TitleMobile';
 

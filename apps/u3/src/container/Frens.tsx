@@ -38,7 +38,7 @@ import {
   getReco,
 } from '../features/frens/frensHandles';
 import { MainWrapper } from '../components/layout/Index';
-import FeedsMenu from '../components/news/web3-today/feeds/FeedsMenu';
+import FeedsMenu from '../components/web3-today/feeds/FeedsMenu';
 import ListScrollBox from '../components/common/box/ListScrollBox';
 import { messages } from '../utils/shared/message';
 import useLogin from '../hooks/shared/useLogin';

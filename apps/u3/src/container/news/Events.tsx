@@ -22,11 +22,11 @@ import { AsyncRequestStatus } from '../../services/shared/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import Loading from '../../components/common/loading/Loading';
 import NoResult from '../../components/layout/NoResult';
-import FeedsMenu from '../../components/news/web3-today/feeds/FeedsMenu';
+import FeedsMenu from '../../components/web3-today/feeds/FeedsMenu';
 import FeedsMenuRight, {
   Layout,
-} from '../../components/news/web3-today/feeds/FeedsMenuRight';
-import FeedsFilterBox from '../../components/news/web3-today/feeds/FeedsFilterBox';
+} from '../../components/web3-today/feeds/FeedsMenuRight';
+import FeedsFilterBox from '../../components/web3-today/feeds/FeedsFilterBox';
 import SearchInput from '../../components/common/input/SearchInput';
 import EventOrderBySelect, {
   defaultEventOrderBy,
