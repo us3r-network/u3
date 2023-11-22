@@ -20,9 +20,10 @@ import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
 import { EventExploreListItemResponse } from '../../../services/news/types/event';
 import useAdminEventHandles from '../../../hooks/news/useAdminEventHandles';
-import { Share } from '../../common/icons/share';
-import useEventHandles from '../../../hooks/news/useEventHandles';
 import { FavorButtonBase } from '../../shared/button/FavorButtonBase';
+import { MultiPlatformShareMenuBtn } from '../../shared/share/MultiPlatformShareMenuBtn';
+import { EVENT_SHARE_TITLE } from '../../../constants';
+import { getEventShareUrl } from '../../../utils/shared/share';
 
 export type EventPreviewDataType = {
   name: string;
@@ -121,18 +122,16 @@ export function EventPreviewHandles({
 }: EventPreviewHandlesProps) {
   const navigate = useNavigate();
   const { onAdminThumbUp, onAdminDelete } = useAdminEventHandles();
-  const { onShare } = useEventHandles();
   return (
     <EventPreviewHandlesWrapper {...props}>
       {!!data?.linkStreamId && <FavorBtn linkId={data.linkStreamId} />}
 
-      <EventHandleButton
-        onClick={() => {
-          onShare(data);
-        }}
-      >
-        <Share />
-      </EventHandleButton>
+      <EventShareMenuBtn
+        shareLink={getEventShareUrl(data.id)}
+        shareLinkDefaultText={`${EVENT_SHARE_TITLE} ${data?.name || ''}`}
+        shareLinkEmbedTitle={data?.name || data?.description}
+        popoverConfig={{ placement: 'bottom end', offset: 0 }}
+      />
       {showAdminOps && (
         <>
           <EventHandleButton
@@ -168,6 +167,8 @@ export function EventPreviewHandles({
     </EventPreviewHandlesWrapper>
   );
 }
+
+export const EventShareMenuBtn = styled(MultiPlatformShareMenuBtn)``;
 const EventPreviewHandlesWrapper = styled.div`
   display: flex;
   align-items: center;

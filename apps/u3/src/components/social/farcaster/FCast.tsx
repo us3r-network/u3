@@ -199,7 +199,9 @@ export default function FCast({
           }}
         >
           <PostShareMenuBtn
-            shareLink={getSocialDetailShareUrlWithFarcaster(userData.fid)}
+            shareLink={getSocialDetailShareUrlWithFarcaster(
+              Buffer.from(castId.hash).toString('hex')
+            )}
             shareLinkDefaultText={SOCIAL_SHARE_TITLE}
             shareLinkEmbedTitle={cast.text}
             popoverConfig={{ placement: 'top end', offset: 0 }}
