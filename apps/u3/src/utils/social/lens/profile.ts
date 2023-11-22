@@ -18,3 +18,7 @@ export const isFollowedByMe = (profile: Profile) => {
 export const canFollow = (profile: Profile) => {
   return profile?.operations?.canFollow === TriStateValue.Yes;
 };
+
+export const canUnfollow = (profile: Profile) => {
+  return profile?.operations?.canUnfollow;
+};
