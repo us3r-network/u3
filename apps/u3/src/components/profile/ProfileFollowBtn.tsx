@@ -1,11 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile, useFollow, useUnfollow } from '@lens-protocol/react-web';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../social/button/SocialButton';
 import useFarcasterFollowAction from '../../hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import {
   canFollow,
   canUnfollow,
@@ -23,11 +22,6 @@ export default function ProfileFollowBtn({
   fid,
   ...wrapperProps
 }: ProfileFollowBtnProps) {
-  const { setCanEnableXmtp } = useXmtpClient();
-  useEffect(() => {
-    setCanEnableXmtp(true);
-  }, []);
-
   const { isLogin, sessionProfile } = useLensCtx();
   const { following: farcasterFollowings } = useFarcasterCtx();
 
