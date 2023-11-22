@@ -27,16 +27,12 @@ const App = loadable(() => import(`./App`), {
 });
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-if (process.env.NODE_ENV === 'production') {
-  root.render(<App />);
-} else {
-  root.render(
-    <React.StrictMode>
-      {/* {isExternalLinkRiskWarningUrl ? <ExternalLinkRiskWarning /> : <App />} */}
-      <App />
-    </React.StrictMode>
-  );
-}
+root.render(
+  <React.StrictMode>
+    {/* {isExternalLinkRiskWarningUrl ? <ExternalLinkRiskWarning /> : <App />} */}
+    <App />
+  </React.StrictMode>
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
