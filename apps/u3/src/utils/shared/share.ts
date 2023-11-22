@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-15 17:21:55
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-27 11:55:12
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 16:41:46
  * @Description: file description
  */
 import { U3_HOST_URI, SHARE_DOMAIN } from '../../constants';
@@ -19,6 +19,10 @@ export const getDappShareUrl = (id: string | number) => {
 
 export const getContentShareUrl = (id: string | number) => {
   return `${SHARE_DOMAIN}/contents/${id}`;
+};
+
+export const getLinkShareUrl = (url: string) => {
+  return `${SHARE_DOMAIN}/links/${Buffer.from(url, 'utf8').toString('base64')}`;
 };
 
 export const getSocialDetailShareUrlWithLens = (id: string | number) => {
