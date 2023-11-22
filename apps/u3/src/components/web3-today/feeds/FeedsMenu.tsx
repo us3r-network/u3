@@ -8,10 +8,10 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { getRoute, RouteKey } from '../../../../route/routes';
-import useRoute from '../../../../route/useRoute';
-import Tab from '../../../common/tab/Tab';
-import ButtonBack from '../../../common/button/ButtonBack';
+import { getRoute, RouteKey } from '../../../route/routes';
+import useRoute from '../../../route/useRoute';
+import Tab from '../../common/tab/Tab';
+import ButtonBack from '../../common/button/ButtonBack';
 
 const TWITTER_SEARCH_PARAMS =
   'includeDomains=https://twitter.com,https://x.com';

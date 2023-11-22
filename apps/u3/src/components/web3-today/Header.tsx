@@ -1,13 +1,21 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-10-30 14:41:21
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 15:15:13
+ * @FilePath: /u3/apps/u3/src/components/web3-today/Header.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import styled from 'styled-components';
 import { LoginButton, UserAvatar, UserName } from '@us3r-network/profile';
 import { useNavigate } from 'react-router-dom';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
-import CardBase from '../../common/card/CardBase';
+import CardBase from '../common/card/CardBase';
 import {
   ButtonPrimaryLine,
   ButtonPrimaryLineCss,
-} from '../../common/button/ButtonBase';
-import { ReactComponent as BookmarkSvg } from '../../common/assets/svgs/bookmark.svg';
+} from '../common/button/ButtonBase';
+import { ReactComponent as BookmarkSvg } from '../common/assets/svgs/bookmark.svg';
 
 export default function Header() {
   const navigate = useNavigate();

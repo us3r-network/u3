@@ -5,9 +5,9 @@ import Title from './Title';
 import {
   PlatformsItemResponse,
   PlatformType,
-} from '../../../services/shared/types/common';
-import ImgDefault from '../../common/ImgDefault';
-import { formatFilterShowName } from '../../../utils/shared/filter';
+} from '../../services/shared/types/common';
+import ImgDefault from '../common/ImgDefault';
+import { formatFilterShowName } from '../../utils/shared/filter';
 
 export default function Platform({
   platforms,
