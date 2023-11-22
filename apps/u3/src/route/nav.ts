@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 15:02:34
+ * @LastEditTime: 2023-11-22 15:40:46
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
@@ -54,7 +54,7 @@ export const navs: CustomNavObject[] = [
       RouteKey.socialPostDetailLens,
     ],
     icon: React.createElement(SocialSvg),
-    route: getRoute(RouteKey.social),
+    route: getRoute(RouteKey.socialLayout),
   },
   {
     name: 'dapp store',
