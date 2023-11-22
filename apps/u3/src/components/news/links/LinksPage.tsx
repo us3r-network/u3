@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-20 16:28:27
+ * @LastEditTime: 2023-11-22 17:16:16
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,15 +12,12 @@ import { LinkListItem } from 'src/services/news/types/links';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
-import SearchInput from '../../common/input/SearchInput';
+// import SearchInput from '../../common/input/SearchInput';
 import { MainWrapper } from '../../layout/Index';
-import FeedsMenu from '../../web3-today/feeds/FeedsMenu';
-import FeedsMenuRight, { Layout } from '../../web3-today/feeds/FeedsMenuRight';
-import FeedsFilterBox from '../../web3-today/feeds/FeedsFilterBox';
-import Filter from './Filter';
 import GridModal from './grid/GridModal';
 import NoResult from '../../layout/NoResult';
 import {
+  Layout,
   getContentsLayoutFromLocal,
   setContentsLayoutToLocal,
 } from '../../../utils/news/localLayout';
@@ -29,6 +26,8 @@ import LinkOrderBySelect from './LinkOrderBySelect';
 import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
 import LinkList from './list/LinkList';
+import NewsToolbar from '../header/NewsToolbar';
+import NewsMenu from '../header/NewsMenu';
 
 export type LinksPageProps = {
   // Queries
@@ -61,13 +60,12 @@ export default function LinksPage({
   getMore,
 }: LinksPageProps) {
   const navigate = useNavigate();
-  const { isAdmin } = useLogin();
+  // const { isAdmin } = useLogin();
   const { link } = useParams();
   const [searchParams] = useSearchParams();
 
   const [layout, setLayout] = useState(getContentsLayoutFromLocal());
   const [gridModalShow, setGridModalShow] = useState(false);
-  const [isActiveFilter, setIsActiveFilter] = useState(false);
 
   const selectLink: LinkListItem | null = useMemo(
     () =>
@@ -99,9 +97,9 @@ export default function LinksPage({
 
   return (
     <Box>
-      <FeedsMenu
+      <NewsMenu
         rightEl={
-          <FeedsMenuRight
+          <NewsToolbar
             // displayFilterButton
             // isActiveFilter={isActiveFilter}
             // onChangeActiveFilter={setIsActiveFilter}

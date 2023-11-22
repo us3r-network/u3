@@ -22,11 +22,7 @@ import { AsyncRequestStatus } from '../../services/shared/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import Loading from '../../components/common/loading/Loading';
 import NoResult from '../../components/layout/NoResult';
-import FeedsMenu from '../../components/web3-today/feeds/FeedsMenu';
-import FeedsMenuRight, {
-  Layout,
-} from '../../components/web3-today/feeds/FeedsMenuRight';
-import FeedsFilterBox from '../../components/web3-today/feeds/FeedsFilterBox';
+import FeedsFilterBox from '../../components/news/header/FilterBox';
 import SearchInput from '../../components/common/input/SearchInput';
 import EventOrderBySelect, {
   defaultEventOrderBy,
@@ -34,12 +30,14 @@ import EventOrderBySelect, {
 import EventExploreGridList from '../../components/news/event/EventExploreGridList';
 import EventPreviewModal from '../../components/news/event/EventPreviewModal';
 import {
+  Layout,
   getEventsLayoutFromLocal,
-  setContentsLayoutToLocal,
   setEventsLayoutToLocal,
 } from '../../utils/news/localLayout';
 import EventPreview from '../../components/news/event/EventPreview';
 import useLogin from '../../hooks/shared/useLogin';
+import NewsMenu from '../../components/news/header/NewsMenu';
+import NewsToolbar from '../../components/news/header/NewsToolbar';
 
 const isUUid = (str: string) => {
   return str.indexOf('-') > -1;
@@ -171,9 +169,9 @@ export default function Events() {
 
   return (
     <EventsWrapper>
-      <FeedsMenu
+      <NewsMenu
         rightEl={
-          <FeedsMenuRight
+          <NewsToolbar
             displayFilterButton
             isActiveFilter={isActiveFilter}
             onChangeActiveFilter={setIsActiveFilter}
