@@ -3,7 +3,6 @@ import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useParams, useSearchParams } from 'react-router-dom';
-import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -16,7 +15,6 @@ import { LogoutButton } from '../../components/layout/LoginButton';
 import useLogin from '../../hooks/shared/useLogin';
 import LogoutConfirmModal from '../../components/layout/LogoutConfirmModal';
 import ProfileInfoCard from '../../components/profile/profile-info/ProfileInfoCard';
-import { RouteKey } from '../../route/routes';
 import {
   selectWebsite,
   setProfilePageFeedsType,
@@ -422,20 +420,13 @@ function ProfileView({
           }
 
           return (
-            <KeepAlive
-              cacheKey={`${RouteKey.profile}_social_${
-                lensProfileFirst?.id || '0'
-              }_${fid || '0'}_${profilePageFeedsType}`}
-              saveScrollPosition="#profile-wrapper"
-            >
-              <MainCenter>
-                <ProfileSocialPosts
-                  lensProfileId={lensProfileFirst?.id}
-                  fid={fid}
-                  group={profilePageFeedsType as unknown as ProfileFeedsGroups}
-                />
-              </MainCenter>
-            </KeepAlive>
+            <MainCenter>
+              <ProfileSocialPosts
+                lensProfileId={lensProfileFirst?.id}
+                fid={fid}
+                group={profilePageFeedsType as unknown as ProfileFeedsGroups}
+              />
+            </MainCenter>
           );
         })()}
 

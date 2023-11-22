@@ -21,8 +21,6 @@ import {
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-
-import { AliveScope } from 'react-activation';
 import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './styles/GlobalStyle';
@@ -75,13 +73,11 @@ function App() {
                       <FarcasterProvider>
                         <LivepeerConfig client={livepeerClient}>
                           <GlobalModalsProvider>
-                            <AliveScope>
-                              <NavProvider>
-                                <GlobalModals />
-                                <LensGlobalModals />
-                                <Layout />
-                              </NavProvider>
-                            </AliveScope>
+                            <NavProvider>
+                              <GlobalModals />
+                              <LensGlobalModals />
+                              <Layout />
+                            </NavProvider>
                           </GlobalModalsProvider>
                         </LivepeerConfig>
                       </FarcasterProvider>

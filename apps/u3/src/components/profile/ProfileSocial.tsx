@@ -79,7 +79,7 @@ export function ProfileSocialPosts({
                 </LoadingMoreWrapper>
               ) : null
             }
-            scrollableTarget="profile-wrapper"
+            scrollableTarget="layout-main-wrapper"
           >
             <PostList>
               {feeds.map(({ platform, data }) => {
