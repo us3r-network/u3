@@ -114,7 +114,7 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
     params: {
       urls,
       timeout: 3000,
-      maxRedirects: 3,
+      maxRedirects: 2,
     },
   });
 }
