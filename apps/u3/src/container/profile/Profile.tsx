@@ -40,8 +40,16 @@ import FollowingDefault from '../../components/social/FollowingDefault';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
 import useU3ProfileInfoData from '../../hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '../../hooks/profile/usePlatformProfileInfoData';
+import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
-export default function Profile() {
+export default function ProfileContainer() {
+  return (
+    <LivepeerProvider>
+      <Profile />
+    </LivepeerProvider>
+  );
+}
+function Profile() {
   const { user: identity } = useParams();
   const { did, loading: didLoading } = useDid(identity);
   const { getProfileWithDid } = useProfileState();

@@ -13,12 +13,6 @@ import { ProfileStateProvider } from '@us3r-network/profile';
 import { LinkStateProvider } from '@us3r-network/link';
 import { init } from '@airstack/airstack-react';
 
-import {
-  createReactClient,
-  LivepeerConfig,
-  studioProvider,
-} from '@livepeer/react';
-
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import Layout from './components/layout/Index';
@@ -40,10 +34,6 @@ import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
 import { GlobalModalsProvider } from './contexts/shared/GlobalModalsCtx';
 import GlobalModals from './components/shared/modal/GlobalModals';
-
-const livepeerClient = createReactClient({
-  provider: studioProvider({ apiKey: '' }),
-});
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -71,15 +61,13 @@ function App() {
                     <GlobalStyle />
                     <BrowserRouter>
                       <FarcasterProvider>
-                        <LivepeerConfig client={livepeerClient}>
-                          <GlobalModalsProvider>
-                            <NavProvider>
-                              <GlobalModals />
-                              <LensGlobalModals />
-                              <Layout />
-                            </NavProvider>
-                          </GlobalModalsProvider>
-                        </LivepeerConfig>
+                        <GlobalModalsProvider>
+                          <NavProvider>
+                            <GlobalModals />
+                            <LensGlobalModals />
+                            <Layout />
+                          </NavProvider>
+                        </GlobalModalsProvider>
                       </FarcasterProvider>
                     </BrowserRouter>
                   </ReduxProvider>
