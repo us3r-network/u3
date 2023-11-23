@@ -2,13 +2,16 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-17 16:58:26
+ * @LastEditTime: 2023-11-22 16:36:18
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
+import { MultiPlatformShareMenuBtn } from 'src/components/shared/share/MultiPlatformShareMenuBtn';
+import { LINK_SHARE_TITLE } from 'src/constants';
+import { getLinkShareUrl } from 'src/utils/shared/share';
 import useFullScreen from '../../../hooks/shared/useFullScreen';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
 import LinkContentBox, { Tab } from './LinkContentBox';
@@ -35,6 +38,12 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
         <Header>
           <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
           <HeaderRight>
+            <PostShareMenuBtn
+              shareLink={getLinkShareUrl(data.url)}
+              shareLinkDefaultText={LINK_SHARE_TITLE}
+              shareLinkEmbedTitle={data?.metadata?.title}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
             <ButtonFullScreen
               className="content-fullscreen-button"
               isFullscreen={isFullscreen}
@@ -155,6 +164,26 @@ const LinkRenderSwitchTabsWrapper = styled.div`
     &.active {
       color: #ffffff;
       background: #21262c;
+    }
+  }
+`;
+export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
+  border: none;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: none;
+  &:not(:disabled):hover {
+    border: none;
+    background-color: #14171a;
+  }
+  & > svg {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    path {
+      stroke: #ffffff;
     }
   }
 `;
