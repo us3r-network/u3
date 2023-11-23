@@ -28,6 +28,7 @@ import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { getOwnedByAddress } from '../../utils/social/lens/profile';
+import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
 export default function SocialLayout() {
   const location = useLocation();
@@ -142,39 +143,41 @@ export default function SocialLayout() {
 
         <MainCenter id="main-center">
           <MainOutletWrapper>
-            <Outlet
-              context={{
-                socialPlatform,
-                feedsType,
+            <LivepeerProvider>
+              <Outlet
+                context={{
+                  socialPlatform,
+                  feedsType,
 
-                trendingFirstLoading,
-                trendingMoreLoading,
-                trendingFeeds,
-                trendingPageInfo,
-                loadTrendingFirstFeeds,
-                loadTrendingMoreFeeds,
+                  trendingFirstLoading,
+                  trendingMoreLoading,
+                  trendingFeeds,
+                  trendingPageInfo,
+                  loadTrendingFirstFeeds,
+                  loadTrendingMoreFeeds,
 
-                followingFirstLoading,
-                followingMoreLoading,
-                followingFeeds,
-                followingPageInfo,
-                loadFollowingFirstFeeds,
-                loadFollowingMoreFeeds,
+                  followingFirstLoading,
+                  followingMoreLoading,
+                  followingFeeds,
+                  followingPageInfo,
+                  loadFollowingFirstFeeds,
+                  loadFollowingMoreFeeds,
 
-                // farcasterScrollTop,
-                // setFarcasterScrollTop,
-                postScroll,
-                setPostScroll,
+                  // farcasterScrollTop,
+                  // setFarcasterScrollTop,
+                  postScroll,
+                  setPostScroll,
 
-                currentChannel,
-                channelFeeds,
-                channelPageInfo,
-                channelFirstLoading,
-                channelMoreLoading,
-                loadChannelMoreFeeds,
-                channelFarcasterUserData,
-              }}
-            />
+                  currentChannel,
+                  channelFeeds,
+                  channelPageInfo,
+                  channelFirstLoading,
+                  channelMoreLoading,
+                  loadChannelMoreFeeds,
+                  channelFarcasterUserData,
+                }}
+              />
+            </LivepeerProvider>
           </MainOutletWrapper>
         </MainCenter>
 
