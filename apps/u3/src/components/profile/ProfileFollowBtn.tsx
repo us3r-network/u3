@@ -1,11 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile, useFollow, useUnfollow } from '@lens-protocol/react-web';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { SocialButtonPrimary } from '../social/button/SocialButton';
 import useFarcasterFollowAction from '../../hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import {
   canFollow,
   canUnfollow,
@@ -23,13 +22,13 @@ export default function ProfileFollowBtn({
   fid,
   ...wrapperProps
 }: ProfileFollowBtnProps) {
-  const { setCanEnableXmtp } = useXmtpClient();
-  useEffect(() => {
-    setCanEnableXmtp(true);
-  }, []);
-
-  const { isLogin, sessionProfile } = useLensCtx();
-  const { following: farcasterFollowings } = useFarcasterCtx();
+  const { isLogin, sessionProfile, setOpenLensLoginModal } = useLensCtx();
+  const {
+    following: farcasterFollowings,
+    isConnected: isLoginFarcaster,
+    currFid: farcasterUserFid,
+    openFarcasterQR,
+  } = useFarcasterCtx();
 
   const { execute: lensFollow, loading: lensFollowIsPending } = useFollow();
   const { execute: lensUnfollow, loading: lensUnfollowIsPending } =
@@ -45,66 +44,59 @@ export default function ProfileFollowBtn({
    * TODO : __typename !== 'FeeFollowModuleSettings'
    * 这个是为了过滤掉需要付费才能Follow的lens 账户
    */
+  const lensNotFeeFollowProfiles = useMemo(
+    () =>
+      lensProfiles?.filter(
+        (profile) =>
+          !profile?.followModule ||
+          // eslint-disable-next-line no-underscore-dangle
+          profile?.followModule?.__typename !== 'FeeFollowModuleSettings'
+      ) || [],
+    [lensProfiles]
+  );
   const lensCanFollowProfiles = useMemo(
     () =>
-      isLogin && sessionProfile && lensProfiles
-        ? lensProfiles.filter(
-            (profile) =>
-              canFollow(profile) &&
-              // eslint-disable-next-line no-underscore-dangle
-              profile?.followModule?.__typename !== 'FeeFollowModuleSettings'
-          )
-        : [],
-    [lensProfiles, isLogin, sessionProfile]
+      lensNotFeeFollowProfiles.filter(
+        (profile) => canFollow(profile) && !isFollowedByMe(profile)
+      ),
+    [lensNotFeeFollowProfiles]
   );
-  const lensCanUnfollowProfiles = useMemo(
-    () =>
-      isLogin && sessionProfile && lensProfiles
-        ? lensProfiles.filter(
-            (profile) =>
-              canUnfollow(profile) &&
-              // eslint-disable-next-line no-underscore-dangle
-              profile?.followModule?.__typename !== 'FeeFollowModuleSettings'
-          )
-        : [],
-    [lensProfiles, isLogin, sessionProfile]
-  );
-  const lensProfilesIsAllFollowing = useMemo(
-    () => lensCanUnfollowProfiles.every((profile) => isFollowedByMe(profile)),
-    [lensCanUnfollowProfiles]
-  );
-
   const lensProfilesFollow = useCallback(() => {
     lensCanFollowProfiles.forEach((profile) => {
-      if (!isFollowedByMe(profile)) {
-        lensFollow({ profile })
-          .then(() => {
-            toast.success(`[lens] @${getHandle(profile)} follow success!`);
-          })
-          .catch((error) => {
-            toast.error(
-              `[lens] @${getHandle(profile)} follow failed: ${error}`
-            );
-          });
-      }
+      lensFollow({ profile })
+        .then(() => {
+          toast.success(`[lens] @${getHandle(profile)} follow success!`);
+        })
+        .catch((error) => {
+          toast.error(`[lens] @${getHandle(profile)} follow failed: ${error}`);
+        });
     });
   }, [lensCanFollowProfiles, lensFollow]);
-
+  const lensCanUnfollowProfiles = useMemo(
+    () =>
+      lensNotFeeFollowProfiles.filter(
+        (profile) => canUnfollow(profile) && isFollowedByMe(profile)
+      ),
+    [lensNotFeeFollowProfiles]
+  );
   const lensProfilesUnfollow = useCallback(() => {
     lensCanUnfollowProfiles.forEach((profile) => {
-      if (isFollowedByMe(profile)) {
-        lensUnfollow({ profile })
-          .then(() => {
-            toast.success(`[lens] @${getHandle(profile)} unfollow success!`);
-          })
-          .catch((error) => {
-            toast.error(
-              `[lens] @${getHandle(profile)} unfollow failed: ${error}`
-            );
-          });
-      }
+      lensUnfollow({ profile })
+        .then(() => {
+          toast.success(`[lens] @${getHandle(profile)} unfollow success!`);
+        })
+        .catch((error) => {
+          toast.error(
+            `[lens] @${getHandle(profile)} unfollow failed: ${error}`
+          );
+        });
     });
   }, [lensCanUnfollowProfiles, lensFollow]);
+
+  const lensProfilesIsAllFollowing = useMemo(
+    () => lensCanFollowProfiles.length === 0,
+    [lensCanFollowProfiles]
+  );
 
   const fcastIsFollowing = useMemo(
     () => farcasterFollowings.includes(String(fid)),
@@ -112,59 +104,59 @@ export default function ProfileFollowBtn({
   );
 
   const followAction = useCallback(() => {
-    if (!lensProfilesIsAllFollowing && !lensFollowIsPending) {
-      lensProfilesFollow();
-    }
+    lensProfilesFollow();
 
-    if (fid && !fcastIsFollowing && !fcastFollowIsPending) {
+    if (fid) {
       fcastFollow(fid);
     }
-  }, [
-    lensProfilesFollow,
-    lensProfilesIsAllFollowing,
-    lensFollowIsPending,
-    fid,
-    fcastFollow,
-    fcastFollowIsPending,
-    fcastIsFollowing,
-  ]);
+  }, [lensProfilesFollow, fid, fcastFollow]);
 
   const unfollowAction = useCallback(() => {
-    if (!lensUnfollowIsPending) {
-      lensProfilesUnfollow();
-    }
+    lensProfilesUnfollow();
 
-    if (fid && fcastIsFollowing && !fcastFollowIsPending) {
+    if (fid) {
       fcastUnfollow(fid);
     }
-  }, [
-    lensProfilesFollow,
-    lensUnfollowIsPending,
-    fid,
-    fcastUnfollow,
-    fcastFollowIsPending,
-    fcastIsFollowing,
-  ]);
+  }, [lensProfilesFollow, fid, fcastUnfollow]);
 
-  const enabledLensFollowAction = lensCanFollowProfiles.length > 0;
-  const enabledFarcasterFollowAction = !!fid;
-  // 是否follow了此人的所有平台账户
-  const isFollowing =
-    // lens和farcaster 都follow 过
-    (lensProfilesIsAllFollowing && fcastIsFollowing) ||
-    // 没有lens，有farcaster，并follow了farcaster
-    (!enabledLensFollowAction && fid && fcastIsFollowing) ||
-    // 没有farcaster，有lens，并follow了lens
-    (!enabledFarcasterFollowAction &&
-      enabledLensFollowAction &&
-      lensProfilesIsAllFollowing);
+  const hasFarcaster = !!fid;
+  const hasLens = lensNotFeeFollowProfiles.length > 0;
+  const farcasterIsLogin = isLoginFarcaster && farcasterUserFid;
+  const lensIsLogin = isLogin && sessionProfile;
+
+  let isFollowing = false;
+  if (hasFarcaster && hasLens) {
+    isFollowing =
+      farcasterIsLogin &&
+      lensIsLogin &&
+      fcastIsFollowing &&
+      lensProfilesIsAllFollowing;
+  } else if (hasFarcaster) {
+    isFollowing = farcasterIsLogin && fcastIsFollowing;
+  } else if (hasLens) {
+    isFollowing = lensIsLogin && lensProfilesIsAllFollowing;
+  }
 
   const followActionLoading =
     lensFollowIsPending || lensUnfollowIsPending || fcastFollowIsPending;
 
   return (
     <Wrapper
-      onClick={() => (isFollowing ? unfollowAction() : followAction())}
+      onClick={() => {
+        if (hasFarcaster && !farcasterIsLogin) {
+          openFarcasterQR();
+          return;
+        }
+        if (hasLens && !lensIsLogin) {
+          setOpenLensLoginModal(true);
+          return;
+        }
+        if (isFollowing) {
+          unfollowAction();
+        } else {
+          followAction();
+        }
+      }}
       disabled={followActionLoading}
       {...wrapperProps}
     >

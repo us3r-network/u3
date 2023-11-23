@@ -47,11 +47,11 @@ export default function useFarcasterFollowAction() {
           throw new Error(result.error.message);
         }
         setFollowing((prev) => [...prev, String(targetFid)]);
-        toast.success('successfully followed');
+        toast.success('farcaster follow success');
         setIsFollowing(true);
       } catch (error: unknown) {
         console.error(error);
-        toast.error('failed to followed');
+        toast.error('farcaster follow failed');
       }
       setIsPending(false);
     },
@@ -85,11 +85,11 @@ export default function useFarcasterFollowAction() {
           throw new Error(result.error.message);
         }
         setFollowing((prev) => prev.filter((fid) => fid !== String(targetFid)));
-        toast.success('successfully unfollowed');
+        toast.success('farcaster unfollow success');
         setIsFollowing(false);
       } catch (error: unknown) {
         console.error(error);
-        toast.error('failed to unfollowed');
+        toast.error('farcaster unfollow failed');
       }
       setIsPending(false);
     },
