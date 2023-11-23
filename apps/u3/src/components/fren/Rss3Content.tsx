@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-01 15:42:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-02 14:04:29
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-23 10:50:49
  * @Description: file description
  */
 import React, {
@@ -13,7 +13,6 @@ import React, {
   useRef,
 } from 'react';
 import styled from 'styled-components';
-import { Popover } from 'antd';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import { toast } from 'react-toastify';
@@ -592,30 +591,6 @@ export default function Rss3Content({ address, empty }: Rss3ContentProps) {
 
           return (
             <Rss3ContentCard key={hash}>
-              <Popover
-                content={renderUserInfo(
-                  owner,
-                  ownerName,
-                  owner in followingMap,
-                  ownerFollowerNum,
-                  ownerFollowingNum
-                )}
-                getPopupContainer={(triggerNode) =>
-                  (triggerNode as any).parentNode
-                }
-                color="#1b1e23"
-                overlayInnerStyle={{
-                  background: '#1b1e23',
-                  color: '#718096',
-                }}
-              >
-                {/* <img
-                  id={`tooltip-anchor-children-${owner}-${index}`}
-                  className="avatar"
-                  src={`https://cdn.stamp.fyi/avatar/${owner}?s=300`}
-                  alt={owner}
-                /> */}
-              </Popover>
               <div className="content">
                 <div className="owner">
                   {/* <span className="name color-white">{ownerName}</span>{' '} */}

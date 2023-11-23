@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 16:36:18
+ * @LastEditTime: 2023-11-23 10:42:24
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -38,7 +38,7 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
         <Header>
           <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
           <HeaderRight>
-            <PostShareMenuBtn
+            <LinkShareMenuBtn
               shareLink={getLinkShareUrl(data.url)}
               shareLinkDefaultText={LINK_SHARE_TITLE}
               shareLinkEmbedTitle={data?.metadata?.title}
@@ -167,7 +167,7 @@ const LinkRenderSwitchTabsWrapper = styled.div`
     }
   }
 `;
-export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
+export const LinkShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
   border: none;
   padding: 0px;
   width: 20px;

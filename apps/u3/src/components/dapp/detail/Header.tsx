@@ -2,6 +2,8 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useFavorAction } from '@us3r-network/link';
 import { useProfileState } from '@us3r-network/profile';
+import { MultiPlatformShareMenuBtn } from 'src/components/shared/share/MultiPlatformShareMenuBtn';
+import { getDappShareUrl } from 'src/utils/shared/share';
 import { formatFilterShowName } from '../../../utils/shared/filter';
 import {
   DappExploreListItemResponse,
@@ -77,6 +79,14 @@ export default function Header({
       </HeaderCenter>
       <HeaderRight>
         <RightButtons>
+          {data?.id && (
+            <DappShareMenuBtn
+              shareLink={getDappShareUrl(data.id)}
+              shareLinkDefaultText={data.name}
+              shareLinkEmbedTitle={data?.name}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
+          )}
           {data?.mediaLinks?.twitter && (
             <LinkButton
               onClick={() => window.open(data?.mediaLinks?.twitter, '__blank')}
@@ -289,4 +299,24 @@ const TagsRowMobile = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+`;
+export const DappShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
+  border: none;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: none;
+  &:not(:disabled):hover {
+    border: none;
+    background-color: #14171a;
+  }
+  & > svg {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    path {
+      stroke: #ffffff;
+    }
+  }
 `;
