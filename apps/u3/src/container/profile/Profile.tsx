@@ -40,6 +40,7 @@ import FollowingDefault from '../../components/social/FollowingDefault';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
 import useU3ProfileInfoData from '../../hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '../../hooks/profile/usePlatformProfileInfoData';
+import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
 export default function Profile() {
   const { user: identity } = useParams();
@@ -246,193 +247,195 @@ function ProfileView({
   );
 
   return (
-    <ProfileWrapper id="profile-wrapper">
-      {isMobile && (
-        <ProfileInfoMobileWrapper>
-          <ProfileInfoMobile did={did} identity={identity} isSelf={isSelf} />
-          <LogoutButton
-            className="logout-button"
-            onClick={() => {
-              setOpenLogoutConfirm(true);
-            }}
-          />
-        </ProfileInfoMobileWrapper>
-      )}
-      {(() => {
-        if (showFollowNav) {
-          if (followNavType === FollowType.FOLLOWING) {
-            return (
-              <ProfilePageFollowNav
-                followType={FollowType.FOLLOWING}
-                activePlatform={followingActivePlatform}
-                platformCount={followingPlatformCount}
-                onChangePlatform={(platform) => {
-                  setFollowNavData((prevData) => ({
-                    ...prevData,
-                    followingActivePlatform: platform,
-                  }));
-                }}
-                goBack={() => {
-                  setFollowNavData((prevData) => ({
-                    ...prevData,
-                    showFollowNav: false,
-                  }));
-                }}
-              />
-            );
-          }
-          if (followNavType === FollowType.FOLLOWERS) {
-            return (
-              <ProfilePageFollowNav
-                followType={FollowType.FOLLOWERS}
-                activePlatform={followersActivePlatform}
-                platformCount={followersPlatformCount}
-                onChangePlatform={(platform) => {
-                  setFollowNavData((prevData) => ({
-                    ...prevData,
-                    followersActivePlatform: platform,
-                  }));
-                }}
-                goBack={() => {
-                  setFollowNavData((prevData) => ({
-                    ...prevData,
-                    showFollowNav: false,
-                  }));
-                }}
-              />
-            );
-          }
-          return null;
-        }
-
-        return (
-          <ProfilePageNav
-            feedsType={
-              onlyShowActivities && address
-                ? FeedsType.ACTIVITIES
-                : profilePageFeedsType
-            }
-            enabledFeedsTypes={
-              onlyShowActivities
-                ? address
-                  ? [FeedsType.ACTIVITIES]
-                  : []
-                : undefined
-            }
-            onChangeFeedsType={(type) => {
-              dispatch(setProfilePageFeedsType(type));
-            }}
-          />
-        );
-      })()}
-
-      <MainWrapper>
-        {!isMobile && (
-          <MainLeft>
-            <ProfileInfo
-              isSelf={isSelf}
-              did={did}
-              identity={identity}
-              clickFollowing={() => {
-                setFollowNavData((prevData) => ({
-                  ...prevData,
-                  showFollowNav: true,
-                  followNavType: FollowType.FOLLOWING,
-                }));
-              }}
-              clickFollowers={() => {
-                setFollowNavData((prevData) => ({
-                  ...prevData,
-                  showFollowNav: true,
-                  followNavType: FollowType.FOLLOWERS,
-                }));
+    <LivepeerProvider>
+      <ProfileWrapper id="profile-wrapper">
+        {isMobile && (
+          <ProfileInfoMobileWrapper>
+            <ProfileInfoMobile did={did} identity={identity} isSelf={isSelf} />
+            <LogoutButton
+              className="logout-button"
+              onClick={() => {
+                setOpenLogoutConfirm(true);
               }}
             />
-            {isLoginUser && (
-              <>
-                <LogoutButton
-                  className="logout-button"
-                  onClick={() => {
-                    setOpenLogoutConfirm(true);
-                  }}
-                />
-                <LogoutConfirmModal
-                  isOpen={openLogoutConfirm}
-                  onClose={() => {
-                    setOpenLogoutConfirm(false);
-                  }}
-                  onConfirm={() => {
-                    logout();
-                    setOpenLogoutConfirm(false);
-                  }}
-                />
-              </>
-            )}
-          </MainLeft>
+          </ProfileInfoMobileWrapper>
         )}
-
         {(() => {
           if (showFollowNav) {
-            if (
-              followNavType === FollowType.FOLLOWING &&
-              followingActivePlatform === SocialPlatform.Lens
-            ) {
-              return <LensProfileFollowing address={address} />;
+            if (followNavType === FollowType.FOLLOWING) {
+              return (
+                <ProfilePageFollowNav
+                  followType={FollowType.FOLLOWING}
+                  activePlatform={followingActivePlatform}
+                  platformCount={followingPlatformCount}
+                  onChangePlatform={(platform) => {
+                    setFollowNavData((prevData) => ({
+                      ...prevData,
+                      followingActivePlatform: platform,
+                    }));
+                  }}
+                  goBack={() => {
+                    setFollowNavData((prevData) => ({
+                      ...prevData,
+                      showFollowNav: false,
+                    }));
+                  }}
+                />
+              );
             }
-            if (
-              followNavType === FollowType.FOLLOWERS &&
-              followersActivePlatform === SocialPlatform.Lens
-            ) {
-              return <LensProfileFollowers address={address} />;
-            }
-            if (
-              followNavType === FollowType.FOLLOWING &&
-              followingActivePlatform === SocialPlatform.Farcaster
-            ) {
-              return <FarcasterFollowing fid={fid} />;
-            }
-            if (
-              followNavType === FollowType.FOLLOWERS &&
-              followersActivePlatform === SocialPlatform.Farcaster
-            ) {
-              return <FarcasterFollowers fid={fid} />;
+            if (followNavType === FollowType.FOLLOWERS) {
+              return (
+                <ProfilePageFollowNav
+                  followType={FollowType.FOLLOWERS}
+                  activePlatform={followersActivePlatform}
+                  platformCount={followersPlatformCount}
+                  onChangePlatform={(platform) => {
+                    setFollowNavData((prevData) => ({
+                      ...prevData,
+                      followersActivePlatform: platform,
+                    }));
+                  }}
+                  goBack={() => {
+                    setFollowNavData((prevData) => ({
+                      ...prevData,
+                      showFollowNav: false,
+                    }));
+                  }}
+                />
+              );
             }
             return null;
           }
-          if (
-            address &&
-            (onlyShowActivities ||
-              profilePageFeedsType === FeedsType.ACTIVITIES)
-          ) {
-            return (
-              <MainCenter>
-                <ProfileSocialActivity address={address} />
-              </MainCenter>
-            );
-          }
-
-          if (isLoginUser && !lensProfileFirst?.id && !fid) {
-            return (
-              <MainCenter>
-                <FollowingDefault />
-              </MainCenter>
-            );
-          }
 
           return (
-            <MainCenter>
-              <ProfileSocialPosts
-                lensProfileId={lensProfileFirst?.id}
-                fid={fid}
-                group={profilePageFeedsType as unknown as ProfileFeedsGroups}
-              />
-            </MainCenter>
+            <ProfilePageNav
+              feedsType={
+                onlyShowActivities && address
+                  ? FeedsType.ACTIVITIES
+                  : profilePageFeedsType
+              }
+              enabledFeedsTypes={
+                onlyShowActivities
+                  ? address
+                    ? [FeedsType.ACTIVITIES]
+                    : []
+                  : undefined
+              }
+              onChangeFeedsType={(type) => {
+                dispatch(setProfilePageFeedsType(type));
+              }}
+            />
           );
         })()}
 
-        {!isMobile && <MainRight />}
-      </MainWrapper>
-    </ProfileWrapper>
+        <MainWrapper>
+          {!isMobile && (
+            <MainLeft>
+              <ProfileInfo
+                isSelf={isSelf}
+                did={did}
+                identity={identity}
+                clickFollowing={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: true,
+                    followNavType: FollowType.FOLLOWING,
+                  }));
+                }}
+                clickFollowers={() => {
+                  setFollowNavData((prevData) => ({
+                    ...prevData,
+                    showFollowNav: true,
+                    followNavType: FollowType.FOLLOWERS,
+                  }));
+                }}
+              />
+              {isLoginUser && (
+                <>
+                  <LogoutButton
+                    className="logout-button"
+                    onClick={() => {
+                      setOpenLogoutConfirm(true);
+                    }}
+                  />
+                  <LogoutConfirmModal
+                    isOpen={openLogoutConfirm}
+                    onClose={() => {
+                      setOpenLogoutConfirm(false);
+                    }}
+                    onConfirm={() => {
+                      logout();
+                      setOpenLogoutConfirm(false);
+                    }}
+                  />
+                </>
+              )}
+            </MainLeft>
+          )}
+
+          {(() => {
+            if (showFollowNav) {
+              if (
+                followNavType === FollowType.FOLLOWING &&
+                followingActivePlatform === SocialPlatform.Lens
+              ) {
+                return <LensProfileFollowing address={address} />;
+              }
+              if (
+                followNavType === FollowType.FOLLOWERS &&
+                followersActivePlatform === SocialPlatform.Lens
+              ) {
+                return <LensProfileFollowers address={address} />;
+              }
+              if (
+                followNavType === FollowType.FOLLOWING &&
+                followingActivePlatform === SocialPlatform.Farcaster
+              ) {
+                return <FarcasterFollowing fid={fid} />;
+              }
+              if (
+                followNavType === FollowType.FOLLOWERS &&
+                followersActivePlatform === SocialPlatform.Farcaster
+              ) {
+                return <FarcasterFollowers fid={fid} />;
+              }
+              return null;
+            }
+            if (
+              address &&
+              (onlyShowActivities ||
+                profilePageFeedsType === FeedsType.ACTIVITIES)
+            ) {
+              return (
+                <MainCenter>
+                  <ProfileSocialActivity address={address} />
+                </MainCenter>
+              );
+            }
+
+            if (isLoginUser && !lensProfileFirst?.id && !fid) {
+              return (
+                <MainCenter>
+                  <FollowingDefault />
+                </MainCenter>
+              );
+            }
+
+            return (
+              <MainCenter>
+                <ProfileSocialPosts
+                  lensProfileId={lensProfileFirst?.id}
+                  fid={fid}
+                  group={profilePageFeedsType as unknown as ProfileFeedsGroups}
+                />
+              </MainCenter>
+            );
+          })()}
+
+          {!isMobile && <MainRight />}
+        </MainWrapper>
+      </ProfileWrapper>
+    </LivepeerProvider>
   );
 }
 
