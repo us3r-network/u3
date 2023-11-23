@@ -30,7 +30,14 @@ import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { getOwnedByAddress } from '../../utils/social/lens/profile';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
-export default function SocialLayout() {
+export default function SocialLayoutContainer() {
+  return (
+    <LivepeerProvider>
+      <SocialLayout />
+    </LivepeerProvider>
+  );
+}
+function SocialLayout() {
   const location = useLocation();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
@@ -143,41 +150,39 @@ export default function SocialLayout() {
 
         <MainCenter id="main-center">
           <MainOutletWrapper>
-            <LivepeerProvider>
-              <Outlet
-                context={{
-                  socialPlatform,
-                  feedsType,
+            <Outlet
+              context={{
+                socialPlatform,
+                feedsType,
 
-                  trendingFirstLoading,
-                  trendingMoreLoading,
-                  trendingFeeds,
-                  trendingPageInfo,
-                  loadTrendingFirstFeeds,
-                  loadTrendingMoreFeeds,
+                trendingFirstLoading,
+                trendingMoreLoading,
+                trendingFeeds,
+                trendingPageInfo,
+                loadTrendingFirstFeeds,
+                loadTrendingMoreFeeds,
 
-                  followingFirstLoading,
-                  followingMoreLoading,
-                  followingFeeds,
-                  followingPageInfo,
-                  loadFollowingFirstFeeds,
-                  loadFollowingMoreFeeds,
+                followingFirstLoading,
+                followingMoreLoading,
+                followingFeeds,
+                followingPageInfo,
+                loadFollowingFirstFeeds,
+                loadFollowingMoreFeeds,
 
-                  // farcasterScrollTop,
-                  // setFarcasterScrollTop,
-                  postScroll,
-                  setPostScroll,
+                // farcasterScrollTop,
+                // setFarcasterScrollTop,
+                postScroll,
+                setPostScroll,
 
-                  currentChannel,
-                  channelFeeds,
-                  channelPageInfo,
-                  channelFirstLoading,
-                  channelMoreLoading,
-                  loadChannelMoreFeeds,
-                  channelFarcasterUserData,
-                }}
-              />
-            </LivepeerProvider>
+                currentChannel,
+                channelFeeds,
+                channelPageInfo,
+                channelFirstLoading,
+                channelMoreLoading,
+                loadChannelMoreFeeds,
+                channelFarcasterUserData,
+              }}
+            />
           </MainOutletWrapper>
         </MainCenter>
 
