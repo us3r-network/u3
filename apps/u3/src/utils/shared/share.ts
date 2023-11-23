@@ -32,3 +32,6 @@ export const getSocialDetailShareUrlWithLens = (id: string | number) => {
 export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
   return `${SHARE_DOMAIN}/social/post-detail/fcast/${id}`;
 };
+export const getProfileShareUrl = (identity: string | number) => {
+  return `${SHARE_DOMAIN}/u/${identity}`;
+};
