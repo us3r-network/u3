@@ -2,16 +2,15 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 16:56:13
+ * @LastEditTime: 2023-11-24 19:25:24
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { debounce, throttle, unionBy } from 'lodash';
+import { throttle, unionBy } from 'lodash';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchLinks } from 'src/services/news/api/links';
 import { LinkListItem } from 'src/services/news/types/links';
 import useLogin from 'src/hooks/shared/useLogin';
-import { getFarcasterEmbedMetadata } from 'src/services/social/api/farcaster';
 import { messages } from 'src/utils/shared/message';
 
 export default function useFeedLinks(currentSearchParams) {
@@ -41,12 +40,11 @@ export default function useFeedLinks(currentSearchParams) {
         user?.token
       );
       const newLinks = processLinks(data.data.data);
-      const res = await getFarcasterEmbedMetadata(newLinks.map((l) => l.url));
-      const { metadata: metadatas } = res.data.data;
-      newLinks.forEach((item, index) => {
-        const metadata = metadatas[index];
+      newLinks.forEach((item) => {
         item.metadata =
-          metadata && metadata.title ? processMetadata(metadata) : null;
+          item.metadata && item.metadata.title
+            ? processMetadata(item.metadata)
+            : null;
         item.supportIframe = true;
       });
       setLinks(
