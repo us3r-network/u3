@@ -3,7 +3,6 @@ import { isMobile } from 'react-device-detect';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useParams, useSearchParams } from 'react-router-dom';
-import KeepAlive from 'react-activation';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -16,7 +15,6 @@ import { LogoutButton } from '../../components/layout/LoginButton';
 import useLogin from '../../hooks/shared/useLogin';
 import LogoutConfirmModal from '../../components/layout/LogoutConfirmModal';
 import ProfileInfoCard from '../../components/profile/profile-info/ProfileInfoCard';
-import { RouteKey } from '../../route/routes';
 import {
   selectWebsite,
   setProfilePageFeedsType,
@@ -42,8 +40,16 @@ import FollowingDefault from '../../components/social/FollowingDefault';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
 import useU3ProfileInfoData from '../../hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '../../hooks/profile/usePlatformProfileInfoData';
+import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
-export default function Profile() {
+export default function ProfileContainer() {
+  return (
+    <LivepeerProvider>
+      <Profile />
+    </LivepeerProvider>
+  );
+}
+function Profile() {
   const { user: identity } = useParams();
   const { did, loading: didLoading } = useDid(identity);
   const { getProfileWithDid } = useProfileState();
@@ -422,20 +428,13 @@ function ProfileView({
           }
 
           return (
-            <KeepAlive
-              cacheKey={`${RouteKey.profile}_social_${
-                lensProfileFirst?.id || '0'
-              }_${fid || '0'}_${profilePageFeedsType}`}
-              saveScrollPosition="#profile-wrapper"
-            >
-              <MainCenter>
-                <ProfileSocialPosts
-                  lensProfileId={lensProfileFirst?.id}
-                  fid={fid}
-                  group={profilePageFeedsType as unknown as ProfileFeedsGroups}
-                />
-              </MainCenter>
-            </KeepAlive>
+            <MainCenter>
+              <ProfileSocialPosts
+                lensProfileId={lensProfileFirst?.id}
+                fid={fid}
+                group={profilePageFeedsType as unknown as ProfileFeedsGroups}
+              />
+            </MainCenter>
           );
         })()}
 

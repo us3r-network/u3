@@ -24,6 +24,7 @@ import {
   PostList,
 } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { FEEDS_SCROLL_THRESHOLD } from '../../services/social/api/feeds';
 
 export default function SocialAll() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -173,7 +174,7 @@ export default function SocialAll() {
             loadMoreFeeds();
           }}
           hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold="1000px"
+          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
           loader={
             <LoadingMoreWrapper>
               <Loading />

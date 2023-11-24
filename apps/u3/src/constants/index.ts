@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-01 15:09:50
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2022-12-19 14:55:28
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 16:24:14
  * @Description: 系统相关常量定义
  */
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -44,3 +44,7 @@ export const SHARE_DOMAIN =
   process.env.REACT_APP_SHARE_DOMAIN || 'https://share.u3.xyz';
 
 export const SOCIAL_SHARE_TITLE = 'I found an interesting viewpoint in U3!';
+export const CONTENT_SHARE_TITLE = 'I found an interesting viewpoint in U3!';
+export const LINK_SHARE_TITLE = 'I found something interesting in U3!';
+
+export const EVENT_SHARE_TITLE = 'Great event in U3!';

@@ -3,11 +3,11 @@ import { isMobile } from 'react-device-detect';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Loading from '../../components/common/loading/Loading';
-import Platform from '../../components/news/web3-today/Platform';
-import RecommendContent from '../../components/news/web3-today/RecommendContent';
-import RecommendContentMobile from '../../components/news/web3-today/RecommendContentMobile';
-import RecommendEvents from '../../components/news/web3-today/RecommendEvents';
-import Poster from '../../components/news/web3-today/Poster';
+import Platform from '../../components/web3-today/Platform';
+import RecommendContent from '../../components/web3-today/RecommendContent';
+import RecommendContentMobile from '../../components/web3-today/RecommendContentMobile';
+import RecommendEvents from '../../components/web3-today/RecommendEvents';
+import Poster from '../../components/web3-today/Poster';
 import { MainWrapper } from '../../components/layout/Index';
 import useConfigsPlatforms from '../../hooks/shared/useConfigsPlatforms';
 import {
@@ -18,8 +18,8 @@ import {
 import { ContentListItem } from '../../services/news/types/contents';
 import { EventExploreListItemResponse } from '../../services/news/types/event';
 import { DappExploreListItemResponse } from '../../services/dapp/types/dapp';
-import RecommendEventMobile from '../../components/news/web3-today/RecommendEventsMobile';
-import Header from '../../components/news/web3-today/Header';
+import RecommendEventMobile from '../../components/web3-today/RecommendEventsMobile';
+import Header from '../../components/web3-today/Header';
 
 function Web3Today() {
   const navigate = useNavigate();

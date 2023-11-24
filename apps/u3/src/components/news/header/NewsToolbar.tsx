@@ -1,26 +1,24 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-05 14:33:02
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-29 16:33:37
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 17:18:38
  * @Description: file description
  */
 import styled from 'styled-components';
 import { ReactNode } from 'react';
-import { ReactComponent as FilterFunnelSvg } from '../../../common/assets/svgs/filter-funnel.svg';
-import { ReactComponent as PlusSvg } from '../../../common/assets/svgs/plus.svg';
-import { ButtonPrimaryLine } from '../../../common/button/ButtonBase';
+import { ReactComponent as FilterFunnelSvg } from '../../common/assets/svgs/filter-funnel.svg';
+import { ReactComponent as PlusSvg } from '../../common/assets/svgs/plus.svg';
+import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import {
   LayoutGrid,
   LayoutGridActive,
   LayoutList,
   LayoutListActive,
-} from '../../../common/icons/layout';
-import { Layout } from '../../../../utils/news/localLayout';
+} from '../../common/icons/layout';
+import { Layout } from '../../../utils/news/localLayout';
 
-export { Layout } from '../../../../utils/news/localLayout';
-
-type FeedsMenuRightProps = {
+type NewsToolbarProps = {
   orderByEl?: ReactNode;
   searchEl?: ReactNode;
   displayFilterButton?: boolean;
@@ -32,7 +30,7 @@ type FeedsMenuRightProps = {
   displaySubmitButton?: boolean;
   submitButtonOnClick?: () => void;
 };
-export default function FeedsMenuRight({
+export default function NewsToolbar({
   orderByEl,
   searchEl,
   displayFilterButton,
@@ -43,9 +41,9 @@ export default function FeedsMenuRight({
   setLayout,
   displaySubmitButton,
   submitButtonOnClick,
-}: FeedsMenuRightProps) {
+}: NewsToolbarProps) {
   return (
-    <FeedsMenuRightWrapper>
+    <NewsToolbarWrapper>
       {orderByEl && <OrderByBox>{orderByEl}</OrderByBox>}
       {displayFilterButton && (
         <FilterButton
@@ -90,10 +88,10 @@ export default function FeedsMenuRight({
           </div>
         )}
       </MultiLayoutBox>
-    </FeedsMenuRightWrapper>
+    </NewsToolbarWrapper>
   );
 }
-const FeedsMenuRightWrapper = styled.div`
+const NewsToolbarWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: end;

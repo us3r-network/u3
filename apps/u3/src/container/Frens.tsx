@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-02 14:06:49
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-23 10:52:20
  * @Description: 首页任务看板
  */
 import React, {
@@ -15,8 +15,6 @@ import React, {
 import styled from 'styled-components';
 
 import { toast } from 'react-toastify';
-import { Popover } from 'antd';
-
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 import { TagType } from '../services/shared/types/common';
@@ -38,7 +36,7 @@ import {
   getReco,
 } from '../features/frens/frensHandles';
 import { MainWrapper } from '../components/layout/Index';
-import FeedsMenu from '../components/news/web3-today/feeds/FeedsMenu';
+import FeedsMenu from '../components/news/header/NewsMenu';
 import ListScrollBox from '../components/common/box/ListScrollBox';
 import { messages } from '../utils/shared/message';
 import useLogin from '../hooks/shared/useLogin';
@@ -691,31 +689,6 @@ function Frens() {
                 } = item;
                 return (
                   <FrensFeedCard>
-                    <Popover
-                      content={renderUserInfo(
-                        owner,
-                        ownerName,
-                        owner in followingMap,
-                        ownerFollowerNum,
-                        ownerFollowingNum,
-                        false
-                      )}
-                      getPopupContainer={(triggerNode) =>
-                        (triggerNode as any).parentNode
-                      }
-                      color="#1b1e23"
-                      overlayInnerStyle={{
-                        background: '#1b1e23',
-                        color: '#718096',
-                      }}
-                    >
-                      <img
-                        id={`tooltip-anchor-children-${owner}-${index}`}
-                        className="avatar"
-                        src={`https://cdn.stamp.fyi/avatar/${owner}?s=300`}
-                        alt={owner}
-                      />
-                    </Popover>
                     <div className="content">
                       <div className="owner">
                         <span className="name color-white">{ownerName}</span>{' '}

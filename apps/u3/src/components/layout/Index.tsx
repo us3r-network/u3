@@ -31,7 +31,7 @@ function Layout() {
         </MobileContentBox>
       ) : (
         <RightBox>
-          <RightInner>
+          <RightInner id="layout-main-wrapper">
             {location.pathname.includes('social') ? (
               <Main />
             ) : (

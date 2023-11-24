@@ -10,6 +10,7 @@ interface U3ProfileInfoCardContainerProps
   onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
+  shareLink: string;
 }
 export default function U3ProfileInfoCardContainer({
   did,
@@ -18,6 +19,7 @@ export default function U3ProfileInfoCardContainer({
   onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
+  shareLink,
   ...wrapperProps
 }: U3ProfileInfoCardContainerProps) {
   const {
@@ -46,6 +48,7 @@ export default function U3ProfileInfoCardContainer({
       fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
+      shareLink={shareLink}
       {...wrapperProps}
     />
   );

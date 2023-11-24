@@ -1,22 +1,22 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-05 14:33:02
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-06 18:59:57
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 17:11:07
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useCallback, useEffect, useRef } from 'react';
-import useWindowSize from '../../../../hooks/shared/useWindowSize';
+import useWindowSize from '../../../hooks/shared/useWindowSize';
 
-type FeedsFilterBoxProps = StyledComponentPropsWithRef<'div'> & {
+type FilterBoxProps = StyledComponentPropsWithRef<'div'> & {
   open?: boolean;
 };
-export default function FeedsFilterBox({
+export default function FilterBox({
   children,
   open,
   ...otherProps
-}: FeedsFilterBoxProps) {
+}: FilterBoxProps) {
   const bottomInnerRef = useRef<HTMLDivElement>();
   const [width] = useWindowSize();
   const setOpenStyle = useCallback(() => {
@@ -40,8 +40,8 @@ export default function FeedsFilterBox({
     }
   }, [width]);
   return (
-    <FeedsFilterBoxWrapper {...otherProps}>
-      <FeedsFilterBoxInner
+    <FilterBoxWrapper {...otherProps}>
+      <FilterBoxInner
         ref={(el) => {
           if (el) {
             bottomInnerRef.current = el;
@@ -56,17 +56,17 @@ export default function FeedsFilterBox({
         }}
       >
         {children}
-      </FeedsFilterBoxInner>
-    </FeedsFilterBoxWrapper>
+      </FilterBoxInner>
+    </FilterBoxWrapper>
   );
 }
-const FeedsFilterBoxWrapper = styled.div`
+const FilterBoxWrapper = styled.div`
   padding-top: 20px;
   width: 100%;
   overflow: hidden;
   transition: all 0.3s ease-out;
 `;
-const FeedsFilterBoxInner = styled.div`
+const FilterBoxInner = styled.div`
   width: 100%;
   max-height: 50vh;
   overflow-y: auto;

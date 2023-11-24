@@ -1,9 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { Profile, useFollow } from '@lens-protocol/react-web';
-import { useCallback, useEffect, useMemo } from 'react';
-import { toast } from 'react-toastify';
+import { Profile } from '@lens-protocol/react-web';
+import { useEffect } from 'react';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
-import useFarcasterFollowAction from '../../../hooks/social/farcaster/useFarcasterFollowAction';
 import {
   MessageRoute,
   useXmtpStore,
@@ -11,9 +9,8 @@ import {
 import { useNav } from '../../../contexts/NavCtx';
 import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs/message-chat-square.svg';
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
-import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { useXmtpClient } from '../../../contexts/message/XmtpClientCtx';
-import { canFollow, isFollowedByMe } from '../../../utils/social/lens/profile';
+import ProfileFollowBtn from '../ProfileFollowBtn';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -35,65 +32,12 @@ export default function ProfileBtns({
     setCanEnableXmtp(true);
   }, []);
 
-  const { following: farcasterFollowings } = useFarcasterCtx();
-  const lensProfileFirst = lensProfiles?.[0];
-
-  const { execute: lensFollow, loading: lensFollowIsPending } = useFollow();
-
-  const { followAction: fcastFollow, isPending: fcastFollowIsPending } =
-    useFarcasterFollowAction();
-
-  const fcastIsFollowing = useMemo(
-    () => farcasterFollowings.includes(String(fid)),
-    [fid, farcasterFollowings]
-  );
-
-  const onFollow = useCallback(async () => {
-    if (
-      !lensFollowIsPending &&
-      lensProfileFirst &&
-      !isFollowedByMe(lensProfileFirst) &&
-      canFollow(lensProfileFirst)
-    ) {
-      try {
-        await lensFollow({ profile: lensProfileFirst });
-        toast.success('Lens follow success!');
-      } catch (error) {
-        toast.error(error.message);
-      }
-    }
-
-    if (fid && !fcastFollowIsPending && !fcastIsFollowing) {
-      fcastFollow(fid);
-    }
-  }, [
-    lensProfileFirst,
-    lensFollow,
-    lensFollowIsPending,
-    fid,
-    fcastFollow,
-    fcastFollowIsPending,
-    fcastIsFollowing,
-  ]);
-
-  const isFollowing =
-    (isFollowedByMe(lensProfileFirst) && fcastIsFollowing) ||
-    (fid && fcastIsFollowing && !lensProfileFirst) ||
-    (lensProfileFirst && isFollowedByMe(lensProfileFirst) && !fid);
-
-  const followActionDisabled =
-    lensFollowIsPending || fcastFollowIsPending || isFollowing;
-
   const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
   const { canMessage } = useCanMessage(address);
   return (
     <BtnsWrapper {...wrapperProps}>
-      {showFollowBtn && (
-        <FollowBtn onClick={onFollow} disabled={followActionDisabled}>
-          {isFollowing ? 'Following' : 'follow'}
-        </FollowBtn>
-      )}
+      {showFollowBtn && <FollowBtn lensProfiles={lensProfiles} fid={fid} />}
 
       {showMessageBtn && canMessage && (
         <MessageBtn
@@ -119,7 +63,7 @@ const BtnsWrapper = styled.div`
   margin-top: 30px;
 `;
 
-const FollowBtn = styled(SocialButtonPrimary)`
+const FollowBtn = styled(ProfileFollowBtn)`
   flex: 1;
   color: #000;
   font-family: Baloo Bhai 2;

@@ -16,6 +16,7 @@ import NoLogin from 'src/components/layout/NoLogin';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 import useListScroll from 'src/hooks/social/useListScroll';
 import useListFeeds from 'src/hooks/social/useListFeeds';
+import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 
 export default function SocialFarcaster() {
   const {
@@ -154,7 +155,7 @@ export default function SocialFarcaster() {
               <Loading />
             </LoadingMoreWrapper>
           }
-          scrollThreshold="1000px"
+          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
           scrollableTarget="social-scroll-wrapper"
         >
           <PostList>

@@ -14,6 +14,10 @@ import {
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
 import { SocialPlatform } from '../../../services/social/types';
+import { MultiPlatformShareMenuBtn } from '../../shared/share/MultiPlatformShareMenuBtn';
+
+const MY_PROFILE_SHARE_TITLE = 'View my profile in U3!';
+const getShareNewFriendProfileTitle = (name) => `New friend ${name} in U3!`;
 
 interface ProfileInfoCardLayoutProps
   extends StyledComponentPropsWithRef<'div'> {
@@ -31,6 +35,7 @@ interface ProfileInfoCardLayoutProps
   clickFollowers?: () => void;
   loading?: boolean;
   isSelf: boolean;
+  shareLink: string;
 }
 export default function ProfileInfoCardLayout({
   isU3Profile,
@@ -47,6 +52,7 @@ export default function ProfileInfoCardLayout({
   clickFollowers,
   loading,
   isSelf,
+  shareLink,
   ...wrapperProps
 }: ProfileInfoCardLayoutProps) {
   const session = useSession();
@@ -77,14 +83,32 @@ export default function ProfileInfoCardLayout({
         }}
         {...wrapperProps}
       >
-        {({ isLoginUser }) => {
+        {({ isLoginUser, info }) => {
           return (
             <>
-              <U3ProfileBasicInfo
-                did={did}
-                navigateToProfileUrl={navigateToProfileUrl}
-                onNavigateToProfileAfter={onNavigateToProfileAfter}
-              />
+              <HeaderWrapper>
+                <U3ProfileBasicInfo
+                  did={did}
+                  navigateToProfileUrl={navigateToProfileUrl}
+                  onNavigateToProfileAfter={onNavigateToProfileAfter}
+                />
+                <PostShareMenuBtn
+                  shareLink={shareLink}
+                  shareLinkDefaultText={
+                    isLoginUser
+                      ? MY_PROFILE_SHARE_TITLE
+                      : getShareNewFriendProfileTitle(
+                          info?.name && !info?.name?.startsWith('0x')
+                            ? info?.name
+                            : platformAccounts?.[0]?.name ||
+                                platformAccounts?.[0]?.handle ||
+                                address
+                        )
+                  }
+                  shareLinkEmbedTitle={'Profile'}
+                  popoverConfig={{ placement: 'bottom end', offset: 0 }}
+                />
+              </HeaderWrapper>
 
               <PlatformAccounts
                 isSelf={isSelf}
@@ -124,20 +148,34 @@ export default function ProfileInfoCardLayout({
       }}
       {...wrapperProps}
     >
-      <PlatformProfileBasicInfo
-        data={{
-          avatar:
-            platformAccounts?.[0]?.avatar ||
-            getDefaultAvatarWithIdentity(
-              address || String(platformAccounts?.[0]?.id) || ''
-            ),
-          name: platformAccounts?.[0]?.name || shortPubKey(address),
-          address,
-          identity: platformAccounts?.[0]?.id,
-        }}
-        navigateToProfileUrl={navigateToProfileUrl}
-        onNavigateToProfileAfter={onNavigateToProfileAfter}
-      />
+      <HeaderWrapper>
+        <PlatformProfileBasicInfo
+          data={{
+            avatar:
+              platformAccounts?.[0]?.avatar ||
+              getDefaultAvatarWithIdentity(
+                address || String(platformAccounts?.[0]?.id) || ''
+              ),
+            name: platformAccounts?.[0]?.name || shortPubKey(address),
+            address,
+            identity: platformAccounts?.[0]?.id,
+          }}
+          navigateToProfileUrl={navigateToProfileUrl}
+          onNavigateToProfileAfter={onNavigateToProfileAfter}
+        />
+        {platformAccounts.length > 0 && (
+          <PostShareMenuBtn
+            shareLink={shareLink}
+            shareLinkDefaultText={getShareNewFriendProfileTitle(
+              platformAccounts?.[0]?.name ||
+                platformAccounts?.[0]?.handle ||
+                address
+            )}
+            shareLinkEmbedTitle={'Profile'}
+            popoverConfig={{ placement: 'bottom end', offset: 0 }}
+          />
+        )}
+      </HeaderWrapper>
 
       <PlatformAccounts data={platformAccounts} isSelf={isSelf} />
 
@@ -166,7 +204,31 @@ export default function ProfileInfoCardLayout({
     </PlatformProfileCardWrapper>
   );
 }
-
+const HeaderWrapper = styled.div`
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+`;
+export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
+  border: none;
+  padding: 0px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: none;
+  &:not(:disabled):hover {
+    border: none;
+    background-color: #14171a;
+  }
+  & > svg {
+    width: 12px;
+    height: 12px;
+    cursor: pointer;
+    path {
+      stroke: #ffffff;
+    }
+  }
+`;
 const BaseWrapperCss = css`
   padding: 20px;
   width: 360px;

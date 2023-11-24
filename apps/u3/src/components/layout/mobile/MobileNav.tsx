@@ -1,11 +1,10 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-02 09:39:48
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 16:03:33
  * @Description: file description
  */
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import useRoute from '../../../route/useRoute';
@@ -42,9 +41,6 @@ const MobileNavWrapper = styled.div`
       div:last-of-type {
         display: none;
       }
-    }
-    & > div:nth-child(4) {
-      display: none;
     }
     & > div:nth-child(5) {
       display: none;

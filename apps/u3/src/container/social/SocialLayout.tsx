@@ -28,8 +28,16 @@ import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { getOwnedByAddress } from '../../utils/social/lens/profile';
+import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
-export default function SocialLayout() {
+export default function SocialLayoutContainer() {
+  return (
+    <LivepeerProvider>
+      <SocialLayout />
+    </LivepeerProvider>
+  );
+}
+function SocialLayout() {
   const location = useLocation();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { sessionProfile: lensSessionProfile } = useLensCtx();

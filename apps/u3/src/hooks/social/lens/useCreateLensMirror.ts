@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PrimaryPublication, useCreateMirror } from '@lens-protocol/react-web';
 import { toast } from 'react-toastify';
 import PubSub from 'pubsub-js';
@@ -16,10 +16,12 @@ export function useCreateLensMirror({
   onMirrorSuccess?: (originPublication: PrimaryPublication) => void;
   onMirrorFailed?: (error: any) => void;
 }) {
-  const { execute, error, loading: isPending } = useCreateMirror();
+  const { execute, error } = useCreateMirror();
+  const [isPending, setIsPending] = useState(false);
 
   const createMirror = useCallback(async () => {
     try {
+      setIsPending(true);
       const result = await execute({
         mirrorOn: publication.id, // the publication ID to mirror
       });
@@ -28,17 +30,19 @@ export function useCreateLensMirror({
       }
       // this might take a while, depends on the type of tx (on-chain or Momoka)
       // and the congestion of the network
-      const completion = await result.value.waitForCompletion();
+      // const completion = await result.value.waitForCompletion();
 
-      if (completion.isFailure()) {
-        throw new Error(completion.error.message);
-      }
+      // if (completion.isFailure()) {
+      //   throw new Error(completion.error.message);
+      // }
       PubSub.publish(LensMirrorPubSubTopic.SUCCESS, publication);
       toast.success('Mirror successfully');
     } catch (err: any) {
       console.error(err?.message);
       PubSub.publish(LensMirrorPubSubTopic.FAILED, err);
       toast.error('Mirror failed');
+    } finally {
+      setIsPending(false);
     }
   }, [execute, publication]);
 

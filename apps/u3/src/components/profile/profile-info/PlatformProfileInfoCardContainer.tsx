@@ -10,6 +10,7 @@ interface PlatformProfileInfoCardContainerProps
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   isSelf: boolean;
+  shareLink: string;
 }
 export default function PlatformProfileInfoCardContainer({
   identity,
@@ -18,6 +19,7 @@ export default function PlatformProfileInfoCardContainer({
   onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
+  shareLink,
   ...wrapperProps
 }: PlatformProfileInfoCardContainerProps) {
   const {
@@ -45,6 +47,7 @@ export default function PlatformProfileInfoCardContainer({
       fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
+      shareLink={shareLink}
       {...wrapperProps}
     />
   );

@@ -4,7 +4,7 @@ export const getName = (profile: Profile) => {
   return profile?.metadata?.displayName || '';
 };
 export const getHandle = (profile: Profile) => {
-  return profile?.handle?.fullHandle || '';
+  return profile?.handle?.localName || '';
 };
 export const getBio = (profile: Profile) => {
   return profile?.metadata?.bio || '';
@@ -17,4 +17,8 @@ export const isFollowedByMe = (profile: Profile) => {
 };
 export const canFollow = (profile: Profile) => {
   return profile?.operations?.canFollow === TriStateValue.Yes;
+};
+
+export const canUnfollow = (profile: Profile) => {
+  return profile?.operations?.canUnfollow;
 };

@@ -8,6 +8,8 @@ import FarcasterIcon from '../../common/icons/FarcasterIcon';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import { getFarcasterProfileExternalLinkWithHandle } from '../../../utils/social/farcaster/getFarcasterProfileExternalLink';
+import { getLensProfileExternalLinkWithHandle } from '../../../utils/social/lens/getLensProfileExternalLink';
 
 export type PlatformAccountsData = Array<{
   platform: SocialPlatform;
@@ -45,6 +47,12 @@ export default function PlatformAccounts({
   );
 
   const userInfo = useUserData(currUserInfo?.[currFid]);
+  const selfFarcasterAccountExtLink =
+    isSelf && currFid && currUserInfo
+      ? getFarcasterProfileExternalLinkWithHandle(
+          userInfo.handle || userInfo.name
+        )
+      : '';
 
   return (
     <Wrapper {...wrapperProps}>
@@ -75,11 +83,30 @@ export default function PlatformAccounts({
         if (isSelf && item.platform === SocialPlatform.Farcaster) {
           return null;
         }
+        let accountExternalLink = '';
+        switch (item.platform) {
+          case SocialPlatform.Farcaster:
+            accountExternalLink = getFarcasterProfileExternalLinkWithHandle(
+              item.handle || item.name
+            );
+            break;
+          case SocialPlatform.Lens:
+            accountExternalLink = getLensProfileExternalLinkWithHandle(
+              item.handle || item.name
+            );
+            break;
+          default:
+            break;
+        }
         return (
           <Row key={item.handle}>
             <Line />
             <Avatar src={item.avatar} />
-            <Center>
+            <Center
+              // eslint-disable-next-line no-script-url
+              href={accountExternalLink || 'javascript:void(0)'}
+              target={accountExternalLink ? '_blank' : ''}
+            >
               {!!item.name && <Name>{item.name}</Name>}
               {!!item.handle && <Handle>@{item.handle}</Handle>}
             </Center>
@@ -104,7 +131,11 @@ export default function PlatformAccounts({
             <Avatar src={userInfo.avatar} />
             <FarcasterIcon width="20px" height="20px" className="platform" />
           </div>
-          <Center>
+          <Center
+            // eslint-disable-next-line no-script-url
+            href={selfFarcasterAccountExtLink || 'javascript:void(0)'}
+            target={selfFarcasterAccountExtLink ? '_blank' : ''}
+          >
             {!!userInfo.name && <Name>{userInfo.name}</Name>}
             {!!userInfo.handle && <Handle>@{userInfo.handle}</Handle>}
           </Center>
@@ -164,17 +195,18 @@ const Avatar = styled.img`
   border-radius: 50%;
   object-fit: cover;
 `;
-const Center = styled.div`
+const Center = styled.a`
   display: flex;
-  align-items: center;
+  align-items: end;
   flex: 1;
   gap: 5px;
-  // 超出显示省略号
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: #718096;
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
-const Name = styled.div`
+const Name = styled.span`
   color: #fff;
 
   /* Text/Body 16pt · 1rem */
@@ -184,7 +216,9 @@ const Name = styled.div`
   font-weight: 400;
   line-height: 24px; /* 150% */
 `;
-const Handle = styled.div`
+const Handle = styled.span`
+  width: 0;
+  flex: 1;
   color: #718096;
 
   /* Text/Body 16pt · 1rem */
@@ -193,6 +227,9 @@ const Handle = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const LoginButton = styled(SocialButtonPrimary)`

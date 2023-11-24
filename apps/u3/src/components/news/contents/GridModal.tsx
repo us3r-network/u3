@@ -12,6 +12,7 @@ import ContentShowerBox, {
   Tab,
 } from './ContentShowerBox';
 import { ContentItemActions } from './ListItem';
+import { getContentShareUrl } from '../../../utils/shared/share';
 
 export default function GridModal({
   show,
@@ -66,9 +67,12 @@ export default function GridModal({
               <HeaderRight>
                 <ContentItemActions
                   isActive
-                  shareAction={() => {
-                    if (shareAction) shareAction();
-                  }}
+                  shareLink={getContentShareUrl(selectContent?.id)}
+                  shareLinkEmbedTitle={
+                    selectContent?.title ||
+                    selectContent?.description ||
+                    selectContent?.value
+                  }
                   hiddenAction={() => {
                     if (hiddenAction) hiddenAction();
                   }}

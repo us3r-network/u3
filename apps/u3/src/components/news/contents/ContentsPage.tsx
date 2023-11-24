@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-07 16:11:03
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-22 17:14:50
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,24 +12,24 @@ import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 import { ContentBoxContainer } from './ContentShowerBox';
 import { MainWrapper } from '../../layout/Index';
-import FeedsMenu from '../web3-today/feeds/FeedsMenu';
+import NewsMenu from '../header/NewsMenu';
 import GridModal from './GridModal';
-import FeedsMenuRight, { Layout } from '../web3-today/feeds/FeedsMenuRight';
-import FeedsFilterBox from '../web3-today/feeds/FeedsFilterBox';
 import Filter from './Filter';
 import SearchInput from '../../common/input/SearchInput';
 import NoResult from '../../layout/NoResult';
 import ContentOrderBySelect from './ContentOrderBySelect';
 import {
+  Layout,
   getContentsLayoutFromLocal,
   setContentsLayoutToLocal,
 } from '../../../utils/news/localLayout';
 import ContentList from './ContentList';
 import ContentGridList from './ContentGridList';
 import ContentPreview from './ContentPreview';
-import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import type { ContentsPageProps } from '../../../container/news/Contents';
 import useLogin from '../../../hooks/shared/useLogin';
+import NewsToolbar from '../header/NewsToolbar';
+import FilterBox from '../header/FilterBox';
 
 export default function ContentsPage({
   // Queries
@@ -39,7 +39,6 @@ export default function ContentsPage({
   contents,
   currentSearchParams,
   searchParamsChange,
-  hasNewest,
   getMore,
   // Mutations
   onHiddenAction,
@@ -100,9 +99,9 @@ export default function ContentsPage({
 
   return (
     <Box>
-      <FeedsMenu
+      <NewsMenu
         rightEl={
-          <FeedsMenuRight
+          <NewsToolbar
             displayFilterButton
             isActiveFilter={isActiveFilter}
             onChangeActiveFilter={setIsActiveFilter}
@@ -116,7 +115,7 @@ export default function ContentsPage({
                     })
                   }
                 />
-                <NewestButton
+                {/* <NewestButton
                   isActive={currentSearchParams.orderBy === 'NEWEST'}
                   onClick={() => {
                     searchParamsChange({
@@ -126,7 +125,7 @@ export default function ContentsPage({
                 >
                   Mempool
                   {hasNewest && <HasNewestTag />}
-                </NewestButton>
+                </NewestButton> */}
               </>
             }
             searchEl={
@@ -152,14 +151,14 @@ export default function ContentsPage({
           />
         }
         bottomEl={
-          <FeedsFilterBox open={isActiveFilter}>
+          <FilterBox open={isActiveFilter}>
             <Filter
               values={currentSearchParams}
               filterAction={(data) => {
                 searchParamsChange(data);
               }}
             />
-          </FeedsFilterBox>
+          </FilterBox>
         }
       />
       {(() => {
@@ -337,34 +336,4 @@ const MoreLoading = styled.div`
   padding: 20px;
   text-align: center;
   color: #748094;
-`;
-const NewestButton = styled(ButtonPrimaryLine)<{ isActive?: boolean }>`
-  height: 40px;
-  border-radius: 100px;
-  position: relative;
-  ${({ isActive }) =>
-    isActive &&
-    `
-    background: #718096;
-    transition: all 0.3s ease-out;
-    color: #14171A;
-  `}
-  &:not(:disabled):hover {
-    ${({ isActive }) =>
-      isActive &&
-      `
-        background: #718096;
-        color: #14171A;
-      `}
-  }
-`;
-const HasNewestTag = styled.div`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ff0000;
-  position: absolute;
-  top: 0;
-  right: 10px;
-  transform: translateY(-50%);
 `;
