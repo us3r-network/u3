@@ -1,32 +1,14 @@
 import styled from 'styled-components';
-import {
-  MessageRoute,
-  useXmtpStore,
-} from '../../contexts/message/XmtpStoreCtx';
-import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
-import NoEnableXmtp from './NoEnableXmtp';
-import ConversationsPage from './ConversationsPage';
-import ConvoMessagesPage from './ConvoMessagesPage';
+import loadable from '@loadable/component';
 import { useNav } from '../../contexts/NavCtx';
 
+const MessageModalBody = loadable(() => import('./MessageModalBody'));
+
 export default function MessageModal() {
-  const { xmtpClient } = useXmtpClient();
-  const { messageRouteParams } = useXmtpStore();
   const { openMessageModal } = useNav();
   return (
     <Wrapper open={openMessageModal}>
-      {(() => {
-        if (!xmtpClient) {
-          return <NoEnableXmtp />;
-        }
-        if (messageRouteParams.route === MessageRoute.SEARCH) {
-          return <ConversationsPage />;
-        }
-        if (messageRouteParams.route === MessageRoute.DETAIL) {
-          return <ConvoMessagesPage />;
-        }
-        return null;
-      })()}
+      {openMessageModal && <MessageModalBody />}
     </Wrapper>
   );
 }

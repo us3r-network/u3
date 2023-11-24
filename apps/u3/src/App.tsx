@@ -27,7 +27,6 @@ import {
 import { injectStore, injectU3Token } from './services/shared/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/message/XmtpClientCtx';
-import { XmtpStoreProvider } from './contexts/message/XmtpStoreCtx';
 import { AppLensProvider } from './contexts/social/AppLensCtx';
 import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/social/FarcasterCtx';
@@ -55,24 +54,22 @@ function App() {
             }}
           >
             <XmtpClientProvider>
-              <XmtpStoreProvider>
-                <AppLensProvider>
-                  <ReduxProvider store={store}>
-                    <GlobalStyle />
-                    <BrowserRouter>
-                      <FarcasterProvider>
-                        <GlobalModalsProvider>
-                          <NavProvider>
-                            <GlobalModals />
-                            <LensGlobalModals />
-                            <Layout />
-                          </NavProvider>
-                        </GlobalModalsProvider>
-                      </FarcasterProvider>
-                    </BrowserRouter>
-                  </ReduxProvider>
-                </AppLensProvider>
-              </XmtpStoreProvider>
+              <AppLensProvider>
+                <ReduxProvider store={store}>
+                  <GlobalStyle />
+                  <BrowserRouter>
+                    <FarcasterProvider>
+                      <GlobalModalsProvider>
+                        <NavProvider>
+                          <GlobalModals />
+                          <LensGlobalModals />
+                          <Layout />
+                        </NavProvider>
+                      </GlobalModalsProvider>
+                    </FarcasterProvider>
+                  </BrowserRouter>
+                </ReduxProvider>
+              </AppLensProvider>
             </XmtpClientProvider>
           </U3LoginProvider>
         </LinkStateProvider>

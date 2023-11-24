@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { useMemo, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
-import { useXmtpStore } from '../../contexts/message/XmtpStoreCtx';
+import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import useSendMessage from '../../hooks/message/xmtp/useSendMessage';
 import useSendAttachment from '../../hooks/message/xmtp/useSendAttachment';
 import { ButtonPrimary } from '../common/button/ButtonBase';
@@ -9,7 +9,7 @@ import TextareaBase from '../common/input/TextareaBase';
 import ImgIcon from '../common/icons/ImgIcon';
 
 export default function SendMessageForm() {
-  const { messageRouteParams } = useXmtpStore();
+  const { messageRouteParams } = useXmtpClient();
   const peerAddress = messageRouteParams?.peerAddress || '';
   const { isSending, sendMessage } = useSendMessage(peerAddress);
   const { isSending: isSendingAttachment, sendAttachment } =

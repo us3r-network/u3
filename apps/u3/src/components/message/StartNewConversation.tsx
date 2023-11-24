@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import {
   MessageRoute,
-  useXmtpStore,
-} from '../../contexts/message/XmtpStoreCtx';
+  useXmtpClient,
+} from '../../contexts/message/XmtpClientCtx';
 import useStartNewConvo from '../../hooks/message/xmtp/useStartNewConvo';
 import InputBase from '../common/input/InputBase';
 import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 
 export default function StartNewConversation() {
-  const { setMessageRouteParams } = useXmtpStore();
+  const { setMessageRouteParams } = useXmtpClient();
   const { isStarting, startNewConvo } = useStartNewConvo();
   const [errMsg, setErrMsg] = useState('');
   const [convoAddress, setConvoAddress] = useState('');

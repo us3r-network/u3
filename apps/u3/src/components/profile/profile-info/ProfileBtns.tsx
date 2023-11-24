@@ -2,14 +2,13 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile } from '@lens-protocol/react-web';
 import { useEffect } from 'react';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
-import {
-  MessageRoute,
-  useXmtpStore,
-} from '../../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../../contexts/NavCtx';
 import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs/message-chat-square.svg';
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
-import { useXmtpClient } from '../../../contexts/message/XmtpClientCtx';
+import {
+  useXmtpClient,
+  MessageRoute,
+} from '../../../contexts/message/XmtpClientCtx';
 import ProfileFollowBtn from '../ProfileFollowBtn';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
@@ -27,12 +26,11 @@ export default function ProfileBtns({
   address,
   ...wrapperProps
 }: ProfileBtnsProps) {
-  const { setCanEnableXmtp } = useXmtpClient();
+  const { setCanEnableXmtp, setMessageRouteParams } = useXmtpClient();
   useEffect(() => {
     setCanEnableXmtp(true);
   }, []);
 
-  const { setMessageRouteParams } = useXmtpStore();
   const { setOpenMessageModal } = useNav();
   const { canMessage } = useCanMessage(address);
   return (
