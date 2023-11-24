@@ -1,7 +1,6 @@
 import { StyledComponentPropsWithRef } from 'styled-components';
 import ProfileInfoCardLayout from './ProfileInfoCardLayout';
 import usePlatformProfileInfoData from '../../../hooks/profile/usePlatformProfileInfoData';
-import { getProfileShareUrl } from '../../../utils/shared/share';
 
 interface PlatformProfileInfoCardContainerProps
   extends StyledComponentPropsWithRef<'div'> {
@@ -11,6 +10,7 @@ interface PlatformProfileInfoCardContainerProps
   clickFollowing?: () => void;
   clickFollowers?: () => void;
   isSelf: boolean;
+  shareLink: string;
 }
 export default function PlatformProfileInfoCardContainer({
   identity,
@@ -19,6 +19,7 @@ export default function PlatformProfileInfoCardContainer({
   onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
+  shareLink,
   ...wrapperProps
 }: PlatformProfileInfoCardContainerProps) {
   const {
@@ -46,7 +47,7 @@ export default function PlatformProfileInfoCardContainer({
       fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
-      shareLink={getProfileShareUrl(identity)}
+      shareLink={shareLink}
       {...wrapperProps}
     />
   );

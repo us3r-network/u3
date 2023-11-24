@@ -98,7 +98,11 @@ export default function ProfileInfoCardLayout({
                     isLoginUser
                       ? MY_PROFILE_SHARE_TITLE
                       : getShareNewFriendProfileTitle(
-                          info?.name || platformAccounts?.[0]?.name || address
+                          info?.name && !info?.name?.startsWith('0x')
+                            ? info?.name
+                            : platformAccounts?.[0]?.name ||
+                                platformAccounts?.[0]?.handle ||
+                                address
                         )
                   }
                   shareLinkEmbedTitle={'Profile'}
@@ -163,7 +167,9 @@ export default function ProfileInfoCardLayout({
           <PostShareMenuBtn
             shareLink={shareLink}
             shareLinkDefaultText={getShareNewFriendProfileTitle(
-              platformAccounts?.[0]?.name || address
+              platformAccounts?.[0]?.name ||
+                platformAccounts?.[0]?.handle ||
+                address
             )}
             shareLinkEmbedTitle={'Profile'}
             popoverConfig={{ placement: 'bottom end', offset: 0 }}

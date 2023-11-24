@@ -1,7 +1,6 @@
 import { StyledComponentPropsWithRef } from 'styled-components';
 import ProfileInfoCardLayout from './ProfileInfoCardLayout';
 import useU3ProfileInfoData from '../../../hooks/profile/useU3ProfileInfoData';
-import { getProfileShareUrl } from '../../../utils/shared/share';
 
 interface U3ProfileInfoCardContainerProps
   extends StyledComponentPropsWithRef<'div'> {
@@ -11,6 +10,7 @@ interface U3ProfileInfoCardContainerProps
   onNavigateToProfileAfter?: () => void;
   clickFollowing?: () => void;
   clickFollowers?: () => void;
+  shareLink: string;
 }
 export default function U3ProfileInfoCardContainer({
   did,
@@ -19,6 +19,7 @@ export default function U3ProfileInfoCardContainer({
   onNavigateToProfileAfter,
   clickFollowing,
   clickFollowers,
+  shareLink,
   ...wrapperProps
 }: U3ProfileInfoCardContainerProps) {
   const {
@@ -47,7 +48,7 @@ export default function U3ProfileInfoCardContainer({
       fid={Number(fid)}
       clickFollowing={clickFollowing}
       clickFollowers={clickFollowers}
-      shareLink={getProfileShareUrl(did)}
+      shareLink={shareLink}
       {...wrapperProps}
     />
   );

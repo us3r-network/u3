@@ -6,6 +6,7 @@ import Loading from '../../common/loading/Loading';
 import U3ProfileInfoCardContainer from './U3ProfileInfoCardContainer';
 import PlatformProfileInfoCardContainer from './PlatformProfileInfoCardContainer';
 import { isDidPkh } from '../../../utils/shared/did';
+import { getProfileShareUrl } from '../../../utils/shared/share';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   isSelf?: boolean;
@@ -43,6 +44,7 @@ export default function ProfileInfoCard({
     })();
   }, [did]);
 
+  const shareLink = useMemo(() => getProfileShareUrl(identity), [identity]);
   const navigateToProfileUrl = useMemo(
     () => (canNavigateToProfile ? `/u/${identity}` : undefined),
     [canNavigateToProfile, identity]
@@ -63,6 +65,7 @@ export default function ProfileInfoCard({
         onNavigateToProfileAfter={onNavigateToProfileAfter}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
+        shareLink={shareLink}
         {...wrapperProps}
       />
     );
@@ -76,6 +79,7 @@ export default function ProfileInfoCard({
         onNavigateToProfileAfter={onNavigateToProfileAfter}
         clickFollowing={clickFollowing}
         clickFollowers={clickFollowers}
+        shareLink={shareLink}
         {...wrapperProps}
       />
     );
