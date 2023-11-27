@@ -14,25 +14,11 @@ import {
 import { Conversation, DecodedMessage, Stream } from '@xmtp/xmtp-js';
 import { useXmtpClient } from './XmtpClientCtx';
 
-export enum MessageRoute {
-  SEARCH = 'search',
-  DETAIL = 'detail',
-}
-
-type MessageRouteParams = {
-  route: MessageRoute;
-  peerAddress?: string;
-};
-
 interface XmtpStoreCtxValue {
   conversations: Map<string, Conversation>;
   convoMessages: Map<string, DecodedMessage[]>;
   loadingConversations: boolean;
   loadConversations: () => void;
-  messageRouteParams: MessageRouteParams;
-  setMessageRouteParams: React.Dispatch<
-    React.SetStateAction<MessageRouteParams>
-  >;
 }
 
 const defaultContextValue: XmtpStoreCtxValue = {
@@ -40,16 +26,11 @@ const defaultContextValue: XmtpStoreCtxValue = {
   convoMessages: new Map(),
   loadingConversations: false,
   loadConversations: () => {},
-  messageRouteParams: { route: MessageRoute.SEARCH },
-  setMessageRouteParams: () => {},
 };
 
 export const XmtpStoreCtx = createContext(defaultContextValue);
 
 export function XmtpStoreProvider({ children }: PropsWithChildren) {
-  const [messageRouteParams, setMessageRouteParams] =
-    useState<MessageRouteParams>({ route: MessageRoute.SEARCH });
-
   const { xmtpClient } = useXmtpClient();
 
   const [conversations, setConversations] = useState(
@@ -202,17 +183,8 @@ export function XmtpStoreProvider({ children }: PropsWithChildren) {
           convoMessages,
           loadingConversations,
           loadConversations,
-          messageRouteParams,
-          setMessageRouteParams,
         }),
-        [
-          conversations,
-          convoMessages,
-          loadingConversations,
-          loadConversations,
-          messageRouteParams,
-          setMessageRouteParams,
-        ]
+        [conversations, convoMessages, loadingConversations, loadConversations]
       )}
     >
       {children}

@@ -9,9 +9,8 @@ import Avatar from './Avatar';
 import { useNav } from '../../contexts/NavCtx';
 
 export default function MessageList() {
-  const { xmtpClient } = useXmtpClient();
-  const { loadingConversations, convoMessages, messageRouteParams } =
-    useXmtpStore();
+  const { xmtpClient, messageRouteParams } = useXmtpClient();
+  const { loadingConversations, convoMessages } = useXmtpStore();
 
   const messages =
     convoMessages.get(messageRouteParams?.peerAddress || '') || [];

@@ -18,6 +18,16 @@ import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { loadKeys, storeKeys } from '../../utils/message/xmtp';
 import { XMTP_ENV } from '../../constants/xmtp';
 
+export enum MessageRoute {
+  SEARCH = 'search',
+  DETAIL = 'detail',
+}
+
+type MessageRouteParams = {
+  route: MessageRoute;
+  peerAddress?: string;
+};
+
 interface XmtpClientCtxValue {
   xmtpClient: Client | null;
   enablingXmtp: boolean;
@@ -26,6 +36,10 @@ interface XmtpClientCtxValue {
   disconnectXmtp: () => void;
   canEnableXmtp: boolean;
   setCanEnableXmtp: (canEnable: boolean) => void;
+  messageRouteParams: MessageRouteParams;
+  setMessageRouteParams: React.Dispatch<
+    React.SetStateAction<MessageRouteParams>
+  >;
 }
 
 const defaultContextValue: XmtpClientCtxValue = {
@@ -36,6 +50,8 @@ const defaultContextValue: XmtpClientCtxValue = {
   disconnectXmtp: () => {},
   canEnableXmtp: false,
   setCanEnableXmtp: () => {},
+  messageRouteParams: { route: MessageRoute.SEARCH },
+  setMessageRouteParams: () => {},
 };
 
 export const XmtpClientCtx = createContext(defaultContextValue);
@@ -47,6 +63,8 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   const { data } = useWalletClient();
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
+  const [messageRouteParams, setMessageRouteParams] =
+    useState<MessageRouteParams>({ route: MessageRoute.SEARCH });
 
   /**
    * // TODO wagmi 的 wallet对象中getAddress, signMessage方法不符合xmtp-js的Signer定义要求，这里是临时方案
@@ -136,6 +154,8 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
           disconnectXmtp,
           canEnableXmtp,
           setCanEnableXmtp,
+          messageRouteParams,
+          setMessageRouteParams,
         }),
         [
           xmtpClient,
@@ -145,6 +165,8 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
           disconnectXmtp,
           canEnableXmtp,
           setCanEnableXmtp,
+          messageRouteParams,
+          setMessageRouteParams,
         ]
       )}
     >
