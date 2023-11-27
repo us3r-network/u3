@@ -2,6 +2,7 @@ import {
   Profile,
   useFollow,
   useRecommendedProfiles,
+  useUnfollow,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
@@ -90,6 +91,7 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
 
   const [isFollowing, setIsFollowing] = useState(false);
   const { execute: follow, loading: followLoading } = useFollow();
+  const { execute: unfollow, loading: unfollowLoading } = useUnfollow();
 
   const name = getName(profile);
   const handle = getHandle(profile);
@@ -134,7 +136,17 @@ function LensFollowItem({ profile }: LensFollowItemProps) {
           {followLoading ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
-        <FollowedText>Followed</FollowedText>
+        // <FollowedText>Followed</FollowedText>
+        <FollowBtn
+          onClick={() => {
+            unfollow({ profile }).then(() => {
+              setIsFollowing(false);
+            });
+          }}
+          disabled={unfollowLoading}
+        >
+          {unfollowLoading ? 'Unfollowing...' : 'Unfollow'}
+        </FollowBtn>
       )}
     </FollowItemWrapper>
   );
@@ -157,6 +169,7 @@ function FarcasterFollowItem({
   });
   const {
     followAction: follow,
+    unfollowAction: unfollow,
     isPending,
     isFollowing,
   } = useFarcasterFollowAction();
@@ -196,7 +209,10 @@ function FarcasterFollowItem({
           {isPending ? 'Following...' : 'Follow'}
         </FollowBtn>
       ) : (
-        <FollowedText>Followed</FollowedText>
+        // <FollowedText>Followed</FollowedText>
+        <FollowBtn onClick={() => unfollow(fid)} disabled={isPending}>
+          {isPending ? 'Unfollowing...' : 'Unfollow'}
+        </FollowBtn>
       )}
     </FollowItemWrapper>
   );
