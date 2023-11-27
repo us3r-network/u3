@@ -166,7 +166,7 @@ export default function AddPostForm({
       const cast = (
         await makeCastAdd(
           {
-            text: isShareForm ? text + shareData.shareLink : text,
+            text: isShareForm ? `${text} ${shareData.shareLink}` : text,
             embeds: [...uploadedLinks],
             embedsDeprecated: [],
             mentions: [],
