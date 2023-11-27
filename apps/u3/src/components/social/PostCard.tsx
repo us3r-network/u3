@@ -7,7 +7,7 @@ import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import PostLike from './PostLike';
 import PostReply from './PostReply';
-import PostReport from './PostReport';
+import PostReport from './PostRepost';
 import { PostCardMenuBtn } from './PostCardMenuBtn';
 import {
   farcasterHandleToBioLinkHandle,

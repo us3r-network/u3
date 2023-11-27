@@ -36,12 +36,14 @@ export default function FCast({
   isDetail,
   showMenuBtn,
   cardClickAction,
+  disableRenderUrl,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
+  disableRenderUrl?: boolean;
   cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
   const navigate = useNavigate();
@@ -123,7 +125,7 @@ export default function FCast({
             avatar: userData.pfp,
             name: userData.display,
             handle: userData.userName,
-            createdAt: cast.created_at,
+            createdAt: cast.created_at || cast.createdAt,
           }}
         />
         {showMenuBtn && (
@@ -169,8 +171,13 @@ export default function FCast({
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
-      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
+      <Embed
+        embedImgs={[...embeds.imgs]}
+        embedWebpages={!disableRenderUrl ? embeds.webpages : []}
+      />
+      {(cast.parent_url || cast.rootParentUrl) && (
+        <FarcasterChannel url={cast.parent_url || cast.rootParentUrl} />
+      )}
       <PostCardFooterWrapper>
         <PostCardActionsWrapper
           onClick={(e) => {

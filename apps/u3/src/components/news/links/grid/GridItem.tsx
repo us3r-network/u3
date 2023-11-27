@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import { useMemo } from 'react';
+import PostLike from 'src/components/social/PostLike';
+import PostReply from 'src/components/social/PostReply';
+import PostRepost from 'src/components/social/PostRepost';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
 import LinkBox from '../LinkBox';
 import Badge from '../Badge';
@@ -30,6 +33,15 @@ export default function GridItem({
           {tags?.length > 0 && <LinkBadge text={tags[0]} />}
           <div className="date">{defaultFormatFromNow(timestamp)}</div>
         </div>
+        <LinkCardActionsWrapper>
+          <PostLike
+            disabled
+            totalLikes={data?.total_like_num || 0}
+            likeAvatars={[]}
+          />
+          <PostReply disabled totalReplies={data?.total_reply_num || 0} />
+          <PostRepost disabled totalReposts={data?.total_repost_num || 0} />
+        </LinkCardActionsWrapper>
       </div>
     </Box>
   );
@@ -120,4 +132,10 @@ const LinkBadge = styled(Badge)`
   text-overflow: ellipsis;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 1;
+`;
+export const LinkCardActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -10px 0;
 `;

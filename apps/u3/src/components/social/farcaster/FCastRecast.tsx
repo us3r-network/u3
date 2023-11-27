@@ -19,7 +19,7 @@ import {
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import useFarcasterCurrFid from '../../../hooks/social/farcaster/useFarcasterCurrFid';
 // import { getCurrFid } from '../../../utils/farsign-utils';
-import PostReport from '../PostReport';
+import PostReport from '../PostRepost';
 import useLogin from '../../../hooks/shared/useLogin';
 
 export default function FCastRecast({
@@ -37,7 +37,7 @@ export default function FCastRecast({
     Array.from(new Set(cast.recasts))
   );
   const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || 0)
+    Number(cast.recast_count || cast.recastsCount || 0)
   );
 
   const recast = useCallback(
