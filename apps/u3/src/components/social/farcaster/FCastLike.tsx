@@ -37,7 +37,7 @@ export default function FCastLike({
   const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
   const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
   const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || 0)
+    Number(cast.like_count || cast.likesCount || 0)
   );
 
   const likeCast = useCallback(

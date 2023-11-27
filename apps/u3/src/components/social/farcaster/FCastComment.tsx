@@ -20,7 +20,7 @@ export default function FCastComment({
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const [commentCount, setCommentCount] = useState(
-    Number(cast.comment_count || 0)
+    Number(cast.comment_count || cast.repliesCount || 0)
   );
   const currFid: string = useFarcasterCurrFid();
   const [openComment, setOpenComment] = useState(false);
@@ -29,7 +29,7 @@ export default function FCastComment({
   return (
     <>
       <PostReply
-        replied={cast.comments?.includes(currFid)}
+        replied={(cast.comments || cast.replies)?.includes(currFid)}
         totalReplies={commentCount}
         replyAction={() => {
           if (!isLoginU3) {
