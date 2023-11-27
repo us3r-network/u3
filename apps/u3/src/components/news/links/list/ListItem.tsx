@@ -1,8 +1,11 @@
 import styled from 'styled-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LinkListItem } from 'src/services/news/types/links';
-import LinkBox from '../LinkBox';
+import PostLike from 'src/components/social/PostLike';
+import PostReply from 'src/components/social/PostReply';
+import PostReport from 'src/components/social/PostRepost';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
+import LinkBox from '../LinkBox';
 
 export default function ListItem({
   data,
@@ -41,6 +44,32 @@ export default function ListItem({
             </div>
             <span>{defaultFormatFromNow(timestamp)}</span>
           </ItemTitle>
+          {isActive && (
+            <LinkCardActionsWrapper>
+              <PostLike
+                disabled
+                totalLikes={data?.total_like_num || 0}
+                likeAvatars={[]}
+                // liking={liking}
+                // liked={liked}
+                // likeAction={likeAction}
+              />
+              <PostReply
+                disabled
+                totalReplies={data?.total_reply_num || 0}
+                // replying={replying}
+                // replied={replied}
+                // replyAction={replyAction}
+              />
+              <PostReport
+                disabled
+                totalReposts={data?.total_repost_num || 0}
+                // reposting={reposting}
+                // reposted={reposted}
+                // repostAction={repostAction}
+              />
+            </LinkCardActionsWrapper>
+          )}
         </div>
       </ItemInner>
     </Item>
@@ -52,7 +81,7 @@ const Item = styled.div<{ isActive: boolean }>`
   padding: 20px;
   gap: 10px;
   border-bottom: 1px solid #39424c;
-  cursor: pointer;
+  cursor: ${(props) => (props.isActive ? '' : 'pointer')};
   background: inherit;
   position: relative;
   &:hover {
@@ -143,7 +172,7 @@ const ItemInner = styled.div<{ isActive: boolean }>`
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
     > p {
       margin: 0%;
       font-weight: 500;
@@ -179,7 +208,7 @@ const ItemTitle = styled.div`
     display: flex;
     gap: 10px;
     align-items: center;
-    max-width: 160px;
+    max-width: 200px;
   }
 
   > span {
@@ -200,4 +229,10 @@ const ItemTitle = styled.div`
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+`;
+export const LinkCardActionsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -10px 0;
 `;

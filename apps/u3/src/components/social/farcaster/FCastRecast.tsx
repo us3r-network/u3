@@ -19,7 +19,7 @@ import {
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 import useFarcasterCurrFid from '../../../hooks/social/farcaster/useFarcasterCurrFid';
 // import { getCurrFid } from '../../../utils/farsign-utils';
-import PostReport from '../PostReport';
+import PostReport from '../PostRepost';
 import useLogin from '../../../hooks/shared/useLogin';
 
 export default function FCastRecast({
