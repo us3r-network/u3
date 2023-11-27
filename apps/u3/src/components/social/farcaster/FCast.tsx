@@ -123,7 +123,7 @@ export default function FCast({
             avatar: userData.pfp,
             name: userData.display,
             handle: userData.userName,
-            createdAt: cast.created_at,
+            createdAt: cast.created_at || cast.createdAt,
           }}
         />
         {showMenuBtn && (
@@ -170,7 +170,9 @@ export default function FCast({
         </PostCardShowMoreWrapper>
       )}
       <Embed embedImgs={[...embeds.imgs]} embedWebpages={embeds.webpages} />
-      {cast.parent_url && <FarcasterChannel url={cast.parent_url} />}
+      {(cast.parent_url || cast.rootParentUrl) && (
+        <FarcasterChannel url={cast.parent_url || cast.rootParentUrl} />
+      )}
       <PostCardFooterWrapper>
         <PostCardActionsWrapper
           onClick={(e) => {

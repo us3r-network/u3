@@ -30,6 +30,7 @@ export type FarCastEmbedMeta = {
 
 export type FarCast = {
   created_at: string;
+  createdAt: string;
   deleted_at: string | null;
   embeds: any[];
   fid: string;
@@ -40,13 +41,22 @@ export type FarCast = {
   parent_fid: string | null;
   parent_hash: { type: 'Buffer'; data: Uint8Array } | null;
   parent_url: string | null;
+  rootParentUrl: string | null;
+  parent: string | null;
+  parentUrl: string | null;
   text: string;
   timestamp: string;
   updated_at: string;
   likes: string[];
   like_count: string | null;
+  likesCount: string | null;
+
   recasts: string[];
   recast_count: string | null;
+  recastsCount: string | null;
+
+  replies?: string[];
+  repliesCount: string | null;
   comments?: string[];
   comment_count: string | null;
 };

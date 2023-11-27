@@ -37,7 +37,7 @@ export default function FCastRecast({
     Array.from(new Set(cast.recasts))
   );
   const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || 0)
+    Number(cast.recast_count || cast.recastsCount || 0)
   );
 
   const recast = useCallback(
