@@ -1,0 +1,488 @@
+#root-loading {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: #14171a;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#root-loading>.rubiks-loader *,
+#root-loading>.rubiks-loader *::before,
+#root-loading>.rubiks-loader *::after {
+  box-sizing: border-box;
+}
+
+/* Constants */
+/* Functions */
+/* Inheritance basis */
+#root-loading>.rubiks-loader {
+  width: 130px;
+  height: 130px;
+  position: relative;
+  perspective: 130px;
+}
+
+/* Main */
+#root-loading>.rubiks-loader .cube {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+  transform-style: preserve-3d;
+}
+
+#root-loading>.rubiks-loader .cube .piece {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+#root-loading>.rubiks-loader .cube .piece.row-top {
+  top: 10px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.row-center {
+  top: 50px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.row-bottom {
+  top: 90px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-left {
+  left: 10px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-center {
+  left: 50px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-right {
+  left: 90px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-left.row-top {
+  transform-origin: 55px 55px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-center.row-top {
+  transform-origin: 15px 55px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-right.row-top {
+  transform-origin: -25px 55px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-left.row-center {
+  transform-origin: 55px 15px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-center.row-center {
+  transform-origin: 15px 15px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-right.row-center {
+  transform-origin: -25px 15px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-left.row-bottom {
+  transform-origin: 55px -25px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-center.row-bottom {
+  transform-origin: 15px -25px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.col-right.row-bottom {
+  transform-origin: -25px -25px -55px;
+}
+
+#root-loading>.rubiks-loader .cube .piece.yellow {
+  background-color: #0046ff;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .piece.blue {
+  background-color: #5904c6;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .piece.green {
+  background-color: #d03dca;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .piece.white {
+  background-color: #0046ff;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .piece.red {
+  background-color: #5904c6;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .piece.orange {
+  background-color: #d03dca;
+  opacity: 0.6;
+}
+
+#root-loading>.rubiks-loader .cube .face.back {
+  transform: rotateY(180deg);
+}
+
+#root-loading>.rubiks-loader .cube .face.right {
+  transform: rotateY(90deg);
+}
+
+#root-loading>.rubiks-loader .cube .face.left {
+  transform: rotateY(-90deg);
+}
+
+#root-loading>.rubiks-loader .cube .face.up {
+  transform: rotateX(90deg);
+}
+
+#root-loading>.rubiks-loader .cube .face.down {
+  transform: rotateX(-90deg);
+}
+
+/* Animations */
+/* This begins to become messy & dirty... */
+#root-loading>.rubiks-loader .piece {
+  -webkit-animation-duration: 1.5s;
+  animation-duration: 1.5s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes root-loading-step-1-front-to-up {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  25%,
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+
+@keyframes root-loading-step-1-front-to-up {
+  0% {
+    transform: rotateX(0deg);
+  }
+
+  25%,
+  100% {
+    transform: rotateX(90deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.front.piece.col-center {
+  -webkit-animation-name: root-loading-step-1-front-to-up;
+  animation-name: root-loading-step-1-front-to-up;
+}
+
+@-webkit-keyframes root-loading-step-1-down-to-front {
+  0% {
+    transform: rotateX(-90deg);
+  }
+
+  25%,
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes root-loading-step-1-down-to-front {
+  0% {
+    transform: rotateX(-90deg);
+  }
+
+  25%,
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.down.piece.col-center {
+  -webkit-animation-name: root-loading-step-1-down-to-front;
+  animation-name: root-loading-step-1-down-to-front;
+}
+
+@-webkit-keyframes root-loading-step-2-front-to-left {
+  25% {
+    transform: rotateY(0deg);
+  }
+
+  50%,
+  100% {
+    transform: rotateY(-90deg);
+  }
+}
+
+@keyframes root-loading-step-2-front-to-left {
+  25% {
+    transform: rotateY(0deg);
+  }
+
+  50%,
+  100% {
+    transform: rotateY(-90deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.piece.front.row-center.col-left,
+#root-loading>.rubiks-loader .face.piece.down.row-center.col-center,
+#root-loading>.rubiks-loader .face.piece.front.row-center.col-right {
+  -webkit-animation-name: root-loading-step-2-front-to-left;
+  animation-name: root-loading-step-2-front-to-left;
+}
+
+@-webkit-keyframes root-loading-step-2-right-to-front {
+  25% {
+    transform: rotateY(90deg);
+  }
+
+  50%,
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes root-loading-step-2-right-to-front {
+  25% {
+    transform: rotateY(90deg);
+  }
+
+  50%,
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.right.piece.row-center {
+  -webkit-animation-name: root-loading-step-2-right-to-front;
+  animation-name: root-loading-step-2-right-to-front;
+}
+
+@-webkit-keyframes root-loading-step-3-front-to-down {
+  50% {
+    transform: rotateX(0deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes root-loading-step-3-front-to-down {
+  50% {
+    transform: rotateX(0deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+@-webkit-keyframes root-loading-step-2-3-right-to-front-to-down {
+  25% {
+    transform: rotateY(90deg);
+  }
+
+  50% {
+    transform: rotateX(0deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes root-loading-step-2-3-right-to-front-to-down {
+  25% {
+    transform: rotateY(90deg);
+  }
+
+  50% {
+    transform: rotateX(0deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(-90deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.piece.front.row-top.col-left,
+#root-loading>.rubiks-loader .face.piece.front.row-bottom.col-left {
+  -webkit-animation-name: root-loading-step-3-front-to-down;
+  animation-name: root-loading-step-3-front-to-down;
+}
+
+#root-loading>.rubiks-loader .face.piece.right.row-center.col-left {
+  -webkit-animation-name: root-loading-step-2-3-right-to-front-to-down;
+  animation-name: root-loading-step-2-3-right-to-front-to-down;
+}
+
+@-webkit-keyframes root-loading-step-3-up-to-front {
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+@keyframes root-loading-step-3-up-to-front {
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75%,
+  100% {
+    transform: rotateX(0deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.up.piece.col-left {
+  -webkit-animation-name: root-loading-step-3-up-to-front;
+  animation-name: root-loading-step-3-up-to-front;
+}
+
+@-webkit-keyframes root-loading-step-4-front-to-right {
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+@keyframes root-loading-step-4-front-to-right {
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+@-webkit-keyframes root-loading-step-1-4-down-to-front-to-right {
+  0% {
+    transform: rotateX(-90deg);
+  }
+
+  25% {
+    transform: rotateX(0deg);
+  }
+
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+@keyframes root-loading-step-1-4-down-to-front-to-right {
+  0% {
+    transform: rotateX(-90deg);
+  }
+
+  25% {
+    transform: rotateX(0deg);
+  }
+
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+@-webkit-keyframes root-loading-step-3-4-up-to-front-to-right {
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+@keyframes root-loading-step-3-4-up-to-front-to-right {
+  50% {
+    transform: rotateX(90deg);
+  }
+
+  75% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(90deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.piece.front.row-bottom.col-right {
+  -webkit-animation-name: root-loading-step-4-front-to-right;
+  animation-name: root-loading-step-4-front-to-right;
+}
+
+#root-loading>.rubiks-loader .face.piece.down.row-bottom.col-center {
+  -webkit-animation-name: root-loading-step-1-4-down-to-front-to-right;
+  animation-name: root-loading-step-1-4-down-to-front-to-right;
+}
+
+#root-loading>.rubiks-loader .face.piece.up.row-bottom.col-left {
+  -webkit-animation-name: root-loading-step-3-4-up-to-front-to-right;
+  animation-name: root-loading-step-3-4-up-to-front-to-right;
+}
+
+@-webkit-keyframes root-loading-step-4-left-to-front {
+  75% {
+    transform: rotateY(-90deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes root-loading-step-4-left-to-front {
+  75% {
+    transform: rotateY(-90deg);
+  }
+
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+#root-loading>.rubiks-loader .face.left.piece.row-bottom {
+  -webkit-animation-name: root-loading-step-4-left-to-front;
+  animation-name: root-loading-step-4-left-to-front;
+}
