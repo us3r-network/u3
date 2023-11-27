@@ -209,7 +209,7 @@ export default function AddPostForm({
           (item) => ({ item: item.url, type: item.mimeType } as MediaImage)
         ) || [];
       await createPostToLens(
-        isShareForm ? text + shareData.shareLink : text,
+        isShareForm ? `${text} ${shareData.shareLink}` : text,
         attachments
       );
       toast.success('successfully posted to lens');
