@@ -2,7 +2,7 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import dayjs from 'dayjs';
 import PostLike from './PostLike';
 import PostReply from './PostReply';
-import PostReport from './PostReport';
+import PostRepost from './PostRepost';
 
 export type ReplyCardData = {
   avatar: string;
@@ -71,7 +71,7 @@ export default function ReplyCard({
               replied={replied}
               replyAction={replyAction}
             />
-            <PostReport
+            <PostRepost
               disabled={repostDisabled}
               totalReposts={data?.totalReposts || 0}
               reposting={reposting}

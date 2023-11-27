@@ -1,25 +1,18 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 // import LensPostCard from 'src/components/social/lens/LensPostCard';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
-import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
-
-import useLogin from 'src/hooks/shared/useLogin';
 import { SocialPlatform } from 'src/services/social/types';
 import { useLoadLinkFeeds } from 'src/hooks/social/useLoadLinkFeeds';
-import AddPost from 'src/components/social/AddPost';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
+import { useGlobalModalsCtx } from 'src/contexts/shared/GlobalModalsCtx';
+import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 
 export default function LinkPost({ url }: { url: string }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [parentId, setParentId] = useState('social-all');
-  const { isLogin } = useLogin();
-  const fid = useFarcasterCurrFid();
-
   const {
     firstLoading,
     moreLoading,
@@ -37,7 +30,7 @@ export default function LinkPost({ url }: { url: string }) {
   useEffect(() => {
     loadFirstFeeds(url);
   }, [url]);
-
+  const { openCommentLinkModal } = useGlobalModalsCtx();
   return (
     <Wraper id="link-social-scroll-wrapper">
       <Title>Comments</Title>
@@ -71,6 +64,7 @@ export default function LinkPost({ url }: { url: string }) {
                     <ItemWraper key={data.id}>
                       <FCast
                         cast={data}
+                        disableRenderUrl
                         openFarcasterQR={openFarcasterQR}
                         farcasterUserData={farcasterUserData}
                         showMenuBtn
@@ -90,9 +84,20 @@ export default function LinkPost({ url }: { url: string }) {
           </PostList>
         </InfiniteScroll>
       )}
-      <AddPostButtonWrapper>
-        <AddPost />
-      </AddPostButtonWrapper>
+      <CommentButton
+        onClick={() => {
+          if (!isConnectedFarcaster || !farcasterUserData) {
+            openFarcasterQR();
+            return;
+          }
+          openCommentLinkModal({
+            link: url,
+            platform: SocialPlatform.Farcaster,
+          });
+        }}
+      >
+        Give a Comment
+      </CommentButton>
     </Wraper>
   );
 }
@@ -133,7 +138,7 @@ const PostList = styled.div`
 const ItemWraper = styled.div`
   border-top: 1px solid #39424c;
 `;
-const AddPostButtonWrapper = styled.div`
+const CommentButton = styled(ButtonPrimaryLine)`
   position: sticky;
   bottom: 20px;
   width: 70%;
@@ -141,4 +146,6 @@ const AddPostButtonWrapper = styled.div`
   justify-content: center;
   align-items: center;
   margin: 0 15%;
+  font-weight: 600;
+  color: #fff;
 `;
