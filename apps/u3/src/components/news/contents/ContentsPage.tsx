@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 17:14:50
+ * @LastEditTime: 2023-11-27 14:39:41
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -99,23 +99,22 @@ export default function ContentsPage({
 
   return (
     <Box>
-      <NewsMenu
-        rightEl={
-          <NewsToolbar
-            displayFilterButton
-            isActiveFilter={isActiveFilter}
-            onChangeActiveFilter={setIsActiveFilter}
-            orderByEl={
-              <>
-                <ContentOrderBySelect
-                  value={currentSearchParams.orderBy}
-                  onChange={(value) =>
-                    searchParamsChange({
-                      orderBy: value,
-                    })
-                  }
-                />
-                {/* <NewestButton
+      <NewsMenu />
+      <NewsToolbar
+        // displayFilterButton
+        // isActiveFilter={isActiveFilter}
+        // onChangeActiveFilter={setIsActiveFilter}
+        orderByEl={
+          <>
+            <ContentOrderBySelect
+              value={currentSearchParams.orderBy}
+              onChange={(value) =>
+                searchParamsChange({
+                  orderBy: value,
+                })
+              }
+            />
+            {/* <NewestButton
                   isActive={currentSearchParams.orderBy === 'NEWEST'}
                   onClick={() => {
                     searchParamsChange({
@@ -126,40 +125,38 @@ export default function ContentsPage({
                   Mempool
                   {hasNewest && <HasNewestTag />}
                 </NewestButton> */}
-              </>
-            }
-            searchEl={
-              <SearchInput
-                debounceMs={1000}
-                onSearch={(value) => {
-                  searchParamsChange({
-                    keywords: value,
-                  });
-                }}
-              />
-            }
-            multiLayout
-            layout={layout}
-            setLayout={(l) => {
-              setContentsLayoutToLocal(l);
-              setLayout(l);
-            }}
-            displaySubmitButton={isAdmin}
-            submitButtonOnClick={() => {
-              navigate('/contents/create');
+          </>
+        }
+        searchEl={
+          <SearchInput
+            debounceMs={1000}
+            onSearch={(value) => {
+              searchParamsChange({
+                keywords: value,
+              });
             }}
           />
         }
-        bottomEl={
-          <FilterBox open={isActiveFilter}>
-            <Filter
-              values={currentSearchParams}
-              filterAction={(data) => {
-                searchParamsChange(data);
-              }}
-            />
-          </FilterBox>
-        }
+        // filterEl={
+        //   <FilterBox open={isActiveFilter}>
+        //     <Filter
+        //       values={currentSearchParams}
+        //       filterAction={(data) => {
+        //         searchParamsChange(data);
+        //       }}
+        //     />
+        //   </FilterBox>
+        // }
+        multiLayout
+        layout={layout}
+        setLayout={(l) => {
+          setContentsLayoutToLocal(l);
+          setLayout(l);
+        }}
+        displaySubmitButton={isAdmin}
+        submitButtonOnClick={() => {
+          navigate('/contents/create');
+        }}
       />
       {(() => {
         if (loading) {
@@ -273,7 +270,7 @@ export default function ContentsPage({
 const Box = styled(MainWrapper)`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding-top: 0;
 `;
 // const Box = styled.div`

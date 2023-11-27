@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-05 14:33:02
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 17:18:38
+ * @LastEditTime: 2023-11-27 14:49:32
  * @Description: file description
  */
 import styled from 'styled-components';
@@ -21,6 +21,7 @@ import { Layout } from '../../../utils/news/localLayout';
 type NewsToolbarProps = {
   orderByEl?: ReactNode;
   searchEl?: ReactNode;
+  filterEl?: ReactNode;
   displayFilterButton?: boolean;
   isActiveFilter?: boolean;
   onChangeActiveFilter?: (active: boolean) => void;
@@ -33,6 +34,7 @@ type NewsToolbarProps = {
 export default function NewsToolbar({
   orderByEl,
   searchEl,
+  filterEl,
   displayFilterButton,
   isActiveFilter,
   onChangeActiveFilter,
@@ -43,52 +45,54 @@ export default function NewsToolbar({
   submitButtonOnClick,
 }: NewsToolbarProps) {
   return (
-    <NewsToolbarWrapper>
-      {orderByEl && <OrderByBox>{orderByEl}</OrderByBox>}
-      {displayFilterButton && (
-        <FilterButton
-          isActive={isActiveFilter}
-          onClick={() =>
-            onChangeActiveFilter && onChangeActiveFilter(!isActiveFilter)
-          }
-        >
-          <FilterFunnelSvg />
-        </FilterButton>
-      )}
-
-      {searchEl && <SearchBox>{searchEl}</SearchBox>}
-      {displaySubmitButton && (
-        <SubmitButton onClick={submitButtonOnClick}>
-          <PlusSvg />
-        </SubmitButton>
-      )}
-      <MultiLayoutBox>
-        {multiLayout && (
-          <div className="layout">
-            <span
-              className={(layout === Layout.LIST && 'active') || ''}
-              onClick={() => {
-                if (setLayout) setLayout(Layout.LIST);
-              }}
-            >
-              {(layout === Layout.LIST && <LayoutListActive />) || (
-                <LayoutList />
-              )}
-            </span>
-            <span
-              className={(layout === Layout.GRID && 'active') || ''}
-              onClick={() => {
-                setLayout(Layout.GRID);
-              }}
-            >
-              {(layout === Layout.GRID && <LayoutGridActive />) || (
-                <LayoutGrid />
-              )}
-            </span>
-          </div>
+    <>
+      <NewsToolbarWrapper>
+        {displaySubmitButton && (
+          <SubmitButton onClick={submitButtonOnClick}>
+            <PlusSvg />
+          </SubmitButton>
         )}
-      </MultiLayoutBox>
-    </NewsToolbarWrapper>
+        {searchEl && <SearchBox>{searchEl}</SearchBox>}
+        {displayFilterButton && (
+          <FilterButton
+            isActive={isActiveFilter}
+            onClick={() =>
+              onChangeActiveFilter && onChangeActiveFilter(!isActiveFilter)
+            }
+          >
+            <FilterFunnelSvg />
+          </FilterButton>
+        )}
+        {orderByEl && <OrderByBox>{orderByEl}</OrderByBox>}
+        <MultiLayoutBox>
+          {multiLayout && (
+            <div className="layout">
+              <span
+                className={(layout === Layout.LIST && 'active') || ''}
+                onClick={() => {
+                  if (setLayout) setLayout(Layout.LIST);
+                }}
+              >
+                {(layout === Layout.LIST && <LayoutListActive />) || (
+                  <LayoutList />
+                )}
+              </span>
+              <span
+                className={(layout === Layout.GRID && 'active') || ''}
+                onClick={() => {
+                  setLayout(Layout.GRID);
+                }}
+              >
+                {(layout === Layout.GRID && <LayoutGridActive />) || (
+                  <LayoutGrid />
+                )}
+              </span>
+            </div>
+          )}
+        </MultiLayoutBox>
+      </NewsToolbarWrapper>
+      {displayFilterButton && filterEl}
+    </>
   );
 }
 const NewsToolbarWrapper = styled.div`
@@ -102,6 +106,7 @@ const OrderByBox = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
+  width: 170px;
 `;
 const FilterButton = styled(ButtonPrimaryLine)<{ isActive?: boolean }>`
   width: 52px;
@@ -127,7 +132,7 @@ const FilterButton = styled(ButtonPrimaryLine)<{ isActive?: boolean }>`
   }
 `;
 const SearchBox = styled.div`
-  width: 200px;
+  width: 630px;
 `;
 const MultiLayoutBox = styled.div`
   display: flex;
