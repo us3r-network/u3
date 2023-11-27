@@ -29,6 +29,12 @@ export default function SocialFarcaster() {
     loadTrendingFirstFeeds,
 
     setPostScroll,
+
+    farcasterTrendingPageInfo,
+    farcasterTrendingLoading,
+    loadFarcasterTrending,
+    farcasterTrending,
+    farcasterTrendingUserData,
   } = useOutletContext<any>(); // TODO: any
 
   const [parentId] = useState('social-farcaster');
@@ -66,10 +72,7 @@ export default function SocialFarcaster() {
         platforms: SocialPlatform.Farcaster,
       });
     } else {
-      await loadTrendingFirstFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: SocialPlatform.Farcaster,
-      });
+      await loadFarcasterTrending();
     }
     setFirstLoadingDone(true);
   }, [
@@ -82,7 +85,8 @@ export default function SocialFarcaster() {
     isConnectedFarcaster,
   ]);
 
-  const loadMoreFeeds = useCallback(() => {
+  const loadMoreFeeds = useCallback(async () => {
+    console.log('loadMoreFeeds', Date.now());
     if (feedsType === FeedsType.FOLLOWING) {
       loadFollowingMoreFeeds(parentId, {
         keyword: currentSearchParams.keyword,
@@ -90,10 +94,7 @@ export default function SocialFarcaster() {
         platforms: SocialPlatform.Farcaster,
       });
     } else {
-      loadTrendingMoreFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: SocialPlatform.Farcaster,
-      });
+      await loadFarcasterTrending();
     }
   }, [
     parentId,
@@ -113,11 +114,39 @@ export default function SocialFarcaster() {
   }, [currentSearchParams]);
 
   useEffect(() => {
-    if (feeds.length > 0) return;
     if (!mounted) return;
+    if (feedsType === FeedsType.FOLLOWING) {
+      if (feeds.length > 0) return;
+    } else if (farcasterTrending.length > 0) return;
 
     loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted]);
+  }, [loadFirstFeeds, feeds, mounted, feedsType]);
+
+  const displayFeeds = useMemo(() => {
+    if (feedsType === FeedsType.FOLLOWING) {
+      return feeds;
+    }
+    return farcasterTrending;
+  }, [feedsType, farcasterTrending, feeds]);
+
+  const displayUserData = useMemo(() => {
+    if (feedsType === FeedsType.FOLLOWING) {
+      return farcasterUserData;
+    }
+    return farcasterTrendingUserData;
+  }, [feedsType, farcasterTrendingUserData, farcasterUserData]);
+
+  const displayPageInfo = useMemo(() => {
+    if (feedsType === FeedsType.FOLLOWING) {
+      return pageInfo;
+    }
+    return farcasterTrendingPageInfo;
+  }, [feedsType, pageInfo, farcasterTrendingPageInfo]);
+
+  const hasMore =
+    displayPageInfo?.hasNextPage !== undefined
+      ? displayPageInfo?.hasNextPage
+      : true;
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
@@ -137,53 +166,53 @@ export default function SocialFarcaster() {
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
-      {(firstLoading && (
-        <LoadingWrapper>
-          <Loading />
-        </LoadingWrapper>
-      )) || (
-        <InfiniteScroll
-          style={{ overflow: 'hidden' }}
-          dataLength={feeds.length}
-          next={() => {
+
+      <InfiniteScroll
+        style={{ overflow: 'hidden' }}
+        dataLength={displayFeeds.length}
+        next={() => {
+          if (feedsType === FeedsType.FOLLOWING) {
             if (moreLoading) return;
             loadMoreFeeds();
-          }}
-          hasMore={!firstLoading && pageInfo?.hasNextPage}
-          loader={
-            <LoadingMoreWrapper>
-              <Loading />
-            </LoadingMoreWrapper>
+          } else {
+            if (farcasterTrendingLoading) return;
+            loadMoreFeeds();
           }
-          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
-          scrollableTarget="social-scroll-wrapper"
-        >
-          <PostList>
-            {feeds.map(({ platform, data }) => {
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex');
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                    showMenuBtn
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: key,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              return null;
-            })}
-          </PostList>
-        </InfiniteScroll>
-      )}
+        }}
+        hasMore={hasMore || firstLoading}
+        loader={
+          <LoadingMoreWrapper>
+            <Loading />
+          </LoadingMoreWrapper>
+        }
+        scrollThreshold={FEEDS_SCROLL_THRESHOLD}
+        scrollableTarget="social-scroll-wrapper"
+      >
+        <PostList>
+          {displayFeeds.map(({ platform, data }) => {
+            if (platform === 'farcaster') {
+              const key = Buffer.from(data.hash.data).toString('hex');
+              return (
+                <FCast
+                  key={key}
+                  cast={data}
+                  openFarcasterQR={openFarcasterQR}
+                  farcasterUserData={displayUserData}
+                  showMenuBtn
+                  cardClickAction={(e) => {
+                    setPostScroll({
+                      currentParent: parentId,
+                      id: key,
+                      top: (e.target as HTMLDivElement).offsetTop,
+                    });
+                  }}
+                />
+              );
+            }
+            return null;
+          })}
+        </PostList>
+      </InfiniteScroll>
     </FarcasterListBox>
   );
 }
