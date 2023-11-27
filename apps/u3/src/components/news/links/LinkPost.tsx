@@ -71,6 +71,7 @@ export default function LinkPost({ url }: { url: string }) {
                     <ItemWraper key={data.id}>
                       <FCast
                         cast={data}
+                        disableRenderUrl
                         openFarcasterQR={openFarcasterQR}
                         farcasterUserData={farcasterUserData}
                         showMenuBtn
