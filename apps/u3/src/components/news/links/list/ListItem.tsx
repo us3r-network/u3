@@ -50,24 +50,9 @@ export default function ListItem({
                 disabled
                 totalLikes={data?.total_like_num || 0}
                 likeAvatars={[]}
-                // liking={liking}
-                // liked={liked}
-                // likeAction={likeAction}
               />
-              <PostReply
-                disabled
-                totalReplies={data?.total_reply_num || 0}
-                // replying={replying}
-                // replied={replied}
-                // replyAction={replyAction}
-              />
-              <PostReport
-                disabled
-                totalReposts={data?.total_repost_num || 0}
-                // reposting={reposting}
-                // reposted={reposted}
-                // repostAction={repostAction}
-              />
+              <PostReply disabled totalReplies={data?.total_reply_num || 0} />
+              <PostReport disabled totalReposts={data?.total_repost_num || 0} />
             </LinkCardActionsWrapper>
           )}
         </div>
