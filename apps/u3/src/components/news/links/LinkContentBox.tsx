@@ -65,7 +65,7 @@ export default function LinkContentBox({
               return (
                 <div className="info">
                   <p>{selectLink?.metadata?.title}</p>
-                  <p>OTERH Twitter Page Preview is NOT supported yet!</p>
+                  <p>This Twitter Page Preview is NOT supported yet!</p>
                   <p>
                     <a href={selectLink.url} target="_blank" rel="noreferrer">
                       Open in New Tab
@@ -74,19 +74,31 @@ export default function LinkContentBox({
                 </div>
               );
             }
-            // if (selectLink?.metadata?.provider === 'YouTube') {
-            //   return (
-            //     <iframe
-            //       width="100%"
-            //       height="100%"
-            //       src="https://www.youtube.com/embed/b3jiBauZDvs"
-            //       title="YouTube video player"
-            //       frameBorder="0"
-            //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            //       allowFullScreen
-            //     />
-            //   );
-            // }
+            if (selectLink?.metadata?.provider === 'YouTube') {
+              const videoId = extractYoutubeVideoId(selectLink?.url);
+              if (videoId)
+                return (
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${videoId}`}
+                    title="YouTube video player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                );
+              return (
+                <div className="info">
+                  <p>{selectLink?.metadata?.title}</p>
+                  <p>This Youtube Page Preview is NOT supported yet!</p>
+                  <p>
+                    <a href={selectLink?.url} target="_blank" rel="noreferrer">
+                      Open in New Tab
+                    </a>
+                  </p>
+                </div>
+              );
+            }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -191,3 +203,17 @@ export const LoadingBox = styled.div`
   justify-content: center;
   height: calc(100% - 60px);
 `;
+
+function extractYoutubeVideoId(url: string) {
+  const patterns = ['v=', 'youtu.be/', '/embed/', '/live/', '/shorts/'];
+  if (!url) return null;
+  console.log(url);
+  let videoId = '';
+  patterns.forEach((pattern) => {
+    if (url.indexOf(pattern) > 0) {
+      [, videoId] = url.split(pattern);
+      [videoId] = videoId.split('&');
+    }
+  });
+  return videoId;
+}
