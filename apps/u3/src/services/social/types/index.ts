@@ -26,6 +26,7 @@ export type FarCastEmbedMeta = {
   creatorAddress: string | undefined;
   contractAddress: string | undefined;
   twitter?: string;
+  provider?: string;
 };
 
 export type FarCast = {
