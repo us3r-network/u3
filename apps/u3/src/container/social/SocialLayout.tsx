@@ -13,6 +13,8 @@ import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 import useFarcasterTrending from 'src/hooks/social/farcaster/useFarcasterTrending';
+import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
+import useLensTrending from 'src/hooks/social/lens/useLensTrending';
 
 import { useSession } from '@lens-protocol/react-web';
 import { MEDIA_BREAK_POINTS } from 'src/constants';
@@ -60,6 +62,17 @@ function SocialLayout() {
     farcasterTrending,
     pageInfo: farcasterTrendingPageInfo,
   } = useFarcasterTrending();
+
+  const {
+    farcasterFollowing,
+    farcasterFollowingUserData,
+    loadFarcasterFollowing,
+    loading: farcasterFollowingLoading,
+    pageInfo: farcasterFollowingPageInfo,
+  } = useFarcasterFollowing();
+
+  const { loadLensTrending } = useLensTrending();
+
   const {
     firstLoading: trendingFirstLoading,
     moreLoading: trendingMoreLoading,
@@ -143,14 +156,11 @@ function SocialLayout() {
 
   return (
     <HomeWrapper id="social-wrapper">
-      <HeaderWraper>{titleElem}</HeaderWraper>
+      <HeaderWrapper>{titleElem}</HeaderWrapper>
       <MainWrapper id="social-scroll-wrapper">
         {!isMobile && (
           <LeftWrapper>
-            <SocialPlatformChoice
-              platform={socialPlatform}
-              onChangePlatform={setSocialPlatform}
-            />
+            <SocialPlatformChoice />
             <AddPost />
             <PinedChannels />
           </LeftWrapper>
@@ -195,6 +205,14 @@ function SocialLayout() {
                 farcasterTrending,
                 farcasterTrendingUserData,
                 farcasterTrendingPageInfo,
+
+                farcasterFollowingLoading,
+                loadFarcasterFollowing,
+                farcasterFollowing,
+                farcasterFollowingUserData,
+                farcasterFollowingPageInfo,
+
+                loadLensTrending,
               }}
             />
           </MainOutletWrapper>
@@ -250,7 +268,7 @@ const MainWrapper = styled.div`
   justify-content: center;
   gap: 40px;
 `;
-export const HeaderWraper = styled.div`
+export const HeaderWrapper = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: 100%;
   }

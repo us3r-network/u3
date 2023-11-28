@@ -1,6 +1,7 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
@@ -30,7 +31,7 @@ export default function SocialPageNav({
 
       <SocialNavCenter>
         {showFeedsTabs &&
-          (isMobile ? (
+          (isMobile ? ( // TODO: mobile
             <MobileFeedsTypeTable
               feedsType={feedsType}
               onChangeFeedsType={onChangeFeedsType}
@@ -102,23 +103,31 @@ function PcFeedsTypeTable({
   feedsType: FeedsType;
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { pathname } = location;
+  const currentPlatform = pathname.split('/')[2];
+  const type = pathname.split('/')[3] || '';
+
   return (
     <FeedsTypeTabsWrapper>
       <FeedsTypeTab
-        active={feedsType === FeedsType.FOLLOWING}
-        onClick={() => {
-          onChangeFeedsType(FeedsType.FOLLOWING);
-        }}
-      >
-        Following
-      </FeedsTypeTab>
-      <FeedsTypeTab
-        active={feedsType === FeedsType.TRENDING}
+        active={type === ''}
         onClick={() => {
           onChangeFeedsType(FeedsType.TRENDING);
+          navigate(`/social/${currentPlatform}`);
         }}
       >
         Trending
+      </FeedsTypeTab>
+      <FeedsTypeTab
+        active={type === 'following'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.FOLLOWING);
+          navigate(`/social/${currentPlatform}/following`);
+        }}
+      >
+        Following
       </FeedsTypeTab>
     </FeedsTypeTabsWrapper>
   );

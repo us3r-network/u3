@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 import { trim } from 'lodash';
 
 import Loading from 'src/components/common/loading/Loading';
@@ -28,97 +28,93 @@ export default function SocialFarcaster() {
   const [parentId] = useState('social-lens');
   const { isLogin } = useLogin();
 
-  const [searchParams] = useSearchParams();
-  const currentSearchParams = useMemo(
-    () => ({
-      keyword: searchParams.get('keyword') || '',
-    }),
-    [searchParams]
-  );
+  // const [searchParams] = useSearchParams();
+  // const currentSearchParams = useMemo(
+  //   () => ({
+  //     keyword: searchParams.get('keyword') || '',
+  //   }),
+  //   [searchParams]
+  // );
 
   const {
     feedsType,
-
-    loadFollowingMoreFeeds,
-    loadTrendingMoreFeeds,
-
-    loadFollowingFirstFeeds,
-    loadTrendingFirstFeeds,
-
+    postScroll,
     setPostScroll,
+
+    loadLensTrending,
   } = useOutletContext<any>(); // TODO: any
 
-  const { mounted, firstLoadingDone, setFirstLoadingDone } =
-    useListScroll(parentId);
-  const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
+  // const { mounted, firstLoadingDone, setFirstLoadingDone } =
+  //   useListScroll(parentId);
+  // const { feeds, firstLoading, pageInfo, moreLoading } = useListFeeds(parentId);
 
   const { sessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = sessionProfile || {};
 
-  const loadFirstFeeds = useCallback(async () => {
-    setFirstLoadingDone(false);
-    if (feedsType === FeedsType.FOLLOWING) {
-      const lensSessionProfileIdParam = lensSessionProfileId;
-      if (!lensSessionProfileIdParam) {
-        setFirstLoadingDone(true);
-        return;
-      }
-      await loadFollowingFirstFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        fid: undefined,
-        platforms: SocialPlatform.Lens,
-        lensProfileId: lensSessionProfileIdParam,
-      });
-    } else {
-      await loadTrendingFirstFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: SocialPlatform.Lens,
-      });
-    }
-    setFirstLoadingDone(true);
-  }, [
-    loadFollowingFirstFeeds,
-    loadTrendingFirstFeeds,
-    currentSearchParams.keyword,
-    feedsType,
-    lensSessionProfileId,
-  ]);
+  // const loadFirstFeeds = useCallback(async () => {
+  //   setFirstLoadingDone(false);
+  //   if (feedsType === FeedsType.FOLLOWING) {
+  //     const lensSessionProfileIdParam = lensSessionProfileId;
+  //     if (!lensSessionProfileIdParam) {
+  //       setFirstLoadingDone(true);
+  //       return;
+  //     }
+  //     await loadFollowingFirstFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       fid: undefined,
+  //       platforms: SocialPlatform.Lens,
+  //       lensProfileId: lensSessionProfileIdParam,
+  //     });
+  //   } else {
+  //     await loadTrendingFirstFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       platforms: SocialPlatform.Lens,
+  //     });
+  //   }
+  //   setFirstLoadingDone(true);
+  // }, [
+  //   loadFollowingFirstFeeds,
+  //   loadTrendingFirstFeeds,
+  //   currentSearchParams.keyword,
+  //   feedsType,
+  //   lensSessionProfileId,
+  // ]);
 
-  const loadMoreFeeds = useCallback(() => {
-    if (feedsType === FeedsType.FOLLOWING) {
-      loadFollowingMoreFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        fid: undefined,
-        platforms: SocialPlatform.Lens,
-        lensProfileId: lensSessionProfileId,
-      });
-    } else {
-      loadTrendingMoreFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: SocialPlatform.Lens,
-      });
-    }
-  }, [
-    loadFollowingMoreFeeds,
-    loadTrendingMoreFeeds,
-    currentSearchParams.keyword,
-    feedsType,
-    lensSessionProfileId,
-  ]);
+  // const loadMoreFeeds = useCallback(() => {
+  //   if (feedsType === FeedsType.FOLLOWING) {
+  //     loadFollowingMoreFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       fid: undefined,
+  //       platforms: SocialPlatform.Lens,
+  //       lensProfileId: lensSessionProfileId,
+  //     });
+  //   } else {
+  //     loadTrendingMoreFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       platforms: SocialPlatform.Lens,
+  //     });
+  //   }
+  // }, [
+  //   loadFollowingMoreFeeds,
+  //   loadTrendingMoreFeeds,
+  //   currentSearchParams.keyword,
+  //   feedsType,
+  //   lensSessionProfileId,
+  // ]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
-      return;
-    loadFirstFeeds();
-  }, [currentSearchParams]);
+  // useEffect(() => {
+  //   if (!mounted) return;
+  //   if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+  //     return;
+  //   loadFirstFeeds();
+  // }, [currentSearchParams]);
 
-  useEffect(() => {
-    if (feeds.length > 0) return;
-    if (!mounted) return;
+  // useEffect(() => {
+  //   if (feeds.length > 0) return;
+  //   if (!mounted) return;
 
-    loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
+  //   loadFirstFeeds();
+  // }, [loadFirstFeeds, feeds, mounted, firstLoadingDone]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
@@ -138,49 +134,16 @@ export default function SocialFarcaster() {
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
-      {(firstLoading && (
-        <LoadingWrapper>
-          <Loading />
-        </LoadingWrapper>
-      )) || (
-        <InfiniteScroll
-          style={{ overflow: 'hidden' }}
-          dataLength={feeds.length}
-          next={() => {
-            if (moreLoading) return;
-            loadMoreFeeds();
-          }}
-          hasMore={!firstLoading && pageInfo?.hasNextPage}
-          loader={
-            <LoadingMoreWrapper>
-              <Loading />
-            </LoadingMoreWrapper>
-          }
-          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
-          scrollableTarget="social-scroll-wrapper"
-        >
-          <PostList>
-            {feeds.map(({ platform, data, ...args }) => {
-              if (platform === 'lens') {
-                return (
-                  <LensPostCard
-                    key={data.id}
-                    data={data}
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: data.id,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              return null;
-            })}
-          </PostList>
-        </InfiniteScroll>
-      )}
+
+      <Outlet
+        context={{
+          loadLensTrending,
+
+          postScroll,
+          setPostScroll,
+          feedsType,
+        }}
+      />
     </LensListBox>
   );
 }

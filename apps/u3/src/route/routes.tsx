@@ -47,8 +47,13 @@ export enum RouteKey {
   farcasterProfile = 'farcasterProfile',
   socialLayout = 'socialLayout',
   social = 'social',
+  socialAll = 'socialAll',
   socialFarcaster = 'socialFarcaster',
+  socialFarcasterTrending = 'socialFarcasterTrending',
+  socialFarcasterFollowing = 'socialFarcasterFollowing',
   socialLens = 'socialLens',
+  socialLensTrending = 'socialLensTrending',
+  socialLensFollowing = 'socialLensFollowing',
   socialChannel = 'socialChannel',
   socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
@@ -257,19 +262,60 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.socialLayout,
     children: [
       {
-        path: '', // social allPlatform
+        path: '',
+        element: <Navigate to="all" />,
+        key: RouteKey.home,
+      } as CutomRouteObject,
+      {
+        path: 'all', // social allPlatform
         element: loadContainerElement('social/Social'),
         key: RouteKey.social,
+        children: [
+          {
+            path: '', // default trending
+            element: loadContainerElement('social/SocialFarcasterTrending'),
+            key: RouteKey.socialFarcasterTrending,
+          },
+          {
+            path: 'following',
+            element: loadContainerElement('social/SocialFarcasterFollowing'),
+            key: RouteKey.socialFarcasterFollowing,
+          } as CutomRouteObject,
+        ],
       },
       {
-        path: 'farcaster', // social farcaster platform
+        path: 'farcaster',
         element: loadContainerElement('social/SocialFarcaster'),
         key: RouteKey.socialFarcaster,
+        children: [
+          {
+            path: '', // default trending
+            element: loadContainerElement('social/SocialFarcasterTrending'),
+            key: RouteKey.socialFarcasterTrending,
+          },
+          {
+            path: 'following',
+            element: loadContainerElement('social/SocialFarcasterFollowing'),
+            key: RouteKey.socialFarcasterFollowing,
+          } as CutomRouteObject,
+        ],
       },
       {
         path: 'lens', // social Lens platform
         element: loadContainerElement('social/SocialLens'),
         key: RouteKey.socialLens,
+        children: [
+          {
+            path: '', // default trending
+            element: loadContainerElement('social/SocialLensTrending'),
+            key: RouteKey.socialLensTrending,
+          },
+          {
+            path: 'following',
+            element: loadContainerElement('social/SocialLensTrending'),
+            key: RouteKey.socialLensTrending,
+          } as CutomRouteObject,
+        ],
       },
       {
         path: 'trends',

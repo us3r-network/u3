@@ -1,25 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { FeedsType } from 'src/components/social/SocialPageNav';
 
 export default function useListScroll(parentId: string) {
-  const currentFeedType = useRef<FeedsType>();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [firstLoadingDone, setFirstLoadingDone] = useState(false);
 
-  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>();
-
-  useEffect(() => {
-    if (!currentFeedType.current) {
-      currentFeedType.current = feedsType;
-      return;
-    }
-    if (feedsType === currentFeedType.current) return;
-    setFirstLoadingDone(false);
-    document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
-    currentFeedType.current = feedsType;
-  }, [feedsType]);
+  const { postScroll, setPostScroll } = useOutletContext<any>();
 
   useEffect(() => {
     setMounted(true);

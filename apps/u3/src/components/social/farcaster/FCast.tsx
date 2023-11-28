@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
 
+import { UserData } from 'src/utils/social/farcaster/user-data';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
@@ -32,6 +33,7 @@ import { SOCIAL_SHARE_TITLE } from '../../../constants';
 export default function FCast({
   cast,
   farcasterUserData,
+  fUserData,
   openFarcasterQR,
   isDetail,
   showMenuBtn,
@@ -40,6 +42,7 @@ export default function FCast({
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  fUserData?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;

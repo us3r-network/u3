@@ -1,6 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getFarcasterTrending } from 'src/services/social/api/farcaster';
+import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
 const PAGE_SIZE = 30;
 export default function useFarcasterTrending() {
@@ -9,9 +10,13 @@ export default function useFarcasterTrending() {
   const [farcasterTrending, setFarcasterTrending] = useState<any[]>([]); // TODO any
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState({});
+
+  // TODO: remove
   const [farcasterTrendingUserData, setFarcasterTrendingUserData] = useState(
     {}
   );
+  const [farcasterFollowingUserDataObj, setFarcasterFollowingUserDataObj] =
+    useState({});
 
   const loadFarcasterTrending = useCallback(async () => {
     setLoading(true);
@@ -43,6 +48,7 @@ export default function useFarcasterTrending() {
         index.current = endIndex;
       }
       if (farcasterUserData.length > 0) {
+        // TODO: remove
         const temp: { [key: string]: { type: number; value: string }[] } = {};
         farcasterUserData?.forEach((item) => {
           if (temp[item.fid]) {
@@ -51,7 +57,10 @@ export default function useFarcasterTrending() {
             temp[item.fid] = [item];
           }
         });
+        const userDataObj = userDataObjFromArr(farcasterUserData);
+        // TODO: remove
         setFarcasterTrendingUserData((pre) => ({ ...pre, ...temp }));
+        setFarcasterFollowingUserDataObj((pre) => ({ ...pre, ...userDataObj }));
       }
       setPageInfo(trendingPageInfo);
     } catch (err) {
@@ -66,6 +75,7 @@ export default function useFarcasterTrending() {
     loading,
     farcasterTrending,
     farcasterTrendingUserData,
+    farcasterFollowingUserDataObj,
     loadFarcasterTrending,
     pageInfo,
   };
