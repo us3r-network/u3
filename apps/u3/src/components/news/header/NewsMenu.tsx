@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-27 14:33:57
+ * @LastEditTime: 2023-11-28 16:23:16
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -20,7 +20,8 @@ const YOUTUBE_SEARCH_PARAMS = 'includeDomains=youtube.com';
 const SUBSTACK_SEARCH_PARAMS = 'includeDomains=substack.com';
 const HACKER_NEWS_SEARCH_PARAMS = 'includeDomains=ycombinator.com';
 const REDDIT_SEARCH_PARAMS = 'includeDomains=reddit.com';
-const FARQUEST_SEARCH_PARAMS = 'includeDomains=far.quest';
+// const FARQUEST_SEARCH_PARAMS = 'includeDomains=far.quest';
+const KIWISTAND_SEARCH_PARAMS = 'includeDomains=news.kiwistand.com/';
 
 const FeedsSwitchOptions = [
   {
@@ -58,9 +59,13 @@ const FeedsSwitchOptions = [
     label: 'Reddit',
     value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
   },
+  // {
+  //   label: 'Far.quest',
+  //   value: `${RouteKey.links}?${FARQUEST_SEARCH_PARAMS}`,
+  // },
   {
-    label: 'Far.quest',
-    value: `${RouteKey.links}?${FARQUEST_SEARCH_PARAMS}`,
+    label: 'KiWiStand',
+    value: `${RouteKey.links}?${KIWISTAND_SEARCH_PARAMS}`,
   },
   {
     label: 'Contents',

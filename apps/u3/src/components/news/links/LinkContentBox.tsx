@@ -20,24 +20,32 @@ export default function LinkContentBox({
 }) {
   const { u3ExtensionInstalled } = useAppSelector(selectWebsite);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [readerviewLoaded, setReaderviewLoaded] = useState(false);
 
   useEffect(() => {
     setIframeLoaded(false);
   }, [selectLink?.url]);
 
   useEffect(() => {
-    if (!selectLink.readerView)
+    setReaderviewLoaded(false);
+    if (!selectLink.readerView) {
       contentParse(selectLink?.url)
         .then((resp) => {
-          // console.log(resp);
           selectLink.readerView = resp.data.data;
           selectLink.supportReaderView = true;
+          setTimeout(() => {
+            setReaderviewLoaded(true);
+          }, 1000);
         })
         .catch((reason) => {
           selectLink.readerView = null;
           selectLink.supportReaderView = false;
           console.log(reason.message);
+          setReaderviewLoaded(true);
         });
+    } else {
+      setReaderviewLoaded(true);
+    }
   }, [selectLink]);
 
   return (
@@ -46,7 +54,7 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink?.metadata?.twitter) {
+            if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
               const tweetId = selectLink.url.split('/status/')[1];
               if (tweetId)
                 return (
@@ -66,6 +74,19 @@ export default function LinkContentBox({
                 </div>
               );
             }
+            // if (selectLink?.metadata?.provider === 'YouTube') {
+            //   return (
+            //     <iframe
+            //       width="100%"
+            //       height="100%"
+            //       src="https://www.youtube.com/embed/b3jiBauZDvs"
+            //       title="YouTube video player"
+            //       frameBorder="0"
+            //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            //       allowFullScreen
+            //     />
+            //   );
+            // }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -97,21 +118,27 @@ export default function LinkContentBox({
 
             break;
           case 'readerView':
-            if (selectLink.readerView) {
-              return <LinkReaderView data={selectLink} />;
+            if (readerviewLoaded) {
+              if (selectLink.readerView) {
+                return <LinkReaderView data={selectLink} />;
+              }
+              return (
+                <ExtensionSupport
+                  url={selectLink.url}
+                  title={selectLink.metadata?.title}
+                  msg="Reader view is not supported for this page! Please view it in the original tab."
+                />
+              );
             }
             return (
-              <ExtensionSupport
-                url={selectLink.url}
-                title={selectLink.metadata?.title}
-                msg="Reader view is not supported for this page! Please view it in the original tab."
-              />
+              <LoadingBox>
+                <Loading />
+              </LoadingBox>
             );
             break;
           default:
             return null;
         }
-        return null;
       })()}
     </ContentBox>
   );

@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-23 10:42:24
+ * @LastEditTime: 2023-11-28 11:31:43
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -23,12 +23,12 @@ export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
 export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
-  const [tab, setTab] = useState<Tab>('readerView');
+  const [tab, setTab] = useState<Tab>('original');
   useEffect(() => {
-    if (data?.supportReaderView) {
-      setTab('readerView');
-    } else {
+    if (data?.supportIframe) {
       setTab('original');
+    } else {
+      setTab('readerView');
     }
   }, [data]);
 
