@@ -40,10 +40,7 @@ export default function SocialSuggestFollow() {
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
       lensProfiles
-        ?.filter(
-          (profile) =>
-            profile.metadata.displayName && profile.metadata.displayName !== ''
-        )
+        ?.filter((profile) => !!getName(profile))
         .slice(0, SUGGEST_NUM),
     [lensProfiles, isLoginLens]
   );
