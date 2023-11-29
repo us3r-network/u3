@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-28 18:23:27
+ * @LastEditTime: 2023-11-29 11:44:28
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -49,17 +49,21 @@ const FeedsSwitchOptions = [
     value: `${RouteKey.links}?${YOUTUBE_SEARCH_PARAMS}`,
   },
   {
+    label: 'Zora',
+    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
+  },
+  {
     label: 'Substack',
     value: `${RouteKey.links}?${SUBSTACK_SEARCH_PARAMS}`,
   },
-  {
-    label: 'Hacker News',
-    value: `${RouteKey.links}?${HACKER_NEWS_SEARCH_PARAMS}`,
-  },
-  {
-    label: 'Reddit',
-    value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
-  },
+  // {
+  //   label: 'Hacker News',
+  //   value: `${RouteKey.links}?${HACKER_NEWS_SEARCH_PARAMS}`,
+  // },
+  // {
+  //   label: 'Reddit',
+  //   value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
+  // },
   // {
   //   label: 'Far.quest',
   //   value: `${RouteKey.links}?${FARQUEST_SEARCH_PARAMS}`,
@@ -67,10 +71,6 @@ const FeedsSwitchOptions = [
   {
     label: 'KiWiStand',
     value: `${RouteKey.links}?${KIWISTAND_SEARCH_PARAMS}`,
-  },
-  {
-    label: 'Zora',
-    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
   },
   {
     label: 'Contents',
