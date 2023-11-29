@@ -2,24 +2,54 @@ import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import { useEffect, useState } from 'react';
 import { MainWrapper } from '../components/layout/Index';
-import HotPosts from '../components/explore/hot-posts/HotPosts';
-import { getFarcasterTrending } from '../services/social/api/farcaster';
+import PosterBanner from '../components/explore/poster/PosterBanner';
+import HotPosts, { HotPostsData } from '../components/explore/posts/HotPosts';
+import TopLinks, { TopLinksData } from '../components/explore/links/TopLinks';
+import HighScoreDapps, {
+  HighScoreDappsData,
+} from '../components/explore/dapps/HighScoreDapps';
+import {
+  getHotPosts,
+  getTopLinks,
+  getHighScoreDapps,
+} from '../services/shared/api/explore';
+
+type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 
 export default function Explore() {
-  const [hotPosts, setHotPosts] = useState({
+  const [hotPosts, setHotPosts] = useState<{
+    posts: HotPostsData;
+    farcasterUserData: FarcasterUserData;
+    isLoading: boolean;
+  }>({
     posts: [],
     farcasterUserData: {},
     isLoading: true,
   });
 
+  const [topLinks, setTopLinks] = useState<{
+    links: TopLinksData;
+    isLoading: boolean;
+  }>({
+    links: [],
+    isLoading: true,
+  });
+
+  const [highScoreDapps, setHighScoreDapps] = useState<{
+    dapps: HighScoreDappsData;
+    isLoading: boolean;
+  }>({
+    dapps: [],
+    isLoading: true,
+  });
+
   useEffect(() => {
-    // TODO 后期换成包含farcaster和lens的trending
-    getFarcasterTrending({ start: 0, end: 15 })
+    getHotPosts()
       .then((res) => {
         const { data } = res.data;
         const { casts, farcasterUserData: farcasterUserDataTmp } = data;
 
-        const temp: { [key: string]: { type: number; value: string }[] } = {};
+        const temp: FarcasterUserData = {};
         farcasterUserDataTmp.forEach((item) => {
           if (temp[item.fid]) {
             temp[item.fid].push(item);
@@ -36,10 +66,46 @@ export default function Explore() {
       .finally(() => {
         setHotPosts((pre) => ({ ...pre, isLoading: false }));
       });
+
+    getTopLinks()
+      .then((res) => {
+        const { data } = res.data;
+        const { data: links } = data;
+        setTopLinks((pre) => ({
+          ...pre,
+          links: (links || []).map((item) => ({
+            logo: item?.metadata?.icon,
+            name: item?.metadata?.title,
+            url: item?.metadata?.url,
+          })),
+        }));
+      })
+      .finally(() => {
+        setTopLinks((pre) => ({ ...pre, isLoading: false }));
+      });
+
+    getHighScoreDapps()
+      .then((res) => {
+        const { data: dapps } = res.data;
+
+        setHighScoreDapps((pre) => ({
+          ...pre,
+          dapps: dapps.map((item) => ({
+            id: item.id,
+            logo: item.image,
+            name: item.name,
+            types: item?.types || [],
+            linkStreamId: item?.linkStreamId,
+          })),
+        }));
+      })
+      .finally(() => {
+        setHighScoreDapps((pre) => ({ ...pre, isLoading: false }));
+      });
   }, []);
   return (
     <Wrapper>
-      <Header>Poster</Header>
+      <PosterBanner />
       <Main>
         <MainLeft>
           <HotPosts
@@ -48,9 +114,16 @@ export default function Explore() {
             farcasterUserData={hotPosts.farcasterUserData}
           />
         </MainLeft>
-        <MainRight>right</MainRight>
+        <MainRight>
+          <TopLinks links={topLinks.links} isLoading={topLinks.isLoading} />
+        </MainRight>
       </Main>
-      <Footer>dapps</Footer>
+      <Footer>
+        <HighScoreDapps
+          dapps={highScoreDapps.dapps}
+          isLoading={highScoreDapps.isLoading}
+        />
+      </Footer>
     </Wrapper>
   );
 }
@@ -66,15 +139,16 @@ const Wrapper = styled(MainWrapper)`
     gap: 20px;
   `}
 `;
-const Header = styled.div``;
 const Main = styled.div`
   display: flex;
   gap: 20px;
 `;
 const MainLeft = styled.div`
+  width: 0;
   flex: 3;
 `;
 const MainRight = styled.div`
+  width: 0;
   flex: 1;
 `;
 const Footer = styled.div``;
