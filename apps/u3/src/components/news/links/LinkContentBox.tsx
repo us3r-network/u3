@@ -171,6 +171,40 @@ export default function LinkContentBox({
                   </div>
                 );
               }
+            // Spotify
+            if (selectLink?.url.indexOf('spotify.com') > 0)
+              if (selectLink?.metadata?.provider === 'Spotify') {
+                const spotifyEmbedUrl = selectLink?.url.replace(
+                  'spotify.com',
+                  'spotify.com/embed'
+                );
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={spotifyEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                      loading="lazy"
+                    />
+                  </div>
+                );
+              }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -234,9 +268,6 @@ export const ContentBox = styled.div`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 
   & img {
     max-width: 100%;

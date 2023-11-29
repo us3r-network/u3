@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 12:32:06
+ * @LastEditTime: 2023-11-29 15:11:27
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -23,6 +23,7 @@ const SUBSTACK_SEARCH_PARAMS = 'includeDomains=substack.com';
 // const FARQUEST_SEARCH_PARAMS = 'includeDomains=far.quest';
 const KIWISTAND_SEARCH_PARAMS = 'includeDomains=news.kiwistand.com';
 const ZORA_SEARCH_PARAMS = 'includeDomains=zora.co';
+const SPOTIFY_SEARCH_PARAMS = 'includeDomains=spotify.com';
 
 const FeedsSwitchOptions = [
   {
@@ -41,16 +42,20 @@ const FeedsSwitchOptions = [
   //   value: `${RouteKey.links}?${LENS_SEARCH_PARAMS}`,
   // },
   {
+    label: 'Zora',
+    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
+  },
+  {
+    label: 'Spotify',
+    value: `${RouteKey.links}?${SPOTIFY_SEARCH_PARAMS}`,
+  },
+  {
     label: 'Github',
     value: `${RouteKey.links}?${GITHUB_SEARCH_PARAMS}`,
   },
   {
     label: 'Youtube',
     value: `${RouteKey.links}?${YOUTUBE_SEARCH_PARAMS}`,
-  },
-  {
-    label: 'Zora',
-    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
   },
   {
     label: 'Substack',
