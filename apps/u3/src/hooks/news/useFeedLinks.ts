@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-28 18:24:06
+ * @LastEditTime: 2023-11-29 17:14:58
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -83,11 +83,16 @@ function processLinks(links) {
   });
 }
 
-function processMetadata(metadata) {
-  if (metadata.twitter)
+export function processMetadata(metadata) {
+  if (
+    metadata?.url.indexOf('twitter.com') > 0 ||
+    metadata?.url.indexOf('x.com') > 0
+  ) {
     metadata.title = `${metadata.title}: ${metadata.description}`;
+  }
   return metadata;
 }
+
 const DOMAINS_DO_NOT_SUPPORT_IFRAME = [
   // 'youtube.com',
   'github.com',

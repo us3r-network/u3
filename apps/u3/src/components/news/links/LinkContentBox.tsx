@@ -120,7 +120,8 @@ export default function LinkContentBox({
                   );
                 return (
                   <div className="info">
-                    <p>{selectLink?.metadata?.title}</p>
+                    <h3>{selectLink?.metadata?.title}</h3>
+                    <p>{selectLink?.metadata?.description}</p>
                     <p>This Youtube Page Preview is NOT supported yet!</p>
                     <p>
                       <a
