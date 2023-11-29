@@ -80,6 +80,13 @@ export default function LinkContentBox({
                 </div>
               );
             }
+            // Github
+            // if (selectLink?.url.indexOf('github.com') > 0) {
+            //   if (selectLink?.metadata?.provider === 'GitHub') {
+            //     console.log('github', selectLink);
+            //     return <GithubPreview url={selectLink.url} />;
+            //   }
+            // }
             // Youtube
             if (
               selectLink?.url.indexOf('youtube.com') > 0 ||
@@ -275,3 +282,29 @@ function extractYoutubeVideoId(url: string) {
   });
   return videoId;
 }
+
+// function GithubPreview({ url }: { url: string }) {
+//   const [iframeSrc, setIframeSrc] = useState(null);
+//   const apiUrl = url.replace('github.com', 'api.github.com/repos');
+//   fetch(apiUrl)
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .then((data) => {
+//       console.log(data);
+//       setIframeSrc(`data:text/html;base64,${encodeURIComponent(data.content)}`);
+//     });
+//   return (
+//     iframeSrc && (
+//       <iframe
+//         id="github-iframe"
+//         title="Github Page Preview"
+//         src={iframeSrc}
+//         width="100%"
+//         height="100%"
+//         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+//         allowFullScreen
+//       />
+//     )
+//   );
+// }
