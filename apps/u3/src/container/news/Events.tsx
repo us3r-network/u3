@@ -169,60 +169,56 @@ export default function Events() {
 
   return (
     <EventsWrapper>
-      <NewsMenu
-        rightEl={
-          <NewsToolbar
-            displayFilterButton
-            isActiveFilter={isActiveFilter}
-            onChangeActiveFilter={setIsActiveFilter}
-            orderByEl={
-              <EventOrderBySelect
-                value={currentSearchParams.orderBy}
-                onChange={(value) =>
-                  setSearchParams({
-                    ...currentSearchParams,
-                    orderBy: value,
-                  } as unknown as URLSearchParamsInit)
-                }
-              />
+      <NewsMenu />
+      <NewsToolbar
+        // displayFilterButton
+        // isActiveFilter={isActiveFilter}
+        // onChangeActiveFilter={setIsActiveFilter}
+        orderByEl={
+          <EventOrderBySelect
+            value={currentSearchParams.orderBy}
+            onChange={(value) =>
+              setSearchParams({
+                ...currentSearchParams,
+                orderBy: value,
+              } as unknown as URLSearchParamsInit)
             }
-            searchEl={
-              <SearchInput
-                onSearch={(value) =>
-                  setSearchParams({
-                    ...currentSearchParams,
-                    keywords: value,
-                  } as unknown as URLSearchParamsInit)
-                }
-              />
-            }
-            multiLayout
-            layout={layout}
-            setLayout={(l) => {
-              setEventsLayoutToLocal(l);
-              setLayout(l);
-            }}
-            displaySubmitButton={isAdmin}
-            submitButtonOnClick={() => {
-              navigate('/events/create');
-            }}
           />
         }
-        bottomEl={
-          <FeedsFilterBox open={isActiveFilter}>
-            <EventExploreListFilter
-              values={filterValues}
-              onChange={(values) =>
-                setSearchParams({
-                  ...currentSearchParams,
-                  ...filterValuesToSearchParams(values),
-                })
-              }
-            />
-          </FeedsFilterBox>
+        searchEl={
+          <SearchInput
+            onSearch={(value) =>
+              setSearchParams({
+                ...currentSearchParams,
+                keywords: value,
+              } as unknown as URLSearchParamsInit)
+            }
+          />
         }
+        // filterEl={
+        //   <FeedsFilterBox open={isActiveFilter}>
+        //     <EventExploreListFilter
+        //       values={filterValues}
+        //       onChange={(values) =>
+        //         setSearchParams({
+        //           ...currentSearchParams,
+        //           ...filterValuesToSearchParams(values),
+        //         })
+        //       }
+        //     />
+        //   </FeedsFilterBox>
+        // }
+        multiLayout
+        layout={layout}
+        setLayout={(l) => {
+          setEventsLayoutToLocal(l);
+          setLayout(l);
+        }}
+        displaySubmitButton={isAdmin}
+        submitButtonOnClick={() => {
+          navigate('/events/create');
+        }}
       />
-
       <MainBox>
         {(() => {
           if (isLoading) return <Loading />;
@@ -296,7 +292,7 @@ export default function Events() {
 const EventsWrapper = styled(MainWrapper)`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding-top: 0px;
 `;
 const MainBox = styled.div`

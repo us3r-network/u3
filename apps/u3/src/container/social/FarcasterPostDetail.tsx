@@ -25,6 +25,7 @@ export default function FarcasterPostDetail() {
   const [farcasterUserData, setFarcasterUserData] = useState<{
     [key: string]: { type: number; value: string }[];
   }>({});
+  const [mounted, setMounted] = useState(false);
 
   const loadCastInfo = useCallback(async () => {
     if (!castId) return;
@@ -56,11 +57,18 @@ export default function FarcasterPostDetail() {
   }, [castId]);
 
   useEffect(() => {
+    if (!mounted) return;
+    const scrollWrapper = document.getElementById('social-scroll-wrapper');
+    if (scrollWrapper) scrollWrapper.scrollTop = 0;
     setLoading(true);
     loadCastInfo().finally(() => {
       setLoading(false);
     });
-  }, [loadCastInfo]);
+  }, [loadCastInfo, mounted]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   if (loading) {
     return (

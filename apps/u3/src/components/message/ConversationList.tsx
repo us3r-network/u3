@@ -3,16 +3,15 @@ import { DecodedMessage } from '@xmtp/xmtp-js';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import {
-  MessageRoute,
-  useXmtpStore,
-} from '../../contexts/message/XmtpStoreCtx';
-import {
   getAttachmentUrl,
   isAttachment,
   truncate,
 } from '../../utils/message/xmtp';
 import useConversationList from '../../hooks/message/xmtp/useConversationList';
-import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
+import {
+  useXmtpClient,
+  MessageRoute,
+} from '../../contexts/message/XmtpClientCtx';
 import Name from './Name';
 import Avatar from './Avatar';
 import Loading from '../common/loading/Loading';
@@ -21,7 +20,7 @@ import NoConversations from './NoConversations';
 export default function ConversationList(
   props: StyledComponentPropsWithRef<'div'>
 ) {
-  const { setMessageRouteParams } = useXmtpStore();
+  const { setMessageRouteParams } = useXmtpClient();
 
   const { isLoading, conversationList } = useConversationList();
 

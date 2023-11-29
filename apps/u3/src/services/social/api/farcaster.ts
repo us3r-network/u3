@@ -312,3 +312,20 @@ export function unPinFarcasterChannel(
     },
   });
 }
+
+export function getFarcasterTrending({
+  start,
+  end,
+}: {
+  start: number;
+  end: number;
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r_farcaster/trending`,
+    method: 'get',
+    params: {
+      startIndex: start,
+      endIndex: end,
+    },
+  });
+}

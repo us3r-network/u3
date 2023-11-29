@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 15:24:35
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-02-27 13:59:33
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-27 14:19:52
  * @Description: file description
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -118,6 +118,7 @@ export default function Select({
   );
 }
 const SelectWrapper = styled.div`
+  width: 100%;
   height: 40px;
   position: relative;
 `;

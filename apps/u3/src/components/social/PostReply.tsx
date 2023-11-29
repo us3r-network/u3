@@ -39,7 +39,7 @@ export default function PostReply({
       {...wrapperProps}
     >
       <span>{hover || replied ? <MessageIcon2Color /> : <MessageIcon2 />}</span>
-      {totalReplies} {replying ? 'Replying' : 'Replies'}
+      {totalReplies} {replying ? 'Replying' : ''}
     </PostReplyWrapper>
   );
 }
@@ -52,7 +52,7 @@ const PostReplyWrapper = styled.div<{
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? '' : 'pointer')};
 
   color: #718096;
   background: ${(props) =>

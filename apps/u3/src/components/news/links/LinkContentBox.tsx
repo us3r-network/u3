@@ -20,24 +20,32 @@ export default function LinkContentBox({
 }) {
   const { u3ExtensionInstalled } = useAppSelector(selectWebsite);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [readerviewLoaded, setReaderviewLoaded] = useState(false);
 
   useEffect(() => {
     setIframeLoaded(false);
   }, [selectLink?.url]);
 
   useEffect(() => {
-    if (!selectLink.readerView)
+    setReaderviewLoaded(false);
+    if (!selectLink.readerView) {
       contentParse(selectLink?.url)
         .then((resp) => {
-          // console.log(resp);
           selectLink.readerView = resp.data.data;
           selectLink.supportReaderView = true;
+          setTimeout(() => {
+            setReaderviewLoaded(true);
+          }, 1000);
         })
         .catch((reason) => {
           selectLink.readerView = null;
           selectLink.supportReaderView = false;
           console.log(reason.message);
+          setReaderviewLoaded(true);
         });
+    } else {
+      setReaderviewLoaded(true);
+    }
   }, [selectLink]);
 
   return (
@@ -46,18 +54,24 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink?.metadata?.twitter) {
-              const tweetId = selectLink.url.split('/status/')[1];
-              if (tweetId)
-                return (
-                  <div className="dark">
-                    <Tweet id={tweetId} />
-                  </div>
-                );
+            // X(Twitter)
+            if (
+              selectLink?.url.indexOf('twitter.com') > 0 ||
+              selectLink?.url.indexOf('x.com') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
+                const tweetId = selectLink.url.split('/status/')[1];
+                if (tweetId)
+                  return (
+                    <div className="dark">
+                      <Tweet id={tweetId} />
+                    </div>
+                  );
+              }
               return (
                 <div className="info">
                   <p>{selectLink?.metadata?.title}</p>
-                  <p>OTERH Twitter Page Preview is NOT supported yet!</p>
+                  <p>This Twitter Page Preview is NOT supported yet!</p>
                   <p>
                     <a href={selectLink.url} target="_blank" rel="noreferrer">
                       Open in New Tab
@@ -66,6 +80,132 @@ export default function LinkContentBox({
                 </div>
               );
             }
+            // Github
+            // if (selectLink?.url.indexOf('github.com') > 0) {
+            //   if (selectLink?.metadata?.provider === 'GitHub') {
+            //     console.log('github', selectLink);
+            //     return <GithubPreview url={selectLink.url} />;
+            //   }
+            // }
+            // Youtube
+            if (
+              selectLink?.url.indexOf('youtube.com') > 0 ||
+              selectLink?.url.indexOf('youtu.be') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'YouTube') {
+                const videoId = extractYoutubeVideoId(selectLink?.url);
+                if (videoId)
+                  return (
+                    <div className="iframe-container">
+                      {!iframeLoaded && (
+                        <LoadingBox>
+                          <Loading />
+                        </LoadingBox>
+                      )}
+                      <iframe
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        title="YouTube video player"
+                        style={{
+                          opacity: iframeLoaded ? 1 : 0,
+                          inset: 0,
+                          background: 'transparent',
+                        }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        onLoad={() => {
+                          setIframeLoaded(true);
+                        }}
+                      />
+                    </div>
+                  );
+                return (
+                  <div className="info">
+                    <h3>{selectLink?.metadata?.title}</h3>
+                    <p>{selectLink?.metadata?.description}</p>
+                    <p>This Youtube Page Preview is NOT supported yet!</p>
+                    <p>
+                      <a
+                        href={selectLink?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open in New Tab
+                      </a>
+                    </p>
+                  </div>
+                );
+              }
+            }
+            // Zora
+            if (selectLink?.url.indexOf('zora.co') > 0)
+              if (selectLink?.metadata?.provider === 'zora') {
+                const removePremintUrl = selectLink?.url.replace(
+                  'premint-',
+                  ''
+                );
+                const zoraEmbedUrl =
+                  removePremintUrl.indexOf('?') > 0
+                    ? selectLink?.url.replace('?', '/embed?')
+                    : `${selectLink?.url}/embed`;
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={zoraEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                    />
+                  </div>
+                );
+              }
+            // Spotify
+            if (selectLink?.url.indexOf('spotify.com') > 0)
+              if (selectLink?.metadata?.provider === 'Spotify') {
+                const spotifyEmbedUrl = selectLink?.url.replace(
+                  'spotify.com',
+                  'spotify.com/embed'
+                );
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={spotifyEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                      loading="lazy"
+                    />
+                  </div>
+                );
+              }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -83,6 +223,8 @@ export default function LinkContentBox({
                     onLoad={() => {
                       setIframeLoaded(true);
                     }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
                   />
                 </div>
               );
@@ -97,21 +239,27 @@ export default function LinkContentBox({
 
             break;
           case 'readerView':
-            if (selectLink.readerView) {
-              return <LinkReaderView data={selectLink} />;
+            if (readerviewLoaded) {
+              if (selectLink.readerView) {
+                return <LinkReaderView data={selectLink} />;
+              }
+              return (
+                <ExtensionSupport
+                  url={selectLink.url}
+                  title={selectLink.metadata?.title}
+                  msg="Reader view is not supported for this page! Please view it in the original tab."
+                />
+              );
             }
             return (
-              <ExtensionSupport
-                url={selectLink.url}
-                title={selectLink.metadata?.title}
-                msg="Reader view is not supported for this page! Please view it in the original tab."
-              />
+              <LoadingBox>
+                <Loading />
+              </LoadingBox>
             );
             break;
           default:
             return null;
         }
-        return null;
       })()}
     </ContentBox>
   );
@@ -164,3 +312,43 @@ export const LoadingBox = styled.div`
   justify-content: center;
   height: calc(100% - 60px);
 `;
+
+function extractYoutubeVideoId(url: string) {
+  const patterns = ['v=', 'youtu.be/', '/embed/', '/live/', '/shorts/'];
+  if (!url) return null;
+  console.log(url);
+  let videoId = '';
+  patterns.forEach((pattern) => {
+    if (url.indexOf(pattern) > 0) {
+      [, videoId] = url.split(pattern);
+      [videoId] = videoId.split('&');
+    }
+  });
+  return videoId;
+}
+
+// function GithubPreview({ url }: { url: string }) {
+//   const [iframeSrc, setIframeSrc] = useState(null);
+//   const apiUrl = url.replace('github.com', 'api.github.com/repos');
+//   fetch(apiUrl)
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .then((data) => {
+//       console.log(data);
+//       setIframeSrc(`data:text/html;base64,${encodeURIComponent(data.content)}`);
+//     });
+//   return (
+//     iframeSrc && (
+//       <iframe
+//         id="github-iframe"
+//         title="Github Page Preview"
+//         src={iframeSrc}
+//         width="100%"
+//         height="100%"
+//         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+//         allowFullScreen
+//       />
+//     )
+//   );
+// }

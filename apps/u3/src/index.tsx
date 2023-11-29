@@ -7,11 +7,10 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import loadable from '@loadable/component';
 import './index.css';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import LoadableFallback from './components/layout/LoadableFallback';
+import App from './App';
 // import ExternalLinkRiskWarning, {
 //   isExternalLinkRiskWarningUrl,
 //   startExternalLinkNavigationListener,
@@ -21,10 +20,6 @@ import LoadableFallback from './components/layout/LoadableFallback';
 // if (!isExternalLinkRiskWarningUrl) {
 //   startExternalLinkNavigationListener();
 // }
-
-const App = loadable(() => import(`./App`), {
-  fallback: <LoadableFallback />,
-});
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

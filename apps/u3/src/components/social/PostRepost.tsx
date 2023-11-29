@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-11-24 18:31:36
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-27 11:53:21
+ * @FilePath: /u3/apps/u3/src/components/social/PostReport.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ForwardIcon2 } from '../common/icons/ForwardIcon';
@@ -9,7 +17,7 @@ interface PostReportProps {
   repostAction?: () => void;
   disabled?: boolean;
 }
-export default function PostReport({
+export default function PostRepost({
   totalReposts,
   reposted,
   reposting,
@@ -45,7 +53,7 @@ export default function PostReport({
           }
         />
       </span>
-      {totalReposts} {reposting ? 'Reposting' : 'Reposts'}
+      {totalReposts} {reposting ? 'Reposting' : ''}
     </PostReportWrapper>
   );
 }
@@ -58,7 +66,7 @@ const PostReportWrapper = styled.div<{
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? '' : 'pointer')};
 
   color: ${(props) => (props.reposted ? '#00B171' : '#718096')};
   font-family: Baloo Bhai 2;

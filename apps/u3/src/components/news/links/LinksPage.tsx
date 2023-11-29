@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 17:16:16
+ * @LastEditTime: 2023-11-27 14:11:10
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -10,6 +10,7 @@ import styled from 'styled-components';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LinkListItem } from 'src/services/news/types/links';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import SearchInput from 'src/components/common/input/SearchInput';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 // import SearchInput from '../../common/input/SearchInput';
@@ -97,54 +98,41 @@ export default function LinksPage({
 
   return (
     <Box>
-      <NewsMenu
-        rightEl={
-          <NewsToolbar
-            // displayFilterButton
-            // isActiveFilter={isActiveFilter}
-            // onChangeActiveFilter={setIsActiveFilter}
-            orderByEl={
-              <LinkOrderBySelect
-                value={currentSearchParams.orderBy}
-                onChange={(value) =>
-                  searchParamsChange({
-                    orderBy: value,
-                  })
-                }
-              />
+      <NewsMenu />
+      <NewsToolbar
+        // displayFilterButton
+        // isActiveFilter={isActiveFilter}
+        // onChangeActiveFilter={setIsActiveFilter}
+        orderByEl={
+          <LinkOrderBySelect
+            value={currentSearchParams.orderBy}
+            onChange={(value) =>
+              searchParamsChange({
+                orderBy: value,
+              })
             }
-            // searchEl={
-            //   <SearchInput
-            //     debounceMs={1000}
-            //     onSearch={(value) => {
-            //       searchParamsChange({
-            //         keywords: value,
-            //       });
-            //     }}
-            //   />
-            // }
-            multiLayout
-            layout={layout}
-            setLayout={(l) => {
-              setContentsLayoutToLocal(l);
-              setLayout(l);
-            }}
-            // displaySubmitButton={isAdmin}
-            // submitButtonOnClick={() => {
-            //   navigate('/links/create');
-            // }}
           />
         }
-        // bottomEl={
-        //   <FeedsFilterBox open={isActiveFilter}>
-        //     <Filter
-        //       values={currentSearchParams as { channels: string[] }}
-        //       filterAction={(data) => {
-        //         searchParamsChange(data);
-        //       }}
-        //     />
-        //   </FeedsFilterBox>
-        // }
+        searchEl={
+          <SearchInput
+            debounceMs={1000}
+            onSearch={(value) => {
+              searchParamsChange({
+                keywords: value,
+              });
+            }}
+          />
+        }
+        multiLayout
+        layout={layout}
+        setLayout={(l) => {
+          setContentsLayoutToLocal(l);
+          setLayout(l);
+        }}
+        // displaySubmitButton={isAdmin}
+        // submitButtonOnClick={() => {
+        //   navigate('/links/create');
+        // }}
       />
       {(() => {
         if (loading && links.length === 0) {
@@ -254,7 +242,7 @@ export default function LinksPage({
 const Box = styled(MainWrapper)`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   padding-top: 0;
 `;
 // const Box = styled.div`

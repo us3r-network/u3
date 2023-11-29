@@ -47,7 +47,7 @@ export default function PostLike({
       <span>
         <HeartIcon2 fill={hover ? '#F81775' : liked ? '#F81775' : ''} />
       </span>
-      {totalLikes} {liking ? 'Liking' : 'Likes'}
+      {totalLikes} {liking ? 'Liking' : ''}
     </PostLikeWrapper>
   );
 }
@@ -60,7 +60,7 @@ export const PostLikeWrapper = styled.div<{
   display: flex;
   align-items: center;
   gap: 7px;
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? '' : 'pointer')};
 
   color: ${(props) => (props.liked ? '#F81775' : '#718096')};
   font-family: Baloo Bhai 2;

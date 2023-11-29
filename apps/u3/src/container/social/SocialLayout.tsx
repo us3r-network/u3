@@ -12,6 +12,7 @@ import { useLoadTrendingFeeds } from 'src/hooks/social/useLoadTrendingFeeds';
 import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
+import useFarcasterTrending from 'src/hooks/social/farcaster/useFarcasterTrending';
 
 import { useSession } from '@lens-protocol/react-web';
 import { MEDIA_BREAK_POINTS } from 'src/constants';
@@ -52,6 +53,13 @@ function SocialLayout() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { channelId } = useParams();
 
+  const {
+    loading: farcasterTrendingLoading,
+    loadFarcasterTrending,
+    farcasterTrendingUserData,
+    farcasterTrending,
+    pageInfo: farcasterTrendingPageInfo,
+  } = useFarcasterTrending();
   const {
     firstLoading: trendingFirstLoading,
     moreLoading: trendingMoreLoading,
@@ -181,6 +189,12 @@ function SocialLayout() {
                 channelMoreLoading,
                 loadChannelMoreFeeds,
                 channelFarcasterUserData,
+
+                farcasterTrendingLoading,
+                loadFarcasterTrending,
+                farcasterTrending,
+                farcasterTrendingUserData,
+                farcasterTrendingPageInfo,
               }}
             />
           </MainOutletWrapper>
@@ -255,8 +269,9 @@ const MainRight = styled.div`
 `;
 const MainCenter = styled.div`
   width: 600px;
-  margin: 20px 0px;
+  margin-top: 20px;
   box-sizing: border-box;
+  height: fit-content;
 `;
 const MainOutletWrapper = styled.div`
   width: 100%;
@@ -278,10 +293,10 @@ const RightWrapper = styled(MainRight)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin: 24px 0px;
   position: sticky;
-  position: -webkit-sticky;
-  top: min(calc(100vh - 1200px), 20px);
+  top: 24px;
+  overflow: scroll;
+  height: calc(100vh - 96px - 40px);
   > .recommend {
     display: flex;
     flex-direction: column;

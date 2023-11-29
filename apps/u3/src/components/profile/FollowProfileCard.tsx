@@ -6,12 +6,11 @@ import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import useCanMessage from '../../hooks/message/xmtp/useCanMessage';
-import {
-  MessageRoute,
-  useXmtpStore,
-} from '../../contexts/message/XmtpStoreCtx';
 import { useNav } from '../../contexts/NavCtx';
-import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
+import {
+  useXmtpClient,
+  MessageRoute,
+} from '../../contexts/message/XmtpClientCtx';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
@@ -51,7 +50,7 @@ export default function FollowProfileCard({
 
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
   const { canMessage } = useCanMessage(address);
-  const { setMessageRouteParams } = useXmtpStore();
+  const { setMessageRouteParams } = useXmtpClient();
   const { setOpenMessageModal } = useNav();
 
   const profileIdentity = useMemo(() => {

@@ -9,14 +9,12 @@ import LinkBox from './LinkBox';
 // import ContentActions from './action/ContentActions';
 
 export default function LinkReaderView({ data }: { data: LinkListItem }) {
-  const { tags, timestamp, url, metadata, readerView } = data;
-
   const contentFix = useMemo(() => {
-    if (!url || !readerView) return null;
+    if (!data.url || !data.readerView) return null;
     const placeholder = document.createElement('div');
-    placeholder.innerHTML = readerView.content;
+    placeholder.innerHTML = data.readerView.content;
     const imgs = placeholder.getElementsByTagName('img');
-    const linkUrl = new URL(url);
+    const linkUrl = new URL(data.url);
     for (let i = 0; i < imgs.length; i++) {
       const imgItem = imgs[i];
       const srcAttr = imgItem.getAttribute('src');
@@ -25,26 +23,26 @@ export default function LinkReaderView({ data }: { data: LinkListItem }) {
       }
     }
     return placeholder.innerHTML;
-  }, [readerView, url]);
+  }, [data.url, data.readerView]);
 
-  const platformLogo = useMemo(() => metadata.icon || '', [metadata]);
+  const platformLogo = useMemo(() => data.metadata.icon || '', [data.metadata]);
 
   return (
     <Shower>
       <ContentWrapper>
         <ContentTitle>
-          <div className="title">{readerView?.title}</div>
-          {tags?.length > 0 && (
+          <div className="title">{data.readerView?.title}</div>
+          {data.tags?.length > 0 && (
             <div className="tags">
-              {tags.map((tag) => (
+              {data.tags.map((tag) => (
                 <Badge text={tag} key={tag} className="tag" />
               ))}
             </div>
           )}
 
           <div className="info">
-            <LinkBox text={url} logo={platformLogo} />
-            <span>{defaultFormatFromNow(timestamp)}</span>
+            <LinkBox text={data.url} logo={platformLogo} />
+            <span>{defaultFormatFromNow(data.timestamp)}</span>
           </div>
         </ContentTitle>
         <ContentBody dangerouslySetInnerHTML={{ __html: contentFix }} />

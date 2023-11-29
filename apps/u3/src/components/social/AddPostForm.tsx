@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { UserDataType, makeCastAdd } from '@farcaster/hub-web';
+import { Embed, UserDataType, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
@@ -56,11 +56,15 @@ export default function AddPostForm({
   channel,
   isShareForm,
   shareData,
+  embeds,
+  selectedPlatforms,
 }: {
   onSuccess?: () => void;
   channel?: Channel;
   isShareForm?: boolean;
   shareData?: ShareData;
+  embeds?: Embed[];
+  selectedPlatforms?: SocialPlatform[];
 }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const {
@@ -166,8 +170,8 @@ export default function AddPostForm({
       const cast = (
         await makeCastAdd(
           {
-            text: isShareForm ? text + shareData.shareLink : text,
-            embeds: [...uploadedLinks],
+            text: isShareForm ? `${text} ${shareData.shareLink}` : text,
+            embeds: [...uploadedLinks, ...(embeds || [])],
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
@@ -205,7 +209,7 @@ export default function AddPostForm({
           (item) => ({ item: item.url, type: item.mimeType } as MediaImage)
         ) || [];
       await createPostToLens(
-        isShareForm ? text + shareData.shareLink : text,
+        isShareForm ? `${text} ${shareData.shareLink}` : text,
         attachments
       );
       toast.success('successfully posted to lens');
@@ -249,6 +253,10 @@ export default function AddPostForm({
       setPlatforms(new Set([shareData.shareLinkDefaultPlatform]));
     }
   }, [isShareForm, shareData]);
+
+  useEffect(() => {
+    setPlatforms(new Set(selectedPlatforms || []));
+  }, [selectedPlatforms]);
 
   return (
     <Wrapper>

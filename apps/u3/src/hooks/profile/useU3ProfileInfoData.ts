@@ -109,8 +109,8 @@ export default function useU3ProfileInfoData({
       accounts.push({
         platform: SocialPlatform.Farcaster,
         avatar: userData.pfp,
-        name: userData.userName,
-        handle: userData.display,
+        name: userData.display,
+        handle: userData.userName,
         id: userData.fid,
         bio: userData.bio,
         address: web3FcastBioLinks?.[0]?.address || '',
