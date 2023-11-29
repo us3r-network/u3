@@ -54,14 +54,20 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
-              const tweetId = selectLink.url.split('/status/')[1];
-              if (tweetId)
-                return (
-                  <div className="dark">
-                    <Tweet id={tweetId} />
-                  </div>
-                );
+            // X(Twitter)
+            if (
+              selectLink?.url.indexOf('twitter.com') > 0 ||
+              selectLink?.url.indexOf('x.com') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
+                const tweetId = selectLink.url.split('/status/')[1];
+                if (tweetId)
+                  return (
+                    <div className="dark">
+                      <Tweet id={tweetId} />
+                    </div>
+                  );
+              }
               return (
                 <div className="info">
                   <p>{selectLink?.metadata?.title}</p>
@@ -74,31 +80,80 @@ export default function LinkContentBox({
                 </div>
               );
             }
-            if (selectLink?.metadata?.provider === 'YouTube') {
-              const videoId = extractYoutubeVideoId(selectLink?.url);
-              if (videoId)
+            // Youtube
+            if (
+              selectLink?.url.indexOf('youtube.com') > 0 ||
+              selectLink?.url.indexOf('youtu.be') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'YouTube') {
+                const videoId = extractYoutubeVideoId(selectLink?.url);
+                if (videoId)
+                  return (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="YouTube video player"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  );
                 return (
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src={`https://www.youtube.com/embed/${videoId}`}
-                    title="YouTube video player"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                  />
+                  <div className="info">
+                    <p>{selectLink?.metadata?.title}</p>
+                    <p>This Youtube Page Preview is NOT supported yet!</p>
+                    <p>
+                      <a
+                        href={selectLink?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open in New Tab
+                      </a>
+                    </p>
+                  </div>
                 );
-              return (
-                <div className="info">
-                  <p>{selectLink?.metadata?.title}</p>
-                  <p>This Youtube Page Preview is NOT supported yet!</p>
-                  <p>
-                    <a href={selectLink?.url} target="_blank" rel="noreferrer">
-                      Open in New Tab
-                    </a>
-                  </p>
-                </div>
-              );
+              }
             }
+            // Zora
+            if (selectLink?.url.indexOf('zora.co') > 0)
+              if (selectLink?.metadata?.provider === 'zora') {
+                const removePremintUrl = selectLink?.url.replace(
+                  'premint-',
+                  ''
+                );
+                const zoraEmbedUrl =
+                  removePremintUrl.indexOf('?') > 0
+                    ? selectLink?.url.replace('?', '/embed?')
+                    : `${selectLink?.url}/embed`;
+                console.log('zoraEmbedUrl', zoraEmbedUrl, selectLink);
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={zoraEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      width="96%"
+                      height="96%"
+                      allowTransparency
+                      allowFullScreen
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                    />
+                  </div>
+                );
+              }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -160,6 +215,9 @@ export const ContentBox = styled.div`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
 
   & img {
     max-width: 100%;
