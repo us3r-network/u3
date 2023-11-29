@@ -1,47 +1,46 @@
-import styled from 'styled-components';
+import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
-import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
+import FCast from 'src/components/social/farcaster/FCast';
+import LensPostCard from 'src/components/social/lens/LensPostCard';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
+import useAllWhatsnew from 'src/hooks/social/useAllWhatsnew';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import useFarcasterTrending from 'src/hooks/social/farcaster/useFarcasterTrending';
+import styled from 'styled-components';
 
-export default function SocialFarcasterTrending() {
-  const [parentId] = useState('social-farcaster-trending');
+export default function SocialAllWhatsnew() {
+  const [parentId] = useState('social-all-whatsnew');
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>();
-  const { mounted } = useListScroll(parentId);
 
+  const { mounted } = useListScroll(parentId);
   const {
-    loading: farcasterTrendingLoading,
-    farcasterTrending,
-    farcasterTrendingUserData,
-    farcasterTrendingUserDataObj,
-    loadFarcasterTrending,
-    pageInfo: farcasterTrendingPageInfo,
-  } = useFarcasterTrending();
+    loading,
+    loadAllWhatsnew,
+    allWhatsnew,
+    allUserData,
+    allUserDataObj,
+    pageInfo,
+  } = useAllWhatsnew();
 
   useEffect(() => {
     if (mounted) {
-      loadFarcasterTrending();
+      loadAllWhatsnew();
     }
-  }, [mounted, loadFarcasterTrending]);
+  }, [mounted, loadAllWhatsnew]);
 
   const hasMore =
-    farcasterTrendingPageInfo?.hasNextPage !== undefined
-      ? farcasterTrendingPageInfo?.hasNextPage
-      : true;
+    pageInfo?.hasNextPage !== undefined ? pageInfo?.hasNextPage : true;
 
   return (
     <InfiniteScroll
       style={{ overflow: 'hidden' }}
-      dataLength={farcasterTrending.length}
+      dataLength={allWhatsnew.length}
       next={() => {
-        if (farcasterTrendingLoading) return;
-        loadFarcasterTrending();
+        if (loading) return;
+        loadAllWhatsnew();
       }}
       hasMore={hasMore}
       loader={
@@ -53,7 +52,22 @@ export default function SocialFarcasterTrending() {
       scrollableTarget="social-scroll-wrapper"
     >
       <PostList>
-        {farcasterTrending.map(({ platform, data }) => {
+        {(allWhatsnew || []).map(({ platform, data }) => {
+          if (platform === 'lens') {
+            return (
+              <LensPostCard
+                key={data.id}
+                data={data}
+                cardClickAction={(e) => {
+                  setPostScroll({
+                    currentParent: parentId,
+                    id: data.id,
+                    top: (e.target as HTMLDivElement).offsetTop,
+                  });
+                }}
+              />
+            );
+          }
           if (platform === 'farcaster') {
             const key = Buffer.from(data.hash.data).toString('hex');
             return (
@@ -61,8 +75,8 @@ export default function SocialFarcasterTrending() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterTrendingUserData}
-                farcasterUserDataObj={farcasterTrendingUserDataObj}
+                farcasterUserData={allUserData}
+                farcasterUserDataObj={allUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {
                   setPostScroll({

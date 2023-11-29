@@ -8,24 +8,22 @@ import Loading from 'src/components/common/loading/Loading';
 
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
+import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
 
 export default function SocialFarcaster() {
-  const {
-    feedsType,
-    postScroll,
-    setPostScroll,
-    farcasterFollowingLoading,
-    loadFarcasterFollowing,
-    farcasterFollowing,
-    farcasterFollowingUserData,
-    farcasterFollowingPageInfo,
-  } = useOutletContext<any>(); // TODO: any
-
   const [parentId] = useState('social-farcaster-following');
-
   const { openFarcasterQR } = useFarcasterCtx();
-
+  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
+
+  const {
+    farcasterFollowing,
+    loadFarcasterFollowing,
+    loading: farcasterFollowingLoading,
+    pageInfo: farcasterFollowingPageInfo,
+    farcasterFollowingUserData,
+    farcasterFollowingUserDataObj,
+  } = useFarcasterFollowing();
 
   useEffect(() => {
     if (!mounted) return;
@@ -59,6 +57,7 @@ export default function SocialFarcaster() {
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={farcasterFollowingUserData}
+                farcasterUserDataObj={farcasterFollowingUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {
                   setPostScroll({

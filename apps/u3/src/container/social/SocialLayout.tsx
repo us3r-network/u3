@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import {
   Outlet,
   useLocation,
@@ -8,15 +8,9 @@ import {
 } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 
-import { useLoadTrendingFeeds } from 'src/hooks/social/useLoadTrendingFeeds';
-import { useLoadFollowingFeeds } from 'src/hooks/social/useLoadFollowingFeeds';
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
-import useFarcasterTrending from 'src/hooks/social/farcaster/useFarcasterTrending';
-import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
-import useLensTrending from 'src/hooks/social/lens/useLensTrending';
 
-import { useSession } from '@lens-protocol/react-web';
 import { MEDIA_BREAK_POINTS } from 'src/constants';
 import SocialPageNav, {
   FeedsType,
@@ -27,10 +21,7 @@ import SocialPlatformChoice from '../../components/social/SocialPlatformChoice';
 import AddPost from '../../components/social/AddPost';
 import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import SearchInput from '../../components/common/input/SearchInput';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
-import { useLensCtx } from '../../contexts/social/AppLensCtx';
-import { getOwnedByAddress } from '../../utils/social/lens/profile';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
 export default function SocialLayoutContainer() {
@@ -42,11 +33,6 @@ export default function SocialLayoutContainer() {
 }
 function SocialLayout() {
   const location = useLocation();
-  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
-  const { sessionProfile: lensSessionProfile } = useLensCtx();
-  const { loading: lensSessionLoading } = useSession();
-  const lensProfileOwnedByAddress = getOwnedByAddress(lensSessionProfile);
-
   const [postScroll, setPostScroll] = useState({
     currentParent: '',
     id: '',
@@ -54,42 +40,6 @@ function SocialLayout() {
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const { channelId } = useParams();
-
-  const {
-    loading: farcasterTrendingLoading,
-    loadFarcasterTrending,
-    farcasterTrendingUserData,
-    farcasterTrending,
-    pageInfo: farcasterTrendingPageInfo,
-  } = useFarcasterTrending();
-
-  const {
-    farcasterFollowing,
-    farcasterFollowingUserData,
-    loadFarcasterFollowing,
-    loading: farcasterFollowingLoading,
-    pageInfo: farcasterFollowingPageInfo,
-  } = useFarcasterFollowing();
-
-  const { loadLensTrending } = useLensTrending();
-
-  const {
-    firstLoading: trendingFirstLoading,
-    moreLoading: trendingMoreLoading,
-    feeds: trendingFeeds,
-    pageInfo: trendingPageInfo,
-    loadFirstFeeds: loadTrendingFirstFeeds,
-    loadMoreFeeds: loadTrendingMoreFeeds,
-  } = useLoadTrendingFeeds();
-
-  const {
-    firstLoading: followingFirstLoading,
-    moreLoading: followingMoreLoading,
-    feeds: followingFeeds,
-    pageInfo: followingPageInfo,
-    loadFirstFeeds: loadFollowingFirstFeeds,
-    loadMoreFeeds: loadFollowingMoreFeeds,
-  } = useLoadFollowingFeeds();
 
   const {
     feeds: channelFeeds,
@@ -115,20 +65,6 @@ function SocialLayout() {
     },
     [searchParams, setSearchParams]
   );
-
-  const switchedFeedsTypeFirst = useRef(false);
-  useEffect(() => {
-    if (!switchedFeedsTypeFirst.current) {
-      if (!isConnectedFarcaster && !lensProfileOwnedByAddress) {
-        setFeedsType(FeedsType.TRENDING);
-      } else {
-        setFeedsType(FeedsType.FOLLOWING);
-      }
-    }
-    if (!lensSessionLoading) {
-      switchedFeedsTypeFirst.current = true;
-    }
-  }, [isConnectedFarcaster, lensProfileOwnedByAddress, lensSessionLoading]);
 
   const titleElem = useMemo(() => {
     if (location.pathname.includes('social/trends')) {
@@ -173,22 +109,6 @@ function SocialLayout() {
                 socialPlatform,
                 feedsType,
 
-                trendingFirstLoading,
-                trendingMoreLoading,
-                trendingFeeds,
-                trendingPageInfo,
-                loadTrendingFirstFeeds,
-                loadTrendingMoreFeeds,
-
-                followingFirstLoading,
-                followingMoreLoading,
-                followingFeeds,
-                followingPageInfo,
-                loadFollowingFirstFeeds,
-                loadFollowingMoreFeeds,
-
-                // farcasterScrollTop,
-                // setFarcasterScrollTop,
                 postScroll,
                 setPostScroll,
 
@@ -199,20 +119,6 @@ function SocialLayout() {
                 channelMoreLoading,
                 loadChannelMoreFeeds,
                 channelFarcasterUserData,
-
-                farcasterTrendingLoading,
-                loadFarcasterTrending,
-                farcasterTrending,
-                farcasterTrendingUserData,
-                farcasterTrendingPageInfo,
-
-                farcasterFollowingLoading,
-                loadFarcasterFollowing,
-                farcasterFollowing,
-                farcasterFollowingUserData,
-                farcasterFollowingPageInfo,
-
-                loadLensTrending,
               }}
             />
           </MainOutletWrapper>

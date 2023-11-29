@@ -1,64 +1,116 @@
-export default function SocialAllFollowing() {
+import styled from 'styled-components';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { useOutletContext } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
+import FCast from 'src/components/social/farcaster/FCast';
+import Loading from 'src/components/common/loading/Loading';
+
+import useListScroll from 'src/hooks/social/useListScroll';
+import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
+import useAllFollowing from 'src/hooks/social/useAllFollowing';
+import LensPostCard from 'src/components/social/lens/LensPostCard';
+
+export default function SocialFarcaster() {
+  const [parentId] = useState('social-farcaster-following');
+  const { openFarcasterQR } = useFarcasterCtx();
+  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { mounted } = useListScroll(parentId);
+
+  const {
+    allFollowing,
+    loadAllFollowing,
+    loading,
+    pageInfo,
+    allUserData,
+    allUserDataObj,
+  } = useAllFollowing();
+
+  useEffect(() => {
+    if (!mounted) return;
+    loadAllFollowing();
+  }, [loadAllFollowing, mounted]);
+
   return (
-    <div>
-      Social all following
-      {/* <InfiniteScroll
-          style={{ overflow: 'hidden' }}
-          dataLength={feeds?.length || 0}
-          next={() => {
-            console.log({ moreLoading });
-            if (moreLoading) return;
-            loadMoreFeeds();
-          }}
-          hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
-          loader={
-            <LoadingMoreWrapper>
-              <Loading />
-            </LoadingMoreWrapper>
+    <InfiniteScroll
+      style={{ overflow: 'hidden' }}
+      dataLength={allFollowing.length}
+      next={() => {
+        if (loading) return;
+        loadAllFollowing();
+      }}
+      hasMore={pageInfo.hasNextPage || true}
+      loader={
+        <LoadingMoreWrapper>
+          <Loading />
+        </LoadingMoreWrapper>
+      }
+      scrollThreshold={FEEDS_SCROLL_THRESHOLD}
+      scrollableTarget="social-scroll-wrapper"
+    >
+      <PostList>
+        {allFollowing.map(({ platform, data }) => {
+          if (platform === 'lens') {
+            return (
+              <LensPostCard
+                key={data.id}
+                data={data}
+                cardClickAction={(e) => {
+                  setPostScroll({
+                    currentParent: parentId,
+                    id: data.id,
+                    top: (e.target as HTMLDivElement).offsetTop,
+                  });
+                }}
+              />
+            );
           }
-          scrollableTarget="social-scroll-wrapper"
-        >
-          <PostList>
-            {(feeds || []).map(({ platform, data }) => {
-              if (platform === 'lens') {
-                return (
-                  <LensPostCard
-                    key={data.id}
-                    data={data}
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: data.id,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex');
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                    showMenuBtn
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: key,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              return null;
-            })}
-          </PostList>
-        </InfiniteScroll> */}
-    </div>
+          if (platform === 'farcaster') {
+            const key = Buffer.from(data.hash.data).toString('hex');
+            return (
+              <FCast
+                key={key}
+                cast={data}
+                openFarcasterQR={openFarcasterQR}
+                farcasterUserData={allUserData}
+                farcasterUserDataObj={allUserDataObj}
+                showMenuBtn
+                cardClickAction={(e) => {
+                  setPostScroll({
+                    currentParent: parentId,
+                    id: key,
+                    top: (e.target as HTMLDivElement).offsetTop,
+                  });
+                }}
+              />
+            );
+          }
+          return null;
+        })}
+      </PostList>
+    </InfiniteScroll>
   );
 }
+
+const PostList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+
+  border-radius: 20px;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  background: #212228;
+  overflow: hidden;
+  & > * {
+    border-top: 1px solid #718096;
+  }
+`;
+
+const LoadingMoreWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;

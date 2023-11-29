@@ -1,22 +1,26 @@
 import { UserDataType } from '@farcaster/hub-web';
 import { useMemo } from 'react';
-import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import { UserData } from 'src/utils/social/farcaster/user-data';
 
 export default function useFarcasterUserData({
   farcasterUserData,
+  farcasterUserDataObj,
   fid,
 }: {
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   fid: string;
 }) {
-  const { currUserInfo } = useFarcasterCtx();
   const userData = useMemo(() => {
     let data = [];
-    if (currUserInfo) {
-      data = currUserInfo[fid] || [];
-    }
     if (farcasterUserData && data.length === 0) {
       data = farcasterUserData[fid] || [];
+    }
+    if (farcasterUserDataObj) {
+      const obj = farcasterUserDataObj[fid];
+      if (obj) {
+        return obj;
+      }
     }
 
     let pfp = '';
@@ -55,7 +59,7 @@ export default function useFarcasterUserData({
       display,
       url,
     };
-  }, [currUserInfo, farcasterUserData, fid]);
+  }, [farcasterUserData, fid, farcasterUserDataObj]);
 
   return userData;
 }

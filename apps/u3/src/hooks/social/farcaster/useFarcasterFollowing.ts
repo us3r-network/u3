@@ -1,22 +1,33 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getFollowingFeeds } from 'src/services/social/api/feeds';
 import { SocialPlatform } from 'src/services/social/types';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
+const farcasterFollowingData = {
+  data: [],
+  pageInfo: {
+    hasNextPage: true,
+  },
+  userData: {},
+  userDataObj: {},
+  index: '',
+};
+
 export default function useFarcasterFollowing() {
-  const index = useRef('');
   const { currFid } = useFarcasterCtx();
-  const [farcasterFollowing, setFarcasterFollowing] = useState<any[]>([]); // TODO any
+  const [farcasterFollowing, setFarcasterFollowing] = useState<any[]>(
+    farcasterFollowingData.data
+  ); // TODO any
   const [loading, setLoading] = useState(false);
-  const [pageInfo, setPageInfo] = useState({});
+  const [pageInfo, setPageInfo] = useState(farcasterFollowingData.pageInfo);
 
   // TODO: remove
   const [farcasterFollowingUserData, setFarcasterFollowingUserData] = useState(
-    {}
+    farcasterFollowingData.userData
   );
   const [farcasterFollowingUserDataObj, setFarcasterFollowingUserDataObj] =
-    useState({});
+    useState(farcasterFollowingData.userDataObj);
 
   const loadFarcasterFollowing = useCallback(async () => {
     setLoading(true);
@@ -24,7 +35,9 @@ export default function useFarcasterFollowing() {
       const resp = await getFollowingFeeds({
         fid: `${currFid}`,
         platforms: [SocialPlatform.Farcaster],
-        endFarcasterCursor: index.current ? index.current : undefined,
+        endFarcasterCursor: farcasterFollowingData.index
+          ? farcasterFollowingData.index
+          : undefined,
       });
       const {
         data,
@@ -45,12 +58,22 @@ export default function useFarcasterFollowing() {
 
       if (data.length > 0) {
         setFarcasterFollowing((pre) => [...pre, ...data]);
+        farcasterFollowingData.data = farcasterFollowingData.data.concat(data);
         // TODO: remove
         setFarcasterFollowingUserData((pre) => ({ ...pre, ...temp }));
+        farcasterFollowingData.userData = {
+          ...farcasterFollowingData.userData,
+          ...temp,
+        };
         setFarcasterFollowingUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-        index.current = respPageInfo.endFarcasterCursor;
+        farcasterFollowingData.userDataObj = {
+          ...farcasterFollowingData.userDataObj,
+          ...userDataObj,
+        };
+        farcasterFollowingData.index = respPageInfo.endFarcasterCursor;
       }
       setPageInfo(respPageInfo);
+      farcasterFollowingData.pageInfo = respPageInfo;
     } catch (err) {
       console.error(err);
     } finally {

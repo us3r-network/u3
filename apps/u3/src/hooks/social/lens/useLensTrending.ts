@@ -4,34 +4,47 @@ import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { SocialPlatform } from 'src/services/social/types';
 import { getTrendingFeeds } from 'src/services/social/api/feeds';
 
-const PAGE_SIZE = 30;
+const lensTrendingData = {
+  data: [],
+  pageInfo: {
+    hasNextPage: true,
+  },
+  endLensCursor: '',
+};
 export default function useLensTrending() {
   const index = useRef(0);
 
-  const [lensTrending, setLensTrending] = useState<any[]>([]); // TODO any
+  // TODO any
+  const [lensTrending, setLensTrending] = useState<any[]>(
+    lensTrendingData.data
+  );
   const [loading, setLoading] = useState(false);
-  const [pageInfo, setPageInfo] = useState({});
+  const [pageInfo, setPageInfo] = useState(lensTrendingData.pageInfo);
   const lensAccessToken = useLensAccessToken();
   const loadLensTrending = useCallback(async () => {
     setLoading(true);
     try {
       const resp = await getTrendingFeeds({
-        // endLensCursor: pageInfo.endLensCursor,
+        endLensCursor: lensTrendingData.endLensCursor
+          ? lensTrendingData.endLensCursor
+          : undefined,
         platforms: [SocialPlatform.Lens],
         lensAccessToken,
-        keyword: '',
       });
       if (resp.data.code !== 0) {
         toast.error('fail to get trending trending');
         setLoading(false);
         return;
       }
-      const { data } = resp.data;
-
-      //   const { casts, farcasterUserData, pageInfo: trendingPageInfo } = data;
-      //   const { endIndex } = trendingPageInfo;
-
-      //   setPageInfo(trendingPageInfo);
+      const { data, pageInfo: respPageInfo } = resp.data.data;
+      if (data.length > 0) {
+        setLensTrending((pre) => [...pre, ...data]);
+        lensTrendingData.data = lensTrendingData.data.concat(data);
+      }
+      if (respPageInfo) {
+        lensTrendingData.endLensCursor = respPageInfo.endLensCursor;
+        setPageInfo(respPageInfo);
+      }
     } catch (err) {
       console.error(err);
       toast.error('fail to get trending trending');
@@ -43,6 +56,7 @@ export default function useLensTrending() {
   return {
     loading,
     loadLensTrending,
+    lensTrending,
     pageInfo,
   };
 }

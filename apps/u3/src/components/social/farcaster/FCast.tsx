@@ -33,7 +33,7 @@ import { SOCIAL_SHARE_TITLE } from '../../../constants';
 export default function FCast({
   cast,
   farcasterUserData,
-  fUserData,
+  farcasterUserDataObj,
   openFarcasterQR,
   isDetail,
   showMenuBtn,
@@ -42,7 +42,7 @@ export default function FCast({
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
-  fUserData?: { [key: string]: UserData } | undefined;
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
@@ -52,7 +52,11 @@ export default function FCast({
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
   const castId: CastId = useFarcasterCastId({ cast });
-  const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
+  const userData = useFarcasterUserData({
+    fid: cast.fid,
+    farcasterUserData,
+    farcasterUserDataObj,
+  });
   const [showMore, setShowMore] = useState(false);
   const { following } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =

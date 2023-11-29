@@ -10,6 +10,7 @@ import PinChannelBtn from './PinChannelBtn';
 export enum FeedsType {
   FOLLOWING = 'following',
   TRENDING = 'trending',
+  WHATSNEW = 'whatsnew',
 }
 export default function SocialPageNav({
   showFeedsTabs,
@@ -128,6 +129,15 @@ function PcFeedsTypeTable({
         }}
       >
         Following
+      </FeedsTypeTab>
+      <FeedsTypeTab
+        active={type === 'whatsnew'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.WHATSNEW);
+          navigate(`/social/${currentPlatform}/whatsnew`);
+        }}
+      >
+        {`What's new?`}
       </FeedsTypeTab>
     </FeedsTypeTabsWrapper>
   );

@@ -10,24 +10,7 @@ import NoLogin from 'src/components/layout/NoLogin';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 
 export default function SocialFarcaster() {
-  const {
-    feedsType,
-
-    postScroll,
-    setPostScroll,
-
-    farcasterTrendingPageInfo,
-    farcasterTrendingLoading,
-    loadFarcasterTrending,
-    farcasterTrending,
-    farcasterTrendingUserData,
-
-    farcasterFollowingLoading,
-    loadFarcasterFollowing,
-    farcasterFollowing,
-    farcasterFollowingUserData,
-    farcasterFollowingPageInfo,
-  } = useOutletContext<any>(); // TODO: any
+  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any
 
   const currentFeedType = useRef<FeedsType>();
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
@@ -63,18 +46,6 @@ export default function SocialFarcaster() {
           feedsType,
           postScroll,
           setPostScroll,
-
-          farcasterTrendingPageInfo,
-          farcasterTrendingLoading,
-          loadFarcasterTrending,
-          farcasterTrending,
-          farcasterTrendingUserData,
-
-          farcasterFollowingLoading,
-          loadFarcasterFollowing,
-          farcasterFollowing,
-          farcasterFollowingUserData,
-          farcasterFollowingPageInfo,
         }}
       />
     </FarcasterListBox>

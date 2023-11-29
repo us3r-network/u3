@@ -9,8 +9,8 @@ import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 
 import { LoadingMoreWrapper, PostList } from './CommonStyles';
 
-export default function SocialLensTrending() {
-  const [parentId] = useState('social-lens-trending');
+export default function SocialLensWhatsnew() {
+  const [parentId] = useState('social-lens-whatsnew');
 
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);

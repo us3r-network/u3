@@ -50,12 +50,15 @@ export enum RouteKey {
   socialAll = 'socialAll',
   socialAllTrending = 'socialAllTrending',
   socialAllFollowing = 'socialAllFollowing',
+  socialAllWhatsnew = 'socialAllWhatsnew',
   socialFarcaster = 'socialFarcaster',
   socialFarcasterTrending = 'socialFarcasterTrending',
   socialFarcasterFollowing = 'socialFarcasterFollowing',
+  socialFarcasterWhatsnew = 'socialFarcasterWhatsnew',
   socialLens = 'socialLens',
   socialLensTrending = 'socialLensTrending',
   socialLensFollowing = 'socialLensFollowing',
+  socialLensWhatsnew = 'socialLensWhatsnew',
   socialChannel = 'socialChannel',
   socialTrendsChannel = 'socialTrendsChannel',
   socialPostDetailLens = 'socialPostDetailLens',
@@ -283,6 +286,11 @@ export const routes: CutomRouteObject[] = [
             element: loadContainerElement('social/SocialAllFollowing'),
             key: RouteKey.socialAllFollowing,
           } as CutomRouteObject,
+          {
+            path: 'whatsnew',
+            element: loadContainerElement('social/SocialAllWhatsnew'),
+            key: RouteKey.socialAllWhatsnew,
+          } as CutomRouteObject,
         ],
       },
       {
@@ -300,6 +308,11 @@ export const routes: CutomRouteObject[] = [
             element: loadContainerElement('social/SocialFarcasterFollowing'),
             key: RouteKey.socialFarcasterFollowing,
           } as CutomRouteObject,
+          {
+            path: 'whatsnew',
+            element: loadContainerElement('social/SocialFarcasterWhatsnew'),
+            key: RouteKey.socialFarcasterWhatsnew,
+          },
         ],
       },
       {
@@ -317,6 +330,11 @@ export const routes: CutomRouteObject[] = [
             element: loadContainerElement('social/SocialLensTrending'),
             key: RouteKey.socialLensTrending,
           } as CutomRouteObject,
+          {
+            path: 'whatsnew',
+            element: loadContainerElement('social/SocialLensWhatsnew'),
+            key: RouteKey.socialLensWhatsnew,
+          },
         ],
       },
       {
