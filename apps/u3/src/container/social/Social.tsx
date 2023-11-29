@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useOutletContext, useSearchParams } from 'react-router-dom';
+import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { trim } from 'lodash';
 
@@ -65,81 +65,81 @@ export default function SocialAll() {
     [searchParams]
   );
 
-  const loadFirstFeeds = useCallback(async () => {
-    setFirstLoadingDone(false);
-    if (feedsType === FeedsType.FOLLOWING) {
-      const fidParam = isConnectedFarcaster ? fid : undefined;
-      const lensSessionProfileIdParam = lensSessionProfileId;
-      if (!fidParam && !lensSessionProfileIdParam) {
-        setFirstLoadingDone(true);
-        return;
-      }
+  // const loadFirstFeeds = useCallback(async () => {
+  //   setFirstLoadingDone(false);
+  //   if (feedsType === FeedsType.FOLLOWING) {
+  //     const fidParam = isConnectedFarcaster ? fid : undefined;
+  //     const lensSessionProfileIdParam = lensSessionProfileId;
+  //     if (!fidParam && !lensSessionProfileIdParam) {
+  //       setFirstLoadingDone(true);
+  //       return;
+  //     }
 
-      await loadFollowingFirstFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        fid: fidParam,
-        lensProfileId: lensSessionProfileIdParam,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
-      });
-    } else {
-      await loadTrendingFirstFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
-      });
-    }
-    setFirstLoadingDone(true);
-  }, [
-    parentId,
-    loadFollowingFirstFeeds,
-    loadTrendingFirstFeeds,
-    currentSearchParams.keyword,
-    fid,
-    feedsType,
-    socialPlatform,
-    isConnectedFarcaster,
-    lensSessionProfileId,
-  ]);
+  //     await loadFollowingFirstFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       fid: fidParam,
+  //       lensProfileId: lensSessionProfileIdParam,
+  //       platforms: socialPlatform ? [socialPlatform] : undefined,
+  //     });
+  //   } else {
+  //     await loadTrendingFirstFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       platforms: socialPlatform ? [socialPlatform] : undefined,
+  //     });
+  //   }
+  //   setFirstLoadingDone(true);
+  // }, [
+  //   parentId,
+  //   loadFollowingFirstFeeds,
+  //   loadTrendingFirstFeeds,
+  //   currentSearchParams.keyword,
+  //   fid,
+  //   feedsType,
+  //   socialPlatform,
+  //   isConnectedFarcaster,
+  //   lensSessionProfileId,
+  // ]);
 
-  const loadMoreFeeds = useCallback(async () => {
-    if (feedsType === FeedsType.FOLLOWING) {
-      await loadFollowingMoreFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        lensProfileId: lensSessionProfileId,
-        fid: isConnectedFarcaster ? fid : undefined,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
-      });
-    } else {
-      await loadTrendingMoreFeeds(parentId, {
-        keyword: currentSearchParams.keyword,
-        platforms: socialPlatform ? [socialPlatform] : undefined,
-      });
-    }
-  }, [
-    parentId,
-    loadFollowingMoreFeeds,
-    loadTrendingMoreFeeds,
-    currentSearchParams.keyword,
-    fid,
-    feedsType,
-    socialPlatform,
-    isConnectedFarcaster,
-    lensSessionProfileId,
-  ]);
+  // const loadMoreFeeds = useCallback(async () => {
+  //   if (feedsType === FeedsType.FOLLOWING) {
+  //     await loadFollowingMoreFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       lensProfileId: lensSessionProfileId,
+  //       fid: isConnectedFarcaster ? fid : undefined,
+  //       platforms: socialPlatform ? [socialPlatform] : undefined,
+  //     });
+  //   } else {
+  //     await loadTrendingMoreFeeds(parentId, {
+  //       keyword: currentSearchParams.keyword,
+  //       platforms: socialPlatform ? [socialPlatform] : undefined,
+  //     });
+  //   }
+  // }, [
+  //   parentId,
+  //   loadFollowingMoreFeeds,
+  //   loadTrendingMoreFeeds,
+  //   currentSearchParams.keyword,
+  //   fid,
+  //   feedsType,
+  //   socialPlatform,
+  //   isConnectedFarcaster,
+  //   lensSessionProfileId,
+  // ]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
-      return;
-    loadFirstFeeds();
-  }, [currentSearchParams]);
+  // useEffect(() => {
+  //   if (!mounted) return;
+  //   if (!currentSearchParams.keyword || !trim(currentSearchParams.keyword))
+  //     return;
+  //   loadFirstFeeds();
+  // }, [currentSearchParams]);
 
-  useEffect(() => {
-    // if (firstLoadingDone) return;
-    if (feeds.length > 0) return;
-    if (!mounted) return;
+  // useEffect(() => {
+  //   // if (firstLoadingDone) return;
+  //   if (feeds.length > 0) return;
+  //   if (!mounted) return;
 
-    loadFirstFeeds();
-  }, [loadFirstFeeds, feeds, mounted]);
+  //   loadFirstFeeds();
+  // }, [loadFirstFeeds, feeds, mounted]);
 
   if (feedsType === FeedsType.FOLLOWING) {
     if (!isLogin) {
@@ -159,70 +159,7 @@ export default function SocialAll() {
       <AddPostFormWrapper>
         <AddPostForm />
       </AddPostFormWrapper>
-
-      {(firstLoading && (
-        <LoadingWrapper>
-          <Loading />
-        </LoadingWrapper>
-      )) || (
-        <InfiniteScroll
-          style={{ overflow: 'hidden' }}
-          dataLength={feeds?.length || 0}
-          next={() => {
-            console.log({ moreLoading });
-            if (moreLoading) return;
-            loadMoreFeeds();
-          }}
-          hasMore={!firstLoading && pageInfo?.hasNextPage}
-          scrollThreshold={FEEDS_SCROLL_THRESHOLD}
-          loader={
-            <LoadingMoreWrapper>
-              <Loading />
-            </LoadingMoreWrapper>
-          }
-          scrollableTarget="social-scroll-wrapper"
-        >
-          <PostList>
-            {(feeds || []).map(({ platform, data }) => {
-              if (platform === 'lens') {
-                return (
-                  <LensPostCard
-                    key={data.id}
-                    data={data}
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: data.id,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              if (platform === 'farcaster') {
-                const key = Buffer.from(data.hash.data).toString('hex');
-                return (
-                  <FCast
-                    key={key}
-                    cast={data}
-                    openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
-                    showMenuBtn
-                    cardClickAction={(e) => {
-                      setPostScroll({
-                        currentParent: parentId,
-                        id: key,
-                        top: (e.target as HTMLDivElement).offsetTop,
-                      });
-                    }}
-                  />
-                );
-              }
-              return null;
-            })}
-          </PostList>
-        </InfiniteScroll>
-      )}
+      <Outlet />
     </MainCenter>
   );
 }

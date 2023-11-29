@@ -48,6 +48,8 @@ export enum RouteKey {
   socialLayout = 'socialLayout',
   social = 'social',
   socialAll = 'socialAll',
+  socialAllTrending = 'socialAllTrending',
+  socialAllFollowing = 'socialAllFollowing',
   socialFarcaster = 'socialFarcaster',
   socialFarcasterTrending = 'socialFarcasterTrending',
   socialFarcasterFollowing = 'socialFarcasterFollowing',
@@ -273,13 +275,13 @@ export const routes: CutomRouteObject[] = [
         children: [
           {
             path: '', // default trending
-            element: loadContainerElement('social/SocialFarcasterTrending'),
-            key: RouteKey.socialFarcasterTrending,
+            element: loadContainerElement('social/SocialAllTrending'),
+            key: RouteKey.socialAllTrending,
           },
           {
             path: 'following',
-            element: loadContainerElement('social/SocialFarcasterFollowing'),
-            key: RouteKey.socialFarcasterFollowing,
+            element: loadContainerElement('social/SocialAllFollowing'),
+            key: RouteKey.socialAllFollowing,
           } as CutomRouteObject,
         ],
       },
