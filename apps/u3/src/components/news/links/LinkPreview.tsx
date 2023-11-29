@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 13:42:53
+ * @LastEditTime: 2023-11-29 16:11:17
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -50,7 +50,6 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
                 isFullscreen={isFullscreen}
                 onClick={onToggle}
               />
-              {otherProps.children}
             </HeaderRight>
             {isFullscreen && (
               <ContentPreviewFullscreen
