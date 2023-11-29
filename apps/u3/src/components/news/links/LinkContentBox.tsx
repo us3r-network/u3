@@ -146,7 +146,6 @@ export default function LinkContentBox({
                   removePremintUrl.indexOf('?') > 0
                     ? selectLink?.url.replace('?', '/embed?')
                     : `${selectLink?.url}/embed`;
-                console.log('zoraEmbedUrl', zoraEmbedUrl, selectLink);
                 return (
                   <div className="iframe-container">
                     {!iframeLoaded && (
