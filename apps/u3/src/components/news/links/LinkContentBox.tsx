@@ -54,18 +54,24 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
-              const tweetId = selectLink.url.split('/status/')[1];
-              if (tweetId)
-                return (
-                  <div className="dark">
-                    <Tweet id={tweetId} />
-                  </div>
-                );
+            // X(Twitter)
+            if (
+              selectLink?.url.indexOf('twitter.com') > 0 ||
+              selectLink?.url.indexOf('x.com') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
+                const tweetId = selectLink.url.split('/status/')[1];
+                if (tweetId)
+                  return (
+                    <div className="dark">
+                      <Tweet id={tweetId} />
+                    </div>
+                  );
+              }
               return (
                 <div className="info">
                   <p>{selectLink?.metadata?.title}</p>
-                  <p>OTERH Twitter Page Preview is NOT supported yet!</p>
+                  <p>This Twitter Page Preview is NOT supported yet!</p>
                   <p>
                     <a href={selectLink.url} target="_blank" rel="noreferrer">
                       Open in New Tab
@@ -74,19 +80,87 @@ export default function LinkContentBox({
                 </div>
               );
             }
-            // if (selectLink?.metadata?.provider === 'YouTube') {
-            //   return (
-            //     <iframe
-            //       width="100%"
-            //       height="100%"
-            //       src="https://www.youtube.com/embed/b3jiBauZDvs"
-            //       title="YouTube video player"
-            //       frameBorder="0"
-            //       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            //       allowFullScreen
-            //     />
-            //   );
+            // Github
+            // if (selectLink?.url.indexOf('github.com') > 0) {
+            //   if (selectLink?.metadata?.provider === 'GitHub') {
+            //     console.log('github', selectLink);
+            //     return <GithubPreview url={selectLink.url} />;
+            //   }
             // }
+            // Youtube
+            if (
+              selectLink?.url.indexOf('youtube.com') > 0 ||
+              selectLink?.url.indexOf('youtu.be') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'YouTube') {
+                const videoId = extractYoutubeVideoId(selectLink?.url);
+                if (videoId)
+                  return (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title="YouTube video player"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  );
+                return (
+                  <div className="info">
+                    <p>{selectLink?.metadata?.title}</p>
+                    <p>This Youtube Page Preview is NOT supported yet!</p>
+                    <p>
+                      <a
+                        href={selectLink?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open in New Tab
+                      </a>
+                    </p>
+                  </div>
+                );
+              }
+            }
+            // Zora
+            if (selectLink?.url.indexOf('zora.co') > 0)
+              if (selectLink?.metadata?.provider === 'zora') {
+                const removePremintUrl = selectLink?.url.replace(
+                  'premint-',
+                  ''
+                );
+                const zoraEmbedUrl =
+                  removePremintUrl.indexOf('?') > 0
+                    ? selectLink?.url.replace('?', '/embed?')
+                    : `${selectLink?.url}/embed`;
+                console.log('zoraEmbedUrl', zoraEmbedUrl, selectLink);
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={zoraEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      width="96%"
+                      height="96%"
+                      allowTransparency
+                      allowFullScreen
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                    />
+                  </div>
+                );
+              }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -148,6 +222,9 @@ export const ContentBox = styled.div`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
 
   & img {
     max-width: 100%;
@@ -191,3 +268,43 @@ export const LoadingBox = styled.div`
   justify-content: center;
   height: calc(100% - 60px);
 `;
+
+function extractYoutubeVideoId(url: string) {
+  const patterns = ['v=', 'youtu.be/', '/embed/', '/live/', '/shorts/'];
+  if (!url) return null;
+  console.log(url);
+  let videoId = '';
+  patterns.forEach((pattern) => {
+    if (url.indexOf(pattern) > 0) {
+      [, videoId] = url.split(pattern);
+      [videoId] = videoId.split('&');
+    }
+  });
+  return videoId;
+}
+
+// function GithubPreview({ url }: { url: string }) {
+//   const [iframeSrc, setIframeSrc] = useState(null);
+//   const apiUrl = url.replace('github.com', 'api.github.com/repos');
+//   fetch(apiUrl)
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .then((data) => {
+//       console.log(data);
+//       setIframeSrc(`data:text/html;base64,${encodeURIComponent(data.content)}`);
+//     });
+//   return (
+//     iframeSrc && (
+//       <iframe
+//         id="github-iframe"
+//         title="Github Page Preview"
+//         src={iframeSrc}
+//         width="100%"
+//         height="100%"
+//         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+//         allowFullScreen
+//       />
+//     )
+//   );
+// }

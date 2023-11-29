@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-28 16:23:16
+ * @LastEditTime: 2023-11-29 12:32:06
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -16,12 +16,13 @@ const TWITTER_SEARCH_PARAMS = 'includeDomains=twitter.com,x.com';
 // const FARCASTER_SEARCH_PARAMS = 'includeDomains=warpcast.com';
 // const LENS_SEARCH_PARAMS = 'includeDomains=warpcast.com';
 const GITHUB_SEARCH_PARAMS = 'includeDomains=github.com';
-const YOUTUBE_SEARCH_PARAMS = 'includeDomains=youtube.com';
+const YOUTUBE_SEARCH_PARAMS = 'includeDomains=youtube.com,youtu.be';
 const SUBSTACK_SEARCH_PARAMS = 'includeDomains=substack.com';
-const HACKER_NEWS_SEARCH_PARAMS = 'includeDomains=ycombinator.com';
-const REDDIT_SEARCH_PARAMS = 'includeDomains=reddit.com';
+// const HACKER_NEWS_SEARCH_PARAMS = 'includeDomains=ycombinator.com';
+// const REDDIT_SEARCH_PARAMS = 'includeDomains=reddit.com';
 // const FARQUEST_SEARCH_PARAMS = 'includeDomains=far.quest';
-const KIWISTAND_SEARCH_PARAMS = 'includeDomains=news.kiwistand.com/';
+const KIWISTAND_SEARCH_PARAMS = 'includeDomains=news.kiwistand.com';
+const ZORA_SEARCH_PARAMS = 'includeDomains=zora.co';
 
 const FeedsSwitchOptions = [
   {
@@ -48,17 +49,21 @@ const FeedsSwitchOptions = [
     value: `${RouteKey.links}?${YOUTUBE_SEARCH_PARAMS}`,
   },
   {
+    label: 'Zora',
+    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
+  },
+  {
     label: 'Substack',
     value: `${RouteKey.links}?${SUBSTACK_SEARCH_PARAMS}`,
   },
-  {
-    label: 'Hacker News',
-    value: `${RouteKey.links}?${HACKER_NEWS_SEARCH_PARAMS}`,
-  },
-  {
-    label: 'Reddit',
-    value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
-  },
+  // {
+  //   label: 'Hacker News',
+  //   value: `${RouteKey.links}?${HACKER_NEWS_SEARCH_PARAMS}`,
+  // },
+  // {
+  //   label: 'Reddit',
+  //   value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
+  // },
   // {
   //   label: 'Far.quest',
   //   value: `${RouteKey.links}?${FARQUEST_SEARCH_PARAMS}`,
