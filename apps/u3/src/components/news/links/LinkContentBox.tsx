@@ -96,14 +96,27 @@ export default function LinkContentBox({
                 const videoId = extractYoutubeVideoId(selectLink?.url);
                 if (videoId)
                   return (
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${videoId}`}
-                      title="YouTube video player"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
+                    <div className="iframe-container">
+                      {!iframeLoaded && (
+                        <LoadingBox>
+                          <Loading />
+                        </LoadingBox>
+                      )}
+                      <iframe
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        title="YouTube video player"
+                        style={{
+                          opacity: iframeLoaded ? 1 : 0,
+                          inset: 0,
+                          background: 'transparent',
+                        }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        onLoad={() => {
+                          setIframeLoaded(true);
+                        }}
+                      />
+                    </div>
                   );
                 return (
                   <div className="info">
@@ -133,7 +146,6 @@ export default function LinkContentBox({
                   removePremintUrl.indexOf('?') > 0
                     ? selectLink?.url.replace('?', '/embed?')
                     : `${selectLink?.url}/embed`;
-                console.log('zoraEmbedUrl', zoraEmbedUrl, selectLink);
                 return (
                   <div className="iframe-container">
                     {!iframeLoaded && (
@@ -152,11 +164,43 @@ export default function LinkContentBox({
                       onLoad={() => {
                         setIframeLoaded(true);
                       }}
-                      width="96%"
-                      height="96%"
                       allowTransparency
                       allowFullScreen
                       sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                    />
+                  </div>
+                );
+              }
+            // Spotify
+            if (selectLink?.url.indexOf('spotify.com') > 0)
+              if (selectLink?.metadata?.provider === 'Spotify') {
+                const spotifyEmbedUrl = selectLink?.url.replace(
+                  'spotify.com',
+                  'spotify.com/embed'
+                );
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={spotifyEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                      loading="lazy"
                     />
                   </div>
                 );
@@ -178,6 +222,8 @@ export default function LinkContentBox({
                     onLoad={() => {
                       setIframeLoaded(true);
                     }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
                   />
                 </div>
               );
@@ -222,9 +268,6 @@ export const ContentBox = styled.div`
   width: 100%;
   height: 100%;
   overflow-x: hidden;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
 
   & img {
     max-width: 100%;
