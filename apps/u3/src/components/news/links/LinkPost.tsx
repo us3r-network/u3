@@ -10,6 +10,7 @@ import { SocialPlatform } from 'src/services/social/types';
 import { useLoadLinkFeeds } from 'src/hooks/social/useLoadLinkFeeds';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import { useGlobalModalsCtx } from 'src/contexts/shared/GlobalModalsCtx';
+import IconSend from 'src/components/common/icons/IconSend';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 
 export default function LinkPost({ url }: { url: string }) {
@@ -96,6 +97,7 @@ export default function LinkPost({ url }: { url: string }) {
           });
         }}
       >
+        <IconSend />
         Give a Comment
       </CommentButton>
     </Wraper>
@@ -108,6 +110,7 @@ const Wraper = styled.div`
   overflow: scroll;
   position: relative;
   flex-shrink: 0;
+  border-left: 1px solid #39424c;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -128,7 +131,7 @@ const Title = styled.div`
   font-weight: 600;
   font-style: italic;
   color: #fff;
-  margin: 20px;
+  margin: 18px;
 `;
 const PostList = styled.div`
   width: 100%;

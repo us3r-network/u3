@@ -96,14 +96,27 @@ export default function LinkContentBox({
                 const videoId = extractYoutubeVideoId(selectLink?.url);
                 if (videoId)
                   return (
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${videoId}`}
-                      title="YouTube video player"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                    />
+                    <div className="iframe-container">
+                      {!iframeLoaded && (
+                        <LoadingBox>
+                          <Loading />
+                        </LoadingBox>
+                      )}
+                      <iframe
+                        src={`https://www.youtube.com/embed/${videoId}`}
+                        title="YouTube video player"
+                        style={{
+                          opacity: iframeLoaded ? 1 : 0,
+                          inset: 0,
+                          background: 'transparent',
+                        }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        onLoad={() => {
+                          setIframeLoaded(true);
+                        }}
+                      />
+                    </div>
                   );
                 return (
                   <div className="info">
@@ -152,8 +165,6 @@ export default function LinkContentBox({
                       onLoad={() => {
                         setIframeLoaded(true);
                       }}
-                      width="96%"
-                      height="96%"
                       allowTransparency
                       allowFullScreen
                       sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
@@ -178,6 +189,8 @@ export default function LinkContentBox({
                     onLoad={() => {
                       setIframeLoaded(true);
                     }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
                   />
                 </div>
               );
