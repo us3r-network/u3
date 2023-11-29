@@ -79,7 +79,7 @@ export const NoMatchRoute: CutomRouteObject = {
 export const routes: CutomRouteObject[] = [
   {
     path: '/',
-    element: <Navigate to="/web3-today" />,
+    element: loadContainerElement('Explore'),
     key: RouteKey.home,
   },
   {

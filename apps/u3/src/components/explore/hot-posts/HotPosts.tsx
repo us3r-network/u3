@@ -1,0 +1,76 @@
+import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import CardBase from '../../common/card/CardBase';
+import Title from '../Title';
+import { SocialPlatform } from '../../../services/social/types';
+import FarcasterPostCard from './FarcasterPostCard';
+import Loading from '../../common/loading/Loading';
+
+export default function HotPosts({
+  posts,
+  isLoading,
+  farcasterUserData,
+}: {
+  posts: Array<{ data: any; platform: SocialPlatform }>;
+  isLoading: boolean;
+  farcasterUserData: { [key: string]: { type: number; value: string }[] };
+}) {
+  const navigate = useNavigate();
+  return (
+    <Wrapper>
+      <Title
+        text="🔥 Hot Posts"
+        viewAllAction={() => {
+          navigate(`/social`);
+        }}
+      />
+      <CardsWrapper>
+        {isLoading ? (
+          <LoadingWrapper>
+            <Loading />
+          </LoadingWrapper>
+        ) : (
+          <CardsLayout>
+            {posts.map(({ platform, data }) => {
+              if (platform === SocialPlatform.Farcaster) {
+                const id = Buffer.from(data.hash.data).toString('hex');
+                return (
+                  <FarcasterPostCard
+                    key={id}
+                    data={data}
+                    farcasterUserData={farcasterUserData}
+                    onClick={() => navigate(`/social/post-detail/fcast/${id}`)}
+                  />
+                );
+              }
+              return null;
+            })}
+          </CardsLayout>
+        )}
+      </CardsWrapper>
+    </Wrapper>
+  );
+}
+const Wrapper = styled.div`
+  width: 100%;
+`;
+const CardsWrapper = styled(CardBase)`
+  width: 100%;
+  height: 534px;
+  margin-top: 20px;
+`;
+const LoadingWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const CardsLayout = styled.div`
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-gap: 20px;
+  grid-auto-columns: auto;
+  grid-auto-rows: auto;
+`;
