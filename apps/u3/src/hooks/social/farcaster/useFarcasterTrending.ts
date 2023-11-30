@@ -1,24 +1,36 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getFarcasterTrending } from 'src/services/social/api/farcaster';
+import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
 const PAGE_SIZE = 30;
+const farcasterTrendingData = {
+  data: [],
+  pageInfo: {
+    hasNextPage: true,
+  },
+  userData: {},
+  userDataObj: {},
+  index: 0,
+};
+const trendingIdSet: Set<string> = new Set();
+
 export default function useFarcasterTrending() {
-  const index = useRef(0);
-  const trendingIdSet = useRef<Set<string>>(new Set());
-  const [farcasterTrending, setFarcasterTrending] = useState<any[]>([]); // TODO any
+  const [farcasterTrending, setFarcasterTrending] = useState<any[]>(
+    farcasterTrendingData.data
+  ); // TODO any
   const [loading, setLoading] = useState(false);
-  const [pageInfo, setPageInfo] = useState({});
-  const [farcasterTrendingUserData, setFarcasterTrendingUserData] = useState(
-    {}
-  );
+  const [pageInfo, setPageInfo] = useState(farcasterTrendingData.pageInfo);
+
+  const [farcasterTrendingUserDataObj, setFarcasterTrendingUserDataObj] =
+    useState(farcasterTrendingData.userDataObj);
 
   const loadFarcasterTrending = useCallback(async () => {
     setLoading(true);
     try {
       const resp = await getFarcasterTrending({
-        start: index.current,
-        end: index.current + PAGE_SIZE,
+        start: farcasterTrendingData.index,
+        end: farcasterTrendingData.index + PAGE_SIZE,
       });
       if (resp.data.code !== 0) {
         toast.error('fail to get farcaster trending');
@@ -31,41 +43,42 @@ export default function useFarcasterTrending() {
 
       const newTrending = casts.filter((cast: any) => {
         const { id } = cast.data;
-        if (trendingIdSet.current.has(id)) {
+        if (trendingIdSet.has(id)) {
           return false;
         }
-        trendingIdSet.current.add(id);
+        trendingIdSet.add(id);
         return true;
       });
 
       if (newTrending.length > 0) {
         setFarcasterTrending((pre) => [...pre, ...newTrending]);
-        index.current = endIndex;
+        farcasterTrendingData.data =
+          farcasterTrendingData.data.concat(newTrending);
+        farcasterTrendingData.index = endIndex;
       }
       if (farcasterUserData.length > 0) {
-        const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData?.forEach((item) => {
-          if (temp[item.fid]) {
-            temp[item.fid].push(item);
-          } else {
-            temp[item.fid] = [item];
-          }
-        });
-        setFarcasterTrendingUserData((pre) => ({ ...pre, ...temp }));
+        const userDataObj = userDataObjFromArr(farcasterUserData);
+
+        setFarcasterTrendingUserDataObj((pre) => ({ ...pre, ...userDataObj }));
+        farcasterTrendingData.userDataObj = {
+          ...farcasterTrendingData.userDataObj,
+          ...userDataObj,
+        };
       }
       setPageInfo(trendingPageInfo);
+      farcasterTrendingData.pageInfo = trendingPageInfo;
     } catch (err) {
       console.error(err);
       toast.error('fail to get farcaster trending');
     } finally {
       setLoading(false);
     }
-  }, [index]);
+  }, []);
 
   return {
     loading,
     farcasterTrending,
-    farcasterTrendingUserData,
+    farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo,
   };

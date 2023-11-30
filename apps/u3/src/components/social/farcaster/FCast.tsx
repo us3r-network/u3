@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
 
+import { UserData } from 'src/utils/social/farcaster/user-data';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
@@ -32,6 +33,7 @@ import { SOCIAL_SHARE_TITLE } from '../../../constants';
 export default function FCast({
   cast,
   farcasterUserData,
+  farcasterUserDataObj,
   openFarcasterQR,
   isDetail,
   showMenuBtn,
@@ -41,6 +43,7 @@ export default function FCast({
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
@@ -51,7 +54,11 @@ export default function FCast({
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
   const castId: CastId = useFarcasterCastId({ cast });
-  const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
+  const userData = useFarcasterUserData({
+    fid: cast.fid,
+    farcasterUserData,
+    farcasterUserDataObj,
+  });
   const [showMore, setShowMore] = useState(false);
   const { following } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =
@@ -192,6 +199,7 @@ export default function FCast({
             openFarcasterQR={openFarcasterQR}
             cast={cast}
             farcasterUserData={farcasterUserData}
+            farcasterUserDataObj={farcasterUserDataObj}
           />
           <FCastComment
             openFarcasterQR={openFarcasterQR}

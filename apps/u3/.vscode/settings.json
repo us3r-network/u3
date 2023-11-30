@@ -10,12 +10,14 @@
     "Fname",
     "imgs",
     "Keypair",
+    "Livepeer",
     "offchain",
     "Signup",
     "unfollow",
     "unfollowed",
     "upsert",
     "viem",
-    "Warpcast"
+    "Warpcast",
+    "Whatsnew"
   ],
 }

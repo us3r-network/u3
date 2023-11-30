@@ -1,13 +1,29 @@
 import { UserDataType } from '@farcaster/hub-web';
 
-export default function userDataObj(data: { type: number; value: string }[]) {
-  let pfp = '';
-  let display = '';
-  let bio = '';
-  let userName = '';
-  let url = '';
+export type UserData = {
+  fid: string;
+  pfp: string;
+  bio: string;
+  userName: string;
+  display: string;
+  url: string;
+};
 
-  data.forEach((item) => {
+export function userDataObjFromArr(
+  dataArr: {
+    fid: string;
+    type: number;
+    value: string;
+  }[]
+) {
+  const temp: { [key: string]: UserData } = {};
+  dataArr.forEach((item) => {
+    let pfp = '';
+    let display = '';
+    let bio = '';
+    let userName = '';
+    let url = '';
+
     switch (item.type) {
       case UserDataType.PFP:
         pfp = item.value;
@@ -27,12 +43,22 @@ export default function userDataObj(data: { type: number; value: string }[]) {
       default:
         break;
     }
+
+    temp[item.fid] = temp[item.fid] || {
+      fid: item.fid,
+      pfp,
+      display,
+      bio,
+      userName,
+      url,
+    };
+
+    if (pfp) temp[item.fid].pfp = pfp;
+    if (bio) temp[item.fid].bio = bio;
+    if (userName) temp[item.fid].userName = userName;
+    if (display) temp[item.fid].display = display;
+    if (url) temp[item.fid].url = url;
   });
-  return {
-    pfp,
-    bio,
-    userName,
-    display,
-    url,
-  };
+
+  return temp;
 }
