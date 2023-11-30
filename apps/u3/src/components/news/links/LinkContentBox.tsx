@@ -1,8 +1,17 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-11-29 18:15:27
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-30 15:30:40
+ * @FilePath: /u3/apps/u3/src/components/news/links/LinkContentBox.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import { contentParse } from 'src/services/news/api/contents';
 import { Tweet } from 'react-tweet';
+import { extractYoutubeVideoId } from 'src/utils/news/link';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import ExtensionSupport from '../../layout/ExtensionSupport';
@@ -80,13 +89,6 @@ export default function LinkContentBox({
                 </div>
               );
             }
-            // Github
-            // if (selectLink?.url.indexOf('github.com') > 0) {
-            //   if (selectLink?.metadata?.provider === 'GitHub') {
-            //     console.log('github', selectLink);
-            //     return <GithubPreview url={selectLink.url} />;
-            //   }
-            // }
             // Youtube
             if (
               selectLink?.url.indexOf('youtube.com') > 0 ||
@@ -319,42 +321,3 @@ export const LoadingBox = styled.div`
   justify-content: center;
   height: calc(100% - 60px);
 `;
-
-function extractYoutubeVideoId(url: string) {
-  const patterns = ['v=', 'youtu.be/', '/embed/', '/live/', '/shorts/'];
-  if (!url) return null;
-  let videoId = '';
-  patterns.forEach((pattern) => {
-    if (url.indexOf(pattern) > 0) {
-      [, videoId] = url.split(pattern);
-      [videoId] = videoId.split('&');
-    }
-  });
-  return videoId;
-}
-
-// function GithubPreview({ url }: { url: string }) {
-//   const [iframeSrc, setIframeSrc] = useState(null);
-//   const apiUrl = url.replace('github.com', 'api.github.com/repos');
-//   fetch(apiUrl)
-//     .then((response) => {
-//       return response.json();
-//     })
-//     .then((data) => {
-//       console.log(data);
-//       setIframeSrc(`data:text/html;base64,${encodeURIComponent(data.content)}`);
-//     });
-//   return (
-//     iframeSrc && (
-//       <iframe
-//         id="github-iframe"
-//         title="Github Page Preview"
-//         src={iframeSrc}
-//         width="100%"
-//         height="100%"
-//         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-//         allowFullScreen
-//       />
-//     )
-//   );
-// }
