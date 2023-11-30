@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-30 12:19:30
+ * @LastEditTime: 2023-11-30 15:41:17
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -11,6 +11,7 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { LinkListItem } from 'src/services/news/types/links';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import SearchInput from 'src/components/common/input/SearchInput';
+import { decodeLinkURL, encodeLinkURL } from 'src/utils/news/link';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 // import SearchInput from '../../common/input/SearchInput';
@@ -22,7 +23,6 @@ import {
   getContentsLayoutFromLocal,
   setContentsLayoutToLocal,
 } from '../../../utils/news/localLayout';
-import useLogin from '../../../hooks/shared/useLogin';
 import LinkOrderBySelect from './LinkOrderBySelect';
 import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
@@ -61,7 +61,6 @@ export default function LinksPage({
   getMore,
 }: LinksPageProps) {
   const navigate = useNavigate();
-  // const { isAdmin } = useLogin();
   const { link } = useParams();
   const [searchParams] = useSearchParams();
 
@@ -70,11 +69,7 @@ export default function LinksPage({
 
   const selectLink: LinkListItem | null = useMemo(() => {
     return link
-      ? links.find(
-          (item) =>
-            item?.url ===
-            decodeURIComponent(Buffer.from(link, 'base64').toString('utf8'))
-        ) || links[0]
+      ? links.find((item) => item?.url === decodeLinkURL(link))
       : links[0];
   }, [links, link]);
 
@@ -176,12 +171,10 @@ export default function LinksPage({
                       data={links}
                       activeLink={selectLink}
                       onItemClick={(item) => {
-                        const navlink = encodeURIComponent(
-                          Buffer.from(item?.url, 'utf8').toString('base64')
-                        );
-                        console.log('nav to ', navlink);
                         navigate(
-                          `/links/${navlink}?${searchParams.toString()}`
+                          `/links/${encodeLinkURL(
+                            item?.url
+                          )}?${searchParams.toString()}`
                         );
                       }}
                     />
@@ -215,9 +208,9 @@ export default function LinksPage({
                     data={links}
                     onItemClick={(item) => {
                       navigate(
-                        `/links/${Buffer.from(item?.url, 'utf8').toString(
-                          'base64'
-                        )}}?${searchParams.toString()}`
+                        `/links/${encodeLinkURL(
+                          item?.url
+                        )}?${searchParams.toString()}`
                       );
                     }}
                   />
