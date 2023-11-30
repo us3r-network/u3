@@ -68,9 +68,9 @@ export default function LinkPost({ url }: { url: string }) {
                         <FCast
                           cast={data}
                           disableRenderUrl
+                          simpleLayout
                           openFarcasterQR={openFarcasterQR}
                           farcasterUserData={farcasterUserData}
-                          showMenuBtn
                         />
                       </ItemWraper>
                     );

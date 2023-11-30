@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 17:14:58
+ * @LastEditTime: 2023-11-30 10:16:50
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -38,7 +38,7 @@ export default function useFeedLinks(currentSearchParams) {
         },
         user?.token
       );
-      const newLinks = processLinks(data.data.data);
+      const newLinks = data.data.data;
       newLinks.forEach((item) => {
         item.metadata =
           item.metadata && item.metadata.title
@@ -69,18 +69,6 @@ export default function useFeedLinks(currentSearchParams) {
   }, []);
 
   return { links, loading, hasMore, endCursor, load };
-}
-
-function processLinks(links) {
-  return links.map((link) => {
-    const url = link.url
-      // .replace('https://twitter.com', 'https://x.com')
-      .split('?')[0];
-    return {
-      ...link,
-      url,
-    };
-  });
 }
 
 export function processMetadata(metadata) {
