@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-30 12:06:10
+ * @LastEditTime: 2023-11-30 12:19:30
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -95,7 +95,6 @@ export default function LinksPage({
       resetRouthPath();
     }
   }, [link, resetRouthPath]);
-  console.log(link, selectLink);
   return (
     <Box>
       <NewsMenu />
@@ -177,7 +176,6 @@ export default function LinksPage({
                       data={links}
                       activeLink={selectLink}
                       onItemClick={(item) => {
-                        console.log('nav to ', item?.url);
                         const navlink = encodeURIComponent(
                           Buffer.from(item?.url, 'utf8').toString('base64')
                         );
