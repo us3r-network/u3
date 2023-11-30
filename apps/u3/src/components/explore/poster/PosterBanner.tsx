@@ -33,7 +33,7 @@ const Wrapper = styled.div`
   width: 100%;
   padding: 20px;
   box-sizing: border-box;
-  justify-content: space-between;
+  gap: 40px;
   align-items: center;
   border-radius: 20px;
   background: #f7f6f4;
@@ -55,6 +55,7 @@ const SecondaryTitle = styled.span`
   line-height: normal;
 `;
 const CreatePosterBtn = styled(ButtonPrimary)`
+  margin-left: auto;
   display: flex;
   min-width: 295px;
   height: 70px;

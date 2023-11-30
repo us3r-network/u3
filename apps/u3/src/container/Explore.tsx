@@ -57,39 +57,38 @@ export default function Explore() {
             temp[item.fid] = [item];
           }
         });
-        setHotPosts((pre) => ({
-          ...pre,
+        setHotPosts({
           posts: casts.splice(0, 6),
           farcasterUserData: temp,
-        }));
+          isLoading: false,
+        });
       })
-      .finally(() => {
-        setHotPosts((pre) => ({ ...pre, isLoading: false }));
+      .catch(() => {
+        setHotPosts((pre) => ({ ...pre, posts: [], isLoading: false }));
       });
 
     getTopLinks()
       .then((res) => {
         const { data } = res.data;
         const { data: links } = data;
-        setTopLinks((pre) => ({
-          ...pre,
+        setTopLinks({
           links: (links || []).map((item) => ({
             logo: item?.metadata?.icon,
             name: item?.metadata?.title,
             url: item?.metadata?.url,
           })),
-        }));
+          isLoading: false,
+        });
       })
-      .finally(() => {
-        setTopLinks((pre) => ({ ...pre, isLoading: false }));
+      .catch(() => {
+        setTopLinks((pre) => ({ ...pre, links: [], isLoading: false }));
       });
 
     getHighScoreDapps()
       .then((res) => {
         const { data: dapps } = res.data;
 
-        setHighScoreDapps((pre) => ({
-          ...pre,
+        setHighScoreDapps({
           dapps: dapps.map((item) => ({
             id: item.id,
             logo: item.image,
@@ -97,10 +96,11 @@ export default function Explore() {
             types: item?.types || [],
             linkStreamId: item?.linkStreamId,
           })),
-        }));
+          isLoading: false,
+        });
       })
-      .finally(() => {
-        setHighScoreDapps((pre) => ({ ...pre, isLoading: false }));
+      .catch(() => {
+        setHighScoreDapps((pre) => ({ ...pre, dapps: [], isLoading: false }));
       });
   }, []);
   return (
