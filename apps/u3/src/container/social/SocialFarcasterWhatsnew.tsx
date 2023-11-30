@@ -19,7 +19,6 @@ export default function SocialFarcasterWhatsnew() {
     pageInfo,
     loadFarcasterWhatsnew,
     farcasterWhatsnew,
-    farcasterWhatsnewUserData,
     farcasterWhatsnewUserDataObj,
   } = useFarcasterWhatsnew();
 
@@ -58,7 +57,7 @@ export default function SocialFarcasterWhatsnew() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterWhatsnewUserData}
+                farcasterUserData={{}}
                 farcasterUserDataObj={farcasterWhatsnewUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {

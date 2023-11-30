@@ -21,9 +21,7 @@ export default function useFarcasterWhatsnew() {
   );
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(farcasterWhatsnewData.pageInfo);
-  const [farcasterWhatsnewUserData, setFarcasterWhatsnewUserData] = useState(
-    farcasterWhatsnewData.userData
-  );
+
   const [farcasterWhatsnewUserDataObj, setFarcasterWhatsnewUserDataObj] =
     useState(farcasterWhatsnewData.userDataObj);
 
@@ -56,22 +54,7 @@ export default function useFarcasterWhatsnew() {
         farcasterWhatsnewData.data = farcasterWhatsnewData.data.concat(casts);
       }
       if (farcasterUserData.length > 0) {
-        // TODO: remove
-        const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData?.forEach((item) => {
-          if (temp[item.fid]) {
-            temp[item.fid].push(item);
-          } else {
-            temp[item.fid] = [item];
-          }
-        });
         const userDataObj = userDataObjFromArr(farcasterUserData);
-        // TODO: remove
-        setFarcasterWhatsnewUserData((pre) => ({ ...pre, ...temp }));
-        farcasterWhatsnewData.userData = {
-          ...farcasterWhatsnewData.userData,
-          ...temp,
-        };
 
         setFarcasterWhatsnewUserDataObj((pre) => ({ ...pre, ...userDataObj }));
         farcasterWhatsnewData.userDataObj = {
@@ -95,7 +78,6 @@ export default function useFarcasterWhatsnew() {
     loading,
     loadFarcasterWhatsnew,
     farcasterWhatsnew,
-    farcasterWhatsnewUserData,
     farcasterWhatsnewUserDataObj,
     pageInfo,
   };

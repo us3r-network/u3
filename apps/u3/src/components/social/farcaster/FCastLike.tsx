@@ -7,6 +7,8 @@ import {
 } from '@farcaster/hub-web';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import { UserData } from 'src/utils/social/farcaster/user-data';
+
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
@@ -27,10 +29,12 @@ import useLogin from '../../../hooks/shared/useLogin';
 export default function FCastLike({
   cast,
   farcasterUserData,
+  farcasterUserDataObj,
   openFarcasterQR,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -139,6 +143,7 @@ export default function FCastLike({
                 key={item}
                 fid={item}
                 farcasterUserData={farcasterUserData}
+                farcasterUserDataObj={farcasterUserDataObj}
               />
             );
           })}
@@ -168,12 +173,18 @@ export default function FCastLike({
 
 function LikeAvatar({
   farcasterUserData,
+  farcasterUserDataObj,
   fid,
 }: {
   fid: string;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
 }) {
-  const userData = useFarcasterUserData({ fid, farcasterUserData });
+  const userData = useFarcasterUserData({
+    fid,
+    farcasterUserData,
+    farcasterUserDataObj,
+  });
   if (userData.pfp) {
     return (
       <PostLikeAvatarWrapper>

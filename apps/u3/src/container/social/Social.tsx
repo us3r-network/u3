@@ -20,14 +20,6 @@ export default function SocialAll() {
 
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
 
-  // const [searchParams] = useSearchParams();
-  // const currentSearchParams = useMemo(
-  //   () => ({
-  //     keyword: searchParams.get('keyword') || '',
-  //   }),
-  //   [searchParams]
-  // );
-
   useEffect(() => {
     if (feedsType === currentFeedType.current) return;
     document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);

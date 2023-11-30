@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Outlet,
   useLocation,
@@ -10,6 +10,9 @@ import { isMobile } from 'react-device-detect';
 
 import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
+import { resetFarcasterFollowingData } from 'src/hooks/social/farcaster/useFarcasterFollowing';
+import { resetAllFollowingData } from 'src/hooks/social/useAllFollowing';
+import { resetLensFollowingData } from 'src/hooks/social/lens/useLensFollowing';
 
 import { MEDIA_BREAK_POINTS } from 'src/constants';
 import SocialPageNav, {
@@ -65,6 +68,14 @@ function SocialLayout() {
     },
     [searchParams, setSearchParams]
   );
+
+  useEffect(() => {
+    return () => {
+      resetFarcasterFollowingData();
+      resetAllFollowingData();
+      resetLensFollowingData();
+    };
+  }, []);
 
   const titleElem = useMemo(() => {
     if (location.pathname.includes('social/trends')) {

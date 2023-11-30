@@ -22,10 +22,6 @@ export default function useFarcasterTrending() {
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(farcasterTrendingData.pageInfo);
 
-  // TODO: remove
-  const [farcasterTrendingUserData, setFarcasterTrendingUserData] = useState(
-    farcasterTrendingData.userData
-  );
   const [farcasterTrendingUserDataObj, setFarcasterTrendingUserDataObj] =
     useState(farcasterTrendingData.userDataObj);
 
@@ -61,22 +57,8 @@ export default function useFarcasterTrending() {
         farcasterTrendingData.index = endIndex;
       }
       if (farcasterUserData.length > 0) {
-        // TODO: remove
-        const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData?.forEach((item) => {
-          if (temp[item.fid]) {
-            temp[item.fid].push(item);
-          } else {
-            temp[item.fid] = [item];
-          }
-        });
         const userDataObj = userDataObjFromArr(farcasterUserData);
-        // TODO: remove
-        setFarcasterTrendingUserData((pre) => ({ ...pre, ...temp }));
-        farcasterTrendingData.userData = {
-          ...farcasterTrendingData.userData,
-          ...temp,
-        };
+
         setFarcasterTrendingUserDataObj((pre) => ({ ...pre, ...userDataObj }));
         farcasterTrendingData.userDataObj = {
           ...farcasterTrendingData.userDataObj,
@@ -96,7 +78,6 @@ export default function useFarcasterTrending() {
   return {
     loading,
     farcasterTrending,
-    farcasterTrendingUserData,
     farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo,

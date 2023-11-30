@@ -22,10 +22,6 @@ export default function useFarcasterFollowing() {
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(farcasterFollowingData.pageInfo);
 
-  // TODO: remove
-  const [farcasterFollowingUserData, setFarcasterFollowingUserData] = useState(
-    farcasterFollowingData.userData
-  );
   const [farcasterFollowingUserDataObj, setFarcasterFollowingUserDataObj] =
     useState(farcasterFollowingData.userDataObj);
 
@@ -45,26 +41,12 @@ export default function useFarcasterFollowing() {
         pageInfo: respPageInfo,
       } = resp.data.data;
 
-      // TODO: remove
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      farcasterUserData?.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
       const userDataObj = userDataObjFromArr(farcasterUserData);
 
       if (data.length > 0) {
         setFarcasterFollowing((pre) => [...pre, ...data]);
         farcasterFollowingData.data = farcasterFollowingData.data.concat(data);
-        // TODO: remove
-        setFarcasterFollowingUserData((pre) => ({ ...pre, ...temp }));
-        farcasterFollowingData.userData = {
-          ...farcasterFollowingData.userData,
-          ...temp,
-        };
+
         setFarcasterFollowingUserDataObj((pre) => ({ ...pre, ...userDataObj }));
         farcasterFollowingData.userDataObj = {
           ...farcasterFollowingData.userDataObj,
@@ -86,7 +68,16 @@ export default function useFarcasterFollowing() {
     loadFarcasterFollowing,
     loading,
     pageInfo,
-    farcasterFollowingUserData,
     farcasterFollowingUserDataObj,
   };
+}
+
+export function resetFarcasterFollowingData() {
+  farcasterFollowingData.data = [];
+  farcasterFollowingData.pageInfo = {
+    hasNextPage: true,
+  };
+  farcasterFollowingData.userData = {};
+  farcasterFollowingData.userDataObj = {};
+  farcasterFollowingData.index = '';
 }

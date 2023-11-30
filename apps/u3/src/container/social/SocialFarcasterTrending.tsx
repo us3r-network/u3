@@ -18,7 +18,6 @@ export default function SocialFarcasterTrending() {
   const {
     loading: farcasterTrendingLoading,
     farcasterTrending,
-    farcasterTrendingUserData,
     farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo: farcasterTrendingPageInfo,
@@ -61,7 +60,7 @@ export default function SocialFarcasterTrending() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterTrendingUserData}
+                farcasterUserData={{}}
                 farcasterUserDataObj={farcasterTrendingUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {

@@ -16,14 +16,8 @@ export default function SocialAllWhatsnew() {
   const { setPostScroll } = useOutletContext<any>();
 
   const { mounted } = useListScroll(parentId);
-  const {
-    loading,
-    loadAllWhatsnew,
-    allWhatsnew,
-    allUserData,
-    allUserDataObj,
-    pageInfo,
-  } = useAllWhatsnew();
+  const { loading, loadAllWhatsnew, allWhatsnew, allUserDataObj, pageInfo } =
+    useAllWhatsnew();
 
   useEffect(() => {
     if (mounted) {
@@ -75,7 +69,7 @@ export default function SocialAllWhatsnew() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={allUserData}
+                farcasterUserData={{}}
                 farcasterUserDataObj={allUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {

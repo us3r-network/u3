@@ -27,8 +27,6 @@ export default function useAllFollowing() {
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(allFollowingData.pageInfo);
 
-  // TODO: remove
-  const [allUserData, setAllUserData] = useState(allFollowingData.userData);
   const [allUserDataObj, setAllUserDataObj] = useState(
     allFollowingData.userDataObj
   );
@@ -53,26 +51,11 @@ export default function useAllFollowing() {
         pageInfo: respPageInfo,
       } = resp.data.data;
 
-      // TODO: remove
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      farcasterUserData?.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
-      const userDataObj = userDataObjFromArr(farcasterUserData);
-
       if (data.length > 0) {
         setAllFollowing((pre) => [...pre, ...data]);
         allFollowingData.data = allFollowingData.data.concat(data);
-        // TODO: remove
-        setAllUserData((pre) => ({ ...pre, ...temp }));
-        allFollowingData.userData = {
-          ...allFollowingData.userData,
-          ...temp,
-        };
+
+        const userDataObj = userDataObjFromArr(farcasterUserData);
         setAllUserDataObj((pre) => ({ ...pre, ...userDataObj }));
         allFollowingData.userDataObj = {
           ...allFollowingData.userDataObj,
@@ -95,7 +78,17 @@ export default function useAllFollowing() {
     loadAllFollowing,
     loading,
     pageInfo,
-    allUserData,
     allUserDataObj,
   };
+}
+
+export function resetAllFollowingData() {
+  allFollowingData.data = [];
+  allFollowingData.pageInfo = {
+    hasNextPage: true,
+  };
+  allFollowingData.userData = {};
+  allFollowingData.userDataObj = {};
+  allFollowingData.endFarcasterCursor = '';
+  allFollowingData.endLensCursor = '';
 }

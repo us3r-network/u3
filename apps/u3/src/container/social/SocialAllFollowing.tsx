@@ -11,20 +11,14 @@ import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useAllFollowing from 'src/hooks/social/useAllFollowing';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 
-export default function SocialFarcaster() {
-  const [parentId] = useState('social-farcaster-following');
+export default function SocialAllFollowing() {
+  const [parentId] = useState('social-all-following');
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
-  const {
-    allFollowing,
-    loadAllFollowing,
-    loading,
-    pageInfo,
-    allUserData,
-    allUserDataObj,
-  } = useAllFollowing();
+  const { allFollowing, loadAllFollowing, loading, pageInfo, allUserDataObj } =
+    useAllFollowing();
 
   useEffect(() => {
     if (!mounted) return;
@@ -72,7 +66,7 @@ export default function SocialFarcaster() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={allUserData}
+                farcasterUserData={{}}
                 farcasterUserDataObj={allUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {

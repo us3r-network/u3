@@ -13,7 +13,7 @@ import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollow
 export default function SocialFarcaster() {
   const [parentId] = useState('social-farcaster-following');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
   const {
@@ -21,7 +21,6 @@ export default function SocialFarcaster() {
     loadFarcasterFollowing,
     loading: farcasterFollowingLoading,
     pageInfo: farcasterFollowingPageInfo,
-    farcasterFollowingUserData,
     farcasterFollowingUserDataObj,
   } = useFarcasterFollowing();
 
@@ -56,7 +55,7 @@ export default function SocialFarcaster() {
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterFollowingUserData}
+                farcasterUserData={{}}
                 farcasterUserDataObj={farcasterFollowingUserDataObj}
                 showMenuBtn
                 cardClickAction={(e) => {

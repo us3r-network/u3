@@ -42,7 +42,7 @@ export default function SocialLensWhatsnew() {
       scrollableTarget="social-scroll-wrapper"
     >
       <PostList>
-        {lensTrending.map(({ platform, data, ...args }) => {
+        {lensTrending.map(({ platform, data }) => {
           if (platform === 'lens') {
             return (
               <LensPostCard

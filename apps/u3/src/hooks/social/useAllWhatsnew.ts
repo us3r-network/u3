@@ -20,7 +20,6 @@ export default function useAllWhatsnew() {
   const [allWhatsnew, setAllWhatsnew] = useState<any[]>(allWhatsnewData.data);
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(allWhatsnewData.pageInfo);
-  const [allUserData, setAllUserData] = useState(allWhatsnewData.userData);
   const [allUserDataObj, setAllUserDataObj] = useState(
     allWhatsnewData.userDataObj
   );
@@ -56,22 +55,7 @@ export default function useAllWhatsnew() {
         allWhatsnewData.data = allWhatsnewData.data.concat(casts);
       }
       if (farcasterUserData.length > 0) {
-        // TODO: remove
-        const temp: { [key: string]: { type: number; value: string }[] } = {};
-        farcasterUserData?.forEach((item) => {
-          if (temp[item.fid]) {
-            temp[item.fid].push(item);
-          } else {
-            temp[item.fid] = [item];
-          }
-        });
         const userDataObj = userDataObjFromArr(farcasterUserData);
-        // TODO: remove
-        setAllUserData((pre) => ({ ...pre, ...temp }));
-        allWhatsnewData.userData = {
-          ...allWhatsnewData.userData,
-          ...temp,
-        };
 
         setAllUserDataObj((pre) => ({ ...pre, ...userDataObj }));
         allWhatsnewData.userDataObj = {
@@ -96,7 +80,6 @@ export default function useAllWhatsnew() {
     loading,
     loadAllWhatsnew,
     allWhatsnew,
-    allUserData,
     allUserDataObj,
     pageInfo,
   };

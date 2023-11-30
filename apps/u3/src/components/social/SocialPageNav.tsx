@@ -32,7 +32,7 @@ export default function SocialPageNav({
 
       <SocialNavCenter>
         {showFeedsTabs &&
-          (isMobile ? ( // TODO: mobile
+          (isMobile ? (
             <MobileFeedsTypeTable
               feedsType={feedsType}
               onChangeFeedsType={onChangeFeedsType}
@@ -149,15 +149,88 @@ function MobileFeedsTypeTable({
   feedsType: FeedsType;
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
-  const tabs = [FeedsType.FOLLOWING, FeedsType.TRENDING];
+  // const tabs = [FeedsType.FOLLOWING, FeedsType.TRENDING];
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { pathname } = location;
+  const currentPlatform = pathname.split('/')[2];
+  const type = pathname.split('/')[3] || '';
+
   return (
-    <MobilePageHeader
-      tabs={tabs}
-      setTab={onChangeFeedsType}
-      curTab={feedsType}
-    />
+    <PageHeader>
+      <div
+        className={type === '' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.TRENDING);
+          navigate(`/social/${currentPlatform}`);
+        }}
+      >
+        trending
+      </div>
+      <div
+        className={type === 'following' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.FOLLOWING);
+          navigate(`/social/${currentPlatform}/following`);
+        }}
+      >
+        following
+      </div>
+      <div
+        className={type === 'whatsnew' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.WHATSNEW);
+          navigate(`/social/${currentPlatform}/whatsnew`);
+        }}
+      >
+        {`what's new?`}
+      </div>
+    </PageHeader>
   );
 }
+
+const PageHeader = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #39424c;
+  border-radius: 100px;
+  font-size: 16px;
+  line-height: 28px;
+  color: #ffffff;
+  white-space: pre;
+
+  i {
+    color: #39424c;
+  }
+
+  .tab {
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    color: #718096;
+    padding: 5px 0;
+  }
+
+  .active {
+    color: black;
+    position: relative;
+    background: #718096;
+    box-shadow: 0px 0px 8px rgba(20, 23, 26, 0.08),
+      0px 0px 4px rgba(20, 23, 26, 0.04);
+    border-radius: 100px;
+    /* &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -10px;
+      width: 100%;
+      height: 2px;
+      background: white;
+    } */
+  }
+`;
+
 const SocialNavWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;
