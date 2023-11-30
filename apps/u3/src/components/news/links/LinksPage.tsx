@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-27 14:11:10
+ * @LastEditTime: 2023-11-30 12:06:10
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -68,15 +68,15 @@ export default function LinksPage({
   const [layout, setLayout] = useState(getContentsLayoutFromLocal());
   const [gridModalShow, setGridModalShow] = useState(false);
 
-  const selectLink: LinkListItem | null = useMemo(
-    () =>
-      link
-        ? links.find(
-            (item) => item?.url === Buffer.from(link, 'base64').toString('utf8')
-          ) || links[0]
-        : links[0],
-    [links, link]
-  );
+  const selectLink: LinkListItem | null = useMemo(() => {
+    return link
+      ? links.find(
+          (item) =>
+            item?.url ===
+            decodeURIComponent(Buffer.from(link, 'base64').toString('utf8'))
+        ) || links[0]
+      : links[0];
+  }, [links, link]);
 
   useEffect(() => {
     if (link !== ':link' && selectLink && layout === Layout.GRID) {
@@ -95,7 +95,7 @@ export default function LinksPage({
       resetRouthPath();
     }
   }, [link, resetRouthPath]);
-
+  console.log(link, selectLink);
   return (
     <Box>
       <NewsMenu />
@@ -177,10 +177,13 @@ export default function LinksPage({
                       data={links}
                       activeLink={selectLink}
                       onItemClick={(item) => {
+                        console.log('nav to ', item?.url);
+                        const navlink = encodeURIComponent(
+                          Buffer.from(item?.url, 'utf8').toString('base64')
+                        );
+                        console.log('nav to ', navlink);
                         navigate(
-                          `/links/${Buffer.from(item?.url, 'utf8').toString(
-                            'base64'
-                          )}}?${searchParams.toString()}`
+                          `/links/${navlink}?${searchParams.toString()}`
                         );
                       }}
                     />
