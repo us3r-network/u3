@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-01 15:09:50
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 18:29:06
+ * @LastEditTime: 2023-11-30 09:28:04
  * @Description: 站点布局入口
  */
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ import { isMobile } from 'react-device-detect';
 import { useLocation } from 'react-router-dom';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
-// import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
+import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
 import Menu from './menu';
 import DappMenu from '../dapp/launcher/DappMenu';
 import MobileHeader from './mobile/MobileHeader';
@@ -20,7 +20,7 @@ import MobileNav from './mobile/MobileNav';
 
 function Layout() {
   const location = useLocation();
-  // useGAPageView();
+  useGAPageView();
   return (
     <LayoutWrapper id="layout-wrapper">
       {isMobile ? <MobileHeader /> : <Menu />}
