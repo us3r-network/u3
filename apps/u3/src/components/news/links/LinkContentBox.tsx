@@ -92,9 +92,16 @@ export default function LinkContentBox({
               selectLink?.url.indexOf('youtube.com') > 0 ||
               selectLink?.url.indexOf('youtu.be') > 0
             ) {
+              let videoURL = '';
               if (selectLink?.metadata?.provider === 'YouTube') {
-                const videoId = extractYoutubeVideoId(selectLink?.url);
-                if (videoId)
+                if (selectLink?.metadata?.video) {
+                  videoURL = selectLink?.metadata?.video;
+                } else {
+                  const videoId = extractYoutubeVideoId(selectLink?.url);
+                  if (videoId)
+                    videoURL = `https://www.youtube.com/embed/${videoId}`;
+                }
+                if (videoURL)
                   return (
                     <div className="iframe-container">
                       {!iframeLoaded && (
@@ -103,7 +110,7 @@ export default function LinkContentBox({
                         </LoadingBox>
                       )}
                       <iframe
-                        src={`https://www.youtube.com/embed/${videoId}`}
+                        src={videoURL}
                         title="YouTube video player"
                         style={{
                           opacity: iframeLoaded ? 1 : 0,
@@ -316,7 +323,6 @@ export const LoadingBox = styled.div`
 function extractYoutubeVideoId(url: string) {
   const patterns = ['v=', 'youtu.be/', '/embed/', '/live/', '/shorts/'];
   if (!url) return null;
-  console.log(url);
   let videoId = '';
   patterns.forEach((pattern) => {
     if (url.indexOf(pattern) > 0) {
