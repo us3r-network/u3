@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 15:40:46
+ * @LastEditTime: 2023-11-29 14:44:51
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
@@ -24,13 +24,13 @@ export type CustomNavObject = {
 };
 export const navs: CustomNavObject[] = [
   {
-    name: 'home',
+    name: 'Explore',
     activeRouteKeys: [RouteKey.home],
     icon: React.createElement(CompassSvg),
     route: getRoute(RouteKey.home),
   },
   {
-    name: 'news',
+    name: 'Browse',
     activeRouteKeys: [
       RouteKey.contents,
       RouteKey.content,
@@ -46,7 +46,7 @@ export const navs: CustomNavObject[] = [
     route: getRoute(RouteKey.links),
   },
   {
-    name: 'social',
+    name: 'Social',
     activeRouteKeys: [
       RouteKey.social,
       RouteKey.socialLayout,
@@ -57,13 +57,13 @@ export const navs: CustomNavObject[] = [
     route: getRoute(RouteKey.socialLayout),
   },
   {
-    name: 'dapp store',
+    name: 'Apps',
     activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
     icon: React.createElement(DappSvg),
     route: getRoute(RouteKey.dappStore),
   },
   {
-    name: 'save',
+    name: 'Save',
     activeRouteKeys: [RouteKey.save],
     icon: React.createElement(BookmarkSvg),
     route: getRoute(RouteKey.save),
