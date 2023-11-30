@@ -160,6 +160,10 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     walletProfileId = '';
     setWalletAddress(address);
     const profileId = await getWalletProfileId();
+    if (!profileId) {
+      console.error('lens login error: profileId is null');
+      return;
+    }
 
     await login({ address, profileId });
   };

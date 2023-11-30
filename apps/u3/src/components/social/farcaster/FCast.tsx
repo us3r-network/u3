@@ -39,6 +39,7 @@ export default function FCast({
   showMenuBtn,
   cardClickAction,
   disableRenderUrl,
+  simpleLayout,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
@@ -47,6 +48,7 @@ export default function FCast({
   isDetail?: boolean;
   showMenuBtn?: boolean;
   disableRenderUrl?: boolean;
+  simpleLayout?: boolean;
   cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
   const navigate = useNavigate();
@@ -93,7 +95,7 @@ export default function FCast({
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (entry.target.clientHeight > 125) {
+        if (entry.target.clientHeight > 125 && !simpleLayout) {
           setShowMore(true);
         }
 
@@ -178,10 +180,12 @@ export default function FCast({
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed
-        embedImgs={[...embeds.imgs]}
-        embedWebpages={!disableRenderUrl ? embeds.webpages : []}
-      />
+      {!simpleLayout && (
+        <Embed
+          embedImgs={[...embeds.imgs]}
+          embedWebpages={!disableRenderUrl ? embeds.webpages : []}
+        />
+      )}
       {(cast.parent_url || cast.rootParentUrl) && (
         <FarcasterChannel url={cast.parent_url || cast.rootParentUrl} />
       )}
@@ -208,20 +212,22 @@ export default function FCast({
             farcasterUserData={farcasterUserData}
           />
         </PostCardActionsWrapper>
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <PostShareMenuBtn
-            shareLink={getSocialDetailShareUrlWithFarcaster(
-              Buffer.from(castId.hash).toString('hex')
-            )}
-            shareLinkDefaultText={SOCIAL_SHARE_TITLE}
-            shareLinkEmbedTitle={cast.text}
-            popoverConfig={{ placement: 'top end', offset: 0 }}
-          />
-        </div>
+        {!simpleLayout && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostShareMenuBtn
+              shareLink={getSocialDetailShareUrlWithFarcaster(
+                Buffer.from(castId.hash).toString('hex')
+              )}
+              shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+              shareLinkEmbedTitle={cast.text}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
+          </div>
+        )}
       </PostCardFooterWrapper>
     </PostCardWrapper>
   );

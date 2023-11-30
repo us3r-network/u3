@@ -1,8 +1,17 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-11-29 18:15:27
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-11-30 15:30:40
+ * @FilePath: /u3/apps/u3/src/components/news/links/LinkContentBox.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import { contentParse } from 'src/services/news/api/contents';
 import { Tweet } from 'react-tweet';
+import { extractYoutubeVideoId } from 'src/utils/news/link';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import ExtensionSupport from '../../layout/ExtensionSupport';
@@ -20,24 +29,32 @@ export default function LinkContentBox({
 }) {
   const { u3ExtensionInstalled } = useAppSelector(selectWebsite);
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const [readerviewLoaded, setReaderviewLoaded] = useState(false);
 
   useEffect(() => {
     setIframeLoaded(false);
   }, [selectLink?.url]);
 
   useEffect(() => {
-    if (!selectLink.readerView)
+    setReaderviewLoaded(false);
+    if (!selectLink.readerView) {
       contentParse(selectLink?.url)
         .then((resp) => {
-          // console.log(resp);
           selectLink.readerView = resp.data.data;
           selectLink.supportReaderView = true;
+          setTimeout(() => {
+            setReaderviewLoaded(true);
+          }, 1000);
         })
         .catch((reason) => {
           selectLink.readerView = null;
           selectLink.supportReaderView = false;
           console.log(reason.message);
+          setReaderviewLoaded(true);
         });
+    } else {
+      setReaderviewLoaded(true);
+    }
   }, [selectLink]);
 
   return (
@@ -46,18 +63,24 @@ export default function LinkContentBox({
         if (!selectLink) return null;
         switch (tab) {
           case 'original':
-            if (selectLink?.metadata?.twitter) {
-              const tweetId = selectLink.url.split('/status/')[1];
-              if (tweetId)
-                return (
-                  <div className="dark">
-                    <Tweet id={tweetId} />
-                  </div>
-                );
+            // X(Twitter)
+            if (
+              selectLink?.url.indexOf('twitter.com') > 0 ||
+              selectLink?.url.indexOf('x.com') > 0
+            ) {
+              if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
+                const tweetId = selectLink.url.split('/status/')[1];
+                if (tweetId)
+                  return (
+                    <div className="dark">
+                      <Tweet id={tweetId} />
+                    </div>
+                  );
+              }
               return (
                 <div className="info">
                   <p>{selectLink?.metadata?.title}</p>
-                  <p>OTERH Twitter Page Preview is NOT supported yet!</p>
+                  <p>This Twitter Page Preview is NOT supported yet!</p>
                   <p>
                     <a href={selectLink.url} target="_blank" rel="noreferrer">
                       Open in New Tab
@@ -66,6 +89,132 @@ export default function LinkContentBox({
                 </div>
               );
             }
+            // Youtube
+            if (
+              selectLink?.url.indexOf('youtube.com') > 0 ||
+              selectLink?.url.indexOf('youtu.be') > 0
+            ) {
+              let videoURL = '';
+              if (selectLink?.metadata?.provider === 'YouTube') {
+                if (selectLink?.metadata?.video) {
+                  videoURL = selectLink?.metadata?.video;
+                } else {
+                  const videoId = extractYoutubeVideoId(selectLink?.url);
+                  if (videoId)
+                    videoURL = `https://www.youtube.com/embed/${videoId}`;
+                }
+                if (videoURL)
+                  return (
+                    <div className="iframe-container">
+                      {!iframeLoaded && (
+                        <LoadingBox>
+                          <Loading />
+                        </LoadingBox>
+                      )}
+                      <iframe
+                        src={videoURL}
+                        title="YouTube video player"
+                        style={{
+                          opacity: iframeLoaded ? 1 : 0,
+                          inset: 0,
+                          background: 'transparent',
+                        }}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        onLoad={() => {
+                          setIframeLoaded(true);
+                        }}
+                      />
+                    </div>
+                  );
+                return (
+                  <div className="info">
+                    <h3>{selectLink?.metadata?.title}</h3>
+                    <p>{selectLink?.metadata?.description}</p>
+                    <p>This Youtube Page Preview is NOT supported yet!</p>
+                    <p>
+                      <a
+                        href={selectLink?.url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Open in New Tab
+                      </a>
+                    </p>
+                  </div>
+                );
+              }
+            }
+            // Zora
+            if (selectLink?.url.indexOf('zora.co') > 0)
+              if (selectLink?.metadata?.provider === 'zora') {
+                const removePremintUrl = selectLink?.url.replace(
+                  'premint-',
+                  ''
+                );
+                const zoraEmbedUrl =
+                  removePremintUrl.indexOf('?') > 0
+                    ? selectLink?.url.replace('?', '/embed?')
+                    : `${selectLink?.url}/embed`;
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={zoraEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                    />
+                  </div>
+                );
+              }
+            // Spotify
+            if (selectLink?.url.indexOf('spotify.com') > 0)
+              if (selectLink?.metadata?.provider === 'Spotify') {
+                const spotifyEmbedUrl = selectLink?.url.replace(
+                  'spotify.com',
+                  'spotify.com/embed'
+                );
+                return (
+                  <div className="iframe-container">
+                    {!iframeLoaded && (
+                      <LoadingBox>
+                        <Loading />
+                      </LoadingBox>
+                    )}
+                    <iframe
+                      src={spotifyEmbedUrl}
+                      title={selectLink?.metadata?.title}
+                      style={{
+                        opacity: iframeLoaded ? 1 : 0,
+                        inset: 0,
+                        background: 'transparent',
+                      }}
+                      onLoad={() => {
+                        setIframeLoaded(true);
+                      }}
+                      allowTransparency
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                      sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
+                      loading="lazy"
+                    />
+                  </div>
+                );
+              }
             if (u3ExtensionInstalled || selectLink?.supportIframe) {
               return (
                 <div className="iframe-container">
@@ -83,6 +232,8 @@ export default function LinkContentBox({
                     onLoad={() => {
                       setIframeLoaded(true);
                     }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
                   />
                 </div>
               );
@@ -97,21 +248,27 @@ export default function LinkContentBox({
 
             break;
           case 'readerView':
-            if (selectLink.readerView) {
-              return <LinkReaderView data={selectLink} />;
+            if (readerviewLoaded) {
+              if (selectLink.readerView) {
+                return <LinkReaderView data={selectLink} />;
+              }
+              return (
+                <ExtensionSupport
+                  url={selectLink.url}
+                  title={selectLink.metadata?.title}
+                  msg="Reader view is not supported for this page! Please view it in the original tab."
+                />
+              );
             }
             return (
-              <ExtensionSupport
-                url={selectLink.url}
-                title={selectLink.metadata?.title}
-                msg="Reader view is not supported for this page! Please view it in the original tab."
-              />
+              <LoadingBox>
+                <Loading />
+              </LoadingBox>
             );
             break;
           default:
             return null;
         }
-        return null;
       })()}
     </ContentBox>
   );

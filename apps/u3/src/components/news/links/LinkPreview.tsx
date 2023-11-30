@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-23 10:42:24
+ * @LastEditTime: 2023-11-29 16:11:17
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -23,45 +23,44 @@ export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
 export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
-  const [tab, setTab] = useState<Tab>('readerView');
+  const [tab, setTab] = useState<Tab>('original');
   useEffect(() => {
-    if (data?.supportReaderView) {
-      setTab('readerView');
-    } else {
+    if (data?.supportIframe) {
       setTab('original');
+    } else {
+      setTab('readerView');
     }
   }, [data]);
 
   return (
     data && (
       <PreviewWrapper {...otherProps}>
-        <Header>
-          <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
-          <HeaderRight>
-            <LinkShareMenuBtn
-              shareLink={getLinkShareUrl(data.url)}
-              shareLinkDefaultText={LINK_SHARE_TITLE}
-              shareLinkEmbedTitle={data?.metadata?.title}
-              popoverConfig={{ placement: 'top end', offset: 0 }}
-            />
-            <ButtonFullScreen
-              className="content-fullscreen-button"
-              isFullscreen={isFullscreen}
-              onClick={onToggle}
-            />
-            {otherProps.children}
-          </HeaderRight>
-        </Header>
         <PreviewBox ref={ref}>
+          <Header>
+            <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
+            <HeaderRight>
+              <LinkShareMenuBtn
+                shareLink={getLinkShareUrl(data.url)}
+                shareLinkDefaultText={LINK_SHARE_TITLE}
+                shareLinkEmbedTitle={data?.metadata?.title}
+                popoverConfig={{ placement: 'top end', offset: 0 }}
+              />
+              <ButtonFullScreen
+                className="content-fullscreen-button"
+                isFullscreen={isFullscreen}
+                onClick={onToggle}
+              />
+            </HeaderRight>
+            {isFullscreen && (
+              <ContentPreviewFullscreen
+                isFullscreen={isFullscreen}
+                onClick={onToggle}
+              />
+            )}
+          </Header>
           <LinkContentBox selectLink={data} tab={tab} />
-          <LinkPost url={data.url} />
-          {isFullscreen && (
-            <ContentPreviewFullscreen
-              isFullscreen={isFullscreen}
-              onClick={onToggle}
-            />
-          )}
         </PreviewBox>
+        <LinkPost url={data.url} />
       </PreviewWrapper>
     )
   );
@@ -71,12 +70,20 @@ const PreviewWrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
+  flex-direction: row;
+`;
+const PreviewBox = styled.div`
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  position: relative;
+  display: flex;
   flex-direction: column;
 `;
 const Header = styled.div`
   width: 100%;
   height: 60px;
-  padding: 14px;
+  padding: 12px;
   box-sizing: border-box;
   background: #1b1e23;
   border-bottom: 1px solid #39424c;
@@ -90,15 +97,6 @@ const HeaderRight = styled.div`
   align-items: center;
   gap: 10px;
   margin-left: auto;
-`;
-
-const PreviewBox = styled.div`
-  width: 100%;
-  height: 90%;
-  flex: 1;
-  position: relative;
-  display: flex;
-  flex-direction: row;
 `;
 const ContentPreviewFullscreen = styled(ButtonFullScreen)`
   z-index: 1;
