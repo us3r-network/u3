@@ -13,6 +13,7 @@ import {
   getTopLinks,
   getHighScoreDapps,
 } from '../services/shared/api/explore';
+import { processMetadata } from '../utils/news/link';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 
@@ -72,11 +73,14 @@ export default function Explore() {
         const { data } = res.data;
         const { data: links } = data;
         setTopLinks({
-          links: (links || []).map((item) => ({
-            logo: item?.metadata?.icon,
-            name: item?.metadata?.title,
-            url: item?.metadata?.url,
-          })),
+          links: (links || []).map((item) => {
+            const metadata = processMetadata(item?.metadata);
+            return {
+              logo: metadata?.icon,
+              name: metadata?.title,
+              url: metadata?.url,
+            };
+          }),
           isLoading: false,
         });
       })
