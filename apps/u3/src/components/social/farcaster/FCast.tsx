@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
 
+import { UserData } from 'src/utils/social/farcaster/user-data';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
@@ -32,24 +33,32 @@ import { SOCIAL_SHARE_TITLE } from '../../../constants';
 export default function FCast({
   cast,
   farcasterUserData,
+  farcasterUserDataObj,
   openFarcasterQR,
   isDetail,
   showMenuBtn,
   cardClickAction,
   disableRenderUrl,
+  simpleLayout,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
   isDetail?: boolean;
   showMenuBtn?: boolean;
   disableRenderUrl?: boolean;
+  simpleLayout?: boolean;
   cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
   const castId: CastId = useFarcasterCastId({ cast });
-  const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
+  const userData = useFarcasterUserData({
+    fid: cast.fid,
+    farcasterUserData,
+    farcasterUserDataObj,
+  });
   const [showMore, setShowMore] = useState(false);
   const { following } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =
@@ -86,7 +95,7 @@ export default function FCast({
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        if (entry.target.clientHeight > 125) {
+        if (entry.target.clientHeight > 125 && !simpleLayout) {
           setShowMore(true);
         }
 
@@ -171,10 +180,12 @@ export default function FCast({
           </button>
         </PostCardShowMoreWrapper>
       )}
-      <Embed
-        embedImgs={[...embeds.imgs]}
-        embedWebpages={!disableRenderUrl ? embeds.webpages : []}
-      />
+      {!simpleLayout && (
+        <Embed
+          embedImgs={[...embeds.imgs]}
+          embedWebpages={!disableRenderUrl ? embeds.webpages : []}
+        />
+      )}
       {(cast.parent_url || cast.rootParentUrl) && (
         <FarcasterChannel url={cast.parent_url || cast.rootParentUrl} />
       )}
@@ -188,6 +199,7 @@ export default function FCast({
             openFarcasterQR={openFarcasterQR}
             cast={cast}
             farcasterUserData={farcasterUserData}
+            farcasterUserDataObj={farcasterUserDataObj}
           />
           <FCastComment
             openFarcasterQR={openFarcasterQR}
@@ -200,20 +212,22 @@ export default function FCast({
             farcasterUserData={farcasterUserData}
           />
         </PostCardActionsWrapper>
-        <div
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <PostShareMenuBtn
-            shareLink={getSocialDetailShareUrlWithFarcaster(
-              Buffer.from(castId.hash).toString('hex')
-            )}
-            shareLinkDefaultText={SOCIAL_SHARE_TITLE}
-            shareLinkEmbedTitle={cast.text}
-            popoverConfig={{ placement: 'top end', offset: 0 }}
-          />
-        </div>
+        {!simpleLayout && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            <PostShareMenuBtn
+              shareLink={getSocialDetailShareUrlWithFarcaster(
+                Buffer.from(castId.hash).toString('hex')
+              )}
+              shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+              shareLinkEmbedTitle={cast.text}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
+          </div>
+        )}
       </PostCardFooterWrapper>
     </PostCardWrapper>
   );

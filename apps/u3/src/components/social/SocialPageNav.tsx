@@ -1,6 +1,7 @@
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
@@ -9,6 +10,7 @@ import PinChannelBtn from './PinChannelBtn';
 export enum FeedsType {
   FOLLOWING = 'following',
   TRENDING = 'trending',
+  WHATSNEW = 'whatsnew',
 }
 export default function SocialPageNav({
   showFeedsTabs,
@@ -102,23 +104,40 @@ function PcFeedsTypeTable({
   feedsType: FeedsType;
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { pathname } = location;
+  const currentPlatform = pathname.split('/')[2];
+  const type = pathname.split('/')[3] || '';
+
   return (
     <FeedsTypeTabsWrapper>
       <FeedsTypeTab
-        active={feedsType === FeedsType.FOLLOWING}
+        active={type === ''}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.TRENDING);
+          navigate(`/social/${currentPlatform}`);
+        }}
+      >
+        Trending
+      </FeedsTypeTab>
+      <FeedsTypeTab
+        active={type === 'following'}
         onClick={() => {
           onChangeFeedsType(FeedsType.FOLLOWING);
+          navigate(`/social/${currentPlatform}/following`);
         }}
       >
         Following
       </FeedsTypeTab>
       <FeedsTypeTab
-        active={feedsType === FeedsType.TRENDING}
+        active={type === 'whatsnew'}
         onClick={() => {
-          onChangeFeedsType(FeedsType.TRENDING);
+          onChangeFeedsType(FeedsType.WHATSNEW);
+          navigate(`/social/${currentPlatform}/whatsnew`);
         }}
       >
-        Trending
+        {`What's new?`}
       </FeedsTypeTab>
     </FeedsTypeTabsWrapper>
   );
@@ -130,15 +149,88 @@ function MobileFeedsTypeTable({
   feedsType: FeedsType;
   onChangeFeedsType: (feedsType: FeedsType) => void;
 }) {
-  const tabs = [FeedsType.FOLLOWING, FeedsType.TRENDING];
+  // const tabs = [FeedsType.FOLLOWING, FeedsType.TRENDING];
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { pathname } = location;
+  const currentPlatform = pathname.split('/')[2];
+  const type = pathname.split('/')[3] || '';
+
   return (
-    <MobilePageHeader
-      tabs={tabs}
-      setTab={onChangeFeedsType}
-      curTab={feedsType}
-    />
+    <PageHeader>
+      <div
+        className={type === '' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.TRENDING);
+          navigate(`/social/${currentPlatform}`);
+        }}
+      >
+        trending
+      </div>
+      <div
+        className={type === 'following' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.FOLLOWING);
+          navigate(`/social/${currentPlatform}/following`);
+        }}
+      >
+        following
+      </div>
+      <div
+        className={type === 'whatsnew' ? 'tab active' : 'tab'}
+        onClick={() => {
+          onChangeFeedsType(FeedsType.WHATSNEW);
+          navigate(`/social/${currentPlatform}/whatsnew`);
+        }}
+      >
+        {`what's new?`}
+      </div>
+    </PageHeader>
   );
 }
+
+const PageHeader = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid #39424c;
+  border-radius: 100px;
+  font-size: 16px;
+  line-height: 28px;
+  color: #ffffff;
+  white-space: pre;
+
+  i {
+    color: #39424c;
+  }
+
+  .tab {
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+    color: #718096;
+    padding: 5px 0;
+  }
+
+  .active {
+    color: black;
+    position: relative;
+    background: #718096;
+    box-shadow: 0px 0px 8px rgba(20, 23, 26, 0.08),
+      0px 0px 4px rgba(20, 23, 26, 0.04);
+    border-radius: 100px;
+    /* &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -10px;
+      width: 100%;
+      height: 2px;
+      background: white;
+    } */
+  }
+`;
+
 const SocialNavWrapper = styled.div`
   width: 100%;
   box-sizing: border-box;

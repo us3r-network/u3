@@ -28,6 +28,11 @@ export default function SocialWhoToFollow() {
   const navigate = useNavigate();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
+  // const { data: lensProfiles } = lensProfile?.id
+  //   ? useRecommendedProfiles({
+  //       for: lensProfile?.id,
+  //     })
+  //   : { data: undefined };
   const { data: lensProfiles } = useRecommendedProfiles({
     for: lensProfile?.id,
   });
