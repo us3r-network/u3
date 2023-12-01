@@ -84,7 +84,7 @@ export default function Explore() {
             return {
               logo: metadata?.icon,
               name: metadata?.title,
-              url: metadata?.url,
+              url: item?.url,
             };
           }),
           isLoading: false,
