@@ -14,6 +14,7 @@ import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.s
 // import LogoutConfirmModal from './LogoutConfirmModal';
 // import useLogin from '../../hooks/useLogin';
 import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
+import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
 import MessageModal from '../message/MessageModal';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
@@ -27,8 +28,9 @@ import {
 import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
-import { useNav } from '../../contexts/NavCtx';
+import { NavModalName, useNav } from '../../contexts/NavCtx';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import ContactUsModal from './ContactUsModal';
 
 export default function Menu() {
   // const { logout } = useLogin();
@@ -82,6 +84,7 @@ export default function Menu() {
             )
           )}
           <MessageButton />
+          <ContactUsButton />
         </NavWrapper>
         <LoginButtonBox>
           <LoginButton
@@ -108,23 +111,36 @@ export default function Menu() {
     </MenuWrapper>
   );
 }
+function ContactUsButton() {
+  const { openContactUsModal, renderNavItemText, switchNavModal } = useNav();
+
+  return (
+    <>
+      <PcNavItem
+        isActive={openContactUsModal}
+        onClick={() => {
+          switchNavModal(NavModalName.ContactUs);
+        }}
+      >
+        <PcNavItemIconBox isActive={openContactUsModal}>
+          <ContactUsSvg />
+        </PcNavItemIconBox>
+        {renderNavItemText('Contact US')}
+      </PcNavItem>
+      <ContactUsModal />
+    </>
+  );
+}
 
 function MessageButton() {
-  const {
-    openMessageModal,
-    setOpenMessageModal,
-    openNotificationModal,
-    setOpenNotificationModal,
-    renderNavItemText,
-  } = useNav();
+  const { openMessageModal, renderNavItemText, switchNavModal } = useNav();
 
   return (
     <>
       <PcNavItem
         isActive={openMessageModal}
         onClick={() => {
-          if (openNotificationModal) setOpenNotificationModal(false);
-          setOpenMessageModal((open) => !open);
+          switchNavModal(NavModalName.Message);
         }}
       >
         <PcNavItemIconBox isActive={openMessageModal}>
@@ -138,13 +154,7 @@ function MessageButton() {
 }
 
 function NotificationButton() {
-  const {
-    openMessageModal,
-    setOpenMessageModal,
-    openNotificationModal,
-    setOpenNotificationModal,
-    renderNavItemText,
-  } = useNav();
+  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStore();
 
   return (
@@ -152,9 +162,8 @@ function NotificationButton() {
       <PcNavItem
         isActive={openNotificationModal}
         onClick={() => {
-          if (openMessageModal) setOpenMessageModal(false);
           if (unreadCount && !openNotificationModal) clearUnread();
-          setOpenNotificationModal((open) => !open);
+          switchNavModal(NavModalName.Notification);
         }}
       >
         <PcNavItemIconBox isActive={openNotificationModal}>
@@ -173,13 +182,7 @@ function NotificationButton() {
 }
 
 function NotificationButtonNoLens() {
-  const {
-    openMessageModal,
-    setOpenMessageModal,
-    openNotificationModal,
-    setOpenNotificationModal,
-    renderNavItemText,
-  } = useNav();
+  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStoreNoLens();
 
   return (
@@ -187,9 +190,8 @@ function NotificationButtonNoLens() {
       <PcNavItem
         isActive={openNotificationModal}
         onClick={() => {
-          if (openMessageModal) setOpenMessageModal(false);
           if (unreadCount && !openNotificationModal) clearUnread();
-          setOpenNotificationModal((open) => !open);
+          switchNavModal(NavModalName.Notification);
         }}
       >
         <PcNavItemIconBox isActive={openNotificationModal}>

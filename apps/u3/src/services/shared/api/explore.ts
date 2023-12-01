@@ -7,7 +7,8 @@ export function getHotPosts() {
   // TODO 后期换成包含farcaster和lens的trending
   return getFarcasterTrending({
     start: 0,
-    end: 50, // TODO 多取些暂时规避可能取不到6条的问题（fcast 可能被删除）
+    end: 30, // TODO 多取些暂时规避可能取不到6条的问题（fcast 可能被删除）
+    least: 20,
   });
 }
 
