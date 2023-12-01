@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { SocialPlatform } from 'src/services/social/types';
@@ -12,8 +12,6 @@ const lensTrendingData = {
   endLensCursor: '',
 };
 export default function useLensTrending() {
-  const index = useRef(0);
-
   // TODO any
   const [lensTrending, setLensTrending] = useState<any[]>(
     lensTrendingData.data
@@ -51,7 +49,7 @@ export default function useLensTrending() {
     } finally {
       setLoading(false);
     }
-  }, [index]);
+  }, [lensAccessToken]);
 
   return {
     loading,

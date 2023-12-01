@@ -71,7 +71,7 @@ export default function useAllFollowing() {
     } finally {
       setLoading(false);
     }
-  }, [currFid]);
+  }, [currFid, lensSessionProfileId]);
 
   return {
     allFollowing,

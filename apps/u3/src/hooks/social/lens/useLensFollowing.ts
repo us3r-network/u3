@@ -45,7 +45,7 @@ export default function useLensFollowing() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lensSessionProfileId]);
 
   return {
     loadLensFollowing,
