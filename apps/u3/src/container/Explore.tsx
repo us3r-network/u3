@@ -14,6 +14,7 @@ import {
   getHighScoreDapps,
 } from '../services/shared/api/explore';
 import { processMetadata } from '../utils/news/link';
+import { SocialPlatform } from '../services/social/types';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 
@@ -59,7 +60,12 @@ export default function Explore() {
           }
         });
         setHotPosts({
-          posts: casts.splice(0, 6),
+          posts: casts
+            .filter(
+              (item) =>
+                item.platform !== SocialPlatform.Farcaster || !!item?.data?.text
+            )
+            .splice(0, 6),
           farcasterUserData: temp,
           isLoading: false,
         });
