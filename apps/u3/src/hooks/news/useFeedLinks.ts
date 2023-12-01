@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 15:31:56
+ * @LastEditTime: 2023-12-01 15:47:37
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -12,6 +12,7 @@ import { fetchLinks } from 'src/services/news/api/links';
 import { LinkListItem } from 'src/services/news/types/links';
 import useLogin from 'src/hooks/shared/useLogin';
 import { messages } from 'src/utils/shared/message';
+import { processMetadata } from 'src/utils/news/link';
 import { defaultLinkSearchParams } from './useLinksSearchParams';
 
 type LinkDomians = {
@@ -87,16 +88,6 @@ export default function useFeedLinks() {
   );
 
   return { links, loading, hasMore, endCursor, load, loadMore };
-}
-
-export function processMetadata(metadata) {
-  if (
-    metadata?.url.indexOf('twitter.com') > 0 ||
-    metadata?.url.indexOf('x.com') > 0
-  ) {
-    metadata.title = `${metadata.title}: ${metadata.description}`;
-  }
-  return metadata;
 }
 
 const DOMAINS_DO_NOT_SUPPORT_IFRAME = [];
