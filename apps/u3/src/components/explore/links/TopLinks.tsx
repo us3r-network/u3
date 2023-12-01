@@ -71,7 +71,6 @@ const CardsLayout = styled.div`
 const LinkCardItem = styled(LinkCard)`
   height: 0;
   flex: 1;
-  // css设置除了第一个子元素，其它都加个border-top
   &:not(:first-child) {
     border-top: 1px solid rgba(57, 66, 76, 0.5);
   }
