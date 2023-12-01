@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getFollowingFeeds } from 'src/services/social/api/feeds';
@@ -30,11 +31,12 @@ export default function useAllFollowing() {
   const [allUserDataObj, setAllUserDataObj] = useState(
     allFollowingData.userDataObj
   );
-
+  const lensAccessToken = useLensAccessToken();
   const loadAllFollowing = useCallback(async () => {
     setLoading(true);
     try {
       const resp = await getFollowingFeeds({
+        lensAccessToken,
         lensProfileId: lensSessionProfileId,
         fid: `${currFid}`,
         platforms: [SocialPlatform.Farcaster, SocialPlatform.Lens],
@@ -71,7 +73,7 @@ export default function useAllFollowing() {
     } finally {
       setLoading(false);
     }
-  }, [currFid, lensSessionProfileId]);
+  }, [currFid, lensSessionProfileId, lensAccessToken]);
 
   return {
     allFollowing,
