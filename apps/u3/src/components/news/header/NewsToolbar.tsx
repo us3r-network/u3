@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-05 14:33:02
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-27 14:49:32
+ * @LastEditTime: 2023-12-01 18:20:09
  * @Description: file description
  */
 import styled from 'styled-components';
@@ -106,7 +106,7 @@ const OrderByBox = styled.div`
   display: flex;
   align-items: center;
   gap: 20px;
-  width: 170px;
+  width: 180px;
 `;
 const FilterButton = styled(ButtonPrimaryLine)<{ isActive?: boolean }>`
   width: 52px;
@@ -132,7 +132,7 @@ const FilterButton = styled(ButtonPrimaryLine)<{ isActive?: boolean }>`
   }
 `;
 const SearchBox = styled.div`
-  width: 630px;
+  width: 620px;
 `;
 const MultiLayoutBox = styled.div`
   display: flex;

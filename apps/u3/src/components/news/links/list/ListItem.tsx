@@ -8,10 +8,12 @@ import { defaultFormatFromNow } from '../../../../utils/shared/time';
 import LinkBox from '../LinkBox';
 
 export default function ListItem({
+  no,
   data,
   isActive,
   clickAction,
 }: {
+  no: number;
   data: LinkListItem;
   isActive: boolean;
   clickAction: () => void;
@@ -36,6 +38,7 @@ export default function ListItem({
       isActive={isActive}
     >
       <ItemInner isActive={isActive}>
+        <p className="item-no">{no}</p>
         <div className={isActive ? 'right active' : 'right'}>
           <p>{metadata?.title}</p>
           <ItemTitle>
@@ -107,6 +110,14 @@ const ItemInner = styled.div<{ isActive: boolean }>`
   display: flex;
   transition: all 0.3s;
   color: '#fff';
+  & > p {
+    margin: 0;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 19px;
+    color: #718096;
+    opacity: 0.8;
+  }
   &:hover {
     /* background: #999; */
   }

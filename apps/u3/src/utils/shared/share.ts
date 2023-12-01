@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-15 17:21:55
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-23 11:34:10
+ * @LastEditTime: 2023-12-01 17:28:04
  * @Description: file description
  */
 import { SHARE_DOMAIN } from '../../constants';
@@ -22,7 +22,9 @@ export const getContentShareUrl = (id: string | number) => {
 };
 
 export const getLinkShareUrl = (url: string) => {
-  return `${SHARE_DOMAIN}/links/${Buffer.from(url, 'utf8').toString('base64')}`;
+  return `${SHARE_DOMAIN}/news/links/all/${Buffer.from(url, 'utf8').toString(
+    'base64'
+  )}`;
 };
 
 export const getSocialDetailShareUrlWithLens = (id: string | number) => {

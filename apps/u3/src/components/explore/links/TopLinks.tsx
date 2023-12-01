@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-01 15:43:39
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-01 16:25:46
+ * @FilePath: /u3/apps/u3/src/components/explore/links/TopLinks.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import CardBase from '../../common/card/CardBase';
@@ -21,7 +29,7 @@ export default function TopLinks({
       <Title
         text="👍 Top Links"
         viewAllAction={() => {
-          navigate(`/links`);
+          navigate(`/news/links/all`);
         }}
       />
       <CardsWrapper>
@@ -36,7 +44,9 @@ export default function TopLinks({
                 <LinkCardItem
                   key={item.url}
                   data={item}
-                  onClick={() => navigate(`/links/${encodeLinkURL(item?.url)}`)}
+                  onClick={() =>
+                    navigate(`/news/links/all/${encodeLinkURL(item?.url)}`)
+                  }
                 />
               );
             })}

@@ -12,14 +12,22 @@ import {
 import styled from 'styled-components';
 import { useXmtpClient } from './message/XmtpClientCtx';
 
+export enum NavModalName {
+  Notification = 'Notification',
+  Message = 'Message',
+  ContactUs = 'ContactUs',
+}
 interface NavCtxValue {
   openNotificationModal: boolean;
   setOpenNotificationModal: React.Dispatch<React.SetStateAction<boolean>>;
   openMessageModal: boolean;
   setOpenMessageModal: React.Dispatch<React.SetStateAction<boolean>>;
+  openContactUsModal: boolean;
+  setOpenContactUsModal: React.Dispatch<React.SetStateAction<boolean>>;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   renderNavItemText;
+  switchNavModal: (name: string) => void;
 }
 
 const defaultContextValue: NavCtxValue = {
@@ -27,9 +35,12 @@ const defaultContextValue: NavCtxValue = {
   setOpenNotificationModal: () => {},
   openMessageModal: false,
   setOpenMessageModal: () => {},
+  openContactUsModal: false,
+  setOpenContactUsModal: () => {},
   isOpen: false,
   setIsOpen: () => {},
   renderNavItemText: () => {},
+  switchNavModal: () => {},
 };
 
 export interface NavCtxProviderProps {
@@ -42,6 +53,32 @@ export function NavProvider({ children }: NavCtxProviderProps) {
   );
   const [openMessageModal, setOpenMessageModal] = useState(
     defaultContextValue.openMessageModal
+  );
+
+  const [openContactUsModal, setOpenContactUsModal] = useState(
+    defaultContextValue.openContactUsModal
+  );
+
+  const switchNavModal = useCallback(
+    (name: string) => {
+      if (name !== NavModalName.Notification) setOpenNotificationModal(false);
+      if (name !== NavModalName.Message) setOpenMessageModal(false);
+      if (name !== NavModalName.ContactUs) setOpenContactUsModal(false);
+      switch (name) {
+        case NavModalName.Notification:
+          setOpenNotificationModal((pre) => !pre);
+          break;
+        case NavModalName.Message:
+          setOpenMessageModal((pre) => !pre);
+          break;
+        case NavModalName.ContactUs:
+          setOpenContactUsModal((pre) => !pre);
+          break;
+        default:
+          break;
+      }
+    },
+    [setOpenNotificationModal, setOpenMessageModal, setOpenContactUsModal]
   );
 
   const { setCanEnableXmtp } = useXmtpClient();
@@ -83,6 +120,9 @@ export function NavProvider({ children }: NavCtxProviderProps) {
           setOpenNotificationModal,
           openMessageModal,
           setOpenMessageModal,
+          openContactUsModal,
+          setOpenContactUsModal,
+          switchNavModal,
           isOpen,
           setIsOpen,
           renderNavItemText,
@@ -92,6 +132,9 @@ export function NavProvider({ children }: NavCtxProviderProps) {
           setOpenNotificationModal,
           openMessageModal,
           setOpenMessageModal,
+          openContactUsModal,
+          setOpenContactUsModal,
+          switchNavModal,
           isOpen,
           setIsOpen,
           renderNavItemText,

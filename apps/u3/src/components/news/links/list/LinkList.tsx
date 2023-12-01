@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-08 14:04:04
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-15 14:46:22
+ * @LastEditTime: 2023-12-01 17:10:21
  * @Description: file description
  */
 import styled from 'styled-components';
@@ -21,9 +21,10 @@ export default function LinkList({
 }: LinkListProps) {
   return (
     <LinkListWrapper>
-      {data.map((item) => {
+      {data.map((item, index) => {
         return (
           <ListItem
+            no={index + 1}
             key={item.url}
             data={item}
             isActive={item.url === activeLink?.url}
@@ -34,7 +35,6 @@ export default function LinkList({
     </LinkListWrapper>
   );
 }
-
 const LinkListWrapper = styled.div`
   width: 100%;
   display: flex;
