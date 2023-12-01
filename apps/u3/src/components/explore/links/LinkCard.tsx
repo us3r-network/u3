@@ -1,5 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import EllipsisText from '../../common/text/EllipsisText';
+import LinkLogo from '../../news/links/LinkLogo';
 
 export type LinkCardData = {
   logo: string;
@@ -14,7 +15,7 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
   return (
     <CardWrapper {...wrapperProps}>
       <CardBody>
-        <Logo src={logo} />
+        <Logo logo={logo} link={url} />
         <Right>
           <Name>{name}</Name>
           <Url>{url}</Url>
@@ -43,7 +44,7 @@ const CardBody = styled.div`
     transform: scale(1.05);
   }
 `;
-const Logo = styled.img`
+const Logo = styled(LinkLogo)`
   width: 48px;
   height: 48px;
   border-radius: 40px;

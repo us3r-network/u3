@@ -4,6 +4,7 @@ import CardBase from '../../common/card/CardBase';
 import Title from '../Title';
 import LinkCard from './LinkCard';
 import Loading from '../../common/loading/Loading';
+import { encodeLinkURL } from '../../../utils/news/link';
 
 export type TopLinksData = Array<{ logo: string; name: string; url: string }>;
 
@@ -35,13 +36,7 @@ export default function TopLinks({
                 <LinkCardItem
                   key={item.url}
                   data={item}
-                  onClick={() =>
-                    navigate(
-                      `/links/${Buffer.from(item?.url, 'utf8').toString(
-                        'base64'
-                      )}`
-                    )
-                  }
+                  onClick={() => navigate(`/links/${encodeLinkURL(item?.url)}`)}
                 />
               );
             })}
