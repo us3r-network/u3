@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 15:03:31
+ * @LastEditTime: 2023-12-01 18:14:02
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -63,10 +63,10 @@ export const LinkGroup = [
     label: 'Contents',
     value: `/news/contents`,
   },
-  {
-    label: 'Events',
-    value: `/news/events`,
-  },
+  // {
+  //   label: 'Events',
+  //   value: `/news/events`,
+  // },
 ];
 
 export default function NewsMenu() {
