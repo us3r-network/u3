@@ -25,9 +25,9 @@ export type CustomNavObject = {
 export const navs: CustomNavObject[] = [
   {
     name: 'Explore',
-    activeRouteKeys: [RouteKey.web3Today],
+    activeRouteKeys: [RouteKey.home],
     icon: React.createElement(CompassSvg),
-    route: getRoute(RouteKey.web3Today),
+    route: getRoute(RouteKey.home),
   },
   {
     name: 'Browse',

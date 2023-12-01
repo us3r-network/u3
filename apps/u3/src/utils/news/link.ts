@@ -17,3 +17,12 @@ export function encodeLinkURL(url: string) {
 export function decodeLinkURL(url: string) {
   return Buffer.from(decodeURIComponent(url), 'base64').toString('utf8');
 }
+export function processMetadata(metadata) {
+  if (
+    metadata?.url.indexOf('twitter.com') > 0 ||
+    metadata?.url.indexOf('x.com') > 0
+  ) {
+    metadata.title = `${metadata.title}: ${metadata.description}`;
+  }
+  return metadata;
+}
