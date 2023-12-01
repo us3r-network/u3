@@ -105,7 +105,15 @@ export default function Explore() {
   }, []);
   return (
     <Wrapper>
-      <PosterBanner />
+      <PosterBanner
+        disabled={
+          hotPosts.isLoading || topLinks.isLoading || highScoreDapps.isLoading
+        }
+        posts={hotPosts.posts}
+        farcasterUserData={hotPosts.farcasterUserData}
+        dapps={highScoreDapps.dapps.slice(0, 6)}
+        links={topLinks.links.slice(0, 3)}
+      />
       <Main>
         <MainLeft>
           <HotPosts

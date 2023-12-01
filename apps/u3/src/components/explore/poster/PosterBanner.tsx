@@ -1,14 +1,37 @@
 import { ButtonPrimary } from 'src/components/common/button/ButtonBase';
 import styled from 'styled-components';
+import { useState } from 'react';
+import loadable from '@loadable/component';
+// import DailyPosterModal from './DailyPosterModal';
+import { DailyPosterLayoutProps } from './layout/DailyPosterLayout';
 
-export default function PosterBanner() {
+const DailyPosterModal = loadable(() => import(`./DailyPosterModal`));
+
+export default function PosterBanner({
+  disabled,
+  ...layoutProps
+}: DailyPosterLayoutProps & { disabled?: boolean }) {
+  const [open, setOpen] = useState(false);
+  const [posterUrl, setPosterUrl] = useState('');
   return (
     <Wrapper>
       <PrimaryTitle>Daily Poster</PrimaryTitle>
       <SecondaryTitle>Web3 Today</SecondaryTitle>
-      <CreatePosterBtn>
+      <CreatePosterBtn
+        disabled={disabled || !DailyPosterModal}
+        onClick={() => setOpen(true)}
+      >
         Create Poster <ArrowRight />
       </CreatePosterBtn>
+      {DailyPosterModal && (
+        <DailyPosterModal
+          {...layoutProps}
+          posterUrl={posterUrl}
+          setPosterUrl={setPosterUrl}
+          open={open}
+          closeModal={() => setOpen(false)}
+        />
+      )}
     </Wrapper>
   );
 }
