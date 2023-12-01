@@ -1,18 +1,13 @@
-import axios from 'axios';
 import { DappExploreListResponse } from '../../dapp/types/dapp';
 import request, { RequestPromise } from './request';
-import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import { LinksListResponse } from '../../news/types/links';
+import { getFarcasterTrending } from '../../social/api/farcaster';
 
 export function getHotPosts() {
   // TODO 后期换成包含farcaster和lens的trending
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r_farcaster/trending`,
-    method: 'get',
-    params: {
-      startIndex: 0,
-      endIndex: 15, // TODO 取15个是因为有些cast可能被删除了
-    },
+  return getFarcasterTrending({
+    start: 0,
+    end: 25, // TODO 多取些暂时规避可能取不到6条的问题（fcast 可能被删除）
   });
 }
 
