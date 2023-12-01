@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-22 15:06:18
+ * @LastEditTime: 2023-12-01 14:23:34
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -13,38 +13,30 @@ import LoadableFallback from '../components/layout/LoadableFallback';
 
 export enum RouteKey {
   home = 'home',
-  events = 'events',
-  eventCreate = 'eventCreate',
-  eventEdit = 'eventEdit',
-  event = 'event',
-  dappStore = 'dappStore',
-  dapp = 'dapp',
-  dappCreate = 'dappCreate',
-  projects = 'projects',
-  project = 'project',
-  projectCreate = 'projectCreate',
-  contents = 'contents',
-  content = 'content',
-  contentCreate = 'contentCreate',
-  links = 'links',
-  link = 'link',
-  favorite = 'favorite',
-  frens = 'frens',
+  web3Today = 'web3Today',
+  // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
-  noMatch = 'noMatch',
-  policy = 'policy',
-  web3Today = 'web3Today',
-  activity = 'activity',
-  family = 'family',
   asset = 'asset',
   gallery = 'gallery',
-  notification = 'notification',
-  save = 'save',
+  activity = 'activity',
   farcaster = 'farcaster',
   farcasterData = 'farcasterData',
   farcasterSignup = 'farcasterSignup',
   farcasterProfile = 'farcasterProfile',
+  // news
+  newsLayout = 'newsLayout',
+  links = 'links',
+  link = 'link',
+  contents = 'contents',
+  content = 'content',
+  contentCreate = 'contentCreate',
+  events = 'events',
+  eventCreate = 'eventCreate',
+  eventEdit = 'eventEdit',
+  event = 'event',
+  favorite = 'favorite',
+  // social
   socialLayout = 'socialLayout',
   social = 'social',
   socialAll = 'socialAll',
@@ -64,6 +56,21 @@ export enum RouteKey {
   socialPostDetailLens = 'socialPostDetailLens',
   socialPostDetailFcast = 'socialPostDetailFcast',
   socialSuggestFollow = 'socialSuggestFollow',
+  // apps
+  dappStore = 'dappStore',
+  dapp = 'dapp',
+  dappCreate = 'dappCreate',
+  // save
+  save = 'save',
+  // others
+  noMatch = 'noMatch',
+  policy = 'policy',
+
+  // deprecated
+  projects = 'projects',
+  project = 'project',
+  projectCreate = 'projectCreate',
+  frens = 'frens',
 }
 export enum RoutePermission {
   login = 'login',
@@ -97,6 +104,18 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('news/Web3Today'),
     key: RouteKey.web3Today,
   },
+  // profile
+  {
+    path: '/u',
+    element: loadContainerElement('profile/Profile'),
+    key: RouteKey.profile,
+    permissions: [RoutePermission.login],
+  },
+  {
+    path: '/u/:user',
+    element: loadContainerElement('profile/Profile'),
+    key: RouteKey.profileByUser,
+  },
   {
     path: '/activity',
     element: loadContainerElement('Activity'),
@@ -115,152 +134,78 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.gallery,
     permissions: [RoutePermission.login],
   },
+  // news
   {
-    path: '/notification',
-    element: loadContainerElement('Notification'),
-    key: RouteKey.notification,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/favorite',
-    element: loadContainerElement('news/Favorite'),
-    key: RouteKey.favorite,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/save',
-    element: loadContainerElement('Save'),
-    key: RouteKey.save,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/u',
-    element: loadContainerElement('profile/Profile'),
-    key: RouteKey.profile,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/u/:user',
-    element: loadContainerElement('profile/Profile'),
-    key: RouteKey.profileByUser,
-  },
-  {
-    path: '/events',
-    element: loadContainerElement('news/Events'),
-    key: RouteKey.events,
-  },
-  {
-    path: '/events/:id',
-    element: loadContainerElement('news/Events'),
-    key: RouteKey.events,
-  },
-  {
-    path: '/events/create',
-    element: loadContainerElement('news/EventCreate'),
-    key: RouteKey.eventCreate,
-    permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  {
-    path: '/events/:id/edit',
-    element: loadContainerElement('news/EventEdit'),
-    key: RouteKey.eventEdit,
-    permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  {
-    path: '/dapp-store',
-    element: loadContainerElement('dapp/Dapps'),
-    key: RouteKey.dappStore,
-  },
-  {
-    path: '/dapp-store/:id',
-    element: loadContainerElement('dapp/Dapp'),
-    key: RouteKey.dapp,
-  },
-  {
-    path: '/dapp-store/create',
-    element: loadContainerElement('dapp/DappCreate'),
-    key: RouteKey.dappCreate,
-    permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  // {
-  //   path: '/projects',
-  //   element: loadContainerElement('Projects'),
-  //   key: RouteKey.projects,
-  // },
-  {
-    path: '/projects/:id',
-    element: loadContainerElement('Project'),
-    key: RouteKey.project,
-  },
-  {
-    path: '/projects/create',
-    element: loadContainerElement('ProjectCreate'),
-    key: RouteKey.projectCreate,
-    permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  {
-    path: '/contents',
-    element: loadContainerElement('news/Contents'),
-    key: RouteKey.contents,
-  },
-  {
-    path: '/contents/:id',
-    element: isMobile
-      ? loadContainerElement('news/Content')
-      : loadContainerElement('news/Contents'),
-    key: isMobile ? RouteKey.content : RouteKey.contents,
-  },
-  {
-    path: '/contents/create',
-    element: loadContainerElement('news/ContentCreate'),
-    key: RouteKey.contentCreate,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/links',
-    element: loadContainerElement('news/Links'),
-    key: RouteKey.links,
-  },
-  {
-    path: '/links/:link',
-    element: isMobile
-      ? loadContainerElement('news/LinkMobile')
-      : loadContainerElement('news/Links'),
-    key: isMobile ? RouteKey.link : RouteKey.links,
-  },
-  {
-    path: '/frens',
-    element: loadContainerElement('Frens'),
-    key: RouteKey.frens,
-  },
-  {
-    path: '/policy',
-    element: loadContainerElement('Policy'),
-    key: RouteKey.policy,
-  },
-  {
-    path: '/farcaster',
-    element: loadContainerElement('social/FarcasterLayout'),
-    key: RouteKey.farcaster,
+    path: '/news',
+    element: loadContainerElement('news/NewsLayout'),
+    key: RouteKey.newsLayout,
     children: [
       {
         path: '',
-        element: loadContainerElement('social/FarcasterData'),
-        key: RouteKey.farcasterData,
-      },
-      {
-        path: 'signup',
-        element: loadContainerElement('social/FarcasterSignup'),
-        key: RouteKey.farcasterSignup,
+        element: <Navigate to="links/all" />,
+        key: RouteKey.links,
       } as CutomRouteObject,
       {
-        path: 'profile',
-        element: loadContainerElement('social/FarcasterProfile'),
-        key: RouteKey.farcasterProfile,
+        path: 'links/:group',
+        element: loadContainerElement('news/Links'),
+        key: RouteKey.links,
+      },
+      {
+        path: 'links/:group/:link',
+        element: isMobile
+          ? loadContainerElement('news/LinkMobile')
+          : loadContainerElement('news/Links'),
+        key: isMobile ? RouteKey.link : RouteKey.links,
+      },
+      {
+        path: 'contents',
+        element: loadContainerElement('news/Contents'),
+        key: RouteKey.contents,
+      },
+      {
+        path: 'contents/:id',
+        element: isMobile
+          ? loadContainerElement('news/Content')
+          : loadContainerElement('news/Contents'),
+        key: isMobile ? RouteKey.content : RouteKey.contents,
+      },
+      {
+        path: 'contents/create',
+        element: loadContainerElement('news/ContentCreate'),
+        key: RouteKey.contentCreate,
+        permissions: [RoutePermission.login],
+      },
+      {
+        path: 'events',
+        element: loadContainerElement('news/Events'),
+        key: RouteKey.events,
+      },
+      {
+        path: 'events/:id',
+        element: loadContainerElement('news/Events'),
+        key: RouteKey.events,
+      },
+      {
+        path: 'events/create',
+        element: loadContainerElement('news/EventCreate'),
+        key: RouteKey.eventCreate,
+        permissions: [RoutePermission.login, RoutePermission.admin],
+      },
+      {
+        path: 'events/:id/edit',
+        element: loadContainerElement('news/EventEdit'),
+        key: RouteKey.eventEdit,
+        permissions: [RoutePermission.login, RoutePermission.admin],
+      },
+      {
+        path: 'favorite',
+        element: loadContainerElement('news/Favorite'),
+        key: RouteKey.favorite,
+        permissions: [RoutePermission.login],
       },
     ],
   },
-
+  // social
   {
     path: '/social',
     element: loadContainerElement('social/SocialLayout'),
@@ -364,7 +309,81 @@ export const routes: CutomRouteObject[] = [
       },
     ],
   },
+  {
+    path: '/farcaster',
+    element: loadContainerElement('social/FarcasterLayout'),
+    key: RouteKey.farcaster,
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('social/FarcasterData'),
+        key: RouteKey.farcasterData,
+      },
+      {
+        path: 'signup',
+        element: loadContainerElement('social/FarcasterSignup'),
+        key: RouteKey.farcasterSignup,
+      } as CutomRouteObject,
+      {
+        path: 'profile',
+        element: loadContainerElement('social/FarcasterProfile'),
+        key: RouteKey.farcasterProfile,
+      },
+    ],
+  },
+  // apps
+  {
+    path: '/dapp-store',
+    element: loadContainerElement('dapp/Dapps'),
+    key: RouteKey.dappStore,
+  },
+  {
+    path: '/dapp-store/:id',
+    element: loadContainerElement('dapp/Dapp'),
+    key: RouteKey.dapp,
+  },
+  {
+    path: '/dapp-store/create',
+    element: loadContainerElement('dapp/DappCreate'),
+    key: RouteKey.dappCreate,
+    permissions: [RoutePermission.login, RoutePermission.admin],
+  },
+  // save
+  {
+    path: '/save',
+    element: loadContainerElement('Save'),
+    key: RouteKey.save,
+    permissions: [RoutePermission.login],
+  },
+  {
+    path: '/policy',
+    element: loadContainerElement('Policy'),
+    key: RouteKey.policy,
+  },
   NoMatchRoute,
+
+  // deprecated
+  // {
+  //   path: '/projects',
+  //   element: loadContainerElement('Projects'),
+  //   key: RouteKey.projects,
+  // },
+  // {
+  //   path: '/projects/:id',
+  //   element: loadContainerElement('Project'),
+  //   key: RouteKey.project,
+  // },
+  // {
+  //   path: '/projects/create',
+  //   element: loadContainerElement('ProjectCreate'),
+  //   key: RouteKey.projectCreate,
+  //   permissions: [RoutePermission.login, RoutePermission.admin],
+  // },
+  // {
+  //   path: '/frens',
+  //   element: loadContainerElement('Frens'),
+  //   key: RouteKey.frens,
+  // },
 ];
 
 export const getRoute = (key: RouteKey): CutomRouteObject | undefined => {

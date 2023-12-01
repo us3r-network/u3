@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-27 14:39:41
+ * @LastEditTime: 2023-11-30 18:10:50
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,9 +12,7 @@ import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 import { ContentBoxContainer } from './ContentShowerBox';
 import { MainWrapper } from '../../layout/Index';
-import NewsMenu from '../header/NewsMenu';
 import GridModal from './GridModal';
-import Filter from './Filter';
 import SearchInput from '../../common/input/SearchInput';
 import NoResult from '../../layout/NoResult';
 import ContentOrderBySelect from './ContentOrderBySelect';
@@ -29,7 +27,6 @@ import ContentPreview from './ContentPreview';
 import type { ContentsPageProps } from '../../../container/news/Contents';
 import useLogin from '../../../hooks/shared/useLogin';
 import NewsToolbar from '../header/NewsToolbar';
-import FilterBox from '../header/FilterBox';
 
 export default function ContentsPage({
   // Queries
@@ -88,7 +85,7 @@ export default function ContentsPage({
   }, [id, selectContent, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/contents/:id?${searchParams.toString()}`);
+    navigate(`/news/contents/:id?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -99,7 +96,6 @@ export default function ContentsPage({
 
   return (
     <Box>
-      <NewsMenu />
       <NewsToolbar
         // displayFilterButton
         // isActiveFilter={isActiveFilter}
@@ -155,7 +151,7 @@ export default function ContentsPage({
         }}
         displaySubmitButton={isAdmin}
         submitButtonOnClick={() => {
-          navigate('/contents/create');
+          navigate('/news/contents/create');
         }}
       />
       {(() => {
@@ -185,7 +181,7 @@ export default function ContentsPage({
                   onHiddenUndo={onHiddenUndoAction}
                   onItemClick={(item) => {
                     navigate(
-                      `/contents/${
+                      `/news/contents/${
                         item?.id || item?.uuid || ''
                       }?${searchParams.toString()}`
                     );

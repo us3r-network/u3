@@ -6,6 +6,7 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
+import { RouteKey, getRoute } from 'src/route/routes';
 import EventExploreList from '../../components/news/event/EventExploreList';
 import EventExploreListFilter, {
   EventExploreListFilterValues,
@@ -22,7 +23,6 @@ import { AsyncRequestStatus } from '../../services/shared/types';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import Loading from '../../components/common/loading/Loading';
 import NoResult from '../../components/layout/NoResult';
-import FeedsFilterBox from '../../components/news/header/FilterBox';
 import SearchInput from '../../components/common/input/SearchInput';
 import EventOrderBySelect, {
   defaultEventOrderBy,
@@ -36,7 +36,6 @@ import {
 } from '../../utils/news/localLayout';
 import EventPreview from '../../components/news/event/EventPreview';
 import useLogin from '../../hooks/shared/useLogin';
-import NewsMenu from '../../components/news/header/NewsMenu';
 import NewsToolbar from '../../components/news/header/NewsToolbar';
 
 const isUUid = (str: string) => {
@@ -158,7 +157,7 @@ export default function Events() {
   }, [id, event, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/events/:id?${searchParams.toString()}`);
+    navigate(`/news/events/:id?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -169,7 +168,6 @@ export default function Events() {
 
   return (
     <EventsWrapper>
-      <NewsMenu />
       <NewsToolbar
         // displayFilterButton
         // isActiveFilter={isActiveFilter}
@@ -216,7 +214,7 @@ export default function Events() {
         }}
         displaySubmitButton={isAdmin}
         submitButtonOnClick={() => {
-          navigate('/events/create');
+          navigate('/news/events/create');
         }}
       />
       <MainBox>
@@ -237,7 +235,7 @@ export default function Events() {
                     activeId={activeId}
                     onItemClick={(item) => {
                       navigate(
-                        `/events/${
+                        `/news/events/${
                           item?.id || item?.uuid || ''
                         }?${searchParams.toString()}`
                       );
@@ -264,7 +262,7 @@ export default function Events() {
                   data={eventExploreList}
                   onItemClick={(item) => {
                     navigate(
-                      `/events/${
+                      `/news/events/${
                         item?.id || item?.uuid || ''
                       }?${searchParams.toString()}`
                     );

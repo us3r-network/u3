@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 14:44:51
+ * @LastEditTime: 2023-12-01 10:09:32
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
@@ -32,6 +32,9 @@ export const navs: CustomNavObject[] = [
   {
     name: 'Browse',
     activeRouteKeys: [
+      RouteKey.newsLayout,
+      RouteKey.links,
+      RouteKey.link,
       RouteKey.contents,
       RouteKey.content,
       RouteKey.contentCreate,
@@ -39,11 +42,9 @@ export const navs: CustomNavObject[] = [
       RouteKey.event,
       RouteKey.eventCreate,
       RouteKey.eventEdit,
-      RouteKey.links,
-      RouteKey.link,
     ],
     icon: React.createElement(NewsSvg),
-    route: getRoute(RouteKey.links),
+    route: getRoute(RouteKey.newsLayout),
   },
   {
     name: 'Social',
