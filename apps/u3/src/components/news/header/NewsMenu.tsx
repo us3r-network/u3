@@ -2,119 +2,92 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 15:11:27
+ * @LastEditTime: 2023-12-01 15:03:31
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { getRoute, RouteKey } from '../../../route/routes';
 import useRoute from '../../../route/useRoute';
 import Tab from '../../common/tab/Tab';
 
-const TWITTER_SEARCH_PARAMS = 'includeDomains=twitter.com,x.com';
-// const FARCASTER_SEARCH_PARAMS = 'includeDomains=warpcast.com';
-// const LENS_SEARCH_PARAMS = 'includeDomains=warpcast.com';
-const GITHUB_SEARCH_PARAMS = 'includeDomains=github.com';
-const YOUTUBE_SEARCH_PARAMS = 'includeDomains=youtube.com,youtu.be';
-const SUBSTACK_SEARCH_PARAMS = 'includeDomains=substack.com';
-// const HACKER_NEWS_SEARCH_PARAMS = 'includeDomains=ycombinator.com';
-// const REDDIT_SEARCH_PARAMS = 'includeDomains=reddit.com';
-// const FARQUEST_SEARCH_PARAMS = 'includeDomains=far.quest';
-const KIWISTAND_SEARCH_PARAMS = 'includeDomains=news.kiwistand.com';
-const ZORA_SEARCH_PARAMS = 'includeDomains=zora.co';
-const SPOTIFY_SEARCH_PARAMS = 'includeDomains=spotify.com';
-
-const FeedsSwitchOptions = [
+export const LinkGroup = [
   {
     label: 'Links',
-    value: `${RouteKey.links}`,
+    value: `/news/links/all`,
+    group: 'all',
   },
   {
     label: 'Twitter Select',
-    value: `${RouteKey.links}?${TWITTER_SEARCH_PARAMS}`,
+    value: `/news/links/twitter`,
+    group: 'twitter',
+    includeDomains: ['twitter.com', 'x.com'],
   },
-  // {
-  //   label: 'Farcaster',
-  //   value: `${RouteKey.links}?${FARCASTER_SEARCH_PARAMS}`,
-  // },
-  //   label: 'Lens',
-  //   value: `${RouteKey.links}?${LENS_SEARCH_PARAMS}`,
-  // },
   {
     label: 'Zora',
-    value: `${RouteKey.links}?${ZORA_SEARCH_PARAMS}`,
+    value: `/news/links/zora`,
+    group: 'zora',
+    includeDomains: ['zora.co'],
   },
   {
     label: 'Spotify',
-    value: `${RouteKey.links}?${SPOTIFY_SEARCH_PARAMS}`,
+    value: `/news/links/spotify`,
+    group: 'spotify',
+    includeDomains: ['spotify.com'],
   },
   {
     label: 'Github',
-    value: `${RouteKey.links}?${GITHUB_SEARCH_PARAMS}`,
+    value: `/news/links/github`,
+    group: 'github',
+    includeDomains: ['github.com'],
   },
   {
     label: 'Youtube',
-    value: `${RouteKey.links}?${YOUTUBE_SEARCH_PARAMS}`,
+    value: `/news/links/youtube`,
+    group: 'youtube',
+    includeDomains: ['youtube.com', 'youtu.be'],
   },
   {
     label: 'Substack',
-    value: `${RouteKey.links}?${SUBSTACK_SEARCH_PARAMS}`,
+    value: `/news/links/substack`,
+    group: 'substack',
+    includeDomains: ['substack.com'],
   },
-  // {
-  //   label: 'Hacker News',
-  //   value: `${RouteKey.links}?${HACKER_NEWS_SEARCH_PARAMS}`,
-  // },
-  // {
-  //   label: 'Reddit',
-  //   value: `${RouteKey.links}?${REDDIT_SEARCH_PARAMS}`,
-  // },
-  // {
-  //   label: 'Far.quest',
-  //   value: `${RouteKey.links}?${FARQUEST_SEARCH_PARAMS}`,
-  // },
   {
-    label: 'KiWiStand',
-    value: `${RouteKey.links}?${KIWISTAND_SEARCH_PARAMS}`,
+    label: 'Paragraph',
+    value: `/news/links/paragraph`,
+    group: 'paragraph',
+    includeDomains: ['paragraph.xyz'],
   },
   {
     label: 'Contents',
-    value: RouteKey.contents,
+    value: `/news/contents`,
   },
   {
     label: 'Events',
-    value: RouteKey.events,
+    value: `/news/events`,
   },
 ];
 
 export default function NewsMenu() {
   const navigate = useNavigate();
-  const { firstRouteMeta } = useRoute();
+  const { lastRouteMeta } = useRoute();
   const location = useLocation();
   const [tabValue, setTabValue] = useState('');
   useEffect(() => {
-    if (location.search) {
-      setTabValue(`${RouteKey.links}${decodeURIComponent(location.search)}`);
-    } else {
-      setTabValue(firstRouteMeta.key);
-    }
-  }, [location, firstRouteMeta]);
+    const activeOption =
+      LinkGroup.find((item) => location.pathname.indexOf(item.value) >= 0) ||
+      LinkGroup[0];
+    if (activeOption) setTabValue(activeOption.value);
+  }, [location, lastRouteMeta]);
   return (
     <NewsMenuWrapper>
       <TopBox>
         <TabSwitch
-          options={FeedsSwitchOptions}
+          options={LinkGroup}
           value={tabValue}
           onChange={(value) => {
-            if (value === RouteKey.contents || value === RouteKey.events) {
-              navigate(getRoute(value).path);
-            } else {
-              const path = value.replace(
-                `${RouteKey.links}`,
-                getRoute(RouteKey.links).path
-              );
-              navigate(path);
-            }
+            navigate(value);
           }}
         />
       </TopBox>

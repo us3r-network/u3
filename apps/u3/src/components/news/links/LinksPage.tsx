@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-30 15:41:17
+ * @LastEditTime: 2023-12-01 16:21:40
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,6 +12,7 @@ import { LinkListItem } from 'src/services/news/types/links';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import SearchInput from 'src/components/common/input/SearchInput';
 import { decodeLinkURL, encodeLinkURL } from 'src/utils/news/link';
+import { RouteKey, getRoute } from 'src/route/routes';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 // import SearchInput from '../../common/input/SearchInput';
@@ -28,7 +29,6 @@ import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
 import LinkList from './list/LinkList';
 import NewsToolbar from '../header/NewsToolbar';
-import NewsMenu from '../header/NewsMenu';
 
 export type LinksPageProps = {
   // Queries
@@ -38,18 +38,9 @@ export type LinksPageProps = {
   getMore?: () => void;
   currentSearchParams?: {
     keywords?: string;
-    channels?: string[];
-    includeDomains?: string[];
-    excludeDomains?: string[];
     orderBy?: any;
   };
-  searchParamsChange?: (values: {
-    keywords?: string;
-    channels?: string[];
-    includeDomains?: string[];
-    excludeDomains?: string[];
-    orderBy?: any;
-  }) => void;
+  searchParamsChange?: (values: { keywords?: string; orderBy?: any }) => void;
 };
 
 export default function LinksPage({
@@ -61,7 +52,7 @@ export default function LinksPage({
   getMore,
 }: LinksPageProps) {
   const navigate = useNavigate();
-  const { link } = useParams();
+  const { group, link } = useParams();
   const [searchParams] = useSearchParams();
 
   const [layout, setLayout] = useState(getContentsLayoutFromLocal());
@@ -69,7 +60,9 @@ export default function LinksPage({
 
   const selectLink: LinkListItem | null = useMemo(() => {
     return link
-      ? links.find((item) => item?.url === decodeLinkURL(link))
+      ? link === ':link'
+        ? links[0]
+        : links.find((item) => item?.url === decodeLinkURL(link)) || links[0]
       : links[0];
   }, [links, link]);
 
@@ -82,7 +75,7 @@ export default function LinksPage({
   }, [link, selectLink, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/links/:link?${searchParams.toString()}`);
+    navigate(`/news/links/${group}/:link?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -92,7 +85,6 @@ export default function LinksPage({
   }, [link, resetRouthPath]);
   return (
     <Box>
-      <NewsMenu />
       <NewsToolbar
         // displayFilterButton
         // isActiveFilter={isActiveFilter}
@@ -172,7 +164,7 @@ export default function LinksPage({
                       activeLink={selectLink}
                       onItemClick={(item) => {
                         navigate(
-                          `/links/${encodeLinkURL(
+                          `/news/links/${group}/${encodeLinkURL(
                             item?.url
                           )}?${searchParams.toString()}`
                         );
@@ -208,7 +200,7 @@ export default function LinksPage({
                     data={links}
                     onItemClick={(item) => {
                       navigate(
-                        `/links/${encodeLinkURL(
+                        `/news/links/${group}/${encodeLinkURL(
                           item?.url
                         )}?${searchParams.toString()}`
                       );
@@ -233,7 +225,9 @@ export default function LinksPage({
   );
 }
 
-const Box = styled(MainWrapper)`
+const Box = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;
