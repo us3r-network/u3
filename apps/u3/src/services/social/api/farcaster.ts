@@ -321,7 +321,7 @@ export function getFarcasterTrending({
   end: number;
 }) {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r_farcaster/trending`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/trending`,
     method: 'get',
     params: {
       startIndex: start,
