@@ -26,6 +26,7 @@ export default function useFarcasterFollowing() {
     useState(farcasterFollowingData.userDataObj);
 
   const loadFarcasterFollowing = useCallback(async () => {
+    if (!currFid) return;
     setLoading(true);
     try {
       const resp = await getFollowingFeeds({

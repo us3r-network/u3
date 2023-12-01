@@ -38,7 +38,7 @@ export default function useAllFollowing() {
       const resp = await getFollowingFeeds({
         lensAccessToken,
         lensProfileId: lensSessionProfileId,
-        fid: `${currFid}`,
+        fid: currFid ? `${currFid}` : undefined,
         platforms: [SocialPlatform.Farcaster, SocialPlatform.Lens],
         endFarcasterCursor: allFollowingData.endFarcasterCursor
           ? allFollowingData.endFarcasterCursor
