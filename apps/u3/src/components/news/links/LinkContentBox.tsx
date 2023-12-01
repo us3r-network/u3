@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-29 18:15:27
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-30 15:30:40
+ * @LastEditTime: 2023-12-01 15:55:04
  * @FilePath: /u3/apps/u3/src/components/news/links/LinkContentBox.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -174,7 +174,6 @@ export default function LinkContentBox({
                       onLoad={() => {
                         setIframeLoaded(true);
                       }}
-                      allowTransparency
                       allowFullScreen
                       sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"
                     />
@@ -206,7 +205,6 @@ export default function LinkContentBox({
                       onLoad={() => {
                         setIframeLoaded(true);
                       }}
-                      allowTransparency
                       allowFullScreen
                       allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                       sandbox="allow-pointer-lock allow-same-origin allow-scripts allow-popups"

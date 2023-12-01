@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 15:33:12
+ * @LastEditTime: 2023-12-01 16:22:00
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect } from 'react';
@@ -18,7 +18,6 @@ import { LinkGroup } from 'src/components/news/header/NewsMenu';
 
 function Links() {
   const { group } = useParams();
-  // console.log('group', group, link);
   const { currentSearchParams, searchParamsChange } = useLinksSearchParams();
   const { loading, hasMore, links, load, loadMore } = useFeedLinks();
 
@@ -27,7 +26,6 @@ function Links() {
     const groupDomain = {
       includeDomains: linkGroup?.includeDomains,
     };
-    console.log('groupDomain', groupDomain);
     load(groupDomain, currentSearchParams);
   }, [group, currentSearchParams]);
 
