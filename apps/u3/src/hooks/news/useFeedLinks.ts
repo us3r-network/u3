@@ -12,6 +12,7 @@ import { fetchLinks } from 'src/services/news/api/links';
 import { LinkListItem } from 'src/services/news/types/links';
 import useLogin from 'src/hooks/shared/useLogin';
 import { messages } from 'src/utils/shared/message';
+import { processMetadata } from 'src/utils/news/link';
 
 export default function useFeedLinks(currentSearchParams) {
   const { user } = useLogin();
@@ -69,16 +70,6 @@ export default function useFeedLinks(currentSearchParams) {
   }, []);
 
   return { links, loading, hasMore, endCursor, load };
-}
-
-export function processMetadata(metadata) {
-  if (
-    metadata?.url.indexOf('twitter.com') > 0 ||
-    metadata?.url.indexOf('x.com') > 0
-  ) {
-    metadata.title = `${metadata.title}: ${metadata.description}`;
-  }
-  return metadata;
 }
 
 const DOMAINS_DO_NOT_SUPPORT_IFRAME = ['substack.com'];
