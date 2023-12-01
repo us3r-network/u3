@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-30 18:10:50
+ * @LastEditTime: 2023-12-01 18:19:06
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -101,27 +101,14 @@ export default function ContentsPage({
         // isActiveFilter={isActiveFilter}
         // onChangeActiveFilter={setIsActiveFilter}
         orderByEl={
-          <>
-            <ContentOrderBySelect
-              value={currentSearchParams.orderBy}
-              onChange={(value) =>
-                searchParamsChange({
-                  orderBy: value,
-                })
-              }
-            />
-            {/* <NewestButton
-                  isActive={currentSearchParams.orderBy === 'NEWEST'}
-                  onClick={() => {
-                    searchParamsChange({
-                      orderBy: 'NEWEST',
-                    });
-                  }}
-                >
-                  Mempool
-                  {hasNewest && <HasNewestTag />}
-                </NewestButton> */}
-          </>
+          <ContentOrderBySelect
+            value={currentSearchParams.orderBy}
+            onChange={(value) =>
+              searchParamsChange({
+                orderBy: value,
+              })
+            }
+          />
         }
         searchEl={
           <SearchInput
@@ -263,7 +250,9 @@ export default function ContentsPage({
   );
 }
 
-const Box = styled(MainWrapper)`
+const Box = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 16px;

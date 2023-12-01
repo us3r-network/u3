@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 16:21:40
+ * @LastEditTime: 2023-12-01 18:12:54
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -99,16 +99,16 @@ export default function LinksPage({
             }
           />
         }
-        searchEl={
-          <SearchInput
-            debounceMs={1000}
-            onSearch={(value) => {
-              searchParamsChange({
-                keywords: value,
-              });
-            }}
-          />
-        }
+        // searchEl={
+        //   <SearchInput
+        //     debounceMs={1000}
+        //     onSearch={(value) => {
+        //       searchParamsChange({
+        //         keywords: value,
+        //       });
+        //     }}
+        //   />
+        // }
         multiLayout
         layout={layout}
         setLayout={(l) => {
