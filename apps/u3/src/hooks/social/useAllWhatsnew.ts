@@ -1,5 +1,7 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
+
 import { getTrendingFeeds } from 'src/services/social/api/feeds';
 import { SocialPlatform } from 'src/services/social/types';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
@@ -23,11 +25,12 @@ export default function useAllWhatsnew() {
   const [allUserDataObj, setAllUserDataObj] = useState(
     allWhatsnewData.userDataObj
   );
-
+  const lensAccessToken = useLensAccessToken();
   const loadAllWhatsnew = useCallback(async () => {
     setLoading(true);
     try {
       const resp = await getTrendingFeeds({
+        lensAccessToken,
         endFarcasterCursor: allWhatsnewData.endFarcasterCursor
           ? allWhatsnewData.endFarcasterCursor
           : undefined,
@@ -74,7 +77,7 @@ export default function useAllWhatsnew() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lensAccessToken]);
 
   return {
     loading,

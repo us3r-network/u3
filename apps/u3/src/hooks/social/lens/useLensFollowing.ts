@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 import { getFollowingFeeds } from 'src/services/social/api/feeds';
 import { SocialPlatform } from 'src/services/social/types';
@@ -20,11 +21,12 @@ export default function useLensFollowing() {
   );
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(lensFollowingData.pageInfo);
-
+  const lensAccessToken = useLensAccessToken();
   const loadLensFollowing = useCallback(async () => {
     setLoading(true);
     try {
       const resp = await getFollowingFeeds({
+        lensAccessToken,
         lensProfileId: lensSessionProfileId,
         platforms: [SocialPlatform.Lens],
         endLensCursor: lensFollowingData.endLensCursor
@@ -45,7 +47,7 @@ export default function useLensFollowing() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [lensSessionProfileId, lensAccessToken]);
 
   return {
     loadLensFollowing,
