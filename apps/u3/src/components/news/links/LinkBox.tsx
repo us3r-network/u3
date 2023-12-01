@@ -19,45 +19,6 @@ type Props = StyledComponentPropsWithRef<'div'> & {
   displayOriginIcon?: boolean;
 };
 
-type LinkLogoProps = StyledComponentPropsWithRef<'img'> & {
-  logo?: string;
-  link: string;
-  displayOriginIcon?: boolean;
-};
-export function LinkLogo({
-  logo,
-  link,
-  displayOriginIcon = true,
-  ...otherProps
-}: LinkLogoProps) {
-  if (!link) return null;
-  const [url, setUrl] = useState('');
-  useEffect(() => {
-    if (logo) {
-      setUrl(platformLogoReplaceMap[logo] || logo);
-      return;
-    }
-    fetchPlatformImgUrlByLink(link)
-      .then((resp) => {
-        setUrl(platformLogoReplaceMap[resp] || resp);
-      })
-      .catch(() => {
-        setUrl('');
-      });
-  }, [logo, link]);
-  return (
-    <PlatformImg
-      src={displayOriginIcon ? url : LinkSvgUrl}
-      onError={(e) => {
-        if (displayOriginIcon) {
-          e.currentTarget.src = LinkSvgUrl;
-        }
-      }}
-      {...otherProps}
-    />
-  );
-}
-
 export default function LinkBox({
   logo,
   text,
