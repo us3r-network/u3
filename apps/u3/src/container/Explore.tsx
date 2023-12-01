@@ -60,12 +60,7 @@ export default function Explore() {
           }
         });
         setHotPosts({
-          posts: casts
-            .filter(
-              (item) =>
-                item.platform !== SocialPlatform.Farcaster || !!item?.data?.text
-            )
-            .splice(0, 6),
+          posts: casts.splice(0, 6),
           farcasterUserData: temp,
           isLoading: false,
         });
