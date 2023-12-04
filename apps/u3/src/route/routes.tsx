@@ -13,7 +13,6 @@ import LoadableFallback from '../components/layout/LoadableFallback';
 
 export enum RouteKey {
   home = 'home',
-  web3Today = 'web3Today',
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
@@ -98,11 +97,6 @@ export const routes: CutomRouteObject[] = [
     path: '/',
     element: loadContainerElement('Explore'),
     key: RouteKey.home,
-  },
-  {
-    path: '/web3-today',
-    element: loadContainerElement('news/Web3Today'),
-    key: RouteKey.web3Today,
   },
   // profile
   {
