@@ -23,7 +23,7 @@ export default function FarcasterPostCard({
     return getChannel().find((c) => c.parent_url === channelUrl);
   }, [data]);
 
-  const recReason = channel?.name ? `#${channel?.name}` : '';
+  const recReason = channel?.name ? `#${channel?.name}` : undefined;
 
   if (data.text) {
     const viewData: PostCardData = {
