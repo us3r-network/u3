@@ -56,6 +56,7 @@ export default function LinkReaderView({ data }: { data: LinkListItem }) {
 }
 
 const Shower = styled.div`
+  width: 100%;
   height: 100%;
   display: flex;
 `;
@@ -128,7 +129,7 @@ const ContentBody = styled.div`
 
   color: #718096;
   padding-top: 20px;
-
+  width: 100%;
   & h1,
   h2,
   h3,
