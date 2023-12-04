@@ -1,5 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useMemo } from 'react';
+
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
