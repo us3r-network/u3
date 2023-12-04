@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-14 19:26:45
+ * @LastEditTime: 2023-12-04 13:55:55
  * @Description: 首页任务看板
  */
 import styled from 'styled-components';
@@ -66,7 +66,7 @@ export default function LinksPageMobile({
               <LinkListMobile
                 data={links}
                 onItemClick={(item) => {
-                  navigate(`/links/${item?.url}`);
+                  navigate(item?.url);
                 }}
               />
             </InfiniteScroll>
