@@ -8,6 +8,13 @@
  */
 import FarcasterChannelData from '../../../constants/warpcast.json';
 
+export type FarcasterChannel = {
+  name: string;
+  parent_url: string;
+  image: string;
+  channel_id: string;
+};
+
 export function getChannelFromName(name: string) {
   const channel = FarcasterChannelData.find((c) => c.name === name);
   if (channel) {

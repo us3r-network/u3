@@ -1,5 +1,8 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useMemo } from 'react';
+
+import { FarcasterChannel } from 'src/utils/social/farcaster/getChannel';
+
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
@@ -15,6 +18,7 @@ export type PostCardData = {
   authorHandle: string;
   recReason?: string;
   platform: SocialPlatform;
+  channel?: FarcasterChannel;
 };
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: PostCardData;
@@ -26,9 +30,9 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorAvatar,
     authorDisplayName,
     authorHandle,
-    recReason = 'Interested Viewpoint',
     platform,
   } = data;
+  const recReason = data.channel?.name || 'Home';
   const PlatFormIcon = useMemo(() => {
     switch (platform) {
       case SocialPlatform.Lens:
@@ -54,7 +58,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
                 {authorDisplayName} {authorHandle && `@${authorHandle}`}
               </AuthorDisplayName>
             </UserWrapper>
-            <RecReason>{recReason}</RecReason>
+            <RecReason>{`#${recReason}`}</RecReason>
           </BottomLeft>
 
           {PlatFormIcon && (

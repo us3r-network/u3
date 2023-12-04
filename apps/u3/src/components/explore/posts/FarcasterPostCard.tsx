@@ -1,4 +1,7 @@
+import { useMemo } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
+import { getChannel } from 'src/utils/social/farcaster/getChannel';
+
 import { FarCast, SocialPlatform } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import PostCard, { PostCardData } from './PostCard';
@@ -14,6 +17,12 @@ export default function FarcasterPostCard({
   ...wrapperProps
 }: Props) {
   const userData = useFarcasterUserData({ fid: data?.fid, farcasterUserData });
+
+  const channel = useMemo(() => {
+    const channelUrl = data.parent_url || data.rootParentUrl;
+    return getChannel().find((c) => c.parent_url === channelUrl);
+  }, [data]);
+
   if (data.text) {
     const viewData: PostCardData = {
       title: data?.text,
@@ -22,6 +31,7 @@ export default function FarcasterPostCard({
       authorDisplayName: userData.display,
       authorHandle: userData.userName,
       platform: SocialPlatform.Farcaster,
+      channel,
     };
     return <PostCard data={viewData} {...wrapperProps} />;
   }
@@ -33,6 +43,7 @@ export default function FarcasterPostCard({
       authorDisplayName: userData.display,
       authorHandle: userData.userName,
       platform: SocialPlatform.Farcaster,
+      channel,
     };
     return <ImgPostCard data={viewData} {...wrapperProps} />;
   }
@@ -43,6 +54,7 @@ export default function FarcasterPostCard({
     authorDisplayName: userData.display,
     authorHandle: userData.userName,
     platform: SocialPlatform.Farcaster,
+    channel,
   };
   return <PostCard data={viewData} {...wrapperProps} />;
 }
