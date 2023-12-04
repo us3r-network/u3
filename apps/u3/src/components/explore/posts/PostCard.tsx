@@ -30,12 +30,9 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorAvatar,
     authorDisplayName,
     authorHandle,
+    recReason = 'Interested Viewpoint',
     platform,
   } = data;
-
-  const recReason = data.channel?.name
-    ? `#${data.channel?.name}`
-    : 'Interested Viewpoint';
 
   const PlatFormIcon = useMemo(() => {
     switch (platform) {

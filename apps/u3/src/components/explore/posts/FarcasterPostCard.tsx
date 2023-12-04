@@ -23,6 +23,8 @@ export default function FarcasterPostCard({
     return getChannel().find((c) => c.parent_url === channelUrl);
   }, [data]);
 
+  const recReason = channel?.name ? `#${channel?.name}` : '';
+
   if (data.text) {
     const viewData: PostCardData = {
       title: data?.text,
@@ -31,7 +33,7 @@ export default function FarcasterPostCard({
       authorDisplayName: userData.display,
       authorHandle: userData.userName,
       platform: SocialPlatform.Farcaster,
-      channel,
+      recReason,
     };
     return <PostCard data={viewData} {...wrapperProps} />;
   }
@@ -43,7 +45,7 @@ export default function FarcasterPostCard({
       authorDisplayName: userData.display,
       authorHandle: userData.userName,
       platform: SocialPlatform.Farcaster,
-      channel,
+      recReason,
     };
     return <ImgPostCard data={viewData} {...wrapperProps} />;
   }
@@ -54,7 +56,7 @@ export default function FarcasterPostCard({
     authorDisplayName: userData.display,
     authorHandle: userData.userName,
     platform: SocialPlatform.Farcaster,
-    channel,
+    recReason,
   };
   return <PostCard data={viewData} {...wrapperProps} />;
 }
