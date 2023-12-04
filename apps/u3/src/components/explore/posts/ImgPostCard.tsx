@@ -1,8 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useMemo } from 'react';
 
-import { FarcasterChannel } from 'src/utils/social/farcaster/getChannel';
-
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
@@ -18,7 +16,6 @@ export type ImgPostCardData = {
   authorHandle: string;
   recReason?: string;
   platform: SocialPlatform;
-  channel?: FarcasterChannel;
 };
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: ImgPostCardData;
