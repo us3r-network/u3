@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 import Title from '../Title';
 import DappCard, { DappData } from './DappCard';
 import Loading from '../../common/loading/Loading';
@@ -51,6 +52,11 @@ const Wrapper = styled.div`
 const CardsWrapper = styled.div`
   width: 100%;
   margin-top: 20px;
+  ${isMobile &&
+  `
+    margin-top: 10px;
+
+  `}
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -58,6 +64,10 @@ const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  ${isMobile &&
+  `
+    height: 430px;
+  `}
 `;
 const CardsLayout = styled.div`
   width: 100%;
@@ -72,4 +82,10 @@ const CardsLayout = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.md}px) {
     grid-template-columns: repeat(1);
   }
+  ${isMobile &&
+  `
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  `}
 `;

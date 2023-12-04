@@ -1,6 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useMemo } from 'react';
 
+import { isMobile } from 'react-device-detect';
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
@@ -59,7 +60,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
                 </AuthorDisplayName>
               </UserNameWrapper>
             </UserWrapper>
-            <RecReason>{recReason}</RecReason>
+            {!isMobile && <RecReason>{recReason}</RecReason>}
           </BottomLeft>
 
           {PlatFormIcon && (
@@ -84,6 +85,10 @@ const CardWrapper = styled(CardBase)`
       height: 223px;
       object-fit: cover;
       border-radius: 10px;
+      ${isMobile &&
+      `
+        height: 160px;
+      `}
     }
     .card-body {
       flex-direction: column;
@@ -105,10 +110,20 @@ const CardWrapper = styled(CardBase)`
       width: 195px;
       height: 100%;
       object-fit: cover;
+      ${isMobile &&
+      `
+        width: 100%;
+        height: 160px;
+      `}
     }
     .user-wrapper {
       flex-direction: column;
       align-items: flex-start;
+      ${isMobile &&
+      `
+        flex-direction: row;
+        align-items: center;
+      `}
     }
     .dividing-line {
       display: none;
@@ -136,10 +151,20 @@ const CardWrapper = styled(CardBase)`
       width: 97px;
       height: 100%;
       object-fit: cover;
+      ${isMobile &&
+      `
+        width: 100%;
+        height: 160px;
+      `}
     }
     .user-wrapper {
       flex-direction: column;
       align-items: flex-start;
+      ${isMobile &&
+      `
+        flex-direction: row;
+        align-items: center;
+      `}
     }
     .dividing-line {
       display: none;
@@ -150,6 +175,11 @@ const CardWrapper = styled(CardBase)`
       transform: scale(1.05);
     }
   }
+  ${isMobile &&
+  `
+    padding: 10px;
+    border-radius: 10px;
+  `}
 `;
 const CardBody = styled.div`
   height: 100%;
@@ -158,6 +188,11 @@ const CardBody = styled.div`
   justify-content: space-between;
   gap: 20px;
   position: relative;
+  ${isMobile &&
+  `
+    flex-direction: column;
+    gap: 10px;
+      `}
 `;
 const Img = styled.img`
   border-radius: 10px;
@@ -169,6 +204,10 @@ const BottomWrapper = styled.div`
   justify-content: space-between;
   align-items: end;
   gap: 10px;
+  ${isMobile &&
+  `
+      height: auto;
+    `}
 `;
 const BottomLeft = styled.div`
   display: flex;
@@ -237,5 +276,10 @@ const PlatformIconWrapper = styled.div`
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+    ${isMobile &&
+    `
+      width: 14px;
+      height: 14px;
+    `}
   }
 `;

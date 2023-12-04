@@ -1,5 +1,6 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ScoresAvg } from '@us3r-network/link';
+import { isMobile } from 'react-device-detect';
 import EllipsisText from '../../common/text/EllipsisText';
 import CardBase from '../../common/card/CardBase';
 import Badge from '../../dapp/Badge';
@@ -28,7 +29,7 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
       <CardBody>
         <Left>
           <Name>{name}</Name>
-          <RecReason>{recReason}</RecReason>
+          {!isMobile && <RecReason>{recReason}</RecReason>}
           <LeftBottom>
             <TypesWrapper>
               {types.map((item) => (
@@ -50,6 +51,13 @@ const CardWrapper = styled(CardBase)`
   overflow: hidden;
   cursor: pointer;
   padding: 0;
+  ${isMobile &&
+  `
+    width: 200px;
+    height: 294px;
+    display: inline-block;
+    margin-right: 10px;
+  `}
 `;
 const CardBody = styled.div`
   width: 100%;
@@ -59,13 +67,27 @@ const CardBody = styled.div`
   &:hover {
     transform: scale(1.05);
   }
+  ${isMobile &&
+  `
+    flex-direction: column;
+    flex-direction: column-reverse;
+  `}
 `;
 const Left = styled.div`
   width: 0;
   flex: 1;
   padding: 15px 20px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
+  ${isMobile &&
+  `
+    width: 100%;
+    padding: 10px;
+    padding-top: 20px;
+    gap: 8px;
+    justify-content: space-between;
+  `}
 `;
 const Name = styled(EllipsisText)`
   color: #fff;
@@ -107,4 +129,9 @@ const Logo = styled.img`
   width: 110px;
   height: 100%;
   object-fit: cover;
+  ${isMobile &&
+  `
+    width: 100%;
+    height: 200px;
+  `}
 `;
