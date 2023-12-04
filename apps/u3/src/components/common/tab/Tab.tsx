@@ -1,8 +1,8 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 09:46:01
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2022-12-14 09:59:34
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-04 13:04:21
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
@@ -10,6 +10,7 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 type TabOption = {
   value: any;
   label: string | JSX.Element;
+  icon?: string;
 };
 type Props = StyledComponentPropsWithRef<'div'> & {
   options: TabOption[];
@@ -19,13 +20,14 @@ type Props = StyledComponentPropsWithRef<'div'> & {
 export default function Tab({ options, value, onChange, ...divProps }: Props) {
   return (
     <TabWrapper {...divProps}>
-      {options.map(({ label, value: v }) => (
+      {options.map(({ label, value: v, icon }) => (
         <TabOptionItem
           key={v}
           isActive={v === value}
           onClick={() => onChange && onChange(v)}
           className="tab-option-item"
         >
+          {icon && <img src={icon} alt="" />}
           {label}
         </TabOptionItem>
       ))}
@@ -36,26 +38,32 @@ const TabWrapper = styled.div`
   width: 100%;
   height: 70px;
   border-bottom: 1px solid #39424c;
-  display: felx;
+  display: flex;
   gap: 32px;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
+  overflow-x: scroll;
 `;
 const TabOptionItem = styled.div<{ isActive?: boolean }>`
   height: 100%;
   box-sizing: border-box;
   cursor: pointer;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
+  font-size: 18px;
+  line-height: 18px;
   color: ${(props) => (props.isActive ? '#FFFFFF' : '#718096')};
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 8px;
+  img {
+    width: 20px;
+    height: 20px;
+  }
   transition: all 0.2s ease-in-out;
   ${(props) =>
     props.isActive &&
     `
-    border-bottom: 3px solid #ffffff;
+    border-bottom: 3px solid #fff;
   `};
 `;
