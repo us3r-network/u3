@@ -25,19 +25,7 @@ export default function FarcasterPostCard({
 
   const recReason = channel?.name ? `#${channel?.name}` : '';
 
-  if (data.text) {
-    const viewData: PostCardData = {
-      title: data?.text,
-      likesCount: Number(data.like_count || data.likesCount || 0),
-      authorAvatar: userData.pfp,
-      authorDisplayName: userData.display,
-      authorHandle: userData.userName,
-      platform: SocialPlatform.Farcaster,
-      recReason,
-    };
-    return <PostCard data={viewData} {...wrapperProps} />;
-  }
-  if (data.embeds?.length > 0) {
+  if (!data.text && data.embeds?.length > 0) {
     const viewData: ImgPostCardData = {
       img: data.embeds[0].url,
       likesCount: Number(data.like_count || data.likesCount || 0),
