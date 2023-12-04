@@ -32,7 +32,11 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorHandle,
     platform,
   } = data;
-  const recReason = data.channel?.name || 'Home';
+
+  const recReason = data.channel?.name
+    ? `#${data.channel?.name}`
+    : 'Interested Viewpoint';
+
   const PlatFormIcon = useMemo(() => {
     switch (platform) {
       case SocialPlatform.Lens:
@@ -58,7 +62,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
                 {authorDisplayName} {authorHandle && `@${authorHandle}`}
               </AuthorDisplayName>
             </UserWrapper>
-            <RecReason>{`#${recReason}`}</RecReason>
+            <RecReason>{recReason}</RecReason>
           </BottomLeft>
 
           {PlatFormIcon && (
