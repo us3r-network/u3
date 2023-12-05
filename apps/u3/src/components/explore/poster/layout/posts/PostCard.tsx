@@ -35,6 +35,7 @@ export default function PostCard({ data, isFirst, ...wrapperProps }: Props) {
 
 const CardWrapper = styled.div`
   width: 100%;
+  overflow: hidden;
   display: flex;
   padding: 20px;
   box-sizing: border-box;

@@ -128,6 +128,7 @@ const LastThreePostsWrapper = styled.div`
   gap: 20px;
 `;
 const LastThreeFarcasterPostCard = styled(FarcasterPostCard)`
+  width: 0;
   flex: 1;
   align-self: stretch;
   justify-content: space-around;
