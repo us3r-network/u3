@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-04 13:58:35
+ * @LastEditTime: 2023-12-05 11:12:29
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -37,11 +37,12 @@ export default function useFeedLinks() {
       if (loading) return;
       // console.log('currentSearchParams: ', currentSearchParams);
       const { keywords, orderBy } = currentSearchParams;
+      console.log('keywords: ', keywords);
       try {
         setLoading(true);
         const { data } = await fetchLinks(
           {
-            keywords,
+            keywords: keywords.split(' ') || [],
             includeDomains: domains.includeDomains || [],
             excludeDomains: domains.excludeDomains || [],
             orderBy,
