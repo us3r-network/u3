@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-04 13:03:54
+ * @LastEditTime: 2023-12-05 17:49:31
  * @Description: file description
  */
 import { useEffect, useRef, useState } from 'react';
@@ -80,7 +80,119 @@ export const LinkGroup = [
   {
     label: 'News',
     value: `/news/contents`,
+    icon: LinksIcon,
+  },
+  {
+    label: 'Mirror',
+    value: `/news/links/mirror`,
+    group: 'mirror',
+    includeDomains: ['mirror.xyz'],
     icon: MirrorIcon,
+  },
+  {
+    label: 'Aburra',
+    value: `/news/links/aburra`,
+    group: 'aburra',
+    includeDomains: ['aburra.xyz'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Launchcaster',
+    value: `/news/links/launchcaster`,
+    group: 'launchcaster',
+    includeDomains: ['launchcaster.xyz'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Kiwistand',
+    value: `/news/links/kiwistand`,
+    group: 'kiwistand',
+    includeDomains: ['news.kiwistand.com'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Weponder',
+    value: `/news/links/weponder`,
+    group: 'weponder',
+    includeDomains: ['weponder.io'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Unlonely',
+    value: `/news/links/unlonely`,
+    group: 'unlonely',
+    includeDomains: ['unlonely.app'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Bountycaster',
+    value: `/news/links/bountycaster`,
+    group: 'bountycaster',
+    includeDomains: ['bountycaster.xyz'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'tiles',
+    value: `/news/links/tiles`,
+    group: 'tiles',
+    includeDomains: ['tiles.cool'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Far.quest',
+    value: `/news/links/far.quest`,
+    group: 'far.quest',
+    includeDomains: ['far.quest'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Withfabric',
+    value: `/news/links/withfabric`,
+    group: 'withfabric',
+    includeDomains: ['withfabric.xyz'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Arxiv',
+    value: `/news/links/arxiv`,
+    group: 'arxiv',
+    includeDomains: ['arxiv.org'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Basepaint',
+    value: `/news/links/basepaint`,
+    group: 'basepaint',
+    includeDomains: ['basepaint.xyz'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Warpcast',
+    value: `/news/links/warpcast`,
+    group: 'warpcast',
+    includeDomains: ['warpcast.com'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Flink',
+    value: `/news/links/flink`,
+    group: 'flink',
+    includeDomains: ['flink.fyi'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Mint.fun',
+    value: `/news/links/mint.fun`,
+    group: 'mint.fun',
+    includeDomains: ['mint.fun'],
+    icon: LinksIcon,
+  },
+  {
+    label: 'Vercel',
+    value: `/news/links/vercel`,
+    group: 'vercel',
+    includeDomains: ['vercel.app'],
+    icon: LinksIcon,
   },
   // {
   //   label: 'Events',

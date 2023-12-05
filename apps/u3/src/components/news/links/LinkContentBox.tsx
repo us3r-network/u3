@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-29 18:15:27
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 11:00:59
+ * @LastEditTime: 2023-12-05 18:43:09
  * @FilePath: /u3/apps/u3/src/components/news/links/LinkContentBox.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -12,6 +12,7 @@ import { LinkListItem } from 'src/services/news/types/links';
 import { contentParse } from 'src/services/news/api/contents';
 import { Tweet } from 'react-tweet';
 import { extractYoutubeVideoId } from 'src/utils/news/link';
+import { EmbedWebsite } from 'src/components/social/Embed';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
 import ExtensionSupport from '../../layout/ExtensionSupport';
@@ -253,11 +254,9 @@ export default function LinkContentBox({
               );
             }
             return (
-              <ExtensionSupport
-                btns
-                url={selectLink.url}
-                title={selectLink.metadata?.title}
-              />
+              <WidgetWraper>
+                <EmbedWebsite item={selectLink.metadata} />
+              </WidgetWraper>
             );
 
             break;
@@ -329,9 +328,18 @@ export const ContentBox = styled.div`
   }
 `;
 
-export const LoadingBox = styled.div`
+const LoadingBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
   height: calc(100% - 60px);
+`;
+
+const WidgetWraper = styled.div`
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  display: flex;
+  align-items: start;
+  justify-content: center;
 `;

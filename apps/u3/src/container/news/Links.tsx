@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 11:24:56
+ * @LastEditTime: 2023-12-05 17:35:57
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect } from 'react';
@@ -27,7 +27,7 @@ function Links() {
       includeDomains: linkGroup?.includeDomains,
     };
     load(groupDomain, currentSearchParams, link);
-  }, [group, link, currentSearchParams]);
+  }, [group, currentSearchParams]);
 
   const getMore = useCallback(() => {
     if (loading) return;
@@ -37,7 +37,7 @@ function Links() {
       includeDomains: linkGroup?.includeDomains,
     };
     loadMore(groupDomain, currentSearchParams, link);
-  }, [hasMore, load, loading, currentSearchParams, group, link]);
+  }, [hasMore, load, loading, currentSearchParams, group]);
 
   return isMobile ? (
     <LinksPageMobile

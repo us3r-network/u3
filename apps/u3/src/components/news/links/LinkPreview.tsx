@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-04 14:22:51
+ * @LastEditTime: 2023-12-05 18:35:31
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -24,13 +24,13 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
   const [tab, setTab] = useState<Tab>('original');
-  useEffect(() => {
-    if (data?.supportIframe) {
-      setTab('original');
-    } else {
-      setTab('readerView');
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data?.supportIframe) {
+  //     setTab('original');
+  //   } else {
+  //     setTab('readerView');
+  //   }
+  // }, [data]);
 
   return (
     data && (
