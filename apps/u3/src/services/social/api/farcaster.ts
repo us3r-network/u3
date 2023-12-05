@@ -81,7 +81,7 @@ export function getFarcasterCastInfo(
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/cast/${hash}`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/cast/${hash}`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -329,6 +329,33 @@ export function getFarcasterTrending({
       startIndex: start,
       endIndex: end,
       ...(least ? { least } : {}),
+    },
+  });
+}
+
+export function getFarcasterWhatsnew(endTimestamp: number, endCursor?: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/whatsnew`,
+    method: 'get',
+    params: {
+      endCursor: endCursor ?? '',
+      endTimestamp,
+    },
+  });
+}
+
+export function getFarcasterFollowing(
+  fid: number,
+  endTimestamp: number,
+  endCursor?: string
+) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/following`,
+    method: 'get',
+    params: {
+      fid,
+      endCursor: endCursor ?? '',
+      endTimestamp,
     },
   });
 }

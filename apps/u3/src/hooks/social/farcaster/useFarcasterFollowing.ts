@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
-import { getFollowingFeeds } from 'src/services/social/api/feeds';
-import { SocialPlatform } from 'src/services/social/types';
+import { getFarcasterFollowing } from 'src/services/social/api/farcaster';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
 const farcasterFollowingData = {
@@ -11,7 +10,8 @@ const farcasterFollowingData = {
   },
   userData: {},
   userDataObj: {},
-  index: '',
+  endTimestamp: Date.now(),
+  endCursor: '',
 };
 
 export default function useFarcasterFollowing() {
@@ -29,15 +29,13 @@ export default function useFarcasterFollowing() {
     if (!currFid) return;
     setLoading(true);
     try {
-      const resp = await getFollowingFeeds({
-        fid: `${currFid}`,
-        platforms: [SocialPlatform.Farcaster],
-        endFarcasterCursor: farcasterFollowingData.index
-          ? farcasterFollowingData.index
-          : undefined,
-      });
+      const resp = await getFarcasterFollowing(
+        currFid,
+        farcasterFollowingData.endTimestamp,
+        farcasterFollowingData.endCursor
+      );
       const {
-        data,
+        casts: data,
         farcasterUserData,
         pageInfo: respPageInfo,
       } = resp.data.data;
@@ -53,10 +51,11 @@ export default function useFarcasterFollowing() {
           ...farcasterFollowingData.userDataObj,
           ...userDataObj,
         };
-        farcasterFollowingData.index = respPageInfo.endFarcasterCursor;
       }
       setPageInfo(respPageInfo);
       farcasterFollowingData.pageInfo = respPageInfo;
+      farcasterFollowingData.endCursor = respPageInfo.endCursor;
+      farcasterFollowingData.endTimestamp = respPageInfo.endTimestamp;
     } catch (err) {
       console.error(err);
     } finally {
@@ -80,5 +79,6 @@ export function resetFarcasterFollowingData() {
   };
   farcasterFollowingData.userData = {};
   farcasterFollowingData.userDataObj = {};
-  farcasterFollowingData.index = '';
+  farcasterFollowingData.endTimestamp = Date.now();
+  farcasterFollowingData.endCursor = '';
 }
