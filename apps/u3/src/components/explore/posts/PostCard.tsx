@@ -28,7 +28,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorAvatar,
     authorDisplayName,
     authorHandle,
-    recReason = 'Interested Viewpoint',
+    recReason = '#High Effort',
     platform,
   } = data;
 
