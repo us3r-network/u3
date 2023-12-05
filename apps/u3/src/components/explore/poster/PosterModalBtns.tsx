@@ -44,6 +44,7 @@ export default function PosterModalBtns({
             shareLinkEmbedTitle: 'Caster Daily',
             shareLinkDefaultPlatform: SocialPlatform.Farcaster,
             shareLinkEmbedImg: posterImg,
+            shareLinkDomain: POSTER_SHARE_DOMAIN,
           });
         }}
       >

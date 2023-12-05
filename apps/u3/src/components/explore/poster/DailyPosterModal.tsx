@@ -8,8 +8,8 @@ import DailyPosterLayout, {
 import ModalBase from '../../common/modal/ModalBase';
 import Loading from 'src/components/common/loading/Loading';
 import { useEffect, useState } from 'react';
-import html2canvas from 'html2canvas-strengthen';
 import PosterModalBtns from './PosterModalBtns';
+import { captureScreenshot } from 'src/utils/shared/captureScreenshot';
 
 type Props = DailyPosterLayoutProps & {
   open: boolean;
@@ -29,19 +29,14 @@ export default function DailyPosterModal({
 }: Props) {
   const [generating, setGenerating] = useState(false);
   useEffect(() => {
-    const captureScreenshot = async () => {
+    const genImg = async () => {
       setGenerating(true);
       try {
         console.time('is to canvas time:');
-
-        await new Promise((resolve) => setTimeout(resolve, 400));
-        const el = document.getElementById('daily-poster-layout');
-        const canvas = await html2canvas(el, {
-          allowTaint: true,
-          useCORS: true,
+        const imgData = await captureScreenshot('daily-poster-layout', {
+          timeout: 400,
         });
         console.timeEnd('is to canvas time:');
-        const imgData = canvas.toDataURL('image/png');
         setPosterImg(imgData);
       } catch (error) {
         console.error('Error capturing screenshot:', error);
@@ -51,7 +46,7 @@ export default function DailyPosterModal({
     };
 
     if (open && !posterImg && !generating) {
-      captureScreenshot();
+      genImg();
     }
   }, [open, posterImg, generating]);
 

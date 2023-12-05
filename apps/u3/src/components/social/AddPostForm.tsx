@@ -51,6 +51,7 @@ export type ShareData = {
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
   shareLinkEmbedImg?: string;
+  shareLinkDomain?: string;
 };
 export default function AddPostForm({
   onSuccess,
@@ -365,6 +366,7 @@ export default function AddPostForm({
         </UserPostWrapepr>
         {isShareForm && shareData && (
           <ShareEmbedCard
+            domain={shareData.shareLinkDomain}
             title={shareData.shareLinkEmbedTitle}
             img={shareData?.shareLinkEmbedImg || ''}
           />
