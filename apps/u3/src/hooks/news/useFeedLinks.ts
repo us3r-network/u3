@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-21 18:38:19
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 18:12:16
+ * @LastEditTime: 2023-12-05 11:26:33
  * @FilePath: /u3/apps/u3/src/hooks/news/useLinks.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -23,6 +23,7 @@ const defaultLinkDomians: LinkDomians = {
   includeDomains: [],
   excludeDomains: [],
 };
+const defaultLinkURLHash = ':link';
 export default function useFeedLinks() {
   const { user } = useLogin();
   const [links, setLinks] = useState<Array<LinkListItem>>([]);
@@ -32,18 +33,21 @@ export default function useFeedLinks() {
   const loadMore = useCallback(
     async (
       domains = defaultLinkDomians,
-      currentSearchParams = defaultLinkSearchParams
+      currentSearchParams = defaultLinkSearchParams,
+      link = defaultLinkURLHash
     ) => {
       if (loading) return;
       // console.log('currentSearchParams: ', currentSearchParams);
       const { keywords, orderBy } = currentSearchParams;
+      console.log('keywords: ', keywords);
       try {
         setLoading(true);
         const { data } = await fetchLinks(
           {
-            keywords,
+            keywords: keywords.split(' ') || [],
             includeDomains: domains.includeDomains || [],
             excludeDomains: domains.excludeDomains || [],
+            urls: link === defaultLinkURLHash ? [] : [link],
             orderBy,
             endCursor,
           },
@@ -79,10 +83,11 @@ export default function useFeedLinks() {
   const load = useCallback(
     (
       domains = defaultLinkDomians,
-      currentSearchParams = defaultLinkSearchParams
+      currentSearchParams = defaultLinkSearchParams,
+      link = defaultLinkURLHash
     ) => {
       setEndCursor('');
-      loadMore(domains, currentSearchParams);
+      loadMore(domains, currentSearchParams, link);
     },
     []
   );
@@ -90,7 +95,7 @@ export default function useFeedLinks() {
   return { links, loading, hasMore, endCursor, load, loadMore };
 }
 
-const DOMAINS_DO_NOT_SUPPORT_IFRAME = ['substack.com'];
+const DOMAINS_DO_NOT_SUPPORT_IFRAME = ['substack.com', 'github.com'];
 function checkSupportIframe(url) {
   const domain = url.split('/')[2];
   let support = true;
