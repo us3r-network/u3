@@ -18,9 +18,10 @@ export default function PosterBanner({
     <Wrapper>
       <PrimaryTitle>Caster Daily</PrimaryTitle>
       <RightWrapper>
-        {!isMobile && <SecondaryTitle>Web3 Today</SecondaryTitle>}
+        {!isMobile && <SecondaryTitle>Today‘s Referrers</SecondaryTitle>}
 
         <CreatePosterBtn
+          id="createPosterBtn"
           disabled={disabled || !DailyPosterModal}
           onClick={() => setOpen(true)}
         >
