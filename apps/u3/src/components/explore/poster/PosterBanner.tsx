@@ -13,7 +13,7 @@ export default function PosterBanner({
   ...layoutProps
 }: DailyPosterLayoutProps & { disabled?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [posterUrl, setPosterUrl] = useState('');
+  const [posterImg, setPosterImg] = useState('');
   return (
     <Wrapper>
       <PrimaryTitle>Caster Daily</PrimaryTitle>
@@ -32,8 +32,8 @@ export default function PosterBanner({
       {DailyPosterModal && (
         <DailyPosterModal
           {...layoutProps}
-          posterUrl={posterUrl}
-          setPosterUrl={setPosterUrl}
+          posterImg={posterImg}
+          setPosterImg={setPosterImg}
           open={open}
           closeModal={() => setOpen(false)}
         />

@@ -4,8 +4,17 @@ import { SHARE_DOMAIN } from '../../../constants';
 interface ShareEmbedCardProps extends StyledComponentPropsWithRef<'div'> {
   domain?: string;
   title: string;
+  img?: string;
 }
-export default function ShareEmbedCard({
+export default function ShareEmbedCard(props: ShareEmbedCardProps) {
+  const { img } = props;
+  if (img) {
+    return <SummaryLargeImgEmbedCard {...props} />;
+  }
+  return <SummaryEmbedCard {...props} />;
+}
+
+function SummaryEmbedCard({
   domain,
   title,
   ...wrapperProps
@@ -13,11 +22,30 @@ export default function ShareEmbedCard({
   return (
     <Wrapper {...wrapperProps}>
       <Logo />
+
       <Right>
         <Domain>{domain || SHARE_DOMAIN}</Domain>
         <Title>{title}</Title>
       </Right>
     </Wrapper>
+  );
+}
+
+function SummaryLargeImgEmbedCard({
+  domain,
+  title,
+  img,
+  ...wrapperProps
+}: ShareEmbedCardProps) {
+  return (
+    <LargeImgWrapper {...wrapperProps}>
+      <Img src={img} />
+
+      <LargeImgBottom>
+        <Domain>{domain || SHARE_DOMAIN}</Domain>
+        <Title>{title}</Title>
+      </LargeImgBottom>
+    </LargeImgWrapper>
   );
 }
 
@@ -56,6 +84,23 @@ const Wrapper = styled.div`
   display: flex;
   gap: 15px;
 `;
+const LargeImgWrapper = styled.div`
+  width: 373px;
+  border-radius: 10px;
+  background: #14171a;
+  padding: 20px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
+const LargeImgBottom = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+`;
 const Right = styled.div`
   width: 0;
   flex: 1;
@@ -84,4 +129,10 @@ const Title = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+`;
+const Img = styled.img`
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  object-position: top;
 `;
