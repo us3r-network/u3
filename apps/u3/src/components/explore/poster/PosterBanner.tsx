@@ -16,14 +16,15 @@ export default function PosterBanner({
   const [posterUrl, setPosterUrl] = useState('');
   return (
     <Wrapper>
-      <PrimaryTitle>Daily Poster</PrimaryTitle>
+      <PrimaryTitle>Caster Daily</PrimaryTitle>
       <RightWrapper>
-        <SecondaryTitle>Web3 Today</SecondaryTitle>
+        {!isMobile && <SecondaryTitle>Web3 Today</SecondaryTitle>}
+
         <CreatePosterBtn
           disabled={disabled || !DailyPosterModal}
           onClick={() => setOpen(true)}
         >
-          Create Poster <ArrowRight />
+          Create Poster {!isMobile && <ArrowRight />}
         </CreatePosterBtn>
       </RightWrapper>
 
@@ -67,7 +68,6 @@ const Wrapper = styled.div`
   ${isMobile &&
   `
     flex-direction: column;
-    align-items: flex-start;
     gap: 20px;
   `}
 `;
@@ -92,6 +92,7 @@ const RightWrapper = styled.div`
   `
     width: 100%;
     flex: none;
+    justify-content: center;
   `}
 `;
 const SecondaryTitle = styled.span`
@@ -128,10 +129,11 @@ const CreatePosterBtn = styled(ButtonPrimary)`
 
   ${isMobile &&
   `
+    margin-left: 0;
     min-width: 0px;
     font-size: 20px;
     padding: 10px;
-    width: auto;
+    width: 200px;
     height: 33px;
     svg {
       width: 20px;
