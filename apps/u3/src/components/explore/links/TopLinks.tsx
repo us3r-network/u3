@@ -8,6 +8,7 @@
  */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { isMobile } from 'react-device-detect';
 import CardBase from '../../common/card/CardBase';
 import Title from '../Title';
 import LinkCard from './LinkCard';
@@ -64,6 +65,14 @@ const CardsWrapper = styled(CardBase)`
   height: 534px;
   margin-top: 20px;
   padding: 0;
+  ${isMobile &&
+  `
+    height: auto;
+    border: none;
+    margin-top: 10px;
+    background: none;
+    overflow: visible;
+  `}
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -71,17 +80,38 @@ const LoadingWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  ${isMobile &&
+  `
+    height: 430px;
+  `}
 `;
 const CardsLayout = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
   flex-direction: column;
+  ${isMobile &&
+  `
+    height: auto;
+    gap: 10px;
+  `}
 `;
 const LinkCardItem = styled(LinkCard)`
   height: 0;
   flex: 1;
-  &:not(:first-child) {
-    border-top: 1px solid rgba(57, 66, 76, 0.5);
-  }
+  ${!isMobile &&
+  `
+    &:not(:first-child) {
+      border-top: 1px solid rgba(57, 66, 76, 0.5);
+    }
+    `}
+
+  ${isMobile &&
+  `
+    height: 68px;
+    flex: none;
+    border: 1px solid #39424C;
+    border-radius: 10px;
+    box-sizing: border-box;
+  `}
 `;
