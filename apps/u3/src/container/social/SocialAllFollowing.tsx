@@ -10,9 +10,18 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useAllFollowing from 'src/hooks/social/useAllFollowing';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
+import { useLensCtx } from 'src/contexts/social/AppLensCtx';
+
+import { NoLoginStyled } from './CommonStyles';
+import useLogin from '../../hooks/shared/useLogin';
+import FollowingDefault from '../../components/social/FollowingDefault';
 
 export default function SocialAllFollowing() {
   const [parentId] = useState('social-all-following');
+  const { isLogin } = useLogin();
+  const { sessionProfile: lensSessionProfile } = useLensCtx();
+  const { id: lensSessionProfileId } = lensSessionProfile || {};
+  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
@@ -22,8 +31,27 @@ export default function SocialAllFollowing() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!isLogin) return;
+    if (!isConnectedFarcaster && !lensSessionProfileId) return;
     loadAllFollowing();
-  }, [loadAllFollowing, mounted]);
+  }, [
+    loadAllFollowing,
+    mounted,
+    isLogin,
+    isConnectedFarcaster,
+    lensSessionProfileId,
+  ]);
+
+  if (!isLogin) {
+    return <NoLoginStyled />;
+  }
+  if (!isConnectedFarcaster && !lensSessionProfileId) {
+    return (
+      <MainCenter>
+        <FollowingDefault farcaster lens />
+      </MainCenter>
+    );
+  }
 
   return (
     <InfiniteScroll
@@ -107,4 +135,8 @@ const LoadingMoreWrapper = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+`;
+
+const MainCenter = styled.div`
+  width: 100%;
 `;

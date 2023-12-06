@@ -6,15 +6,20 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
 
+import FollowingDefault from 'src/components/social/FollowingDefault';
+import NoLogin from 'src/components/layout/NoLogin';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
+import useLogin from 'src/hooks/shared/useLogin';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-farcaster-following');
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
+  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
+  const { isLogin } = useLogin();
 
   const {
     farcasterFollowing,
@@ -26,8 +31,21 @@ export default function SocialFarcaster() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!isLogin) return;
+    if (!isConnectedFarcaster) return;
     loadFarcasterFollowing();
-  }, [loadFarcasterFollowing, mounted]);
+  }, [loadFarcasterFollowing, mounted, isLogin, isConnectedFarcaster]);
+
+  if (!isLogin) {
+    return <NoLoginStyled />;
+  }
+  if (!isConnectedFarcaster) {
+    return (
+      <MainCenter>
+        <FollowingDefault farcaster />
+      </MainCenter>
+    );
+  }
 
   return (
     <InfiniteScroll
@@ -96,4 +114,13 @@ const LoadingMoreWrapper = styled.div`
   justify-content: center;
   align-items: center;
   margin-top: 20px;
+`;
+
+const MainCenter = styled.div`
+  width: 100%;
+`;
+
+const NoLoginStyled = styled(NoLogin)`
+  height: calc(100vh - 136px);
+  padding: 0;
 `;

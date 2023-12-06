@@ -2,9 +2,8 @@ import { useCallback, useState } from 'react';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
-import { getFollowingFeeds } from 'src/services/social/api/feeds';
-import { SocialPlatform } from 'src/services/social/types';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
+import { getAllFollowing } from 'src/services/social/api/all';
 
 const allFollowingData = {
   data: [],
@@ -15,6 +14,7 @@ const allFollowingData = {
   userDataObj: {},
   endFarcasterCursor: '',
   endLensCursor: '',
+  endTimestamp: Date.now(),
 };
 
 export default function useAllFollowing() {
@@ -35,14 +35,16 @@ export default function useAllFollowing() {
   const loadAllFollowing = useCallback(async () => {
     setLoading(true);
     try {
-      const resp = await getFollowingFeeds({
+      const resp = await getAllFollowing({
         lensAccessToken,
         lensProfileId: lensSessionProfileId,
-        fid: currFid ? `${currFid}` : undefined,
-        platforms: [SocialPlatform.Farcaster, SocialPlatform.Lens],
+        fid: currFid || undefined,
         endFarcasterCursor: allFollowingData.endFarcasterCursor
           ? allFollowingData.endFarcasterCursor
           : undefined,
+        endTimestamp: allFollowingData.endTimestamp
+          ? allFollowingData.endTimestamp
+          : Date.now(),
         endLensCursor: allFollowingData.endLensCursor
           ? allFollowingData.endLensCursor
           : undefined,
@@ -93,4 +95,5 @@ export function resetAllFollowingData() {
   allFollowingData.userDataObj = {};
   allFollowingData.endFarcasterCursor = '';
   allFollowingData.endLensCursor = '';
+  allFollowingData.endTimestamp = 0;
 }

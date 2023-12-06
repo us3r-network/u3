@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
-import { SocialPlatform } from 'src/services/social/types';
-import { getTrendingFeeds } from 'src/services/social/api/feeds';
+import { getLensTrending } from 'src/services/social/api/lens';
 
 const lensTrendingData = {
   data: [],
@@ -22,11 +21,10 @@ export default function useLensTrending() {
   const loadLensTrending = useCallback(async () => {
     setLoading(true);
     try {
-      const resp = await getTrendingFeeds({
+      const resp = await getLensTrending({
         endLensCursor: lensTrendingData.endLensCursor
           ? lensTrendingData.endLensCursor
           : undefined,
-        platforms: [SocialPlatform.Lens],
         lensAccessToken,
       });
       if (resp.data.code !== 0) {

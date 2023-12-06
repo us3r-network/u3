@@ -18,6 +18,8 @@ export type FarcasterNotification = {
 };
 
 export type FarcasterPageInfo = {
+  endTimestamp: number;
+  endCursor: string;
   endFarcasterCursor: string;
   hasNextPage: boolean;
 };
@@ -55,7 +57,7 @@ export function getFarcasterUserInfo(
   fids: number[]
 ): AxiosPromise<ApiResp<FarcasterUserData[]>> {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/userinfo`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo`,
     method: 'get',
     params: {
       fids,
@@ -190,7 +192,7 @@ export function getFarcasterFollow(fid: string | number): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/follow`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/follow`,
     method: 'get',
     params: {
       fid,
@@ -211,7 +213,7 @@ export function getFarcasterLinks(
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/links`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/links`,
     method: 'get',
     params: {
       fid,
@@ -241,11 +243,13 @@ export function getFarcasterRecommendedProfile(
 
 export function getFarcasterChannelFeeds({
   channelId,
-  endFarcasterCursor,
+  endTimestamp,
+  endCursor,
   pageSize,
 }: {
   channelId: string;
-  endFarcasterCursor?: string;
+  endTimestamp?: number;
+  endCursor?: string;
   pageSize?: number;
 }): AxiosPromise<
   ApiResp<{
@@ -255,22 +259,25 @@ export function getFarcasterChannelFeeds({
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/channel`,
     method: 'get',
     params: {
       name: '',
       channelId,
-      endFarcasterCursor,
+      endTimestamp,
+      endCursor,
       pageSize,
     },
   });
 }
 
-export function getFarcasterChannelTrends(
-  limit = 500
-): AxiosPromise<ApiResp<{ parent_url: string; count: string }[]>> {
+export function getFarcasterChannelTrends(limit = 500): AxiosPromise<
+  ApiResp<{
+    data: { parent_url: string; rootParentUrl: string; count: string }[];
+  }>
+> {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel/trends`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/channel/trends`,
     method: 'get',
     params: {
       limit,
