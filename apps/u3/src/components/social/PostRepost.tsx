@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-24 18:31:36
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-27 11:53:21
+ * @LastEditTime: 2023-12-06 15:05:49
  * @FilePath: /u3/apps/u3/src/components/social/PostReport.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -27,7 +27,7 @@ export default function PostRepost({
 }: StyledComponentPropsWithRef<'div'> & PostReportProps) {
   const [hover, setHover] = useState(false);
   return (
-    <PostReportWrapper
+    <PostRepostWrapper
       disabled={disabled}
       reposted={reposted}
       onClick={(e) => {
@@ -54,11 +54,11 @@ export default function PostRepost({
         />
       </span>
       {totalReposts} {reposting ? 'Reposting' : ''}
-    </PostReportWrapper>
+    </PostRepostWrapper>
   );
 }
 
-const PostReportWrapper = styled.div<{
+const PostRepostWrapper = styled.div<{
   hover?: boolean;
   reposted?: boolean;
   disabled?: boolean;
