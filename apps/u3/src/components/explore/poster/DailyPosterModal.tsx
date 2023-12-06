@@ -97,6 +97,7 @@ const ModalBody = styled.div`
 `;
 const DailyPosterLayoutWrapperStyled = styled(DailyPosterLayoutWrapper)`
   height: 80vh;
+  background: none;
 `;
 const PosterImg = styled.img`
   width: 1440px;

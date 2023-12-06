@@ -50,7 +50,6 @@ export const CONTENT_SHARE_TITLE = 'I found an interesting viewpoint in U3!';
 export const LINK_SHARE_TITLE = 'I found something interesting in U3!';
 
 export const EVENT_SHARE_TITLE = 'Great event in U3!';
-export const POSTER_SHARE_TITLE = 'Your Web3 Data Hub.';
 
 export const CONTACT_US_LINKS = {
   feedback: 'https://u3xyz.canny.io/',

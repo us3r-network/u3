@@ -2,9 +2,10 @@ import styled from 'styled-components';
 import { ButtonInfo, ButtonPrimary } from '../../common/button/ButtonBase';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
-import { POSTER_SHARE_DOMAIN, POSTER_SHARE_TITLE } from '../../../constants';
+import { POSTER_SHARE_DOMAIN } from '../../../constants';
 import { SocialPlatform } from '../../../services/social/types';
 import useLogin from '../../../hooks/shared/useLogin';
+import { getMetaDescription } from '../../../utils/shared/html-meta';
 
 export default function PosterModalBtns({
   shareDisabled,
@@ -40,8 +41,8 @@ export default function PosterModalBtns({
           }
           openShareLinkModal({
             shareLink: POSTER_SHARE_DOMAIN,
-            shareLinkDefaultText: POSTER_SHARE_TITLE,
-            shareLinkEmbedTitle: 'Caster Daily',
+            shareLinkDefaultText: getMetaDescription(),
+            shareLinkEmbedTitle: getMetaDescription(),
             shareLinkDefaultPlatform: SocialPlatform.Farcaster,
             shareLinkEmbedImg: posterImg,
             shareLinkDomain: POSTER_SHARE_DOMAIN,
