@@ -239,9 +239,7 @@ const Title = styled.h1`
   color: #718096;
   font-family: Rubik;
   font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
+  font-weight: 600;
   margin: 0;
 `;
 const MoreButton = styled.button`

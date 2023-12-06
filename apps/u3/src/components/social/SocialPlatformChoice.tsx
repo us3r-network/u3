@@ -76,10 +76,8 @@ const ListChoiceWrapper = styled.div`
 
 const ListChoiceLabel = styled.div`
   font-family: 'Rubik';
-  font-style: italic;
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 21px;
+  font-weight: 600;
+  font-size: 20px;
   color: #718096;
   ${isMobile &&
   `

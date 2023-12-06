@@ -386,9 +386,9 @@ export default function AddPostForm({
           >
             <ImgIcon />
           </SendImgBtn>
-          <SendEmojiBtn disabled>
+          {/* <SendEmojiBtn disabled>
             <EmojiIcon />
-          </SendEmojiBtn>
+          </SendEmojiBtn> */}
 
           <ChannelSelect
             selectChannelId={channelValue}
