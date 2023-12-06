@@ -1,7 +1,6 @@
 import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import { MainWrapper } from '../layout/Index';
-import PosterBanner from './poster/PosterBanner';
 import HotPosts from './posts/HotPosts';
 import TopLinks from './links/TopLinks';
 import HighScoreDapps from './dapps/HighScoreDapps';
@@ -18,11 +17,7 @@ export default function ExploreLayout({
       {!isMobile && (
         <CreatePosterBtn
           disabled={
-            hotPosts.isLoading ||
-            topLinks.isLoading ||
-            highScoreDapps.isLoading ||
-            // TODO 移动端poster改后再开启
-            isMobile
+            hotPosts.isLoading || topLinks.isLoading || highScoreDapps.isLoading
           }
           posts={hotPosts.posts}
           farcasterUserData={hotPosts.farcasterUserData}
@@ -30,20 +25,6 @@ export default function ExploreLayout({
           links={topLinks.links.slice(0, 3)}
         />
       )}
-
-      {/* <PosterBanner
-        disabled={
-          hotPosts.isLoading ||
-          topLinks.isLoading ||
-          highScoreDapps.isLoading ||
-          // TODO 移动端poster改后再开启
-          isMobile
-        }
-        posts={hotPosts.posts}
-        farcasterUserData={hotPosts.farcasterUserData}
-        dapps={highScoreDapps.dapps.slice(0, 6)}
-        links={topLinks.links.slice(0, 3)}
-      /> */}
       <Main>
         <MainLeft>
           <HotPosts
