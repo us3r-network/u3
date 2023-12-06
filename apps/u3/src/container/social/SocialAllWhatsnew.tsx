@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-01 11:09:08
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-06 11:31:44
+ * @FilePath: /u3/apps/u3/src/container/social/SocialAllWhatsnew.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
@@ -8,7 +16,7 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useAllWhatsnew from 'src/hooks/social/useAllWhatsnew';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import styled from 'styled-components';
+import { LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialAllWhatsnew() {
   const [parentId] = useState('social-all-whatsnew');
@@ -88,26 +96,3 @@ export default function SocialAllWhatsnew() {
     </InfiniteScroll>
   );
 }
-
-const LoadingMoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  background: #212228;
-  overflow: hidden;
-  & > * {
-    border-top: 1px solid #718096;
-  }
-`;

@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-01 11:09:08
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-06 11:39:08
+ * @FilePath: /u3/apps/u3/src/container/social/Social.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import styled from 'styled-components';
 import { useEffect, useRef } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
@@ -5,10 +13,9 @@ import { Outlet, useOutletContext } from 'react-router-dom';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { FeedsType } from '../../components/social/SocialPageNav';
 
-import AddPostForm from '../../components/social/AddPostForm';
 import FollowingDefault from '../../components/social/FollowingDefault';
 import useLogin from '../../hooks/shared/useLogin';
-import { AddPostFormWrapper, NoLoginStyled } from './CommonStyles';
+import { NoLoginStyled } from './CommonStyles';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 
 export default function SocialAll() {
@@ -41,9 +48,6 @@ export default function SocialAll() {
 
   return (
     <MainCenter>
-      <AddPostFormWrapper>
-        <AddPostForm />
-      </AddPostFormWrapper>
       <Outlet
         context={{
           feedsType,
