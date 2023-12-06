@@ -34,7 +34,12 @@ export default function ContactUsModal() {
     <Wrapper open={openContactUsModal}>
       <Body>
         {links.map((link) => (
-          <Link href={link.link} target="_blank" rel="noreferrer">
+          <Link
+            href={link.link}
+            key={link.link}
+            target="_blank"
+            rel="noreferrer"
+          >
             <Icon src={link.iconUrl} />
             <Name>{link.name}</Name>
           </Link>
@@ -73,13 +78,13 @@ const Link = styled.a`
   text-decoration: none;
 `;
 const Icon = styled.img`
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 `;
 const Name = styled.span`
   color: #fff;
   font-family: Rubik;
-  font-size: 12px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;

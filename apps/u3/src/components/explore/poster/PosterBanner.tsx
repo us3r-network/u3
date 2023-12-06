@@ -17,17 +17,19 @@ export default function PosterBanner({
   return (
     <Wrapper>
       <PrimaryTitle>Caster Daily</PrimaryTitle>
-      <RightWrapper>
-        {!isMobile && <SecondaryTitle>Today‘s Referrers</SecondaryTitle>}
+      {!isMobile && (
+        <RightWrapper>
+          {/* <SecondaryTitle>Today‘s Referrers</SecondaryTitle> */}
 
-        <CreatePosterBtn
-          id="createPosterBtn"
-          disabled={disabled || !DailyPosterModal}
-          onClick={() => setOpen(true)}
-        >
-          Create Poster {!isMobile && <ArrowRight />}
-        </CreatePosterBtn>
-      </RightWrapper>
+          <CreatePosterBtn
+            id="createPosterBtn"
+            disabled={disabled || !DailyPosterModal}
+            onClick={() => setOpen(true)}
+          >
+            Create Poster {!isMobile && <ArrowRight />}
+          </CreatePosterBtn>
+        </RightWrapper>
+      )}
 
       {DailyPosterModal && (
         <DailyPosterModal
@@ -75,7 +77,7 @@ const Wrapper = styled.div`
 const PrimaryTitle = styled.span`
   color: var(--14171-a, #14171a);
   font-family: Marion;
-  font-size: 80px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;

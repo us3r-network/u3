@@ -53,7 +53,11 @@ export default function DailyPosterModal({
   return (
     <ModalBase isOpen={open}>
       <ModalBody>
-        <CloseBtn onClick={closeModal} />
+        <PosterModalBtns
+          shareDisabled={generating}
+          posterImg={posterImg}
+          onClose={closeModal}
+        />
         {generating ? (
           <DailyPosterLayoutWrapperStyled>
             <Loading />
@@ -61,11 +65,7 @@ export default function DailyPosterModal({
         ) : (
           <PosterImg src={posterImg} />
         )}
-        <PosterModalBtns
-          shareDisabled={generating}
-          posterImg={posterImg}
-          onClose={closeModal}
-        />
+
         <DailyPosterLayout
           id="posterLayout"
           posts={posts}
