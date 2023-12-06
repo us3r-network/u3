@@ -1,9 +1,10 @@
-import styled from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { LinkListItem } from 'src/services/news/types/links';
 import PostLike from 'src/components/social/PostLike';
 import PostReply from 'src/components/social/PostReply';
-import PostReport from 'src/components/social/PostRepost';
+import PostRepost from 'src/components/social/PostRepost';
+import { Fire } from 'src/components/common/icons/fire';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
 import LinkBox from '../LinkBox';
 
@@ -49,13 +50,14 @@ export default function ListItem({
           </ItemTitle>
           {isActive && (
             <LinkCardActionsWrapper>
+              <LinkScore score={data?.score || 0} />
               <PostLike
                 disabled
                 totalLikes={data?.total_like_num || 0}
                 likeAvatars={[]}
               />
               <PostReply disabled totalReplies={data?.total_reply_num || 0} />
-              <PostReport disabled totalReposts={data?.total_repost_num || 0} />
+              <PostRepost disabled totalReposts={data?.total_repost_num || 0} />
             </LinkCardActionsWrapper>
           )}
         </div>
@@ -231,4 +233,30 @@ export const LinkCardActionsWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   margin: -10px 0;
+`;
+
+interface LinkScoreProps {
+  score: number;
+}
+
+export function LinkScore({
+  score,
+}: StyledComponentPropsWithRef<'div'> & LinkScoreProps) {
+  return (
+    <LinkScoreWrapper>
+      <Fire />
+      {Math.floor(score)}
+    </LinkScoreWrapper>
+  );
+}
+export const LinkScoreWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #718096;
+  font-family: Baloo Bhai 2;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 30px; /* 250% */
 `;
