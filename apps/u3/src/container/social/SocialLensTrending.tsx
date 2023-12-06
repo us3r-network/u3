@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-01 11:09:08
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-06 11:38:00
+ * @FilePath: /u3/apps/u3/src/container/social/SocialLensTrending.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
@@ -6,7 +14,6 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-
 import { LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialLensTrending() {
