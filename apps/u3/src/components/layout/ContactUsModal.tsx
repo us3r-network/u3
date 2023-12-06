@@ -73,13 +73,13 @@ const Link = styled.a`
   text-decoration: none;
 `;
 const Icon = styled.img`
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 `;
 const Name = styled.span`
   color: #fff;
   font-family: Rubik;
-  font-size: 12px;
+  font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;

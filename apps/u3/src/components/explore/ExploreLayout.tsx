@@ -6,6 +6,7 @@ import HotPosts from './posts/HotPosts';
 import TopLinks from './links/TopLinks';
 import HighScoreDapps from './dapps/HighScoreDapps';
 import type { ExploreState } from '../../container/Explore';
+import CreatePosterBtn from './poster/CreatePosterBtn';
 
 export default function ExploreLayout({
   hotPosts,
@@ -14,7 +15,23 @@ export default function ExploreLayout({
 }: ExploreState) {
   return (
     <Wrapper>
-      <PosterBanner
+      {!isMobile && (
+        <CreatePosterBtn
+          disabled={
+            hotPosts.isLoading ||
+            topLinks.isLoading ||
+            highScoreDapps.isLoading ||
+            // TODO 移动端poster改后再开启
+            isMobile
+          }
+          posts={hotPosts.posts}
+          farcasterUserData={hotPosts.farcasterUserData}
+          dapps={highScoreDapps.dapps.slice(0, 6)}
+          links={topLinks.links.slice(0, 3)}
+        />
+      )}
+
+      {/* <PosterBanner
         disabled={
           hotPosts.isLoading ||
           topLinks.isLoading ||
@@ -26,7 +43,7 @@ export default function ExploreLayout({
         farcasterUserData={hotPosts.farcasterUserData}
         dapps={highScoreDapps.dapps.slice(0, 6)}
         links={topLinks.links.slice(0, 3)}
-      />
+      /> */}
       <Main>
         <MainLeft>
           <HotPosts
@@ -50,6 +67,7 @@ export default function ExploreLayout({
 }
 
 const Wrapper = styled(MainWrapper)`
+  padding-bottom: 80px;
   min-height: 100vh;
   height: auto;
   display: flex;
