@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-29 18:15:27
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 18:43:09
+ * @LastEditTime: 2023-12-06 18:50:55
  * @FilePath: /u3/apps/u3/src/components/news/links/LinkContentBox.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -303,11 +303,11 @@ export const ContentBox = styled.div`
   & .iframe-container {
     width: 100%;
     height: 100%;
-
     & iframe {
       border: 0;
       width: 100%;
       height: 100%;
+      background-color: #fff;
     }
   }
 
