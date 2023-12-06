@@ -34,7 +34,12 @@ export default function ContactUsModal() {
     <Wrapper open={openContactUsModal}>
       <Body>
         {links.map((link) => (
-          <Link href={link.link} target="_blank" rel="noreferrer">
+          <Link
+            href={link.link}
+            key={link.link}
+            target="_blank"
+            rel="noreferrer"
+          >
             <Icon src={link.iconUrl} />
             <Name>{link.name}</Name>
           </Link>
