@@ -258,11 +258,11 @@ const FollowListWrapper = styled.div`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  border: 1px solid #718096;
+  border: 1px solid #39424c;
   border-radius: 20px;
   background-color: #212228;
   > :not(:first-child) {
-    border-top: 1px solid #718096;
+    border-top: 1px solid #39424c;
   }
 `;
 const FollowItemWrapper = styled.div`

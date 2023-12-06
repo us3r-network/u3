@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-11-24 18:31:36
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-06 11:43:01
+ * @LastEditTime: 2023-12-06 12:20:33
  * @FilePath: /u3/apps/u3/src/container/social/CommonStyles.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -40,7 +40,7 @@ export const PostList = styled.div`
   background: #212228;
   overflow: hidden;
   & > :not(:first-child) {
-    border-top: 1px solid #718096;
+    border-top: 1px solid #39424c;
   }
 `;
 
