@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 17:49:31
+ * @LastEditTime: 2023-12-06 09:56:06
  * @Description: file description
  */
 import { useEffect, useRef, useState } from 'react';
@@ -29,7 +29,7 @@ export const LinkGroup = [
     icon: LinksIcon,
   },
   {
-    label: 'Twitter Select',
+    label: 'Twitter',
     value: `/news/links/twitter`,
     group: 'twitter',
     includeDomains: ['twitter.com', 'x.com'],

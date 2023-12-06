@@ -2,11 +2,11 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-04 13:55:55
+ * @LastEditTime: 2023-12-06 10:36:45
  * @Description: 首页任务看板
  */
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import Loading from '../../../common/loading/Loading';
 import ListScrollBox from '../../../common/box/ListScrollBox';
@@ -23,7 +23,7 @@ export default function LinksPageMobile({
   // searchParamsChange,
   getMore,
 }: LinksPageProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <Box>
@@ -66,7 +66,8 @@ export default function LinksPageMobile({
               <LinkListMobile
                 data={links}
                 onItemClick={(item) => {
-                  navigate(item?.url);
+                  // navigate(item?.url);
+                  window.open(item?.url, '_blank');
                 }}
               />
             </InfiniteScroll>
