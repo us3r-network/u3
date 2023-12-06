@@ -33,7 +33,7 @@ export default function DailyPosterModal({
       setGenerating(true);
       try {
         console.time('is to canvas time:');
-        const imgData = await captureScreenshot('daily-poster-layout', {
+        const imgData = await captureScreenshot('posterLayout', {
           timeout: 400,
         });
         console.timeEnd('is to canvas time:');
@@ -67,7 +67,7 @@ export default function DailyPosterModal({
           onClose={closeModal}
         />
         <DailyPosterLayout
-          id="daily-poster-layout"
+          id="posterLayout"
           posts={posts}
           farcasterUserData={farcasterUserData}
           dapps={dapps}
@@ -90,7 +90,7 @@ const ModalBody = styled.div`
   gap: 20px;
   background: #1b1e23;
 
-  #daily-poster-layout {
+  #posterLayout {
     position: fixed;
     right: 100%;
   }
