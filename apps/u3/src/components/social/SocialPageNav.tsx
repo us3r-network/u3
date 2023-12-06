@@ -26,7 +26,6 @@ export default function SocialPageNav({
       {!isMobile && (
         <SocialNavLeft>
           <SocialNavTitle>Social</SocialNavTitle>
-          <SocialNavDividingLine />
         </SocialNavLeft>
       )}
 
@@ -65,7 +64,6 @@ export function SocialBackNav({
       {!isMobile && (
         <SocialNavLeft>
           <SocialNavTitle>Social</SocialNavTitle>
-          <SocialNavDividingLine />
         </SocialNavLeft>
       )}
       <SocialNavCenter>
@@ -251,7 +249,6 @@ const SocialNavLeft = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 112px;
 `;
 const SocialNavCenter = styled.div`
   width: 600px;
@@ -315,12 +312,6 @@ const SocialNavTitle = styled.div`
   font-style: italic;
   font-weight: 700;
   line-height: normal;
-`;
-const SocialNavDividingLine = styled.div`
-  width: 20px;
-  height: 1px;
-  transform: rotate(120deg);
-  background: #39424c;
 `;
 
 const FeedsTypeTabsWrapper = styled.div`
