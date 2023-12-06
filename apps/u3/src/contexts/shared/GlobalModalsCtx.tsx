@@ -14,6 +14,8 @@ type ShareLinkModalState = {
   shareLinkDefaultPlatform: SocialPlatform;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
+  shareLinkEmbedImg?: string;
+  shareLinkDomain?: string;
 };
 type CommentLinkModalState = {
   isOpen: boolean;
