@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-06 15:59:03
+ * @LastEditTime: 2023-12-06 17:18:30
  * @Description: file description
  */
 import { useEffect, useRef, useState } from 'react';
@@ -19,7 +19,6 @@ import ZoraIcon from './icon/zora.png';
 import SpotifyIcon from './icon/spotify.png';
 import SubstackIcon from './icon/substack.png';
 import ParagraphIcon from './icon/paragraph.png';
-import MirrorIcon from './icon/mirror.png';
 
 export const LinkGroup = [
   {
@@ -132,7 +131,7 @@ export const LinkGroup = [
     icon: 'https://bountycaster.xyz/static/favicons/apple-touch-icon.png',
   },
   {
-    label: 'tiles',
+    label: 'Tiles',
     value: `/news/links/tiles`,
     group: 'tiles',
     includeDomains: ['tiles.cool'],
