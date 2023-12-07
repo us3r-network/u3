@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { toast } from 'react-toastify';
+import { WARPCAST_HOST } from 'src/utils/social/farcaster/getFarcasterExternalLink';
+import { HEY_HOST } from 'src/utils/social/lens/getLensExternalLink';
 import PopoverBase, {
   PopoverBaseProps,
 } from '../../common/popover/PopoverBase';
@@ -19,12 +21,14 @@ import { SocialPlatform } from '../../../services/social/types';
 interface MultiPlatformShareMenuBtnProps
   extends StyledComponentPropsWithRef<'button'> {
   shareLink: string;
+  offialUrl?: string;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
   popoverConfig?: Omit<PopoverBaseProps, 'children'>;
 }
 export function MultiPlatformShareMenuBtn({
   shareLink,
+  offialUrl,
   shareLinkDefaultText,
   shareLinkEmbedTitle,
   popoverConfig,
@@ -112,6 +116,23 @@ export function MultiPlatformShareMenuBtn({
             <CopyIcon stroke="#fff" />
             <MenuOptionText>Copy link</MenuOptionText>
           </MenuOption>
+          {offialUrl && (
+            <MenuOption
+              onClick={() => {
+                window.open(offialUrl);
+              }}
+            >
+              <CopyIcon stroke="#fff" />
+              <MenuOptionText>
+                Open in{' '}
+                {offialUrl.indexOf(WARPCAST_HOST) === 0
+                  ? 'Warpcast'
+                  : offialUrl.indexOf(HEY_HOST) === 0
+                  ? 'Hey.xyz'
+                  : 'New Tab'}
+              </MenuOptionText>
+            </MenuOption>
+          )}
         </MenuWrapper>
       </PopoverBase>
     </>

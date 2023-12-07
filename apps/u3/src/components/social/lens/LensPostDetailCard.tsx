@@ -108,6 +108,7 @@ export default function LensPostDetailCard({ data }: { data: Post }) {
 
   return (
     <PostCard
+      id={updatedPublication.id}
       isDetail
       // eslint-disable-next-line react/no-unstable-nested-components
       contentRender={() => (

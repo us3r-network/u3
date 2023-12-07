@@ -1,7 +1,16 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-06 17:17:59
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-07 13:24:31
+ * @FilePath: /u3/apps/u3/src/components/social/PostCard.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import dayjs from 'dayjs';
 import { useMemo } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { getOfficialPublicationUrl } from 'src/utils/social/lens/getLensExternalLink';
 import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
@@ -30,6 +39,7 @@ export type PostCardData = {
   likeAvatars?: string[];
 };
 interface PostCardProps {
+  id?: string;
   data: PostCardData;
   contentRender?: () => JSX.Element;
   liked?: boolean;
@@ -55,6 +65,7 @@ interface PostCardProps {
   shareLinkEmbedTitle?: string;
 }
 export default function PostCard({
+  id,
   data,
   contentRender,
   liked,
@@ -134,6 +145,7 @@ export default function PostCard({
             }}
           >
             <PostShareMenuBtn
+              offialUrl={getOfficialPublicationUrl(id)}
               shareLink={shareLink}
               shareLinkDefaultText={SOCIAL_SHARE_TITLE}
               shareLinkEmbedTitle={shareLinkEmbedTitle}
