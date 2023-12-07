@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-07 14:59:22
+ * @LastEditTime: 2023-12-07 15:04:02
  * @Description: file description
  */
 import { useEffect, useRef, useState } from 'react';
@@ -35,6 +35,7 @@ import VercelIcon from './icon/vercel.png';
 import WarpcastIcon from './icon/warpcast.png';
 import WeponderIcon from './icon/weponder.png';
 import WithfabricIcon from './icon/withfabric.png';
+import NewsIcon from './icon/news.png';
 
 export const LinkGroup = [
   {
@@ -95,7 +96,7 @@ export const LinkGroup = [
   {
     label: 'News',
     value: `/news/contents`,
-    icon: LinksIcon,
+    icon: NewsIcon,
   },
   {
     label: 'Mirror',
