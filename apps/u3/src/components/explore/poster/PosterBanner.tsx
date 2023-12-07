@@ -13,25 +13,29 @@ export default function PosterBanner({
   ...layoutProps
 }: DailyPosterLayoutProps & { disabled?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [posterUrl, setPosterUrl] = useState('');
+  const [posterImg, setPosterImg] = useState('');
   return (
     <Wrapper>
-      <PrimaryTitle>Daily Poster</PrimaryTitle>
-      <RightWrapper>
-        <SecondaryTitle>Web3 Today</SecondaryTitle>
-        <CreatePosterBtn
-          disabled={disabled || !DailyPosterModal}
-          onClick={() => setOpen(true)}
-        >
-          Create Poster <ArrowRight />
-        </CreatePosterBtn>
-      </RightWrapper>
+      <PrimaryTitle>Caster Daily</PrimaryTitle>
+      {!isMobile && (
+        <RightWrapper>
+          {/* <SecondaryTitle>Today‘s Referrers</SecondaryTitle> */}
+
+          <CreatePosterBtn
+            id="createPosterBtn"
+            disabled={disabled || !DailyPosterModal}
+            onClick={() => setOpen(true)}
+          >
+            Create Poster {!isMobile && <ArrowRight />}
+          </CreatePosterBtn>
+        </RightWrapper>
+      )}
 
       {DailyPosterModal && (
         <DailyPosterModal
           {...layoutProps}
-          posterUrl={posterUrl}
-          setPosterUrl={setPosterUrl}
+          posterImg={posterImg}
+          setPosterImg={setPosterImg}
           open={open}
           closeModal={() => setOpen(false)}
         />
@@ -67,14 +71,13 @@ const Wrapper = styled.div`
   ${isMobile &&
   `
     flex-direction: column;
-    align-items: flex-start;
     gap: 20px;
   `}
 `;
 const PrimaryTitle = styled.span`
   color: var(--14171-a, #14171a);
   font-family: Marion;
-  font-size: 80px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
@@ -92,6 +95,7 @@ const RightWrapper = styled.div`
   `
     width: 100%;
     flex: none;
+    justify-content: center;
   `}
 `;
 const SecondaryTitle = styled.span`
@@ -128,10 +132,11 @@ const CreatePosterBtn = styled(ButtonPrimary)`
 
   ${isMobile &&
   `
+    margin-left: 0;
     min-width: 0px;
     font-size: 20px;
     padding: 10px;
-    width: auto;
+    width: 200px;
     height: 33px;
     svg {
       width: 20px;

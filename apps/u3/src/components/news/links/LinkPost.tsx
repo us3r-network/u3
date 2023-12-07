@@ -108,11 +108,10 @@ export default function LinkPost({ url }: { url: string }) {
 }
 
 const Wraper = styled.div`
-  width: 360px;
+  width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
-  flex-shrink: 0;
 `;
 const ListWraper = styled.div`
   width: 100%;

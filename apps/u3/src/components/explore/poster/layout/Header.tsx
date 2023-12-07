@@ -9,11 +9,11 @@ export default function Header() {
   const { isLogin } = useLogin();
   return (
     <Wrapper>
-      <PrimaryTitle>Daily Poster</PrimaryTitle>
+      <PrimaryTitle>Caster Daily</PrimaryTitle>
       <Line />
       <RightWrapper>
         <SecondaryTitleWrapper>
-          <SecondaryTitle>Web3 Today</SecondaryTitle>
+          <SecondaryTitle>Today‘s Referrers</SecondaryTitle>
           <UserNameWrapper>
             <LogoIcon />
             {isLogin && (

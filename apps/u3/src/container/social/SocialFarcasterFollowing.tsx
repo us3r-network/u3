@@ -1,17 +1,22 @@
-import styled from 'styled-components';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
 
 import FollowingDefault from 'src/components/social/FollowingDefault';
-import NoLogin from 'src/components/layout/NoLogin';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
 import useLogin from 'src/hooks/shared/useLogin';
+import {
+  LoadingMoreWrapper,
+  MainCenter,
+  NoLoginStyled,
+  PostList,
+} from './CommonStyles';
 
 export default function SocialFarcaster() {
   const [parentId] = useState('social-farcaster-following');
@@ -92,35 +97,3 @@ export default function SocialFarcaster() {
     </InfiniteScroll>
   );
 }
-
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  background: #212228;
-  overflow: hidden;
-  & > * {
-    border-top: 1px solid #718096;
-  }
-`;
-
-const LoadingMoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-const MainCenter = styled.div`
-  width: 100%;
-`;
-
-const NoLoginStyled = styled(NoLogin)`
-  height: calc(100vh - 136px);
-  padding: 0;
-`;

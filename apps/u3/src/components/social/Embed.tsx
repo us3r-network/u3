@@ -203,7 +203,7 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   );
 }
 
-function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
+export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
   if (!item.image) return null;
   return (
     <PostCardEmbedWrapper

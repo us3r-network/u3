@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-11-29 16:11:17
+ * @LastEditTime: 2023-12-05 18:35:31
  * @Description: file description
  */
 import { useEffect, useState } from 'react';
@@ -24,13 +24,13 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
   const [tab, setTab] = useState<Tab>('original');
-  useEffect(() => {
-    if (data?.supportIframe) {
-      setTab('original');
-    } else {
-      setTab('readerView');
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (data?.supportIframe) {
+  //     setTab('original');
+  //   } else {
+  //     setTab('readerView');
+  //   }
+  // }, [data]);
 
   return (
     data && (
@@ -60,7 +60,9 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
           </Header>
           <LinkContentBox selectLink={data} tab={tab} />
         </PreviewBox>
-        <LinkPost url={data.url} />
+        <LinkPostWrapper>
+          <LinkPost url={data.url} />
+        </LinkPostWrapper>
       </PreviewWrapper>
     )
   );
@@ -73,12 +75,15 @@ const PreviewWrapper = styled.div`
   flex-direction: row;
 `;
 const PreviewBox = styled.div`
-  width: 100%;
+  width: 610px;
   height: 100%;
-  flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
+`;
+const LinkPostWrapper = styled.div`
+  width: 360px;
+  height: 100%;
 `;
 const Header = styled.div`
   width: 100%;

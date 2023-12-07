@@ -1,3 +1,11 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-11-24 18:31:36
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-06 14:03:41
+ * @FilePath: /u3/apps/u3/src/components/social/AddPostModal.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 
@@ -28,7 +36,7 @@ export default function AddPostModal({
 }
 
 const ModalBody = styled.div<{ isMobile?: boolean }>`
-  width: ${(props) => (props.isMobile ? 'fit-content' : '600px')};
+  width: ${(props) => (props.isMobile ? '96vw' : '600px')};
   /* min-height: 194px; */
   flex-shrink: 0;
 

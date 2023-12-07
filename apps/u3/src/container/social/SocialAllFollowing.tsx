@@ -1,7 +1,15 @@
-import styled from 'styled-components';
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-12-01 11:09:08
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-06 11:30:33
+ * @FilePath: /u3/apps/u3/src/container/social/SocialAllFollowing.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
@@ -12,7 +20,12 @@ import useAllFollowing from 'src/hooks/social/useAllFollowing';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 
-import { NoLoginStyled } from './CommonStyles';
+import {
+  LoadingMoreWrapper,
+  MainCenter,
+  NoLoginStyled,
+  PostList,
+} from './CommonStyles';
 import useLogin from '../../hooks/shared/useLogin';
 import FollowingDefault from '../../components/social/FollowingDefault';
 
@@ -113,30 +126,3 @@ export default function SocialAllFollowing() {
     </InfiniteScroll>
   );
 }
-
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  background: #212228;
-  overflow: hidden;
-  & > * {
-    border-top: 1px solid #718096;
-  }
-`;
-
-const LoadingMoreWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-`;
-
-const MainCenter = styled.div`
-  width: 100%;
-`;

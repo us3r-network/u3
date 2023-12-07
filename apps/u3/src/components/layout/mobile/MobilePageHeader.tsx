@@ -67,6 +67,7 @@ const PageHeader = styled.div<{ tab: string }>`
     text-align: center;
     color: #718096;
     padding: 5px 0;
+    text-transform: capitalize;
   }
 
   .active {

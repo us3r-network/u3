@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 
 import { getFarcasterCastInfo } from '../../services/social/api/farcaster';
@@ -14,6 +13,7 @@ import {
 import Loading from '../../components/common/loading/Loading';
 import FarcasterCommentForm from '../../components/social/farcaster/FarcasterCommentForm';
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
+import { LoadingWrapper } from './CommonStyles';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
@@ -80,50 +80,36 @@ export default function FarcasterPostDetail() {
   if (cast) {
     scrollToAnchor(window.location.hash.split('#')[1]);
     return (
-      <DetailBox>
-        <PostDetailWrapper isMobile={isMobile}>
-          <FCast
-            cast={cast}
-            openFarcasterQR={openFarcasterQR}
-            farcasterUserData={farcasterUserData}
-            isDetail
-            showMenuBtn
-          />
-          <FarcasterCommentForm
-            castId={{
-              hash: Buffer.from(cast.hash.data),
-              fid: Number(cast.fid),
-            }}
-            successAction={loadCastInfo}
-          />
-          <PostDetailCommentsWrapper>
-            {(comments || []).map((item) => {
-              const key = Buffer.from(item.data.hash.data).toString('hex');
-              return (
-                <FCast
-                  key={key}
-                  cast={item.data}
-                  openFarcasterQR={openFarcasterQR}
-                  farcasterUserData={farcasterUserData}
-                />
-              );
-            })}
-          </PostDetailCommentsWrapper>
-        </PostDetailWrapper>
-      </DetailBox>
+      <PostDetailWrapper isMobile={isMobile}>
+        <FCast
+          cast={cast}
+          openFarcasterQR={openFarcasterQR}
+          farcasterUserData={farcasterUserData}
+          isDetail
+          showMenuBtn
+        />
+        <FarcasterCommentForm
+          castId={{
+            hash: Buffer.from(cast.hash.data),
+            fid: Number(cast.fid),
+          }}
+          successAction={loadCastInfo}
+        />
+        <PostDetailCommentsWrapper>
+          {(comments || []).map((item) => {
+            const key = Buffer.from(item.data.hash.data).toString('hex');
+            return (
+              <FCast
+                key={key}
+                cast={item.data}
+                openFarcasterQR={openFarcasterQR}
+                farcasterUserData={farcasterUserData}
+              />
+            );
+          })}
+        </PostDetailCommentsWrapper>
+      </PostDetailWrapper>
     );
   }
   return <LoadingWrapper />;
 }
-
-const DetailBox = styled.div`
-  width: 600px;
-`;
-
-const LoadingWrapper = styled.div`
-  width: 600px;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
