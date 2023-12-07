@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
-import { getFollowingFeeds } from 'src/services/social/api/feeds';
-import { SocialPlatform } from 'src/services/social/types';
+import { getLensFollowing } from 'src/services/social/api/lens';
 
 const lensFollowingData = {
   data: [],
@@ -25,10 +24,9 @@ export default function useLensFollowing() {
   const loadLensFollowing = useCallback(async () => {
     setLoading(true);
     try {
-      const resp = await getFollowingFeeds({
+      const resp = await getLensFollowing({
         lensAccessToken,
         lensProfileId: lensSessionProfileId,
-        platforms: [SocialPlatform.Lens],
         endLensCursor: lensFollowingData.endLensCursor
           ? lensFollowingData.endLensCursor
           : undefined,

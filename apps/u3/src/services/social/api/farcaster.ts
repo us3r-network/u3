@@ -30,29 +30,6 @@ export type FarcasterUserData = {
   value: string;
 };
 
-export function getFarcasterFeeds({
-  endFarcasterCursor,
-  pageSize,
-}: {
-  endFarcasterCursor?: string;
-  pageSize?: number;
-}): AxiosPromise<
-  ApiResp<{
-    data: { data: FarCast; platform: 'farcaster' }[];
-    farcasterUserData: FarcasterUserData[];
-    pageInfo: FarcasterPageInfo;
-  }>
-> {
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcasts`,
-    method: 'get',
-    params: {
-      endFarcasterCursor,
-      pageSize,
-    },
-  });
-}
-
 export function getFarcasterUserInfo(
   fids: number[]
 ): AxiosPromise<ApiResp<FarcasterUserData[]>> {
@@ -363,6 +340,21 @@ export function getFarcasterFollowing(
       fid,
       endCursor: endCursor ?? '',
       endTimestamp,
+    },
+  });
+}
+
+export function getFnames(fid: number): AxiosPromise<
+  ApiResp<{
+    username: string;
+    type: number;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/fnames`,
+    method: 'get',
+    params: {
+      fid,
     },
   });
 }

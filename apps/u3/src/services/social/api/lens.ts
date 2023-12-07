@@ -39,3 +39,33 @@ export function getLensTrending({
     },
   });
 }
+
+export function getLensFollowing({
+  pageSize,
+  endLensCursor,
+  lensProfileId,
+  lensAccessToken,
+}: {
+  pageSize?: number;
+  endLensCursor?: string;
+  lensAccessToken?: string;
+  lensProfileId?: string;
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-lens/following`,
+    method: 'get',
+    headers: {
+      'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
+    },
+    params: {
+      pageSize: pageSize || FEEDS_PAGE_SIZE,
+      endLensCursor,
+      lensProfileId,
+    },
+  });
+}
+
+// for now use trending api
+export function getLensWhatsnew() {
+  throw new Error('not implemented');
+}

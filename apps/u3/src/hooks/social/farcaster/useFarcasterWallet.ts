@@ -8,7 +8,10 @@ import { useAccount } from 'wagmi';
 import { createPublicClient, http } from 'viem';
 import { optimism } from 'viem/chains';
 
-import { getFarcasterUserInfo } from 'src/services/social/api/farcaster';
+import {
+  getFarcasterUserInfo,
+  getFnames,
+} from 'src/services/social/api/farcaster';
 import { useU3Login } from 'src/contexts/U3LoginContext';
 import {
   FarcasterSignerType,
@@ -88,12 +91,9 @@ export default function useFarcasterWallet() {
   const fnameCheck = async (fid: number) => {
     if (!fid) return;
     try {
-      const resp = await axios.get(
-        `https://fnames.farcaster.xyz/transfers?fid=${fid}`
-      );
-      if (resp.data.transfers.length > 0) {
-        return resp.data.transfers[0].username;
-      }
+      const resp = await getFnames(fid);
+      if (resp.data.code !== 0) return;
+      return resp.data.data.username;
     } catch (error) {
       console.log(error);
     }

@@ -18,6 +18,11 @@ export const FEEDS_PAGE_SIZE = 25;
 
 export const FEEDS_SCROLL_THRESHOLD = `${FEEDS_PAGE_SIZE * 200}px`;
 
+// for now use farcaster trending
+export function getAllTrending() {
+  throw new Error('Not implemented');
+}
+
 export function getAllWhatsnew({
   pageSize,
   endLensCursor,
