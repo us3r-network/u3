@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2023-01-03 16:10:28
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-07 15:04:02
+ * @LastEditTime: 2023-12-07 15:29:25
  * @Description: file description
  */
 import { useEffect, useRef, useState } from 'react';
@@ -37,70 +37,72 @@ import WeponderIcon from './icon/weponder.png';
 import WithfabricIcon from './icon/withfabric.png';
 import NewsIcon from './icon/news.png';
 
+const LINKS_ROUTE_PREFIX = '/b/links';
+const CONTENTS_ROUTE = '/b/contents';
 export const LinkGroup = [
   {
     label: 'Links',
-    value: `/news/links/all`,
+    value: `${LINKS_ROUTE_PREFIX}/all`,
     group: 'all',
     icon: LinksIcon,
   },
   {
     label: 'Twitter',
-    value: `/news/links/twitter`,
+    value: `${LINKS_ROUTE_PREFIX}/twitter`,
     group: 'twitter',
     includeDomains: ['twitter.com', 'x.com'],
     icon: XIcon,
   },
   {
     label: 'Zora',
-    value: `/news/links/zora`,
+    value: `${LINKS_ROUTE_PREFIX}/zora`,
     group: 'zora',
     includeDomains: ['zora.co'],
     icon: ZoraIcon,
   },
   {
     label: 'Spotify',
-    value: `/news/links/spotify`,
+    value: `${LINKS_ROUTE_PREFIX}/spotify`,
     group: 'spotify',
     includeDomains: ['spotify.com'],
     icon: SpotifyIcon,
   },
   {
     label: 'Github',
-    value: `/news/links/github`,
+    value: `${LINKS_ROUTE_PREFIX}/github`,
     group: 'github',
     includeDomains: ['github.com'],
     icon: GithubIcon,
   },
   {
     label: 'Youtube',
-    value: `/news/links/youtube`,
+    value: `${LINKS_ROUTE_PREFIX}/youtube`,
     group: 'youtube',
     includeDomains: ['youtube.com', 'youtu.be'],
     icon: YoutubeIcon,
   },
   {
     label: 'Substack',
-    value: `/news/links/substack`,
+    value: `${LINKS_ROUTE_PREFIX}/substack`,
     group: 'substack',
     includeDomains: ['substack.com'],
     icon: SubstackIcon,
   },
   {
     label: 'Paragraph',
-    value: `/news/links/paragraph`,
+    value: `${LINKS_ROUTE_PREFIX}/paragraph`,
     group: 'paragraph',
     includeDomains: ['paragraph.xyz'],
     icon: ParagraphIcon,
   },
   {
     label: 'News',
-    value: `/news/contents`,
+    value: CONTENTS_ROUTE,
     icon: NewsIcon,
   },
   {
     label: 'Mirror',
-    value: `/news/links/mirror`,
+    value: `${LINKS_ROUTE_PREFIX}/mirror`,
     group: 'mirror',
     includeDomains: ['mirror.xyz'],
     // icon: 'https://mirror.xyz/icon/favicon-32x32.png',
@@ -108,7 +110,7 @@ export const LinkGroup = [
   },
   {
     label: 'Aburra',
-    value: `/news/links/aburra`,
+    value: `${LINKS_ROUTE_PREFIX}/aburra`,
     group: 'aburra',
     includeDomains: ['aburra.xyz'],
     // icon: 'https://aburra.xyz/favicon.ico',
@@ -116,7 +118,7 @@ export const LinkGroup = [
   },
   {
     label: 'Launchcaster',
-    value: `/news/links/launchcaster`,
+    value: `${LINKS_ROUTE_PREFIX}/launchcaster`,
     group: 'launchcaster',
     includeDomains: ['launchcaster.xyz'],
     // icon: 'https://www.launchcaster.xyz/favicon.ico',
@@ -124,7 +126,7 @@ export const LinkGroup = [
   },
   {
     label: 'Kiwistand',
-    value: `/news/links/kiwistand`,
+    value: `${LINKS_ROUTE_PREFIX}/kiwistand`,
     group: 'kiwistand',
     includeDomains: ['news.kiwistand.com'],
     // icon: 'https://news.kiwistand.com/favicon.ico',
@@ -132,7 +134,7 @@ export const LinkGroup = [
   },
   {
     label: 'Weponder',
-    value: `/news/links/weponder`,
+    value: `${LINKS_ROUTE_PREFIX}/weponder`,
     group: 'weponder',
     includeDomains: ['weponder.io'],
     // icon: 'https://weponder.io/favicon.ico',
@@ -140,7 +142,7 @@ export const LinkGroup = [
   },
   {
     label: 'Unlonely',
-    value: `/news/links/unlonely`,
+    value: `${LINKS_ROUTE_PREFIX}/unlonely`,
     group: 'unlonely',
     includeDomains: ['unlonely.app'],
     // icon: 'https://unlonely.app/images/favicon-32x32.png',
@@ -148,7 +150,7 @@ export const LinkGroup = [
   },
   {
     label: 'Bountycaster',
-    value: `/news/links/bountycaster`,
+    value: `${LINKS_ROUTE_PREFIX}/bountycaster`,
     group: 'bountycaster',
     includeDomains: ['bountycaster.xyz'],
     // icon: 'https://bountycaster.xyz/static/favicons/apple-touch-icon.png',
@@ -156,7 +158,7 @@ export const LinkGroup = [
   },
   {
     label: 'Tiles',
-    value: `/news/links/tiles`,
+    value: `${LINKS_ROUTE_PREFIX}/tiles`,
     group: 'tiles',
     includeDomains: ['tiles.cool'],
     // icon: 'https://www.tiles.cool/favicon.ico',
@@ -164,7 +166,7 @@ export const LinkGroup = [
   },
   {
     label: 'Far.quest',
-    value: `/news/links/far.quest`,
+    value: `${LINKS_ROUTE_PREFIX}/far.quest`,
     group: 'far.quest',
     includeDomains: ['far.quest'],
     // icon: 'https://far.quest/favicon.ico',
@@ -172,7 +174,7 @@ export const LinkGroup = [
   },
   {
     label: 'Withfabric',
-    value: `/news/links/withfabric`,
+    value: `${LINKS_ROUTE_PREFIX}/withfabric`,
     group: 'withfabric',
     includeDomains: ['withfabric.xyz'],
     // icon: 'https://withfabric.xyz/favicon.ico',
@@ -180,7 +182,7 @@ export const LinkGroup = [
   },
   {
     label: 'Arxiv',
-    value: `/news/links/arxiv`,
+    value: `${LINKS_ROUTE_PREFIX}/arxiv`,
     group: 'arxiv',
     includeDomains: ['arxiv.org'],
     // icon: 'https://arxiv.org/favicon.ico',
@@ -188,7 +190,7 @@ export const LinkGroup = [
   },
   {
     label: 'Basepaint',
-    value: `/news/links/basepaint`,
+    value: `${LINKS_ROUTE_PREFIX}/basepaint`,
     group: 'basepaint',
     includeDomains: ['basepaint.xyz'],
     // icon: 'https://basepaint.xyz/favicon.ico',
@@ -196,7 +198,7 @@ export const LinkGroup = [
   },
   {
     label: 'Warpcast',
-    value: `/news/links/warpcast`,
+    value: `${LINKS_ROUTE_PREFIX}/warpcast`,
     group: 'warpcast',
     includeDomains: ['warpcast.com'],
     // icon: 'https://warpcast.com/favicon.ico',
@@ -204,7 +206,7 @@ export const LinkGroup = [
   },
   {
     label: 'Flink',
-    value: `/news/links/flink`,
+    value: `${LINKS_ROUTE_PREFIX}/flink`,
     group: 'flink',
     includeDomains: ['flink.fyi'],
     // icon: 'https://flink.fyi/favicon.ico',
@@ -212,7 +214,7 @@ export const LinkGroup = [
   },
   {
     label: 'Mint.fun',
-    value: `/news/links/mint.fun`,
+    value: `${LINKS_ROUTE_PREFIX}/mint.fun`,
     group: 'mint.fun',
     includeDomains: ['mint.fun'],
     // icon: 'https://mint.fun/favicon.ico',
@@ -220,7 +222,7 @@ export const LinkGroup = [
   },
   {
     label: 'Vercel',
-    value: `/news/links/vercel`,
+    value: `${LINKS_ROUTE_PREFIX}/vercel`,
     group: 'vercel',
     includeDomains: ['vercel.app'],
     // icon: 'https://vercel.com/favicon.ico',

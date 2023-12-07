@@ -41,7 +41,7 @@ import NewsToolbar from '../../components/news/header/NewsToolbar';
 const isUUid = (str: string) => {
   return str.indexOf('-') > -1;
 };
-
+const ROUTE_PREFIX = '/b/events';
 const filterValuesToSearchParams = (values: EventExploreListFilterValues) => {
   return {
     platforms: values.platforms.join(','),
@@ -157,7 +157,7 @@ export default function Events() {
   }, [id, event, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/news/events/:id?${searchParams.toString()}`);
+    navigate(`${ROUTE_PREFIX}/:id?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function Events() {
         }}
         displaySubmitButton={isAdmin}
         submitButtonOnClick={() => {
-          navigate('/news/events/create');
+          navigate(`${ROUTE_PREFIX}/create`);
         }}
       />
       <MainBox>
@@ -235,7 +235,7 @@ export default function Events() {
                     activeId={activeId}
                     onItemClick={(item) => {
                       navigate(
-                        `/news/events/${
+                        `${ROUTE_PREFIX}/${
                           item?.id || item?.uuid || ''
                         }?${searchParams.toString()}`
                       );
@@ -262,7 +262,7 @@ export default function Events() {
                   data={eventExploreList}
                   onItemClick={(item) => {
                     navigate(
-                      `/news/events/${
+                      `${ROUTE_PREFIX}/${
                         item?.id || item?.uuid || ''
                       }?${searchParams.toString()}`
                     );

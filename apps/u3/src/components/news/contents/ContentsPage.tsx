@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 18:19:06
+ * @LastEditTime: 2023-12-07 15:13:23
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -28,6 +28,7 @@ import type { ContentsPageProps } from '../../../container/news/Contents';
 import useLogin from '../../../hooks/shared/useLogin';
 import NewsToolbar from '../header/NewsToolbar';
 
+const ROUTE_PREFIX = '/b/contents';
 export default function ContentsPage({
   // Queries
   loading,
@@ -85,7 +86,7 @@ export default function ContentsPage({
   }, [id, selectContent, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/news/contents/:id?${searchParams.toString()}`);
+    navigate(`${ROUTE_PREFIX}/:id?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -138,7 +139,7 @@ export default function ContentsPage({
         }}
         displaySubmitButton={isAdmin}
         submitButtonOnClick={() => {
-          navigate('/news/contents/create');
+          navigate(`${ROUTE_PREFIX}/create`);
         }}
       />
       {(() => {
@@ -168,7 +169,7 @@ export default function ContentsPage({
                   onHiddenUndo={onHiddenUndoAction}
                   onItemClick={(item) => {
                     navigate(
-                      `/news/contents/${
+                      `${ROUTE_PREFIX}/${
                         item?.id || item?.uuid || ''
                       }?${searchParams.toString()}`
                     );
@@ -208,7 +209,7 @@ export default function ContentsPage({
                 onHiddenUndo={onHiddenUndoAction}
                 onItemClick={(item) => {
                   navigate(
-                    `/contents/${
+                    `${ROUTE_PREFIX}/${
                       item?.id || item?.uuid || ''
                     }?${searchParams.toString()}`
                   );
