@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-12-01 15:43:39
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 16:25:46
+ * @LastEditTime: 2023-12-07 15:20:01
  * @FilePath: /u3/apps/u3/src/components/explore/links/TopLinks.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -15,6 +15,7 @@ import LinkCard from './LinkCard';
 import Loading from '../../common/loading/Loading';
 import { encodeLinkURL } from '../../../utils/news/link';
 
+const ROUTE_PREFIX = '/b/links';
 export type TopLinksData = Array<{ logo: string; name: string; url: string }>;
 
 export default function TopLinks({
@@ -30,7 +31,7 @@ export default function TopLinks({
       <Title
         text="👍 Top Links"
         viewAllAction={() => {
-          navigate(`/news/links/all`);
+          navigate(`${ROUTE_PREFIX}/all`);
         }}
       />
       <CardsWrapper>
@@ -46,7 +47,7 @@ export default function TopLinks({
                   key={item.url}
                   data={item}
                   onClick={() =>
-                    navigate(`/news/links/all/${encodeLinkURL(item?.url)}`)
+                    navigate(`${ROUTE_PREFIX}/all/${encodeLinkURL(item?.url)}`)
                   }
                 />
               );

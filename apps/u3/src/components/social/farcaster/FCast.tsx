@@ -9,6 +9,7 @@ import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFol
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getSocialDetailShareUrlWithFarcaster } from 'src/utils/shared/share';
 
+import { getOfficialCastUrl } from 'src/utils/social/farcaster/getFarcasterExternalLink';
 import { FarCast, SocialPlatform } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
@@ -196,6 +197,10 @@ export default function FCast({
             }}
           >
             <PostShareMenuBtn
+              offialUrl={getOfficialCastUrl(
+                userData.userName,
+                Buffer.from(castId.hash).toString('hex')
+              )}
               shareLink={getSocialDetailShareUrlWithFarcaster(
                 Buffer.from(castId.hash).toString('hex')
               )}

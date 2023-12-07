@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 11:07:31
+ * @LastEditTime: 2023-12-07 15:14:29
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -26,6 +26,8 @@ import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
 import LinkList from './list/LinkList';
 import NewsToolbar from '../header/NewsToolbar';
+
+const ROUTE_PREFIX = '/b/links';
 
 export type LinksPageProps = {
   // Queries
@@ -72,7 +74,7 @@ export default function LinksPage({
   }, [link, selectLink, layout]);
 
   const resetRouthPath = useCallback(() => {
-    navigate(`/news/links/${group}/:link?${searchParams.toString()}`);
+    navigate(`${ROUTE_PREFIX}/${group}/:link?${searchParams.toString()}`);
   }, [searchParams]);
 
   useEffect(() => {
@@ -161,7 +163,7 @@ export default function LinksPage({
                       activeLink={selectLink}
                       onItemClick={(item) => {
                         navigate(
-                          `/news/links/${group}/${encodeLinkURL(
+                          `${ROUTE_PREFIX}/${group}/${encodeLinkURL(
                             item?.url
                           )}?${searchParams.toString()}`
                         );
@@ -197,7 +199,7 @@ export default function LinksPage({
                     data={links}
                     onItemClick={(item) => {
                       navigate(
-                        `/news/links/${group}/${encodeLinkURL(
+                        `${ROUTE_PREFIX}/${group}/${encodeLinkURL(
                           item?.url
                         )}?${searchParams.toString()}`
                       );
