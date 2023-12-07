@@ -1,46 +1,48 @@
-import styled from 'styled-components';
-import { isMobile } from 'react-device-detect';
 import { useEffect, useState } from 'react';
-import { MainWrapper } from '../components/layout/Index';
-import PosterBanner from '../components/explore/poster/PosterBanner';
-import HotPosts, { HotPostsData } from '../components/explore/posts/HotPosts';
-import TopLinks, { TopLinksData } from '../components/explore/links/TopLinks';
-import HighScoreDapps, {
-  HighScoreDappsData,
-} from '../components/explore/dapps/HighScoreDapps';
+import { HotPostsData } from '../components/explore/posts/HotPosts';
+import { TopLinksData } from '../components/explore/links/TopLinks';
+import { HighScoreDappsData } from '../components/explore/dapps/HighScoreDapps';
 import {
   getHotPosts,
   getTopLinks,
   getHighScoreDapps,
 } from '../services/shared/api/explore';
 import { processMetadata } from '../utils/news/link';
-import { SocialPlatform } from '../services/social/types';
+import ExploreLayout from '../components/explore/ExploreLayout';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
+type HotPostsState = {
+  posts: HotPostsData;
+  farcasterUserData: FarcasterUserData;
+  isLoading: boolean;
+};
+type TopLinksState = {
+  links: TopLinksData;
+  isLoading: boolean;
+};
+type HighScoreDappsState = {
+  dapps: HighScoreDappsData;
+  isLoading: boolean;
+};
+export type ExploreState = {
+  hotPosts: HotPostsState;
+  topLinks: TopLinksState;
+  highScoreDapps: HighScoreDappsState;
+};
 
 export default function Explore() {
-  const [hotPosts, setHotPosts] = useState<{
-    posts: HotPostsData;
-    farcasterUserData: FarcasterUserData;
-    isLoading: boolean;
-  }>({
+  const [hotPosts, setHotPosts] = useState<HotPostsState>({
     posts: [],
     farcasterUserData: {},
     isLoading: true,
   });
 
-  const [topLinks, setTopLinks] = useState<{
-    links: TopLinksData;
-    isLoading: boolean;
-  }>({
+  const [topLinks, setTopLinks] = useState<TopLinksState>({
     links: [],
     isLoading: true,
   });
 
-  const [highScoreDapps, setHighScoreDapps] = useState<{
-    dapps: HighScoreDappsData;
-    isLoading: boolean;
-  }>({
+  const [highScoreDapps, setHighScoreDapps] = useState<HighScoreDappsState>({
     dapps: [],
     isLoading: true,
   });
@@ -109,59 +111,10 @@ export default function Explore() {
       });
   }, []);
   return (
-    <Wrapper>
-      <PosterBanner
-        disabled={
-          hotPosts.isLoading || topLinks.isLoading || highScoreDapps.isLoading
-        }
-        posts={hotPosts.posts}
-        farcasterUserData={hotPosts.farcasterUserData}
-        dapps={highScoreDapps.dapps.slice(0, 6)}
-        links={topLinks.links.slice(0, 3)}
-      />
-      <Main>
-        <MainLeft>
-          <HotPosts
-            posts={hotPosts.posts}
-            isLoading={hotPosts.isLoading}
-            farcasterUserData={hotPosts.farcasterUserData}
-          />
-        </MainLeft>
-        <MainRight>
-          <TopLinks links={topLinks.links} isLoading={topLinks.isLoading} />
-        </MainRight>
-      </Main>
-      <Footer>
-        <HighScoreDapps
-          dapps={highScoreDapps.dapps}
-          isLoading={highScoreDapps.isLoading}
-        />
-      </Footer>
-    </Wrapper>
+    <ExploreLayout
+      hotPosts={hotPosts}
+      topLinks={topLinks}
+      highScoreDapps={highScoreDapps}
+    />
   );
 }
-
-const Wrapper = styled(MainWrapper)`
-  min-height: 100vh;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  ${isMobile &&
-  `
-    gap: 20px;
-  `}
-`;
-const Main = styled.div`
-  display: flex;
-  gap: 20px;
-`;
-const MainLeft = styled.div`
-  width: 0;
-  flex: 3;
-`;
-const MainRight = styled.div`
-  width: 0;
-  flex: 1;
-`;
-const Footer = styled.div``;

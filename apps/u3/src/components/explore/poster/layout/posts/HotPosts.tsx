@@ -94,7 +94,7 @@ const FirstFarcasterPostCard = styled(FarcasterPostCard)`
 `;
 const FirstThreeVerticalLine = styled.div`
   width: 1px;
-  height: 300px;
+  align-self: stretch;
   background: #000;
 `;
 const SecondAndThirdPostsWrapper = styled.div`
@@ -104,9 +104,12 @@ const SecondAndThirdPostsWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
+  align-self: stretch;
 `;
 const SecondAndThirdFarcasterPostCard = styled(FarcasterPostCard)`
   width: 100%;
+  height: 0;
+  flex: 1;
 `;
 const SecondAndThirdHorizontalLine = styled.div`
   height: 1px;
@@ -121,16 +124,18 @@ const LastThreeHorizontalLine = styled.div`
 const LastThreePostsWrapper = styled.div`
   display: flex;
   width: 100%;
-  height: 140px;
   align-items: center;
   gap: 20px;
 `;
 const LastThreeFarcasterPostCard = styled(FarcasterPostCard)`
+  width: 0;
   flex: 1;
+  align-self: stretch;
+  justify-content: space-around;
 `;
 const LastThreeVerticalLine = styled.div`
   width: 1px;
-  height: 100px;
+  align-self: stretch;
   flex-shrink: 0;
   background: #000;
 `;

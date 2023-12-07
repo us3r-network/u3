@@ -1,5 +1,7 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useMemo } from 'react';
+
+import { isMobile } from 'react-device-detect';
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
@@ -26,9 +28,10 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorAvatar,
     authorDisplayName,
     authorHandle,
-    recReason = 'Interested Viewpoint',
+    recReason = '#High Effort',
     platform,
   } = data;
+
   const PlatFormIcon = useMemo(() => {
     switch (platform) {
       case SocialPlatform.Lens:
@@ -54,7 +57,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
                 {authorDisplayName} {authorHandle && `@${authorHandle}`}
               </AuthorDisplayName>
             </UserWrapper>
-            <RecReason>{recReason}</RecReason>
+            {!isMobile && <RecReason>{recReason}</RecReason>}
           </BottomLeft>
 
           {PlatFormIcon && (
@@ -78,6 +81,13 @@ const CardWrapper = styled(CardBase)`
       font-size: 30px;
       line-height: 36px;
       -webkit-line-clamp: 5;
+
+      ${isMobile &&
+      `
+        font-size: 16px;
+        line-height: 21px;
+         -webkit-line-clamp: 2;
+      `}
     }
   }
   &:nth-child(2) {
@@ -94,12 +104,22 @@ const CardWrapper = styled(CardBase)`
     grid-column-end: 7;
     .card-body {
       gap: 6px;
+      ${isMobile &&
+      `
+        gap: 10px;
+      `}
     }
     .title {
       font-size: 18px;
       line-height: 24px;
       -webkit-line-clamp: 2;
       margin-bottom: 5px;
+      ${isMobile &&
+      `
+        font-size: 16px;
+        line-height: 21px;
+         -webkit-line-clamp: 2;
+      `}
     }
   }
 
@@ -122,6 +142,10 @@ const CardWrapper = styled(CardBase)`
     grid-row-end: 4;
     .card-body {
       gap: 15px;
+      ${isMobile &&
+      `
+        gap: 10px;
+      `}
     }
     .title {
       font-size: 16px;
@@ -134,6 +158,11 @@ const CardWrapper = styled(CardBase)`
       transform: scale(1.05);
     }
   }
+  ${isMobile &&
+  `
+    padding: 10px;
+    border-radius: 10px;
+  `}
 `;
 const CardBody = styled.div`
   height: 100%;
@@ -143,12 +172,22 @@ const CardBody = styled.div`
   justify-content: space-between;
   gap: 20px;
   position: relative;
+  ${isMobile &&
+  `
+    gap: 10px;
+  `}
 `;
 const Title = styled(EllipsisText)`
   font-weight: 700;
   font-size: 16px;
   line-height: 19px;
   color: #ffffff;
+  ${isMobile &&
+  `
+    font-size: 16px;
+    line-height: 19px;
+    font-weight: 500;
+  `}
 `;
 const BottomWrapper = styled.div`
   height: 44px;
@@ -157,6 +196,10 @@ const BottomWrapper = styled.div`
   justify-content: space-between;
   align-items: end;
   gap: 10px;
+  ${isMobile &&
+  `
+      height: auto;
+    `}
 `;
 const BottomLeft = styled.div`
   display: flex;
@@ -214,5 +257,10 @@ const PlatformIconWrapper = styled.div`
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
+    ${isMobile &&
+    `
+      width: 14px;
+      height: 14px;
+    `}
   }
 `;

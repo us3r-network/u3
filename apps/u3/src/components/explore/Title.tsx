@@ -1,3 +1,4 @@
+import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 
 export default function Title({
@@ -12,13 +13,30 @@ export default function Title({
       <span>{text}</span>
       {viewAllAction && (
         <button type="button" onClick={viewAllAction}>
-          View All
+          {isMobile ? <ArrowRight /> : 'View All'}
         </button>
       )}
     </Box>
   );
 }
-
+function ArrowRight() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="21"
+      viewBox="0 0 20 21"
+      fill="none"
+    >
+      <path
+        d="M10 13.5833L13.3333 10.25M13.3333 10.25L10 6.91666M13.3333 10.25H6.66667M18.3333 10.25C18.3333 14.8524 14.6024 18.5833 10 18.5833C5.39763 18.5833 1.66667 14.8524 1.66667 10.25C1.66667 5.64762 5.39763 1.91666 10 1.91666C14.6024 1.91666 18.3333 5.64762 18.3333 10.25Z"
+        stroke="#718096"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 const Box = styled.div`
   display: flex;
   align-items: center;

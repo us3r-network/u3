@@ -1,17 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-
-import styled from 'styled-components';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
-import {
-  LoadingMoreWrapper,
-  LoadingWrapper,
-} from 'src/components/profile/FollowListWidgets';
-import AddPostForm from 'src/components/social/AddPostForm';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
+import { LoadingWrapper, LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialChannel() {
   const { openFarcasterQR } = useFarcasterCtx();
@@ -54,10 +48,6 @@ export default function SocialChannel() {
 
   return (
     <div>
-      <AddPostFormWrapper>
-        <AddPostForm channel={channel} />
-      </AddPostFormWrapper>
-
       {(firstLoading && (
         <LoadingWrapper>
           <Loading />
@@ -109,28 +99,3 @@ export default function SocialChannel() {
     </div>
   );
 }
-
-const PostList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-
-  border-radius: 20px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  background: #212228;
-  overflow: hidden;
-  & > * {
-    border-top: 1px solid #718096;
-  }
-`;
-
-const AddPostFormWrapper = styled.div`
-  background: #212228;
-  border-radius: 20px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
-`;

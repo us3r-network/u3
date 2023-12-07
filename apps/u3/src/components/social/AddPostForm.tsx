@@ -50,6 +50,8 @@ export type ShareData = {
   shareLinkDefaultPlatform: SocialPlatform;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
+  shareLinkEmbedImg?: string;
+  shareLinkDomain?: string;
 };
 export default function AddPostForm({
   onSuccess,
@@ -255,8 +257,10 @@ export default function AddPostForm({
   }, [isShareForm, shareData]);
 
   useEffect(() => {
-    setPlatforms(new Set(selectedPlatforms || []));
-  }, [selectedPlatforms]);
+    if (!isShareForm) {
+      setPlatforms(new Set(selectedPlatforms || []));
+    }
+  }, [isShareForm, selectedPlatforms]);
 
   return (
     <Wrapper>
@@ -361,7 +365,11 @@ export default function AddPostForm({
           </ContentWrapper>
         </UserPostWrapepr>
         {isShareForm && shareData && (
-          <ShareEmbedCard title={shareData.shareLinkEmbedTitle} />
+          <ShareEmbedCard
+            domain={shareData.shareLinkDomain}
+            title={shareData.shareLinkEmbedTitle}
+            img={shareData?.shareLinkEmbedImg || ''}
+          />
         )}
         <FooterWrapper>
           <input
@@ -378,9 +386,9 @@ export default function AddPostForm({
           >
             <ImgIcon />
           </SendImgBtn>
-          <SendEmojiBtn disabled>
+          {/* <SendEmojiBtn disabled>
             <EmojiIcon />
-          </SendEmojiBtn>
+          </SendEmojiBtn> */}
 
           <ChannelSelect
             selectChannelId={channelValue}

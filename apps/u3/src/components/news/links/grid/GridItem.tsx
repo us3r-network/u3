@@ -7,6 +7,7 @@ import PostRepost from 'src/components/social/PostRepost';
 import { defaultFormatFromNow } from '../../../../utils/shared/time';
 import LinkBox from '../LinkBox';
 import Badge from '../Badge';
+import { LinkScore } from '../list/ListItem';
 
 export default function GridItem({
   data,
@@ -34,6 +35,7 @@ export default function GridItem({
           <div className="date">{defaultFormatFromNow(timestamp)}</div>
         </div>
         <LinkCardActionsWrapper>
+          <LinkScore score={data?.score || 0} />
           <PostLike
             disabled
             totalLikes={data?.total_like_num || 0}

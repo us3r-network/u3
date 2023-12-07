@@ -15,6 +15,7 @@ import { resetAllFollowingData } from 'src/hooks/social/useAllFollowing';
 import { resetLensFollowingData } from 'src/hooks/social/lens/useLensFollowing';
 
 import { MEDIA_BREAK_POINTS } from 'src/constants';
+import AddPostMobile from 'src/components/social/AddPostMobile';
 import SocialPageNav, {
   FeedsType,
   SocialBackNav,
@@ -150,6 +151,11 @@ function SocialLayout() {
           </RightWrapper>
         )}
       </MainWrapper>
+      {isMobile && (
+        <AddPostButtonWraper>
+          <AddPostMobile />
+        </AddPostButtonWraper>
+      )}
     </HomeWrapper>
   );
 }
@@ -237,4 +243,9 @@ const RightWrapper = styled(MainRight)`
     flex-direction: column;
     gap: 20px;
   }
+`;
+const AddPostButtonWraper = styled.div`
+  position: fixed;
+  right: 20px;
+  bottom: 60px;
 `;

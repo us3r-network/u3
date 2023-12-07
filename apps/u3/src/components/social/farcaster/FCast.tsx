@@ -25,10 +25,11 @@ import {
   PostCardWrapper,
   PostShareMenuBtn,
 } from '../PostCard';
-import Embed, { isImg } from '../Embed';
+import Embed from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
+import { getEmbeds } from '../../../utils/social/farcaster/getEmbeds';
 
 export default function FCast({
   cast,
@@ -64,31 +65,7 @@ export default function FCast({
   const { followAction, unfollowAction, isPending, isFollowing } =
     useFarcasterFollowAction();
 
-  const embeds: {
-    imgs: {
-      url: string;
-    }[];
-    webpages: {
-      url: string;
-    }[];
-  } = useMemo(() => {
-    const imgs = [];
-    const webpages = [];
-    for (const embed of cast.embeds) {
-      if (embed?.url) {
-        if (isImg(embed.url)) {
-          imgs.push({
-            url: embed.url,
-          });
-        } else {
-          webpages.push({
-            url: embed.url,
-          });
-        }
-      }
-    }
-    return { imgs, webpages };
-  }, [cast]);
+  const embeds = useMemo(() => getEmbeds(cast), [cast]);
 
   useEffect(() => {
     if (isDetail) return;

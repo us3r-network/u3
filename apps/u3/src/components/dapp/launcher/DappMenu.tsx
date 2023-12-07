@@ -5,7 +5,6 @@ import useLogin from '../../../hooks/shared/useLogin';
 import DappWebsiteModal from './DappWebsiteModal';
 import { ReactComponent as PlusSquareSvg } from '../../common/assets/svgs/plus-square.svg';
 import DappInstallList from './DappInstallList';
-import Web3TodaySvgUrl from './imgs/web3-today.svg';
 
 export default function DappMenu() {
   const navigate = useNavigate();
@@ -33,12 +32,6 @@ export default function DappMenu() {
           }}
         >
           <Title>Your Dapps</Title>
-          <Web3TodayNavBtn
-            src={Web3TodaySvgUrl}
-            onClick={() => {
-              navigate('/web3-today');
-            }}
-          />
           <DappInstallList ref={dappInstallListRef} />
         </ListInner>
         {isAdmin && (
@@ -120,14 +113,4 @@ const Title = styled.div`
   line-height: 14px;
   text-align: center;
   color: #718096;
-`;
-
-const Web3TodayNavBtn = styled.img`
-  width: 40px;
-  height: 40px;
-  transition: all 0.3s;
-  cursor: pointer;
-  &:hover {
-    transform: scale(1.2);
-  }
 `;

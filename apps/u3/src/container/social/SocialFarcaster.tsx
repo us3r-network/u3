@@ -1,8 +1,6 @@
 import styled from 'styled-components';
 import { Outlet, useOutletContext } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
-
-import AddPostForm from 'src/components/social/AddPostForm';
 import { FeedsType } from 'src/components/social/SocialPageNav';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useLogin from 'src/hooks/shared/useLogin';
@@ -37,10 +35,6 @@ export default function SocialFarcaster() {
 
   return (
     <FarcasterListBox>
-      <AddPostFormWrapper>
-        <AddPostForm />
-      </AddPostFormWrapper>
-
       <Outlet
         context={{
           feedsType,
@@ -62,13 +56,3 @@ const NoLoginStyled = styled(NoLogin)`
 `;
 
 const FarcasterListBox = styled.div``;
-
-const AddPostFormWrapper = styled.div`
-  background: #212228;
-  border-radius: 20px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding: 20px;
-  width: 100%;
-  box-sizing: border-box;
-`;

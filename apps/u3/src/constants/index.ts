@@ -43,6 +43,8 @@ export const REACT_APP_API_SOCIAL_URL =
 export const SHARE_DOMAIN =
   process.env.REACT_APP_SHARE_DOMAIN || 'https://share.u3.xyz';
 
+export const POSTER_SHARE_DOMAIN = window.location.origin;
+
 export const SOCIAL_SHARE_TITLE = 'I found an interesting viewpoint in U3!';
 export const CONTENT_SHARE_TITLE = 'I found an interesting viewpoint in U3!';
 export const LINK_SHARE_TITLE = 'I found something interesting in U3!';

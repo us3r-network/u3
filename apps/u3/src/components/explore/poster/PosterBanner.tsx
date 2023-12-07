@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useState } from 'react';
 import loadable from '@loadable/component';
 // import DailyPosterModal from './DailyPosterModal';
+import { isMobile } from 'react-device-detect';
 import { DailyPosterLayoutProps } from './layout/DailyPosterLayout';
 
 const DailyPosterModal = loadable(() => import(`./DailyPosterModal`));
@@ -12,22 +13,29 @@ export default function PosterBanner({
   ...layoutProps
 }: DailyPosterLayoutProps & { disabled?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [posterUrl, setPosterUrl] = useState('');
+  const [posterImg, setPosterImg] = useState('');
   return (
     <Wrapper>
-      <PrimaryTitle>Daily Poster</PrimaryTitle>
-      <SecondaryTitle>Web3 Today</SecondaryTitle>
-      <CreatePosterBtn
-        disabled={disabled || !DailyPosterModal}
-        onClick={() => setOpen(true)}
-      >
-        Create Poster <ArrowRight />
-      </CreatePosterBtn>
+      <PrimaryTitle>Caster Daily</PrimaryTitle>
+      {!isMobile && (
+        <RightWrapper>
+          {/* <SecondaryTitle>Today‘s Referrers</SecondaryTitle> */}
+
+          <CreatePosterBtn
+            id="createPosterBtn"
+            disabled={disabled || !DailyPosterModal}
+            onClick={() => setOpen(true)}
+          >
+            Create Poster {!isMobile && <ArrowRight />}
+          </CreatePosterBtn>
+        </RightWrapper>
+      )}
+
       {DailyPosterModal && (
         <DailyPosterModal
           {...layoutProps}
-          posterUrl={posterUrl}
-          setPosterUrl={setPosterUrl}
+          posterImg={posterImg}
+          setPosterImg={setPosterImg}
           open={open}
           closeModal={() => setOpen(false)}
         />
@@ -60,14 +68,35 @@ const Wrapper = styled.div`
   align-items: center;
   border-radius: 20px;
   background: #f7f6f4;
+  ${isMobile &&
+  `
+    flex-direction: column;
+    gap: 20px;
+  `}
 `;
 const PrimaryTitle = styled.span`
   color: var(--14171-a, #14171a);
   font-family: Marion;
-  font-size: 80px;
+  font-size: 40px;
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  ${isMobile &&
+  `
+    font-size: 48px;
+  `}
+`;
+const RightWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  ${isMobile &&
+  `
+    width: 100%;
+    flex: none;
+    justify-content: center;
+  `}
 `;
 const SecondaryTitle = styled.span`
   color: var(--14171-a, #14171a);
@@ -76,6 +105,10 @@ const SecondaryTitle = styled.span`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+  ${isMobile &&
+  `
+    font-size: 20px;
+  `}
 `;
 const CreatePosterBtn = styled(ButtonPrimary)`
   margin-left: auto;
@@ -96,4 +129,18 @@ const CreatePosterBtn = styled(ButtonPrimary)`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
+
+  ${isMobile &&
+  `
+    margin-left: 0;
+    min-width: 0px;
+    font-size: 20px;
+    padding: 10px;
+    width: 200px;
+    height: 33px;
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  `}
 `;

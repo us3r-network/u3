@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 18:12:54
+ * @LastEditTime: 2023-12-05 11:07:31
  * @Description: 首页任务看板
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -12,11 +12,8 @@ import { LinkListItem } from 'src/services/news/types/links';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import SearchInput from 'src/components/common/input/SearchInput';
 import { decodeLinkURL, encodeLinkURL } from 'src/utils/news/link';
-import { RouteKey, getRoute } from 'src/route/routes';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
-// import SearchInput from '../../common/input/SearchInput';
-import { MainWrapper } from '../../layout/Index';
 import GridModal from './grid/GridModal';
 import NoResult from '../../layout/NoResult';
 import {
@@ -99,16 +96,16 @@ export default function LinksPage({
             }
           />
         }
-        // searchEl={
-        //   <SearchInput
-        //     debounceMs={1000}
-        //     onSearch={(value) => {
-        //       searchParamsChange({
-        //         keywords: value,
-        //       });
-        //     }}
-        //   />
-        // }
+        searchEl={
+          <SearchInput
+            debounceMs={1000}
+            onSearch={(value) => {
+              searchParamsChange({
+                keywords: value,
+              });
+            }}
+          />
+        }
         multiLayout
         layout={layout}
         setLayout={(l) => {
@@ -233,23 +230,12 @@ const Box = styled.div`
   gap: 16px;
   padding-top: 0;
 `;
-// const Box = styled.div`
-//   margin: 0 auto;
-//   height: calc(100vh - 72px);
-//   box-sizing: border-box;
-//   padding: 24px 40px 0 40px;
-//   overflow: hidden;
-// `;
 const LinksWrapper = styled.div<{ loading?: string }>`
-  /* width: calc(100% - 2px);
-  height: calc(100% - 94px); */
-  /* box-sizing: border-box; */
   border: ${(props) => (props.loading ? 'none' : '1px solid #39424c')};
   background-color: ${(props) => (props.loading ? '' : '#1b1e23')};
   border-radius: 20px;
   overflow: hidden;
   display: flex;
-  /* margin-top: 24px; */
   flex-grow: 1;
 
   & .loading {

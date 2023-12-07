@@ -173,10 +173,10 @@ export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
   &:hover {
-    background: ${(props) => (props.isDetail ? '#212228' : '#39424c')};
+    background: ${(props) => (props.isDetail ? '#212228' : '#000000')};
   }
 `;
 export const PostCardHeaderWrapper = styled.div`
@@ -314,7 +314,7 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
-  line-height: 25px; /* 156.25% */
+  line-height: 20px; /* 156.25% */
   word-break: break-all;
   white-space: pre-line;
   text-overflow: ellipsis;
@@ -322,7 +322,6 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
   -webkit-box-orient: vertical;
   -webkit-line-clamp: ${(props) => (props.showMore ? 5 : 'initial')};
   overflow: hidden;
-
   a {
     color: #2594ef;
     text-decoration: none;

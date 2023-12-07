@@ -1,4 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { isMobile } from 'react-device-detect';
 import EllipsisText from '../../common/text/EllipsisText';
 import LinkLogo from '../../news/links/LinkLogo';
 
@@ -43,11 +44,19 @@ const CardBody = styled.div`
   &:hover {
     transform: scale(1.05);
   }
+  ${isMobile &&
+  `
+    padding: 10px;
+  `}
 `;
 const Logo = styled(LinkLogo)`
   width: 48px;
   height: 48px;
   border-radius: 40px;
+  ${isMobile &&
+  `
+    border-radius: 10px;
+  `}
 `;
 const Right = styled.div`
   width: 0;
@@ -56,6 +65,10 @@ const Right = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: 8px;
+  ${isMobile &&
+  `
+    gap: 4px;
+  `}
 `;
 const Name = styled(EllipsisText)`
   color: #fff;
@@ -76,4 +89,9 @@ const Url = styled(EllipsisText)`
   font-style: normal;
   font-weight: 400;
   line-height: normal;
+  ${isMobile &&
+  `
+    font-size: 12px;
+    font-weight: 400;
+  `}
 `;
