@@ -333,11 +333,15 @@ export function getFarcasterTrending({
   });
 }
 
-export function getFarcasterUserInfoWithFname(
-  fname
-): AxiosPromise<ApiResp<FarcasterUserData>> {
+export function getFarcasterUserInfoWithFname(fname): AxiosPromise<{
+  fid: number;
+  name: string;
+  owner: string;
+  type: string;
+  signature: string;
+}> {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo/fname/${fname}`,
+    url: `https://api.farcaster.u3.xyz/v1/userNameProofByName?name=${fname}`,
     method: 'get',
   });
 }

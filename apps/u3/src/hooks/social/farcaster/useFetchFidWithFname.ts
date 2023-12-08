@@ -12,7 +12,7 @@ export default function useFetchFidWithFname() {
       setLoading(true);
       const res = await getFarcasterUserInfoWithFname(fname);
       const { data } = res || {};
-      setFid(data?.data.fid || '');
+      setFid(String(data?.fid || ''));
       // eslint-disable-next-line @typescript-eslint/no-shadow
     } catch (error) {
       setError(error);
