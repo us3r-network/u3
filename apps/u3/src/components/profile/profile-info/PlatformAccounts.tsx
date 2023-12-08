@@ -8,8 +8,8 @@ import FarcasterIcon from '../../common/icons/FarcasterIcon';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
-import { getFarcasterProfileExternalLinkWithHandle } from '../../../utils/social/farcaster/getFarcasterProfileExternalLink';
-import { getLensProfileExternalLinkWithHandle } from '../../../utils/social/lens/getLensProfileExternalLink';
+import { getFarcasterProfileExternalLinkWithHandle } from '../../../utils/social/farcaster/getFarcasterExternalLink';
+import { getLensProfileExternalLinkWithHandle } from '../../../utils/social/lens/getLensExternalLink';
 
 export type PlatformAccountsData = Array<{
   platform: SocialPlatform;

@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-09-13 19:00:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-01 14:23:34
+ * @LastEditTime: 2023-12-07 15:10:03
  * @Description: file description
  */
 import { Navigate, RouteObject } from 'react-router-dom';
@@ -130,7 +130,7 @@ export const routes: CutomRouteObject[] = [
   },
   // news
   {
-    path: '/news',
+    path: '/b',
     element: loadContainerElement('news/NewsLayout'),
     key: RouteKey.newsLayout,
     children: [
