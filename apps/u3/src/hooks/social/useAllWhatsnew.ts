@@ -27,6 +27,9 @@ export default function useAllWhatsnew() {
   );
   const lensAccessToken = useLensAccessToken();
   const loadAllWhatsnew = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getAllWhatsnew({
@@ -79,7 +82,7 @@ export default function useAllWhatsnew() {
     } finally {
       setLoading(false);
     }
-  }, [lensAccessToken]);
+  }, [lensAccessToken, pageInfo]);
 
   return {
     loading,

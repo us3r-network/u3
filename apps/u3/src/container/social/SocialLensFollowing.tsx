@@ -22,6 +22,7 @@ import {
   NoLoginStyled,
   LoadingMoreWrapper,
   PostList,
+  EndMsgContainer,
 } from './CommonStyles';
 
 export default function SocialLensFollowing() {
@@ -40,7 +41,7 @@ export default function SocialLensFollowing() {
     if (!isLogin) return;
     if (!lensSessionProfileId) return;
     loadLensFollowing();
-  }, [loadLensFollowing, mounted, isLogin, lensSessionProfileId]);
+  }, [mounted, isLogin, lensSessionProfileId]);
 
   if (!isLogin) {
     return <NoLoginStyled />;
@@ -61,12 +62,13 @@ export default function SocialLensFollowing() {
         if (loading) return;
         loadLensFollowing();
       }}
-      hasMore={pageInfo.hasNextPage || true}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >

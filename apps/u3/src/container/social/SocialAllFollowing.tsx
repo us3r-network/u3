@@ -21,6 +21,7 @@ import LensPostCard from 'src/components/social/lens/LensPostCard';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 
 import {
+  EndMsgContainer,
   LoadingMoreWrapper,
   MainCenter,
   NoLoginStyled,
@@ -47,13 +48,7 @@ export default function SocialAllFollowing() {
     if (!isLogin) return;
     if (!isConnectedFarcaster && !lensSessionProfileId) return;
     loadAllFollowing();
-  }, [
-    loadAllFollowing,
-    mounted,
-    isLogin,
-    isConnectedFarcaster,
-    lensSessionProfileId,
-  ]);
+  }, [mounted, isLogin, isConnectedFarcaster, lensSessionProfileId]);
 
   if (!isLogin) {
     return <NoLoginStyled />;
@@ -72,14 +67,15 @@ export default function SocialAllFollowing() {
       dataLength={allFollowing.length}
       next={() => {
         if (loading) return;
-        loadAllFollowing();
+        loadAllFollowing(true);
       }}
-      hasMore={pageInfo.hasNextPage || true}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >

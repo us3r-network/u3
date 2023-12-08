@@ -27,6 +27,9 @@ export default function useFarcasterFollowing() {
 
   const loadFarcasterFollowing = useCallback(async () => {
     if (!currFid) return;
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getFarcasterFollowing(
@@ -61,7 +64,7 @@ export default function useFarcasterFollowing() {
     } finally {
       setLoading(false);
     }
-  }, [currFid]);
+  }, [currFid, pageInfo]);
 
   return {
     farcasterFollowing,

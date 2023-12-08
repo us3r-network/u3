@@ -9,11 +9,13 @@ const allFollowingData = {
   data: [],
   pageInfo: {
     hasNextPage: true,
+    hasFarcasterNextPage: true,
+    hasLensNextPage: true,
+    endFarcasterCursor: '',
+    endLensCursor: '',
   },
   userData: {},
   userDataObj: {},
-  endFarcasterCursor: '',
-  endLensCursor: '',
   endTimestamp: Date.now(),
 };
 
@@ -32,50 +34,61 @@ export default function useAllFollowing() {
     allFollowingData.userDataObj
   );
   const lensAccessToken = useLensAccessToken();
-  const loadAllFollowing = useCallback(async () => {
-    setLoading(true);
-    try {
-      const resp = await getAllFollowing({
-        lensAccessToken,
-        lensProfileId: lensSessionProfileId,
-        fid: currFid || undefined,
-        endFarcasterCursor: allFollowingData.endFarcasterCursor
-          ? allFollowingData.endFarcasterCursor
-          : undefined,
-        endTimestamp: allFollowingData.endTimestamp
-          ? allFollowingData.endTimestamp
-          : Date.now(),
-        endLensCursor: allFollowingData.endLensCursor
-          ? allFollowingData.endLensCursor
-          : undefined,
-      });
-      const {
-        data,
-        farcasterUserData,
-        pageInfo: respPageInfo,
-      } = resp.data.data;
-
-      if (data.length > 0) {
-        setAllFollowing((pre) => [...pre, ...data]);
-        allFollowingData.data = allFollowingData.data.concat(data);
-
-        const userDataObj = userDataObjFromArr(farcasterUserData);
-        setAllUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-        allFollowingData.userDataObj = {
-          ...allFollowingData.userDataObj,
-          ...userDataObj,
-        };
+  const loadAllFollowing = useCallback(
+    async (more?: boolean) => {
+      if (pageInfo.hasNextPage === false) {
+        return;
       }
-      setPageInfo(respPageInfo);
-      allFollowingData.pageInfo = respPageInfo;
-      allFollowingData.endFarcasterCursor = respPageInfo.endFarcasterCursor;
-      allFollowingData.endLensCursor = respPageInfo.endLensCursor;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [currFid, lensSessionProfileId, lensAccessToken]);
+      setLoading(true);
+      try {
+        const resp = await getAllFollowing({
+          lensAccessToken,
+          lensProfileId: lensSessionProfileId,
+          fid: currFid || undefined,
+          endFarcasterCursor: pageInfo.endFarcasterCursor
+            ? pageInfo.endFarcasterCursor
+            : undefined,
+          hasLensNextPage: pageInfo.hasLensNextPage,
+          hasFarcasterNextPage: pageInfo.hasFarcasterNextPage,
+          endTimestamp: allFollowingData.endTimestamp
+            ? allFollowingData.endTimestamp
+            : Date.now(),
+          endLensCursor: pageInfo.endLensCursor
+            ? pageInfo.endLensCursor
+            : undefined,
+        });
+        const {
+          data,
+          farcasterUserData,
+          pageInfo: respPageInfo,
+        } = resp.data.data;
+
+        if (data.length > 0) {
+          if (more) {
+            setAllFollowing((pre) => [...pre, ...data]);
+            allFollowingData.data = allFollowingData.data.concat(data);
+          } else {
+            setAllFollowing([...data]);
+            allFollowingData.data = [].concat(data);
+          }
+
+          const userDataObj = userDataObjFromArr(farcasterUserData);
+          setAllUserDataObj((pre) => ({ ...pre, ...userDataObj }));
+          allFollowingData.userDataObj = {
+            ...allFollowingData.userDataObj,
+            ...userDataObj,
+          };
+        }
+        setPageInfo(respPageInfo);
+        allFollowingData.pageInfo = respPageInfo;
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currFid, lensSessionProfileId, lensAccessToken, pageInfo]
+  );
 
   return {
     allFollowing,
@@ -90,10 +103,12 @@ export function resetAllFollowingData() {
   allFollowingData.data = [];
   allFollowingData.pageInfo = {
     hasNextPage: true,
+    hasLensNextPage: true,
+    hasFarcasterNextPage: true,
+    endFarcasterCursor: '',
+    endLensCursor: '',
   };
   allFollowingData.userData = {};
   allFollowingData.userDataObj = {};
-  allFollowingData.endFarcasterCursor = '';
-  allFollowingData.endLensCursor = '';
   allFollowingData.endTimestamp = 0;
 }

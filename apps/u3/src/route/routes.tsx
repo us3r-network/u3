@@ -212,8 +212,8 @@ export const routes: CutomRouteObject[] = [
       } as CutomRouteObject,
       {
         path: 'all', // social allPlatform
-        element: loadContainerElement('social/Social'),
-        key: RouteKey.social,
+        element: loadContainerElement('social/SocialAll'),
+        key: RouteKey.socialAll,
         children: [
           {
             path: '', // default trending

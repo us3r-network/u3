@@ -19,6 +19,9 @@ export default function useLensTrending() {
   const [pageInfo, setPageInfo] = useState(lensTrendingData.pageInfo);
   const lensAccessToken = useLensAccessToken();
   const loadLensTrending = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getLensTrending({
@@ -47,7 +50,7 @@ export default function useLensTrending() {
     } finally {
       setLoading(false);
     }
-  }, [lensAccessToken]);
+  }, [lensAccessToken, pageInfo]);
 
   return {
     loading,

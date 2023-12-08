@@ -26,6 +26,9 @@ export default function useFarcasterWhatsnew() {
     useState(farcasterWhatsnewData.userDataObj);
 
   const loadFarcasterWhatsnew = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getFarcasterWhatsnew(
@@ -65,7 +68,7 @@ export default function useFarcasterWhatsnew() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageInfo]);
 
   return {
     loading,

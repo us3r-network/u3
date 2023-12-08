@@ -59,6 +59,8 @@ export function getAllFollowing({
   endFarcasterCursor,
   endTimestamp,
   fid,
+  hasLensNextPage,
+  hasFarcasterNextPage,
 }: {
   pageSize?: number;
   endLensCursor?: string;
@@ -67,6 +69,8 @@ export function getAllFollowing({
   endFarcasterCursor?: string;
   endTimestamp?: number;
   fid?: number;
+  hasLensNextPage?: boolean;
+  hasFarcasterNextPage?: boolean;
 }) {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-all/following`,
@@ -80,6 +84,8 @@ export function getAllFollowing({
       lensProfileId,
       endFarcasterCursor,
       endTimestamp,
+      hasLensNextPage,
+      hasFarcasterNextPage,
       fid,
     },
   });

@@ -22,6 +22,9 @@ export default function useLensFollowing() {
   const [pageInfo, setPageInfo] = useState(lensFollowingData.pageInfo);
   const lensAccessToken = useLensAccessToken();
   const loadLensFollowing = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getLensFollowing({
@@ -45,7 +48,7 @@ export default function useLensFollowing() {
     } finally {
       setLoading(false);
     }
-  }, [lensSessionProfileId, lensAccessToken]);
+  }, [lensSessionProfileId, lensAccessToken, pageInfo]);
 
   return {
     loadLensFollowing,

@@ -12,6 +12,7 @@ import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
 import useLogin from 'src/hooks/shared/useLogin';
 import {
+  EndMsgContainer,
   LoadingMoreWrapper,
   MainCenter,
   NoLoginStyled,
@@ -39,7 +40,7 @@ export default function SocialFarcaster() {
     if (!isLogin) return;
     if (!isConnectedFarcaster) return;
     loadFarcasterFollowing();
-  }, [loadFarcasterFollowing, mounted, isLogin, isConnectedFarcaster]);
+  }, [mounted, isLogin, isConnectedFarcaster]);
 
   if (!isLogin) {
     return <NoLoginStyled />;
@@ -60,12 +61,13 @@ export default function SocialFarcaster() {
         if (farcasterFollowingLoading) return;
         loadFarcasterFollowing();
       }}
-      hasMore={farcasterFollowingPageInfo.hasNextPage || true}
+      hasMore={farcasterFollowingPageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >
