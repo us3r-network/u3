@@ -53,6 +53,7 @@ export const EVENT_SHARE_TITLE = 'Great event in U3!';
 
 export const CONTACT_US_LINKS = {
   feedback: 'https://u3xyz.canny.io/',
+  farcaster: 'https://warpcast.com/liang',
   telegram: 'https://t.me/us3rnetwork',
   twitter: 'https://twitter.com/getus3r',
   discord: 'https://discord.gg/yDgkH4Es',

@@ -80,10 +80,10 @@ const PreviewIframeLoadingBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #1b1e23;
 `;
 const PreviewIframe = styled.iframe`
   width: 100%;
   height: 100%;
   border: none;
+  background: #fff;
 `;

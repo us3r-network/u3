@@ -16,8 +16,14 @@ import LinkSvgUrl from '../../common/assets/svgs/link.svg';
 type LinkLogoProps = StyledComponentPropsWithRef<'img'> & {
   logo: string;
   link: string;
+  errorLogo?: string;
 };
-export default function LinkLogo({ logo, link, ...otherProps }: LinkLogoProps) {
+export default function LinkLogo({
+  logo,
+  link,
+  errorLogo,
+  ...otherProps
+}: LinkLogoProps) {
   const [url, setUrl] = useState(platformLogoReplaceMap[logo] || logo);
   useEffect(() => {
     if (logo) {
@@ -36,7 +42,11 @@ export default function LinkLogo({ logo, link, ...otherProps }: LinkLogoProps) {
     <PlatformImg
       src={url}
       onError={(e) => {
-        e.currentTarget.src = LinkSvgUrl;
+        if (errorLogo && e.currentTarget.src !== errorLogo) {
+          e.currentTarget.src = errorLogo;
+        } else {
+          e.currentTarget.src = LinkSvgUrl;
+        }
       }}
       {...otherProps}
     />
