@@ -7,16 +7,17 @@ export type LinkCardData = {
   logo: string;
   name: string;
   url: string;
+  errorLogo?: string;
 };
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: LinkCardData;
 }
 export default function LinkCard({ data, ...wrapperProps }: Props) {
-  const { logo, name, url } = data;
+  const { logo, name, url, errorLogo } = data;
   return (
     <CardWrapper {...wrapperProps}>
       <CardBody>
-        <Logo logo={logo} link={url} />
+        <Logo logo={logo} link={url} errorLogo={errorLogo} />
         <Right>
           <Name>{name}</Name>
           <Url>{url}</Url>
