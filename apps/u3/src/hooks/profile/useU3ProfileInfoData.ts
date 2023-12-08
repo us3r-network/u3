@@ -6,7 +6,6 @@ import {
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
-import useLazyQueryFidWithAddress from '../social/farcaster/useLazyQueryFidWithAddress';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { getAddressWithDidPkh } from '../../utils/shared/did';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
@@ -21,6 +20,7 @@ import {
   getName,
   getOwnedByAddress,
 } from '../../utils/social/lens/profile';
+import useFetchFidWithFname from '../social/farcaster/useFetchFidWithFname';
 
 export default function useU3ProfileInfoData({
   did,
@@ -57,20 +57,21 @@ export default function useU3ProfileInfoData({
   const {
     lensBioLinks: web3LensBioLinks,
     fcastBioLinks: web3FcastBioLinks,
-    recommendAddress,
     loading: web3BioLoading,
   } = useBioLinkListWithWeb3Bio(identity);
 
+  const fname = web3FcastBioLinks?.[0]?.identity;
   const {
-    fetch: fetchFid,
     fid: fetchedFid,
+    fetchFid,
     loading: fidLoading,
-  } = useLazyQueryFidWithAddress(
-    web3FcastBioLinks?.[0]?.address || recommendAddress
-  );
+  } = useFetchFidWithFname();
+
   useEffect(() => {
-    fetchFid();
-  }, [fetchFid]);
+    if (fname) {
+      fetchFid(fname);
+    }
+  }, [fetchFid, fname]);
 
   const { farcasterUserData } = useFarcasterCtx();
 

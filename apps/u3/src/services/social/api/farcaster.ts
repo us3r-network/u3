@@ -332,3 +332,12 @@ export function getFarcasterTrending({
     },
   });
 }
+
+export function getFarcasterUserInfoWithFname(
+  fname
+): AxiosPromise<ApiResp<FarcasterUserData>> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo/fname/${fname}`,
+    method: 'get',
+  });
+}
