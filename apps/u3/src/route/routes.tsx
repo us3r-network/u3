@@ -212,8 +212,8 @@ export const routes: CutomRouteObject[] = [
       } as CutomRouteObject,
       {
         path: 'all', // social allPlatform
-        element: loadContainerElement('social/Social'),
-        key: RouteKey.social,
+        element: loadContainerElement('social/SocialAll'),
+        key: RouteKey.socialAll,
         children: [
           {
             path: '', // default trending
@@ -266,8 +266,8 @@ export const routes: CutomRouteObject[] = [
           },
           {
             path: 'following',
-            element: loadContainerElement('social/SocialLensTrending'),
-            key: RouteKey.socialLensTrending,
+            element: loadContainerElement('social/SocialLensFollowing'),
+            key: RouteKey.socialLensFollowing,
           } as CutomRouteObject,
           {
             path: 'whatsnew',

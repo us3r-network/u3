@@ -2,9 +2,8 @@ import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 
-import { getTrendingFeeds } from 'src/services/social/api/feeds';
-import { SocialPlatform } from 'src/services/social/types';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
+import { getAllWhatsnew } from 'src/services/social/api/all';
 
 const allWhatsnewData = {
   data: [],
@@ -14,6 +13,7 @@ const allWhatsnewData = {
   userData: {},
   userDataObj: {},
   endFarcasterCursor: '',
+  endTimestamp: Date.now(),
   endLensCursor: '',
 };
 
@@ -27,9 +27,12 @@ export default function useAllWhatsnew() {
   );
   const lensAccessToken = useLensAccessToken();
   const loadAllWhatsnew = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
-      const resp = await getTrendingFeeds({
+      const resp = await getAllWhatsnew({
         lensAccessToken,
         endFarcasterCursor: allWhatsnewData.endFarcasterCursor
           ? allWhatsnewData.endFarcasterCursor
@@ -37,8 +40,9 @@ export default function useAllWhatsnew() {
         endLensCursor: allWhatsnewData.endLensCursor
           ? allWhatsnewData.endLensCursor
           : undefined,
-        platforms: [SocialPlatform.Farcaster, SocialPlatform.Lens],
-        keyword: '',
+        endTimestamp: allWhatsnewData.endTimestamp
+          ? allWhatsnewData.endTimestamp
+          : Date.now(),
       });
       if (resp.data.code !== 0) {
         toast.error('fail to get farcaster whatsnew');
@@ -70,6 +74,7 @@ export default function useAllWhatsnew() {
       setPageInfo(whatsnewPageInfo);
       allWhatsnewData.pageInfo = whatsnewPageInfo;
       allWhatsnewData.endFarcasterCursor = whatsnewPageInfo.endFarcasterCursor;
+      allWhatsnewData.endTimestamp = whatsnewPageInfo.endTimestamp;
       allWhatsnewData.endLensCursor = whatsnewPageInfo.endLensCursor;
     } catch (err) {
       console.error(err);
@@ -77,7 +82,7 @@ export default function useAllWhatsnew() {
     } finally {
       setLoading(false);
     }
-  }, [lensAccessToken]);
+  }, [lensAccessToken, pageInfo]);
 
   return {
     loading,

@@ -59,3 +59,13 @@ export const LoadingMoreWrapper = styled.div`
   align-items: center;
   margin-top: 20px;
 `;
+
+export const EndMsgContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+  font-size: 14px;
+  color: #718096;
+`;

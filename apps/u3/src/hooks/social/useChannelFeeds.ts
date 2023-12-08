@@ -71,7 +71,8 @@ export default function useChannelFeeds() {
       const resp = await getFarcasterChannelFeeds({
         channelId: channel.channel_id,
         pageSize: FEEDS_PAGE_SIZE,
-        endFarcasterCursor: pageInfo?.endFarcasterCursor,
+        endCursor: pageInfo?.endCursor,
+        endTimestamp: pageInfo?.endTimestamp,
       });
       if (resp.data.code !== 0) {
         console.error('loadChannelCasts error');

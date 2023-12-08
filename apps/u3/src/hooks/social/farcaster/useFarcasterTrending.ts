@@ -26,6 +26,9 @@ export default function useFarcasterTrending() {
     useState(farcasterTrendingData.userDataObj);
 
   const loadFarcasterTrending = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
       const resp = await getFarcasterTrending({
@@ -73,7 +76,7 @@ export default function useFarcasterTrending() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageInfo]);
 
   return {
     loading,

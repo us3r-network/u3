@@ -1,9 +1,15 @@
+import { useEffect } from 'react';
 import ChannelItem from 'src/components/social/farcaster/ChannelItem';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import styled from 'styled-components';
 
 export default function SocialTrends() {
   const { channels } = useFarcasterCtx();
+
+  useEffect(() => {
+    document.getElementById('social-scroll-wrapper')?.scrollTo(0, 0);
+  }, []);
+
   if (channels.length === 0) {
     return null;
   }

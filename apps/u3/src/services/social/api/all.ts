@@ -18,17 +18,26 @@ export const FEEDS_PAGE_SIZE = 25;
 
 export const FEEDS_SCROLL_THRESHOLD = `${FEEDS_PAGE_SIZE * 200}px`;
 
-export function getLensTrending({
+// for now use farcaster trending
+export function getAllTrending() {
+  throw new Error('Not implemented');
+}
+
+export function getAllWhatsnew({
   pageSize,
   endLensCursor,
   lensAccessToken,
+  endFarcasterCursor,
+  endTimestamp,
 }: {
   pageSize?: number;
   endLensCursor?: string;
   lensAccessToken?: string;
+  endFarcasterCursor?: string;
+  endTimestamp?: number;
 }) {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-lens/trending`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-all/whatsnew`,
     method: 'get',
     headers: {
       'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
@@ -36,23 +45,35 @@ export function getLensTrending({
     params: {
       pageSize: pageSize || FEEDS_PAGE_SIZE,
       endLensCursor,
+      endFarcasterCursor,
+      endTimestamp,
     },
   });
 }
 
-export function getLensFollowing({
+export function getAllFollowing({
   pageSize,
   endLensCursor,
   lensProfileId,
   lensAccessToken,
+  endFarcasterCursor,
+  endTimestamp,
+  fid,
+  hasLensNextPage,
+  hasFarcasterNextPage,
 }: {
   pageSize?: number;
   endLensCursor?: string;
   lensAccessToken?: string;
   lensProfileId?: string;
+  endFarcasterCursor?: string;
+  endTimestamp?: number;
+  fid?: number;
+  hasLensNextPage?: boolean;
+  hasFarcasterNextPage?: boolean;
 }) {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-lens/following`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-all/following`,
     method: 'get',
     headers: {
       'Lens-Access-Token': lensAccessToken ? `Bearer ${lensAccessToken}` : '',
@@ -61,11 +82,11 @@ export function getLensFollowing({
       pageSize: pageSize || FEEDS_PAGE_SIZE,
       endLensCursor,
       lensProfileId,
+      endFarcasterCursor,
+      endTimestamp,
+      hasLensNextPage,
+      hasFarcasterNextPage,
+      fid,
     },
   });
-}
-
-// for now use trending api
-export function getLensWhatsnew() {
-  throw new Error('not implemented');
 }

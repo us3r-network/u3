@@ -18,6 +18,8 @@ export type FarcasterNotification = {
 };
 
 export type FarcasterPageInfo = {
+  endTimestamp: number;
+  endCursor: string;
   endFarcasterCursor: string;
   hasNextPage: boolean;
 };
@@ -28,34 +30,11 @@ export type FarcasterUserData = {
   value: string;
 };
 
-export function getFarcasterFeeds({
-  endFarcasterCursor,
-  pageSize,
-}: {
-  endFarcasterCursor?: string;
-  pageSize?: number;
-}): AxiosPromise<
-  ApiResp<{
-    data: { data: FarCast; platform: 'farcaster' }[];
-    farcasterUserData: FarcasterUserData[];
-    pageInfo: FarcasterPageInfo;
-  }>
-> {
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcasts`,
-    method: 'get',
-    params: {
-      endFarcasterCursor,
-      pageSize,
-    },
-  });
-}
-
 export function getFarcasterUserInfo(
   fids: number[]
 ): AxiosPromise<ApiResp<FarcasterUserData[]>> {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/userinfo`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo`,
     method: 'get',
     params: {
       fids,
@@ -81,7 +60,7 @@ export function getFarcasterCastInfo(
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/cast/${hash}`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/cast/${hash}`,
     method: 'get',
     params: {
       endFarcasterCursor,
@@ -190,7 +169,7 @@ export function getFarcasterFollow(fid: string | number): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/follow`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/follow`,
     method: 'get',
     params: {
       fid,
@@ -211,7 +190,7 @@ export function getFarcasterLinks(
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/links`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/links`,
     method: 'get',
     params: {
       fid,
@@ -241,11 +220,13 @@ export function getFarcasterRecommendedProfile(
 
 export function getFarcasterChannelFeeds({
   channelId,
-  endFarcasterCursor,
+  endTimestamp,
+  endCursor,
   pageSize,
 }: {
   channelId: string;
-  endFarcasterCursor?: string;
+  endTimestamp?: number;
+  endCursor?: string;
   pageSize?: number;
 }): AxiosPromise<
   ApiResp<{
@@ -255,22 +236,25 @@ export function getFarcasterChannelFeeds({
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/channel`,
     method: 'get',
     params: {
       name: '',
       channelId,
-      endFarcasterCursor,
+      endTimestamp,
+      endCursor,
       pageSize,
     },
   });
 }
 
-export function getFarcasterChannelTrends(
-  limit = 500
-): AxiosPromise<ApiResp<{ parent_url: string; count: string }[]>> {
+export function getFarcasterChannelTrends(limit = 500): AxiosPromise<
+  ApiResp<{
+    data: { parent_url: string; rootParentUrl: string; count: string }[];
+  }>
+> {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/channel/trends`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/channel/trends`,
     method: 'get',
     params: {
       limit,
@@ -329,6 +313,48 @@ export function getFarcasterTrending({
       startIndex: start,
       endIndex: end,
       ...(least ? { least } : {}),
+    },
+  });
+}
+
+export function getFarcasterWhatsnew(endTimestamp: number, endCursor?: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/whatsnew`,
+    method: 'get',
+    params: {
+      endCursor: endCursor ?? '',
+      endTimestamp,
+    },
+  });
+}
+
+export function getFarcasterFollowing(
+  fid: number,
+  endTimestamp: number,
+  endCursor?: string
+) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/following`,
+    method: 'get',
+    params: {
+      fid,
+      endCursor: endCursor ?? '',
+      endTimestamp,
+    },
+  });
+}
+
+export function getFnames(fid: number): AxiosPromise<
+  ApiResp<{
+    username: string;
+    type: number;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/fnames`,
+    method: 'get',
+    params: {
+      fid,
     },
   });
 }

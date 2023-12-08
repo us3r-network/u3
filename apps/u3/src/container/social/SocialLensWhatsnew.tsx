@@ -6,7 +6,7 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { LoadingMoreWrapper, PostList } from './CommonStyles';
+import { EndMsgContainer, LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialLensWhatsnew() {
   const [parentId] = useState('social-lens-whatsnew');
@@ -21,7 +21,7 @@ export default function SocialLensWhatsnew() {
     if (mounted) {
       loadLensTrending();
     }
-  }, [mounted, loadLensTrending]);
+  }, [mounted]);
 
   return (
     <InfiniteScroll
@@ -31,12 +31,13 @@ export default function SocialLensWhatsnew() {
         if (loading) return;
         loadLensTrending();
       }}
-      hasMore={pageInfo.hasNextPage || true}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >

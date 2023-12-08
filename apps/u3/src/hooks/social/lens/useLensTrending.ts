@@ -1,8 +1,7 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
-import { SocialPlatform } from 'src/services/social/types';
-import { getTrendingFeeds } from 'src/services/social/api/feeds';
+import { getLensTrending } from 'src/services/social/api/lens';
 
 const lensTrendingData = {
   data: [],
@@ -20,13 +19,15 @@ export default function useLensTrending() {
   const [pageInfo, setPageInfo] = useState(lensTrendingData.pageInfo);
   const lensAccessToken = useLensAccessToken();
   const loadLensTrending = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
-      const resp = await getTrendingFeeds({
+      const resp = await getLensTrending({
         endLensCursor: lensTrendingData.endLensCursor
           ? lensTrendingData.endLensCursor
           : undefined,
-        platforms: [SocialPlatform.Lens],
         lensAccessToken,
       });
       if (resp.data.code !== 0) {
@@ -49,7 +50,7 @@ export default function useLensTrending() {
     } finally {
       setLoading(false);
     }
-  }, [lensAccessToken]);
+  }, [lensAccessToken, pageInfo]);
 
   return {
     loading,

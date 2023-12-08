@@ -9,6 +9,7 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import FCast from 'src/components/social/farcaster/FCast';
 import Loading from 'src/components/common/loading/Loading';
@@ -17,10 +18,24 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useAllFollowing from 'src/hooks/social/useAllFollowing';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
-import { LoadingMoreWrapper, PostList } from './CommonStyles';
+import { useLensCtx } from 'src/contexts/social/AppLensCtx';
+
+import {
+  EndMsgContainer,
+  LoadingMoreWrapper,
+  MainCenter,
+  NoLoginStyled,
+  PostList,
+} from './CommonStyles';
+import useLogin from '../../hooks/shared/useLogin';
+import FollowingDefault from '../../components/social/FollowingDefault';
 
 export default function SocialAllFollowing() {
   const [parentId] = useState('social-all-following');
+  const { isLogin } = useLogin();
+  const { sessionProfile: lensSessionProfile } = useLensCtx();
+  const { id: lensSessionProfileId } = lensSessionProfile || {};
+  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
@@ -30,8 +45,21 @@ export default function SocialAllFollowing() {
 
   useEffect(() => {
     if (!mounted) return;
+    if (!isLogin) return;
+    if (!isConnectedFarcaster && !lensSessionProfileId) return;
     loadAllFollowing();
-  }, [loadAllFollowing, mounted]);
+  }, [mounted, isLogin, isConnectedFarcaster, lensSessionProfileId]);
+
+  if (!isLogin) {
+    return <NoLoginStyled />;
+  }
+  if (!isConnectedFarcaster && !lensSessionProfileId) {
+    return (
+      <MainCenter>
+        <FollowingDefault farcaster lens />
+      </MainCenter>
+    );
+  }
 
   return (
     <InfiniteScroll
@@ -39,14 +67,15 @@ export default function SocialAllFollowing() {
       dataLength={allFollowing.length}
       next={() => {
         if (loading) return;
-        loadAllFollowing();
+        loadAllFollowing(true);
       }}
-      hasMore={pageInfo.hasNextPage || true}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >

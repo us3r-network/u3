@@ -74,6 +74,7 @@ export default function Embed({
               <img
                 src={img.url}
                 alt=""
+                loading="lazy"
                 key={img.url}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -155,7 +156,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     >
       <div>
         <div>
-          <img src={userData.img} alt="" />
+          <img src={userData.img} alt="" loading="lazy" />
           <div>
             <span className="username">{userData.username}</span>
             <span className="uname">
@@ -167,7 +168,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
         </div>
         <p>{data.cast.text}</p>
       </div>
-      {castImg && <img src={castImg} alt="" />}
+      {castImg && <img src={castImg} alt="" loading="lazy" />}
     </PostCardCastWrapper>
   );
 }
@@ -181,7 +182,7 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
         e.stopPropagation();
       }}
     >
-      <img src={item.image} alt="" />
+      <img src={item.image} alt="" loading="lazy" />
       <div>
         <h4>{item.collection}</h4>
         <button

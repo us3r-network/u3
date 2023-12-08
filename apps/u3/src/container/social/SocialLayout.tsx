@@ -24,7 +24,6 @@ import { SocialPlatform } from '../../services/social/types';
 import SocialPlatformChoice from '../../components/social/SocialPlatformChoice';
 import AddPost from '../../components/social/AddPost';
 import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
-import SearchInput from '../../components/common/input/SearchInput';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
@@ -138,15 +137,14 @@ function SocialLayout() {
 
         {!isMobile && (
           <RightWrapper>
-            <SearchInput
+            {/* <SearchInput
               placeholder="Search"
               onlyOnKeyDown
               onSearch={onSearch}
-            />
+            /> */}
             <div className="recommend">
               <SocialWhoToFollow />
               <TrendChannel />
-              <br />
             </div>
           </RightWrapper>
         )}
@@ -184,12 +182,14 @@ const HomeWrapper = styled.div`
 `;
 const MainWrapper = styled.div`
   width: 100%;
-  height: calc(100vh - 96px);
+  height: calc(100vh - 70px);
   overflow: scroll;
   width: 100%;
   display: flex;
   justify-content: center;
   gap: 40px;
+  padding-bottom: 24px;
+  box-sizing: border-box;
 `;
 export const HeaderWrapper = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
@@ -225,9 +225,11 @@ const LeftWrapper = styled(MainLeft)`
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 24px;
-  height: calc(100vh - 96px - 40px);
+  top: 0px;
+  padding: 24px 0;
+  height: 100%;
   overflow: scroll;
+  box-sizing: border-box;
 `;
 
 const RightWrapper = styled(MainRight)`
@@ -235,9 +237,11 @@ const RightWrapper = styled(MainRight)`
   flex-direction: column;
   gap: 20px;
   position: sticky;
-  top: 24px;
+  top: 0px;
+  padding: 24px 0;
   overflow: scroll;
-  height: calc(100vh - 96px - 40px);
+  height: 100%;
+  box-sizing: border-box;
   > .recommend {
     display: flex;
     flex-direction: column;
