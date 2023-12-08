@@ -332,3 +332,16 @@ export function getFarcasterTrending({
     },
   });
 }
+
+export function getFarcasterUserInfoWithFname(fname): AxiosPromise<{
+  fid: number;
+  name: string;
+  owner: string;
+  type: string;
+  signature: string;
+}> {
+  return axios({
+    url: `https://api.farcaster.u3.xyz/v1/userNameProofByName?name=${fname}`,
+    method: 'get',
+  });
+}
