@@ -78,8 +78,8 @@ const CardWrapper = styled(CardBase)`
     grid-row-start: 1;
     grid-row-end: 3;
     .title {
-      font-size: 30px;
-      line-height: 36px;
+      font-size: 18px;
+      line-height: 24px;
       -webkit-line-clamp: 5;
 
       ${isMobile &&
