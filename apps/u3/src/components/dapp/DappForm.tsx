@@ -1,14 +1,8 @@
+/* eslint-disable react/require-default-props */
 import styled from 'styled-components';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-} from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useMemo } from 'react';
 import InputBase from '../common/input/InputBase';
 import { ButtonPrimary, ButtonPrimaryLine } from '../common/button/ButtonBase';
 import Switch from '../common/switch/Switch';
@@ -266,7 +260,7 @@ export default forwardRef(function DappForm(
         <FormValueBox>
           <ProjectAsyncSelect
             disabled={formik.values.isCreateProject}
-            placeholder="Select"
+            // placeholder="Select"
             value={formik.values.uniProjectId}
             onChange={(value) => formik.setFieldValue('uniProjectId', value)}
           />
