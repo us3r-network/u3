@@ -89,5 +89,6 @@ module.exports = {
     'jsx-a11y/no-static-element-interactions': 'off',
     //浏览器对 media 已有良好的支持
     'jsx-a11y/media-has-caption': 'off',
+    'import/extensions': 0,
   },
 };
