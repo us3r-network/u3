@@ -6,7 +6,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { Embed, UserDataType, makeCastAdd } from '@farcaster/hub-web';
+import { UserDataType, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
@@ -45,28 +45,25 @@ import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
 
-export type ShareData = {
-  shareLink: string;
-  shareLinkDefaultPlatform: SocialPlatform;
-  shareLinkDefaultText: string;
-  shareLinkEmbedTitle: string;
-  shareLinkEmbedImg?: string;
-  shareLinkDomain?: string;
+export type EmbedWebsiteLink = {
+  link: string;
+  showPreview?: boolean;
+  previewTitle?: string;
+  previewImg?: string;
+  previewDomain?: string;
 };
 export default function AddPostForm({
   onSuccess,
   channel,
-  isShareForm,
-  shareData,
-  embeds,
   selectedPlatforms,
+  defaultText,
+  embedWebsiteLink,
 }: {
   onSuccess?: () => void;
   channel?: Channel;
-  isShareForm?: boolean;
-  shareData?: ShareData;
-  embeds?: Embed[];
   selectedPlatforms?: SocialPlatform[];
+  defaultText?: string;
+  embedWebsiteLink?: EmbedWebsiteLink;
 }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
   const {
@@ -167,13 +164,16 @@ export default function AddPostForm({
       parentUrl = ch?.parent_url;
     }
     try {
-      const uploadedLinks = await uploadSelectedImages();
+      const uploadedImgs = await uploadSelectedImages();
+      const embedWebsiteLinks = embedWebsiteLink?.link
+        ? [{ url: embedWebsiteLink?.link }]
+        : [];
       // eslint-disable-next-line no-underscore-dangle
       const cast = (
         await makeCastAdd(
           {
-            text: isShareForm ? `${text} ${shareData.shareLink}` : text,
-            embeds: [...uploadedLinks, ...(embeds || [])],
+            text,
+            embeds: [...uploadedImgs, ...embedWebsiteLinks],
             embedsDeprecated: [],
             mentions: [],
             mentionsPositions: [],
@@ -198,8 +198,7 @@ export default function AddPostForm({
     channel,
     channelValue,
     farcasterUserFid,
-    isShareForm,
-    shareData,
+    embedWebsiteLink,
   ]);
 
   const handleSubmitToLens = useCallback(async () => {
@@ -211,7 +210,7 @@ export default function AddPostForm({
           (item) => ({ item: item.url, type: item.mimeType } as MediaImage)
         ) || [];
       await createPostToLens(
-        isShareForm ? `${text} ${shareData.shareLink}` : text,
+        embedWebsiteLink ? `${text} ${embedWebsiteLink.link}` : text,
         attachments
       );
       toast.success('successfully posted to lens');
@@ -219,7 +218,7 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createPostToLens, isShareForm, shareData]);
+  }, [text, createPostToLens, embedWebsiteLink]);
 
   const handleSubmit = useCallback(async () => {
     if (!text) {
@@ -250,17 +249,12 @@ export default function AddPostForm({
   }, [channel]);
 
   useEffect(() => {
-    if (isShareForm) {
-      setText(shareData.shareLinkDefaultText || '');
-      setPlatforms(new Set([shareData.shareLinkDefaultPlatform]));
-    }
-  }, [isShareForm, shareData]);
+    setText(defaultText || '');
+  }, [defaultText]);
 
   useEffect(() => {
-    if (!isShareForm) {
-      setPlatforms(new Set(selectedPlatforms || []));
-    }
-  }, [isShareForm, selectedPlatforms]);
+    setPlatforms(new Set(selectedPlatforms || []));
+  }, [selectedPlatforms]);
 
   return (
     <Wrapper>
@@ -364,11 +358,11 @@ export default function AddPostForm({
             )}
           </ContentWrapper>
         </UserPostWrapepr>
-        {isShareForm && shareData && (
+        {embedWebsiteLink?.showPreview && (
           <ShareEmbedCard
-            domain={shareData.shareLinkDomain}
-            title={shareData.shareLinkEmbedTitle}
-            img={shareData?.shareLinkEmbedImg || ''}
+            domain={embedWebsiteLink.previewDomain}
+            title={embedWebsiteLink.previewTitle}
+            img={embedWebsiteLink?.previewImg || ''}
           />
         )}
         <FooterWrapper>
