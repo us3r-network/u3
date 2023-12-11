@@ -276,7 +276,7 @@ export default forwardRef(function EventForm(
         <FormField>
           <FormLabel htmlFor="project">Project</FormLabel>
           <ProjectAsyncSelect
-            placeholder="Filter by Project"
+            // placeholder="Filter by Project"
             value={formik.values.project}
             onChange={(value) => formik.setFieldValue('project', value)}
           />
