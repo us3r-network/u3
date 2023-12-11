@@ -12,6 +12,7 @@ import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUs
 
 import ReplyModal from '../ReplyModal';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
+import { UserData } from '@/utils/social/farcaster/user-data';
 
 export default function FCastCommentPostModal({
   cast,
@@ -19,9 +20,11 @@ export default function FCastCommentPostModal({
   closeModal,
   castId,
   farcasterUserData,
+  farcasterUserDataObj,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   open: boolean;
   closeModal: (withInc?: boolean) => void;
   castId: CastId;
@@ -66,10 +69,15 @@ export default function FCastCommentPostModal({
     [text, encryptedSigner, closeModal, currFid]
   );
 
-  const userData = useFarcasterUserData({ fid: cast.fid, farcasterUserData });
+  const userData = useFarcasterUserData({
+    fid: cast.fid,
+    farcasterUserData,
+    farcasterUserDataObj,
+  });
   const currUserData = useFarcasterUserData({
     fid: `${currFid}`,
     farcasterUserData,
+    farcasterUserDataObj,
   });
 
   return (
