@@ -70,5 +70,8 @@ module.exports = {
       // };
       return config;
     },
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
 };
