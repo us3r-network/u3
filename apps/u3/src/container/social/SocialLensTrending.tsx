@@ -29,7 +29,7 @@ export default function SocialLensTrending() {
     if (mounted) {
       loadLensTrending();
     }
-  }, [mounted, loadLensTrending]);
+  }, [mounted]);
 
   return (
     <InfiniteScroll
@@ -39,7 +39,7 @@ export default function SocialLensTrending() {
         if (loading) return;
         loadLensTrending();
       }}
-      hasMore={pageInfo.hasNextPage || true}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />

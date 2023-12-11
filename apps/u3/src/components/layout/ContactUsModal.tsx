@@ -4,6 +4,7 @@ import feedbackIconUrl from '../common/assets/platform/pngs/feedback.png';
 import telegramIconUrl from '../common/assets/platform/pngs/telegram.png';
 import twitterIconUrl from '../common/assets/platform/pngs/twitter.png';
 import discordIconUrl from '../common/assets/platform/pngs/discord.png';
+import warpcastIconUrl from '../common/assets/platform/svgs/warpcast.svg';
 import { CONTACT_US_LINKS } from '../../constants';
 
 const links = [
@@ -11,6 +12,11 @@ const links = [
     link: CONTACT_US_LINKS.feedback,
     iconUrl: feedbackIconUrl,
     name: 'Feedback',
+  },
+  {
+    link: CONTACT_US_LINKS.farcaster,
+    iconUrl: warpcastIconUrl,
+    name: 'Farcaster',
   },
   {
     link: CONTACT_US_LINKS.discord,

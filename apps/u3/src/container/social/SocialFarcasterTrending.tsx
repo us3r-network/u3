@@ -15,7 +15,7 @@ import Loading from 'src/components/common/loading/Loading';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useFarcasterTrending from 'src/hooks/social/farcaster/useFarcasterTrending';
-import { LoadingMoreWrapper, PostList } from './CommonStyles';
+import { EndMsgContainer, LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialFarcasterTrending() {
   const [parentId] = useState('social-farcaster-trending');
@@ -35,12 +35,7 @@ export default function SocialFarcasterTrending() {
     if (mounted) {
       loadFarcasterTrending();
     }
-  }, [mounted, loadFarcasterTrending]);
-
-  const hasMore =
-    farcasterTrendingPageInfo?.hasNextPage !== undefined
-      ? farcasterTrendingPageInfo?.hasNextPage
-      : true;
+  }, [mounted]);
 
   return (
     <InfiniteScroll
@@ -50,12 +45,13 @@ export default function SocialFarcasterTrending() {
         if (farcasterTrendingLoading) return;
         loadFarcasterTrending();
       }}
-      hasMore={hasMore}
+      hasMore={farcasterTrendingPageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >

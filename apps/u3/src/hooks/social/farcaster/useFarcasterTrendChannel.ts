@@ -6,6 +6,7 @@ export default function useFarcasterTrendChannel() {
   const [trendChannel, setTrendChannel] = useState<
     {
       parent_url: string;
+      rootParentUrl: string;
       count: string;
     }[]
   >([]);
@@ -16,22 +17,26 @@ export default function useFarcasterTrendChannel() {
       console.error(resp.data.msg);
       return;
     }
-    setTrendChannel(resp.data.data);
+    setTrendChannel(resp.data.data.data);
   };
 
   const channels = useMemo(() => {
     return FarcasterChannelData.map((c) => {
-      const trend = trendChannel.find((t) => t.parent_url === c.parent_url);
-      if (!trend) return null;
+      const trend = trendChannel.find(
+        (t) => t.parent_url === c.parent_url || t.rootParentUrl === c.parent_url
+      );
+      if (!trend)
+        return {
+          ...c,
+          count: '0',
+        };
       return {
         ...trend,
         ...c,
       };
-    })
-      .filter((c) => c !== null)
-      .sort((a, b) => {
-        return Number(b.count) - Number(a.count);
-      });
+    }).sort((a, b) => {
+      return Number(b.count) - Number(a.count);
+    });
   }, [trendChannel]);
 
   useEffect(() => {

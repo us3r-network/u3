@@ -22,7 +22,7 @@ export const getContentShareUrl = (id: string | number) => {
 };
 
 export const getLinkShareUrl = (url: string) => {
-  return `${SHARE_DOMAIN}/news/links/all/${Buffer.from(url, 'utf8').toString(
+  return `${SHARE_DOMAIN}/b/links/all/${Buffer.from(url, 'utf8').toString(
     'base64'
   )}`;
 };

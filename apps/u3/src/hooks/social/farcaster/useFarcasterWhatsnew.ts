@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
-import { getTrendingFeeds } from 'src/services/social/api/feeds';
-import { SocialPlatform } from 'src/services/social/types';
+import { getFarcasterWhatsnew } from 'src/services/social/api/farcaster';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
 const farcasterWhatsnewData = {
@@ -11,7 +10,8 @@ const farcasterWhatsnewData = {
   },
   userData: {},
   userDataObj: {},
-  index: '0',
+  endTimestamp: Date.now(),
+  endCursor: '',
 };
 
 export default function useFarcasterWhatsnew() {
@@ -26,28 +26,23 @@ export default function useFarcasterWhatsnew() {
     useState(farcasterWhatsnewData.userDataObj);
 
   const loadFarcasterWhatsnew = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
     setLoading(true);
     try {
-      const resp = await getTrendingFeeds({
-        endFarcasterCursor:
-          farcasterWhatsnewData.index === '0'
-            ? ''
-            : farcasterWhatsnewData.index,
-        platforms: [SocialPlatform.Farcaster],
-        keyword: '',
-      });
+      const resp = await getFarcasterWhatsnew(
+        farcasterWhatsnewData.endTimestamp,
+        farcasterWhatsnewData.endCursor
+      );
       if (resp.data.code !== 0) {
-        toast.error('fail to get farcaster whatsnew');
+        toast.error(`fail to get farcaster whatsnew ${resp.data.msg}`);
         setLoading(false);
         return;
       }
       const { data } = resp.data;
 
-      const {
-        data: casts,
-        farcasterUserData,
-        pageInfo: whatsnewPageInfo,
-      } = data;
+      const { casts, farcasterUserData, pageInfo: whatsnewPageInfo } = data;
 
       if (casts.length > 0) {
         setFarcasterWhatsnew((pre) => [...pre, ...casts]);
@@ -65,14 +60,15 @@ export default function useFarcasterWhatsnew() {
 
       setPageInfo(whatsnewPageInfo);
       farcasterWhatsnewData.pageInfo = whatsnewPageInfo;
-      farcasterWhatsnewData.index = whatsnewPageInfo.endFarcasterCursor;
+      farcasterWhatsnewData.endCursor = whatsnewPageInfo.endCursor;
+      farcasterWhatsnewData.endTimestamp = whatsnewPageInfo.endTimestamp;
     } catch (err) {
       console.error(err);
-      toast.error('fail to get  farcaster whatsnew');
+      toast.error('fail to get farcaster whatsnew');
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [pageInfo]);
 
   return {
     loading,

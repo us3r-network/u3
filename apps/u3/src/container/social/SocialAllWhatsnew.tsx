@@ -16,7 +16,7 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useAllWhatsnew from 'src/hooks/social/useAllWhatsnew';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { LoadingMoreWrapper, PostList } from './CommonStyles';
+import { EndMsgContainer, LoadingMoreWrapper, PostList } from './CommonStyles';
 
 export default function SocialAllWhatsnew() {
   const [parentId] = useState('social-all-whatsnew');
@@ -31,10 +31,7 @@ export default function SocialAllWhatsnew() {
     if (mounted) {
       loadAllWhatsnew();
     }
-  }, [mounted, loadAllWhatsnew]);
-
-  const hasMore =
-    pageInfo?.hasNextPage !== undefined ? pageInfo?.hasNextPage : true;
+  }, [mounted]);
 
   return (
     <InfiniteScroll
@@ -44,12 +41,13 @@ export default function SocialAllWhatsnew() {
         if (loading) return;
         loadAllWhatsnew();
       }}
-      hasMore={hasMore}
+      hasMore={pageInfo.hasNextPage}
       loader={
         <LoadingMoreWrapper>
           <Loading />
         </LoadingMoreWrapper>
       }
+      endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
       scrollThreshold={FEEDS_SCROLL_THRESHOLD}
       scrollableTarget="social-scroll-wrapper"
     >
