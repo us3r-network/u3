@@ -9,13 +9,17 @@ import PostReply from '../PostReply';
 import useLogin from '../../../hooks/shared/useLogin';
 import useFarcasterCurrFid from '../../../hooks/social/farcaster/useFarcasterCurrFid';
 
+import { UserData } from '@/utils/social/farcaster/user-data';
+
 export default function FCastComment({
   cast,
   farcasterUserData,
+  farcasterUserDataObj,
   openFarcasterQR,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -47,6 +51,7 @@ export default function FCastComment({
       <FCastCommentPostModal
         cast={cast}
         farcasterUserData={farcasterUserData}
+        farcasterUserDataObj={farcasterUserDataObj}
         castId={castId}
         open={openComment}
         closeModal={(withInc) => {
