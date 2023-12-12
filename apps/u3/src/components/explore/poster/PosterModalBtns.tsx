@@ -5,7 +5,7 @@ import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
 import { POSTER_SHARE_DOMAIN } from '../../../constants';
 import { SocialPlatform } from '../../../services/social/types';
 import useLogin from '../../../hooks/shared/useLogin';
-import { getMetaDescription } from '../../../utils/shared/html-meta';
+import { getMetaTitle } from '../../../utils/shared/html-meta';
 
 export default function PosterModalBtns({
   shareDisabled,
@@ -41,8 +41,8 @@ export default function PosterModalBtns({
           }
           openShareLinkModal({
             shareLink: POSTER_SHARE_DOMAIN,
-            shareLinkDefaultText: getMetaDescription(),
-            shareLinkEmbedTitle: getMetaDescription(),
+            shareLinkDefaultText: '',
+            shareLinkEmbedTitle: getMetaTitle(),
             shareLinkDefaultPlatform: SocialPlatform.Farcaster,
             shareLinkEmbedImg: posterImg,
             shareLinkDomain: POSTER_SHARE_DOMAIN,
