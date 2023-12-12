@@ -19,7 +19,7 @@ export default function HighScoreDapps({
   return (
     <Wrapper>
       <Title
-        text="👍 High Score Dapps"
+        text="👍 Highly Rated Dapps"
         viewAllAction={() => {
           navigate(`/dapp-store`);
         }}
