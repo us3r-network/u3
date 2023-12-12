@@ -30,12 +30,16 @@ import {
 import useLogin from '../../hooks/shared/useLogin';
 import FollowingDefault from '../../components/social/FollowingDefault';
 
+export const AllFirst = {
+  done: false,
+};
+
 export default function SocialAllFollowing() {
   const [parentId] = useState('social-all-following');
   const { isLogin } = useLogin();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
-  const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
+  const { currFid } = useFarcasterCtx();
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
@@ -44,16 +48,20 @@ export default function SocialAllFollowing() {
     useAllFollowing();
 
   useEffect(() => {
+    if (AllFirst.done) return;
     if (!mounted) return;
     if (!isLogin) return;
-    if (!isConnectedFarcaster && !lensSessionProfileId) return;
-    loadAllFollowing();
-  }, [mounted, isLogin, isConnectedFarcaster, lensSessionProfileId]);
+    if (!currFid && !lensSessionProfileId) return;
+
+    loadAllFollowing().finally(() => {
+      AllFirst.done = true;
+    });
+  }, [mounted, isLogin, currFid, lensSessionProfileId]);
 
   if (!isLogin) {
     return <NoLoginStyled />;
   }
-  if (!isConnectedFarcaster && !lensSessionProfileId) {
+  if (!currFid && !lensSessionProfileId) {
     return (
       <MainCenter>
         <FollowingDefault farcaster lens />

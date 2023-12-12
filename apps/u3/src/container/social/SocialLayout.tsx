@@ -26,6 +26,7 @@ import AddPost from '../../components/social/AddPost';
 import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
+import { AllFirst } from './SocialAllFollowing';
 
 export default function SocialLayoutContainer() {
   return (
@@ -51,7 +52,7 @@ function SocialLayout() {
     moreLoading: channelMoreLoading,
     loadMoreFeeds: loadChannelMoreFeeds,
     pageInfo: channelPageInfo,
-    farcasterUserData: channelFarcasterUserData,
+    farcasterUserDataObj: channelFarcasterUserDataObj,
   } = useChannelFeeds();
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
@@ -73,6 +74,7 @@ function SocialLayout() {
     return () => {
       resetFarcasterFollowingData();
       resetAllFollowingData();
+      AllFirst.done = false;
       resetLensFollowingData();
     };
   }, []);
@@ -129,7 +131,7 @@ function SocialLayout() {
                 channelFirstLoading,
                 channelMoreLoading,
                 loadChannelMoreFeeds,
-                channelFarcasterUserData,
+                channelFarcasterUserDataObj,
               }}
             />
           </MainOutletWrapper>
