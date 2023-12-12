@@ -9,3 +9,10 @@ export const getMetaContentByName = (name: string) => {
 export const getMetaDescription = () => {
   return getMetaContentByName('description');
 };
+export const getMetaTitle = () => {
+  const titleEl = document.querySelector('html > head > title');
+  if (titleEl) {
+    return titleEl.textContent;
+  }
+  return '';
+};

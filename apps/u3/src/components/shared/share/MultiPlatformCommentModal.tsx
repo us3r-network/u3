@@ -23,7 +23,6 @@ export default function MultiPlatformCommentModal({
   closeModal: () => void;
 }) {
   const { commentLinkModalState } = useGlobalModalsCtx();
-  const embedLink = [{ url: commentLinkModalState?.link }];
   return (
     <ModalContainer
       open={open}
@@ -35,8 +34,10 @@ export default function MultiPlatformCommentModal({
         <CloseBtn onClick={closeModal} />
         <AddPostForm
           onSuccess={closeModal}
-          embeds={embedLink}
           selectedPlatforms={[SocialPlatform.Farcaster]}
+          embedWebsiteLink={{
+            link: commentLinkModalState?.link,
+          }}
         />
       </ModalBody>
     </ModalContainer>

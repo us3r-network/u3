@@ -5,6 +5,9 @@
     "pretty": true,
     "rootDir": ".",
     "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "outDir": "./dist",
     "types": ["node"],
     "lib": ["es2017", "dom", "es2021"],
@@ -35,5 +38,9 @@
   },
   "files": ["../../typings/cssmodule.d.ts", "../../typings/image.d.ts"],
   "exclude": ["node_modules"],
-  "include": ["src"]
+  "include": [
+    "src",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }
