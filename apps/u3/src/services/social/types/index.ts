@@ -38,8 +38,9 @@ export type FarCast = {
   fid: string;
   hash: { type: 'Buffer'; data: Uint8Array };
   id: string;
-  mentions: string[];
+  mentions: number[];
   mentions_positions: string[];
+  mentionsPositions: number[];
   parent_fid: string | null;
   parent_hash: { type: 'Buffer'; data: Uint8Array } | null;
   parent_url: string | null;

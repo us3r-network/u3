@@ -14,6 +14,7 @@ import Loading from '../../components/common/loading/Loading';
 import FarcasterCommentForm from '../../components/social/farcaster/FarcasterCommentForm';
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
 import { LoadingWrapper } from './CommonStyles';
+import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
@@ -22,9 +23,7 @@ export default function FarcasterPostDetail() {
   const { openFarcasterQR } = useFarcasterCtx();
   const [comments, setComments] =
     useState<{ data: FarCast; platform: 'farcaster' }[]>();
-  const [farcasterUserData, setFarcasterUserData] = useState<{
-    [key: string]: { type: number; value: string }[];
-  }>({});
+  const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
   const [mounted, setMounted] = useState(false);
 
   const loadCastInfo = useCallback(async () => {
@@ -39,16 +38,10 @@ export default function FarcasterPostDetail() {
         cast: castTmp,
         comments: commentsTmp,
       } = resp.data.data;
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      farcasterUserDataTmp.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
+
+      const userDataObj = userDataObjFromArr(farcasterUserDataTmp);
       setCast(castTmp);
-      setFarcasterUserData((pre) => ({ ...pre, ...temp }));
+      setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
       setComments(commentsTmp);
     } catch (error) {
       // eslint-disable-next-line no-console
@@ -84,7 +77,8 @@ export default function FarcasterPostDetail() {
         <FCast
           cast={cast}
           openFarcasterQR={openFarcasterQR}
-          farcasterUserData={farcasterUserData}
+          farcasterUserData={{}}
+          farcasterUserDataObj={farcasterUserDataObj}
           isDetail
           showMenuBtn
         />
@@ -103,7 +97,8 @@ export default function FarcasterPostDetail() {
                 key={key}
                 cast={item.data}
                 openFarcasterQR={openFarcasterQR}
-                farcasterUserData={farcasterUserData}
+                farcasterUserData={{}}
+                farcasterUserDataObj={farcasterUserDataObj}
               />
             );
           })}
