@@ -79,6 +79,7 @@ export type CutomRouteObject = RouteObject & {
   key: RouteKey;
   children?: Array<CutomRouteObject>;
   permissions?: RoutePermission[];
+  title?: string;
 };
 
 const loadContainerElement = (fileName: string): ReactNode => {
@@ -97,6 +98,7 @@ export const routes: CutomRouteObject[] = [
     path: '/',
     element: loadContainerElement('Explore'),
     key: RouteKey.home,
+    title: 'Explore',
   },
   // profile
   {
@@ -104,35 +106,41 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('profile/Profile'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
+    title: 'Profile',
   },
   {
     path: '/u/:user',
     element: loadContainerElement('profile/Profile'),
     key: RouteKey.profileByUser,
+    title: 'Profile',
   },
   {
     path: '/activity',
     element: loadContainerElement('Activity'),
     key: RouteKey.activity,
     permissions: [RoutePermission.login],
+    title: 'Activity',
   },
   {
     path: '/asset',
     element: loadContainerElement('Asset'),
     key: RouteKey.asset,
     permissions: [RoutePermission.login],
+    title: 'Asset',
   },
   {
     path: '/gallery',
     element: loadContainerElement('Gallery'),
     key: RouteKey.gallery,
     permissions: [RoutePermission.login],
+    title: 'Gallery',
   },
   // news
   {
     path: '/b',
     element: loadContainerElement('news/NewsLayout'),
     key: RouteKey.newsLayout,
+    title: 'Browse',
     children: [
       {
         path: '',
@@ -204,6 +212,7 @@ export const routes: CutomRouteObject[] = [
     path: '/social',
     element: loadContainerElement('social/SocialLayout'),
     key: RouteKey.socialLayout,
+    title: 'Social',
     children: [
       {
         path: '',
@@ -330,11 +339,13 @@ export const routes: CutomRouteObject[] = [
     path: '/dapp-store',
     element: loadContainerElement('dapp/Dapps'),
     key: RouteKey.dappStore,
+    title: 'Explore Dapps',
   },
   {
     path: '/dapp-store/:id',
     element: loadContainerElement('dapp/Dapp'),
     key: RouteKey.dapp,
+    title: 'Dapp',
   },
   {
     path: '/dapp-store/create',

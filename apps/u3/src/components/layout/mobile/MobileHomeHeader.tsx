@@ -12,12 +12,13 @@ import { ReactComponent as LogoIconSvg } from '../../common/assets/imgs/logo-ico
 import LogoutConfirmModal from '../LogoutConfirmModal';
 import useLogin from '../../../hooks/shared/useLogin';
 import MobileLoginButton from './MobileLoginButton';
+import useRoute from '@/route/useRoute';
 
 export default function MobileHomeHeader() {
   const { logout } = useLogin();
   const navigate = useNavigate();
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
-
+  const { firstRouteMeta } = useRoute();
   return (
     <MobileHomeHeaderWrapper>
       <LogoBox onClick={() => navigate('/')}>
@@ -27,7 +28,7 @@ export default function MobileHomeHeader() {
 
         {/* <LogoText>Alpha</LogoText> */}
       </LogoBox>
-      <Title>U3.XYZ</Title>
+      <Title>{firstRouteMeta?.title || 'U3.XYZ'}</Title>
       <MobileLoginButton
         onLogout={() => {
           setOpenLogoutConfirm(true);
