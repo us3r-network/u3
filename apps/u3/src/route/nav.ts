@@ -57,12 +57,12 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  {
-    name: 'Apps',
-    activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
-    icon: React.createElement(DappSvg),
-    route: getRoute(RouteKey.dappStore),
-  },
+  // {
+  //   name: 'Apps',
+  //   activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
+  //   icon: React.createElement(DappSvg),
+  //   route: getRoute(RouteKey.dappStore),
+  // },
   // {
   //   name: 'Save',
   //   activeRouteKeys: [RouteKey.save],
