@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 09:46:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-04 13:04:21
+ * @LastEditTime: 2023-12-13 14:05:08
  * @Description: file description
  */
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
@@ -45,6 +45,7 @@ const TabWrapper = styled.div`
   overflow-x: scroll;
 `;
 const TabOptionItem = styled.div<{ isActive?: boolean }>`
+  padding: 0 10px;
   height: 100%;
   box-sizing: border-box;
   cursor: pointer;
