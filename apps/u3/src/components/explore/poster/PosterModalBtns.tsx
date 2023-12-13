@@ -12,7 +12,7 @@ export default function PosterModalBtns({
   posterImg,
   onClose,
 }: {
-  shareDisabled: boolean;
+  shareDisabled?: boolean;
   posterImg: string;
   onClose: () => void;
 }) {
