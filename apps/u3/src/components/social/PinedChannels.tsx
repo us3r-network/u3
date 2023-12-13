@@ -20,7 +20,7 @@ export default function PinedChannels() {
   if (!currFid) return null;
   return (
     <ContainerBox>
-      <h3>Pined trends</h3>
+      <h3>Pined topics</h3>
       {userChannels.map(({ parent_url }) => (
         <PinedChannelItem key={parent_url} parent_url={parent_url} />
       ))}

@@ -17,7 +17,7 @@ export function userDataObjFromArr(
   }[]
 ) {
   const temp: { [key: string]: UserData } = {};
-  dataArr.forEach((item) => {
+  (dataArr || []).forEach((item) => {
     let pfp = '';
     let display = '';
     let bio = '';

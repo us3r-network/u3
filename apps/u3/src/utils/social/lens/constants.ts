@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '@/constants';
+
 export const AVATAR = 'tr:w-300,h-300';
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -9,8 +11,7 @@ export const IPFS_GATEWAY = 'https://ipfs.io/ipfs/';
 
 export const ARWEAVE_GATEWAY = 'https://arweave.net/';
 
-// TODO: Do we need to create a service for uploading metadata to decentralized storage?
-export const METADATA_WORKER_URL = 'https://api-testnet.hey.xyz/metadata';
+export const METADATA_WORKER_URL = `${API_BASE_URL}/3r-lens/metadata`;
 
 // URLs
 export const STATIC_ASSETS_URL = 'https://static-assets.hey.xyz';

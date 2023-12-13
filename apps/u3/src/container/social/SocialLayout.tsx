@@ -26,6 +26,7 @@ import AddPost from '../../components/social/AddPost';
 import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
+import { AllFirst } from './SocialAllFollowing';
 
 export default function SocialLayoutContainer() {
   return (
@@ -51,7 +52,7 @@ function SocialLayout() {
     moreLoading: channelMoreLoading,
     loadMoreFeeds: loadChannelMoreFeeds,
     pageInfo: channelPageInfo,
-    farcasterUserData: channelFarcasterUserData,
+    farcasterUserDataObj: channelFarcasterUserDataObj,
   } = useChannelFeeds();
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
@@ -73,13 +74,14 @@ function SocialLayout() {
     return () => {
       resetFarcasterFollowingData();
       resetAllFollowingData();
+      AllFirst.done = false;
       resetLensFollowingData();
     };
   }, []);
 
   const titleElem = useMemo(() => {
     if (location.pathname.includes('social/trends')) {
-      return <SocialBackNav title="Trends" />;
+      return <SocialBackNav title="Topics" />;
     }
     if (location.pathname.includes('social/channel') && channelId) {
       return <SocialBackNav isChannel channelId={channelId} />;
@@ -129,7 +131,7 @@ function SocialLayout() {
                 channelFirstLoading,
                 channelMoreLoading,
                 loadChannelMoreFeeds,
-                channelFarcasterUserData,
+                channelFarcasterUserDataObj,
               }}
             />
           </MainOutletWrapper>

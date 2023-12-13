@@ -12,7 +12,6 @@ export default function CreatePosterBtn({
   ...layoutProps
 }: DailyPosterLayoutProps & { disabled?: boolean }) {
   const [open, setOpen] = useState(false);
-  const [posterImg, setPosterImg] = useState('');
   return (
     <>
       <Wrapper
@@ -25,8 +24,6 @@ export default function CreatePosterBtn({
       {DailyPosterModal && (
         <DailyPosterModal
           {...layoutProps}
-          posterImg={posterImg}
-          setPosterImg={setPosterImg}
           open={open}
           closeModal={() => setOpen(false)}
         />

@@ -11,9 +11,8 @@ export const lensUploadToArweave = async (data: any): Promise<string> => {
       },
       data,
     });
-
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    const { id }: { id: string } = upload?.data;
+    const resData = upload?.data?.data;
+    const { id }: { id: string } = resData || {};
 
     return `ar://${id}`;
   } catch (e: any) {

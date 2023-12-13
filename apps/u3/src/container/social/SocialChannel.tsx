@@ -17,7 +17,7 @@ export default function SocialChannel() {
     channelFirstLoading: firstLoading,
     channelMoreLoading: moreLoading,
     loadChannelMoreFeeds: loadMoreFeeds,
-    channelFarcasterUserData: farcasterUserData,
+    channelFarcasterUserDataObj: farcasterUserDataObj,
 
     postScroll,
     setPostScroll,
@@ -78,7 +78,8 @@ export default function SocialChannel() {
                     key={key}
                     cast={data}
                     openFarcasterQR={openFarcasterQR}
-                    farcasterUserData={farcasterUserData}
+                    farcasterUserData={{}}
+                    farcasterUserDataObj={farcasterUserDataObj}
                     showMenuBtn
                     cardClickAction={(e) => {
                       if (channel?.channel_id)

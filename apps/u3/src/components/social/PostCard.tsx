@@ -91,7 +91,7 @@ export default function PostCard({
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   return (
-    <PostCardWrapper {...wrapperProps}>
+    <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>
         <PostCardUserInfo data={data} />
         {showMenuBtn && (

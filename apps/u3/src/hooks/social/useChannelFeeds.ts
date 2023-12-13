@@ -7,15 +7,15 @@ import {
 import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
 import { getChannel } from 'src/utils/social/farcaster/getChannel';
 
+import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
+
 export default function useChannelFeeds() {
   const { channelId } = useParams();
   const [mounted, setMounted] = useState(false);
 
   const [feeds, setFeeds] = useState<{ [key: string]: any[] }>({});
   const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
-  const [farcasterUserData, setFarcasterUserData] = useState<{
-    [key: string]: { type: number; value: string }[];
-  }>({});
+  const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
 
   const [firstLoading, setFirstLoading] = useState(false);
   const [moreLoading, setMoreLoading] = useState(false);
@@ -44,20 +44,13 @@ export default function useChannelFeeds() {
         [channel.channel_id]: resp.data.data.data,
       }));
       setPageInfo(resp.data.data.pageInfo);
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      resp.data.data.farcasterUserData?.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
-      setFarcasterUserData((pre) => ({ ...pre, ...temp }));
+      const userDataObj = userDataObjFromArr(resp.data.data.farcasterUserData);
+      setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
     } catch (error) {
       console.error(error);
       setFeeds((prev) => ({ ...prev, [channel.channel_id]: [] }));
       setPageInfo(undefined);
-      setFarcasterUserData({});
+      setFarcasterUserDataObj({});
     } finally {
       setFirstLoading(false);
     }
@@ -86,15 +79,8 @@ export default function useChannelFeeds() {
         ],
       }));
       setPageInfo(resp.data.data.pageInfo);
-      const temp: { [key: string]: { type: number; value: string }[] } = {};
-      resp.data.data.farcasterUserData?.forEach((item) => {
-        if (temp[item.fid]) {
-          temp[item.fid].push(item);
-        } else {
-          temp[item.fid] = [item];
-        }
-      });
-      setFarcasterUserData((pre) => ({ ...pre, ...temp }));
+      const userDataObj = userDataObjFromArr(resp.data.data.farcasterUserData);
+      setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
     } catch (error) {
       console.error(error);
     } finally {
@@ -123,6 +109,6 @@ export default function useChannelFeeds() {
     channel,
     feeds: channelFeeds,
     pageInfo,
-    farcasterUserData,
+    farcasterUserDataObj,
   };
 }
