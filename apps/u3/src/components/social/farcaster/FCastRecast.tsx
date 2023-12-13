@@ -7,9 +7,9 @@ import {
 } from '@farcaster/hub-web';
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import { LoopIcon, Pencil2Icon } from '@radix-ui/react-icons';
 
 import { FarCast } from '../../../services/social/types';
-// import { useFarcasterReactionCast } from '../hooks/farcaster/useFarcaster'
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 
 import {
@@ -17,18 +17,22 @@ import {
   FARCASTER_WEB_CLIENT,
 } from '../../../constants/farcaster';
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
-import useFarcasterCurrFid from '../../../hooks/social/farcaster/useFarcasterCurrFid';
-// import { getCurrFid } from '../../../utils/farsign-utils';
-import PostReport from '../PostRepost';
 import useLogin from '../../../hooks/shared/useLogin';
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 export default function FCastRecast({
   cast,
-  farcasterUserData,
   openFarcasterQR,
 }: {
   cast: FarCast;
-  farcasterUserData: { [key: string]: { type: number; value: string }[] };
   openFarcasterQR: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -142,9 +146,9 @@ export default function FCastRecast({
   const castId: CastId = useFarcasterCastId({ cast });
 
   return (
-    <PostReport
+    <Repost
       reposted={recasts.includes(`${currFid}`)}
-      totalReposts={recastCount}
+      repostCount={recastCount}
       repostAction={() => {
         if (!isLoginU3) {
           loginU3();
@@ -156,6 +160,55 @@ export default function FCastRecast({
           recast(castId);
         }
       }}
+      quoteAction={() => {
+        alert('todo');
+      }}
     />
+  );
+}
+
+function Repost({
+  reposted,
+  repostCount,
+  repostAction,
+  quoteAction,
+}: {
+  reposted: boolean;
+  repostCount: number;
+  repostAction: () => void;
+  quoteAction: () => void;
+}) {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <div
+          className={cn(
+            'flex items-center gap-2 text-xs text-[#718096] hover:text-[#00b171] hover:cursor-pointer',
+            reposted && 'text-[#00b171]'
+          )}
+        >
+          <LoopIcon className="w-3 h-3" />
+          <span>{repostCount}</span>
+        </div>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="min-w-fit bg-black text-white p-3 border-none">
+        <DropdownMenuGroup className="flex flex-col gap-2">
+          <DropdownMenuItem
+            className="gap-2 focus:bg-inherit focus:text-white hover:bg-inherit hover:cursor-pointer"
+            onClick={repostAction}
+          >
+            <LoopIcon className="w-3 h-3" />
+            <span>Repost</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="gap-2 focus:bg-inherit focus:text-white hover:bg-inherit hover:cursor-pointer"
+            onClick={quoteAction}
+          >
+            <Pencil2Icon className="w-3 h-3" />
+            <span>Quote</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

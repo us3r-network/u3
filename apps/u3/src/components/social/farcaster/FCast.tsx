@@ -187,11 +187,7 @@ export default function FCast({
             farcasterUserData={farcasterUserData}
             farcasterUserDataObj={farcasterUserDataObj}
           />
-          <FCastRecast
-            openFarcasterQR={openFarcasterQR}
-            cast={cast}
-            farcasterUserData={farcasterUserData}
-          />
+          <FCastRecast openFarcasterQR={openFarcasterQR} cast={cast} />
         </PostCardActionsWrapper>
         {!simpleLayout && (
           <div

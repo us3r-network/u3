@@ -12,6 +12,8 @@
     "Keypair",
     "Livepeer",
     "offchain",
+    "repost",
+    "reposted",
     "Signup",
     "unfollow",
     "unfollowed",
