@@ -11,6 +11,9 @@ const star = css`
   [data-common-element='InactivatedStarIcon'] {
     fill: #718096;
   }
+  [data-common-element='RatingStarSelect'] {
+    display: flex;
+  }
 `;
 
 export default css`
