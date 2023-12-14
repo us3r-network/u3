@@ -1,12 +1,13 @@
 import {
   Profile,
+  ProfileId,
   useFollow,
   useRecommendedProfiles,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { SocialButtonPrimary } from '../../components/social/button/SocialButton';
@@ -17,7 +18,6 @@ import useFarcasterRecommendedProfile from '../../hooks/social/farcaster/useFarc
 import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
 import useLogin from '../../hooks/shared/useLogin';
 import { SocialPlatform } from '../../services/social/types';
-import Loading from '../../components/common/loading/Loading';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
@@ -27,70 +27,80 @@ import { getBio, getHandle, getName } from '../../utils/social/lens/profile';
 
 const SUGGEST_NUM = 20;
 export default function SocialSuggestFollow() {
-  const [loading, setLoading] = useState(false);
-
   const { socialPlatform } = useOutletContext<{
     socialPlatform: SocialPlatform | '';
   }>();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
-  const { data: lensProfiles, loading: loadingLens } = useRecommendedProfiles({
-    for: lensProfile?.id,
-  });
-  const lensRecommendedProfiles: Profile[] = useMemo(
-    () =>
-      lensProfiles
-        ?.filter((profile) => !!getName(profile))
-        .slice(0, SUGGEST_NUM),
-    [lensProfiles, isLoginLens]
-  );
   const fid = Number(useFarcasterCurrFid());
-  const { farcasterRecommendedProfileData, loading: loadingFarcaster } =
-    useFarcasterRecommendedProfile({
-      fid,
-      num: SUGGEST_NUM,
-    });
-  if (loading) {
-    return (
-      <LoadingWrapper>
-        <Loading />
-      </LoadingWrapper>
-    );
-  }
-
-  useEffect(() => {
-    setLoading(loadingLens && loadingFarcaster);
-  }, [loadingLens, loadingFarcaster]);
-
   return (
-    isLoginU3 &&
-    (fid || isLoginLens) && (
+    isLoginU3 && (
       <Wrapper>
         <FollowListWrapper>
           {fid > 0 &&
             (socialPlatform === SocialPlatform.Farcaster ||
-              socialPlatform === '') &&
-            farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
-            farcasterRecommendedProfileData.recommendedFids.map(
-              (recommendedFid) => (
-                <FarcasterFollowItem
-                  key={recommendedFid}
-                  fid={recommendedFid}
-                  farcasterUserData={
-                    farcasterRecommendedProfileData.farcasterUserData
-                  }
-                />
-              )
-            )}
+              socialPlatform === '') && <FarcasterFollowList fid={fid} />}
           {isLoginLens &&
             (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
-            lensRecommendedProfiles &&
-            lensRecommendedProfiles.map((profile) => (
-              <LensFollowItem key={profile.id} profile={profile} />
-            ))}
+            lensProfile &&
+            lensProfile.id && <LensFollowList lensProfileId={lensProfile.id} />}
         </FollowListWrapper>
       </Wrapper>
     )
+  );
+}
+
+function LensFollowList({
+  lensProfileId,
+  num = SUGGEST_NUM,
+}: {
+  lensProfileId: ProfileId;
+  num?: number;
+}) {
+  const { data: lensProfiles } = useRecommendedProfiles({
+    for: lensProfileId,
+  });
+  const lensRecommendedProfiles: Profile[] = useMemo(
+    () => lensProfiles?.filter((profile) => !!getName(profile)).slice(0, num),
+    [lensProfiles]
+  );
+
+  return (
+    <ListWrapper>
+      {lensRecommendedProfiles &&
+        lensRecommendedProfiles.map((profile) => (
+          <LensFollowItem key={profile.id} profile={profile} />
+        ))}
+    </ListWrapper>
+  );
+}
+
+function FarcasterFollowList({
+  fid,
+  num = SUGGEST_NUM,
+}: {
+  fid: number;
+  num?: number;
+}) {
+  const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
+    fid,
+    num,
+  });
+  return (
+    <ListWrapper>
+      {farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
+        farcasterRecommendedProfileData.recommendedFids.map(
+          (recommendedFid) => (
+            <FarcasterFollowItem
+              key={recommendedFid}
+              fid={recommendedFid}
+              farcasterUserData={
+                farcasterRecommendedProfileData.farcasterUserData
+              }
+            />
+          )
+        )}
+    </ListWrapper>
   );
 }
 
@@ -232,11 +242,20 @@ const FollowListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   /* gap: 20px; */
-  border: 1px solid #718096;
+  /* border: 1px solid #718096; */
   border-radius: 20px;
   background-color: #212228;
   > :not(:first-child) {
     border-top: 1px solid #718096;
+  }
+`;
+const ListWrapper = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  > :not(:first-child) {
+    border-top: 1px solid #39424c;
   }
 `;
 const FollowItemWrapper = styled.div`
@@ -309,11 +328,4 @@ const FollowedText = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: grey;
-`;
-const LoadingWrapper = styled.div`
-  width: 600px;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;

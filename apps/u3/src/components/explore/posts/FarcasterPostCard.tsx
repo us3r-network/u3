@@ -6,13 +6,13 @@ import {
   FarCast,
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
-  SocialPlatform,
 } from '../../../services/social/types';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import PostCard, { PostCardData } from './PostCard';
 import ImgPostCard, { ImgPostCardData } from './ImgPostCard';
 import { getEmbeds, isImg } from '../../../utils/social/farcaster/getEmbeds';
 import { getFarcasterEmbedMetadata } from '../../../services/social/api/farcaster';
+import FarcasterImgUrl from '../../common/assets/pngs/farcaster.png';
 
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: FarCast;
@@ -57,6 +57,8 @@ export default function FarcasterPostCard({
 
   const recReason = channel?.name ? `#${channel?.name}` : undefined;
 
+  const platformIconUrl = channel?.image || FarcasterImgUrl;
+
   if (!data.text && (imgs.length > 0 || metadata.length > 0)) {
     let img = imgs[0]?.url;
     if (!img) {
@@ -79,8 +81,8 @@ export default function FarcasterPostCard({
         authorAvatar: userData.pfp,
         authorDisplayName: userData.display,
         authorHandle: userData.userName,
-        platform: SocialPlatform.Farcaster,
         recReason,
+        platformIconUrl,
       };
       return <ImgPostCard data={viewData} {...wrapperProps} />;
     }
@@ -91,8 +93,8 @@ export default function FarcasterPostCard({
     authorAvatar: userData.pfp,
     authorDisplayName: userData.display,
     authorHandle: userData.userName,
-    platform: SocialPlatform.Farcaster,
     recReason,
+    platformIconUrl,
   };
   return <PostCard data={viewData} {...wrapperProps} />;
 }

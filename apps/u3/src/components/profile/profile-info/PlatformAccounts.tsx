@@ -168,7 +168,7 @@ const Row = styled.div`
     position: relative;
     > .platform {
       position: absolute;
-      bottom: 2px;
+      bottom: 0px;
       left: 0px;
     }
   }

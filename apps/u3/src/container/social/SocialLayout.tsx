@@ -42,7 +42,6 @@ function SocialLayout() {
     id: '',
     top: 0,
   });
-  const [searchParams, setSearchParams] = useSearchParams();
   const { channelId } = useParams();
 
   const {
@@ -57,18 +56,6 @@ function SocialLayout() {
 
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
   const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
-
-  const onSearch = useCallback(
-    (value: string) => {
-      if (value) {
-        searchParams.set('keyword', value);
-      } else {
-        searchParams.delete('keyword');
-      }
-      setSearchParams(searchParams);
-    },
-    [searchParams, setSearchParams]
-  );
 
   useEffect(() => {
     return () => {

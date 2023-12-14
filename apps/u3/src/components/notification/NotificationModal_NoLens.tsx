@@ -12,6 +12,7 @@ import {
   NotificationListWraper,
   Title,
   Wrapper,
+  Body,
 } from './NotificationModal';
 import { LoadingMoreWrapper } from '../profile/FollowListWidgets';
 
@@ -22,55 +23,57 @@ export default function NotificationModalNoLens() {
 
   return (
     <Wrapper open={openNotificationModal}>
-      <Header>
-        <Title>Notifications</Title>
-        <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
-      </Header>
-      {notifications && notifications.length > 0 && (
-        <NotificationListWraper id="notification-list-wraper">
-          <InfiniteScroll
-            dataLength={notifications.length}
-            next={() => {
-              if (loading) return;
-              loadMore();
-            }}
-            hasMore={hasMore}
-            loader={
-              loading ? (
-                <LoadingMoreWrapper>
-                  <Loading scale={0.3} />
-                </LoadingMoreWrapper>
-              ) : null
-            }
-            scrollableTarget="notification-list-wraper"
-            scrollThreshold="200px"
-            endMessage="No More Notifications!"
-            style={{
-              color: '#718096',
-              textAlign: 'center',
-              lineHeight: '32px',
-              fontSize: '14px',
-            }}
-          >
-            <NotificationList>
-              {notifications.map((notification) => {
-                if ('message_hash' in notification) {
-                  return (
-                    <FarcasterNotificationItem
-                      notification={notification}
-                      farcasterUserData={farcasterUserData}
-                      key={Buffer.from(notification.message_hash).toString(
-                        'hex'
-                      )}
-                    />
-                  );
-                }
-                return null;
-              })}
-            </NotificationList>
-          </InfiniteScroll>
-        </NotificationListWraper>
-      )}
+      <Body>
+        <Header>
+          <Title>Notifications</Title>
+          <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
+        </Header>
+        {notifications && notifications.length > 0 && (
+          <NotificationListWraper id="notification-list-wraper">
+            <InfiniteScroll
+              dataLength={notifications.length}
+              next={() => {
+                if (loading) return;
+                loadMore();
+              }}
+              hasMore={hasMore}
+              loader={
+                loading ? (
+                  <LoadingMoreWrapper>
+                    <Loading scale={0.3} />
+                  </LoadingMoreWrapper>
+                ) : null
+              }
+              scrollableTarget="notification-list-wraper"
+              scrollThreshold="200px"
+              endMessage="No More Notifications!"
+              style={{
+                color: '#718096',
+                textAlign: 'center',
+                lineHeight: '32px',
+                fontSize: '14px',
+              }}
+            >
+              <NotificationList>
+                {notifications.map((notification) => {
+                  if ('message_hash' in notification) {
+                    return (
+                      <FarcasterNotificationItem
+                        notification={notification}
+                        farcasterUserData={farcasterUserData}
+                        key={Buffer.from(notification.message_hash).toString(
+                          'hex'
+                        )}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+              </NotificationList>
+            </InfiniteScroll>
+          </NotificationListWraper>
+        )}
+      </Body>
     </Wrapper>
   );
 }

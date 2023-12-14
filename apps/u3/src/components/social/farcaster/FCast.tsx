@@ -32,7 +32,7 @@ import FarcasterChannel from './FarcasterChannel';
 import { PostCardMenuBtn } from '../PostCardMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { getEmbeds } from '../../../utils/social/farcaster/getEmbeds';
-import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
+import FCastText from './FCastText';
 
 export default function FCast({
   cast,
@@ -144,7 +144,7 @@ export default function FCast({
       </PostCardHeaderWrapper>
 
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
-        <CardText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
+        <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
       </PostCardContentWrapper>
       {showMore && (
         <PostCardShowMoreWrapper>
@@ -190,7 +190,7 @@ export default function FCast({
           <FCastRecast
             openFarcasterQR={openFarcasterQR}
             cast={cast}
-            farcasterUserData={farcasterUserData}
+            farcasterUserDataObj={farcasterUserDataObj}
           />
         </PostCardActionsWrapper>
         {!simpleLayout && (
@@ -216,112 +216,4 @@ export default function FCast({
       </PostCardFooterWrapper>
     </PostCardWrapper>
   );
-}
-
-function CardText({
-  cast,
-  farcasterUserDataObj,
-}: {
-  cast: FarCast;
-  farcasterUserDataObj: { [key: string]: UserData } | undefined;
-}) {
-  const t = useMemo(() => {
-    const { text, mentions, mentionsPositions: indices } = cast;
-    const segments = splitAndInsert(
-      text,
-      indices || [],
-      (mentions || []).map((mention, index) => {
-        const mentionData = farcasterUserDataObj?.[mention];
-        if (!mentionData) return null;
-        const profileIdentity = mentionData.userName.endsWith('.eth')
-          ? mentionData.userName
-          : farcasterHandleToBioLinkHandle(mentionData.userName);
-        const link = (
-          <Link
-            to={`/u/${profileIdentity}`}
-            key={index}
-            className="inline text-main-accent hover:cursor-pointer hover:underline"
-          >
-            {`@${mentionData.userName}`}
-          </Link>
-        );
-        return (
-          <span className="override-nav inline-block" key={index}>
-            {link}
-          </span>
-        );
-      }),
-      (s, index) => {
-        return (
-          <span className="inline" key={index}>
-            {s.split(/(\s|\n)/).map((part, index_) => {
-              if (isURL(part, { require_protocol: false })) {
-                const link = !(
-                  part.toLowerCase().startsWith('https://') ||
-                  part.toLowerCase().startsWith('http://')
-                )
-                  ? `https://${part}`
-                  : part;
-                return (
-                  <a
-                    href={link}
-                    key={index_}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline text-main-accent hover:cursor-pointer hover:underline"
-                  >
-                    {part}
-                  </a>
-                );
-              }
-              return part;
-            })}
-          </span>
-        );
-      }
-    );
-    return segments;
-  }, [cast, farcasterUserDataObj]);
-
-  return (
-    <div
-      onClick={(e) => {
-        if (e.target instanceof HTMLAnchorElement) {
-          e.stopPropagation();
-        }
-      }}
-    >
-      {t}
-    </div>
-  );
-}
-
-function splitAndInsert(
-  input: string,
-  indices: number[],
-  insertions: JSX.Element[],
-  elementBuilder: (s: string, key: any) => JSX.Element
-) {
-  const result = [];
-  let lastIndex = 0;
-
-  indices.forEach((index, i) => {
-    result.push(
-      elementBuilder(
-        Buffer.from(input).slice(lastIndex, index).toString(),
-        `el-${i}`
-      )
-    );
-    result.push(insertions[i]);
-    lastIndex = index;
-  });
-
-  result.push(
-    elementBuilder(
-      Buffer.from(input).slice(lastIndex).toString(),
-      `el-${indices.length}`
-    )
-  ); // get remaining part of string
-
-  return result;
 }

@@ -162,9 +162,9 @@ function UserData({
     >
       <div>
         <div className="tint" />
-        <div className="pfp">
+        <div className="pfp relative">
           <img src={data.pfp} alt="" />
-          <div className="icon">
+          <div className="absolute bottom-0">
             <FarcasterIcon />
           </div>
         </div>

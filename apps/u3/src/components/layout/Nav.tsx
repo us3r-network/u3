@@ -81,6 +81,9 @@ export default function Nav({ onlyIcon }: Props) {
   return (
     <NavWrapper>
       {navs.map((item) => {
+        if (item?.component) {
+          return item.component;
+        }
         // feed submit 特殊处理
         if (item.key === 'feed-submit') {
           // 未登录不显示

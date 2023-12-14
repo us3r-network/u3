@@ -1,5 +1,5 @@
 import { StyledComponentPropsWithRef } from 'styled-components';
-import TwitterLineImg from '../assets/pngs/twitter.png';
+import TwitterLineImg from '../assets/platform/pngs/twitter.png';
 
 export function Twitter() {
   return (
