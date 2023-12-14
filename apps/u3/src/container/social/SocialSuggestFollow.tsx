@@ -18,7 +18,6 @@ import useFarcasterRecommendedProfile from '../../hooks/social/farcaster/useFarc
 import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
 import useLogin from '../../hooks/shared/useLogin';
 import { SocialPlatform } from '../../services/social/types';
-import Loading from '../../components/common/loading/Loading';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
@@ -34,66 +33,61 @@ export default function SocialSuggestFollow() {
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
   const fid = Number(useFarcasterCurrFid());
-  console.log(socialPlatform, fid, lensProfile);
   return (
     isLoginU3 && (
       <Wrapper>
-        {fid > 0 &&
-          (socialPlatform === SocialPlatform.Farcaster ||
-            socialPlatform === '') && <FarcasterFollowList fid={fid} />}
-        {isLoginLens &&
-          (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
-          lensProfile &&
-          lensProfile.id && <LensFollowList lensProfileId={lensProfile.id} />}
+        <FollowListWrapper>
+          {fid > 0 &&
+            (socialPlatform === SocialPlatform.Farcaster ||
+              socialPlatform === '') && <FarcasterFollowList fid={fid} />}
+          {isLoginLens &&
+            (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
+            lensProfile &&
+            lensProfile.id && <LensFollowList lensProfileId={lensProfile.id} />}
+        </FollowListWrapper>
       </Wrapper>
     )
   );
 }
 
-function LensFollowList({ lensProfileId }: { lensProfileId: ProfileId }) {
-  const { data: lensProfiles, loading } = useRecommendedProfiles({
+function LensFollowList({
+  lensProfileId,
+  num = SUGGEST_NUM,
+}: {
+  lensProfileId: ProfileId;
+  num?: number;
+}) {
+  const { data: lensProfiles } = useRecommendedProfiles({
     for: lensProfileId,
   });
   const lensRecommendedProfiles: Profile[] = useMemo(
-    () =>
-      lensProfiles
-        ?.filter((profile) => !!getName(profile))
-        .slice(0, SUGGEST_NUM),
+    () => lensProfiles?.filter((profile) => !!getName(profile)).slice(0, num),
     [lensProfiles]
   );
-  if (loading) {
-    return (
-      <LoadingWrapper>
-        <Loading />
-      </LoadingWrapper>
-    );
-  }
+
   return (
-    <FollowListWrapper>
+    <ListWrapper>
       {lensRecommendedProfiles &&
         lensRecommendedProfiles.map((profile) => (
           <LensFollowItem key={profile.id} profile={profile} />
         ))}
-    </FollowListWrapper>
+    </ListWrapper>
   );
 }
 
-function FarcasterFollowList({ fid }: { fid: number }) {
-  const { farcasterRecommendedProfileData, loading } =
-    useFarcasterRecommendedProfile({
-      fid,
-      num: SUGGEST_NUM,
-    });
-  if (loading) {
-    return (
-      <LoadingWrapper>
-        <Loading />
-      </LoadingWrapper>
-    );
-  }
-  console.log(fid, farcasterRecommendedProfileData);
+function FarcasterFollowList({
+  fid,
+  num = SUGGEST_NUM,
+}: {
+  fid: number;
+  num?: number;
+}) {
+  const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
+    fid,
+    num,
+  });
   return (
-    <FollowListWrapper>
+    <ListWrapper>
       {farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
         farcasterRecommendedProfileData.recommendedFids.map(
           (recommendedFid) => (
@@ -106,7 +100,7 @@ function FarcasterFollowList({ fid }: { fid: number }) {
             />
           )
         )}
-    </FollowListWrapper>
+    </ListWrapper>
   );
 }
 
@@ -248,11 +242,20 @@ const FollowListWrapper = styled.div`
   display: flex;
   flex-direction: column;
   /* gap: 20px; */
-  border: 1px solid #718096;
+  /* border: 1px solid #718096; */
   border-radius: 20px;
   background-color: #212228;
   > :not(:first-child) {
     border-top: 1px solid #718096;
+  }
+`;
+const ListWrapper = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  > :not(:first-child) {
+    border-top: 1px solid #39424c;
   }
 `;
 const FollowItemWrapper = styled.div`
@@ -325,11 +328,4 @@ const FollowedText = styled.div`
   font-size: 12px;
   font-weight: 500;
   color: grey;
-`;
-const LoadingWrapper = styled.div`
-  width: 600px;
-  height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;

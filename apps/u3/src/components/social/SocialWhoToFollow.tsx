@@ -1,5 +1,6 @@
 import {
   Profile,
+  ProfileId,
   useFollow,
   useRecommendedProfiles,
   useUnfollow,
@@ -28,26 +29,8 @@ export default function SocialWhoToFollow() {
   const navigate = useNavigate();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
-  // const { data: lensProfiles } = lensProfile?.id
-  //   ? useRecommendedProfiles({
-  //       for: lensProfile?.id,
-  //     })
-  //   : { data: undefined };
-  const { data: lensProfiles } = useRecommendedProfiles({
-    for: lensProfile?.id,
-  });
-  const lensRecommendedProfiles: Profile[] = useMemo(
-    () =>
-      lensProfiles
-        ?.filter((profile) => getName(profile) && getName(profile) !== '')
-        .slice(0, SUGGEST_NUM),
-    [lensProfiles, isLoginLens]
-  );
   const fid = Number(useFarcasterCurrFid());
-  const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
-    fid,
-    num: SUGGEST_NUM,
-  });
+
   return (
     isLoginU3 &&
     (fid || isLoginLens) && (
@@ -63,27 +46,67 @@ export default function SocialWhoToFollow() {
           </MoreButton>
         </Header>
         <FollowListWrapper>
-          {fid > 0 &&
-            farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
-            farcasterRecommendedProfileData.recommendedFids.map(
-              (recommendedFid) => (
-                <FarcasterFollowItem
-                  key={recommendedFid}
-                  fid={recommendedFid}
-                  farcasterUserData={
-                    farcasterRecommendedProfileData.farcasterUserData
-                  }
-                />
-              )
-            )}
-          {isLoginLens &&
-            lensRecommendedProfiles &&
-            lensRecommendedProfiles.map((profile) => (
-              <LensFollowItem key={profile.id} profile={profile} />
-            ))}
+          {fid > 0 && <FarcasterFollowList fid={fid} />}
+          {isLoginLens && lensProfile && lensProfile.id && (
+            <LensFollowList lensProfileId={lensProfile.id} num={1} />
+          )}
         </FollowListWrapper>
       </Wrapper>
     )
+  );
+}
+
+function LensFollowList({
+  lensProfileId,
+  num = SUGGEST_NUM,
+}: {
+  lensProfileId: ProfileId;
+  num?: number;
+}) {
+  const { data: lensProfiles } = useRecommendedProfiles({
+    for: lensProfileId,
+  });
+  const lensRecommendedProfiles: Profile[] = useMemo(
+    () => lensProfiles?.filter((profile) => !!getName(profile)).slice(0, num),
+    [lensProfiles]
+  );
+
+  return (
+    <ListWrapper>
+      {lensRecommendedProfiles &&
+        lensRecommendedProfiles.map((profile) => (
+          <LensFollowItem key={profile.id} profile={profile} />
+        ))}
+    </ListWrapper>
+  );
+}
+
+function FarcasterFollowList({
+  fid,
+  num = SUGGEST_NUM,
+}: {
+  fid: number;
+  num?: number;
+}) {
+  const { farcasterRecommendedProfileData } = useFarcasterRecommendedProfile({
+    fid,
+    num,
+  });
+  return (
+    <ListWrapper>
+      {farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
+        farcasterRecommendedProfileData.recommendedFids.map(
+          (recommendedFid) => (
+            <FarcasterFollowItem
+              key={recommendedFid}
+              fid={recommendedFid}
+              farcasterUserData={
+                farcasterRecommendedProfileData.farcasterUserData
+              }
+            />
+          )
+        )}
+    </ListWrapper>
   );
 }
 
@@ -263,6 +286,15 @@ const FollowListWrapper = styled.div`
     border-top: 1px solid #39424c;
   }
 `;
+const ListWrapper = styled.div`
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  > :not(:first-child) {
+    border-top: 1px solid #39424c;
+  }
+`;
 const FollowItemWrapper = styled.div`
   /* width: 100%; */
   display: flex;
@@ -328,9 +360,4 @@ const FollowBtn = styled.button`
   gap: 10px;
   font-size: 12px;
   font-weight: 700;
-`;
-const FollowedText = styled.div`
-  font-size: 12px;
-  font-weight: 500;
-  color: grey;
 `;
