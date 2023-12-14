@@ -1,13 +1,9 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import { useMemo } from 'react';
 
 import { isMobile } from 'react-device-detect';
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
-import { SocialPlatform } from '../../../services/social/types';
-import LensIcon from '../../common/icons/LensIcon';
-import FarcasterIcon from '../../common/icons/FarcasterIcon';
 
 export type ImgPostCardData = {
   img: string;
@@ -16,7 +12,7 @@ export type ImgPostCardData = {
   authorDisplayName: string;
   authorHandle: string;
   recReason?: string;
-  platform: SocialPlatform;
+  platformIconUrl?: string;
 };
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: ImgPostCardData;
@@ -29,18 +25,8 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
     authorDisplayName,
     authorHandle,
     recReason = '#High Effort',
-    platform,
+    platformIconUrl,
   } = data;
-  const PlatFormIcon = useMemo(() => {
-    switch (platform) {
-      case SocialPlatform.Lens:
-        return <LensIcon />;
-      case SocialPlatform.Farcaster:
-        return <FarcasterIcon />;
-      default:
-        return null;
-    }
-  }, [platform]);
   return (
     <CardWrapper {...wrapperProps}>
       <CardBody className="card-body">
@@ -63,9 +49,7 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
             {!isMobile && <RecReason>{recReason}</RecReason>}
           </BottomLeft>
 
-          {PlatFormIcon && (
-            <PlatformIconWrapper>{PlatFormIcon}</PlatformIconWrapper>
-          )}
+          {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
         </BottomWrapper>
       </CardBody>
     </CardWrapper>
@@ -269,17 +253,15 @@ const RecReason = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
-const PlatformIconWrapper = styled.div`
-  img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-    ${isMobile &&
-    `
+const PlatformIcon = styled.img`
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  ${isMobile &&
+  `
       width: 14px;
       height: 14px;
     `}
-  }
 `;
