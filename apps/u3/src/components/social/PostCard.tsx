@@ -249,7 +249,7 @@ export function PostCardUserInfo({
             {PlatFormIcon}
           </Name>
           <Handle>
-            @{data.handle} . {dayjs(data.createdAt).fromNow()}
+            @{data.handle} · {dayjs(data.createdAt).fromNow()}
           </Handle>
         </PostCardUserInfoCenter>
       </TooltipProfileNavigateLinkWrapper>

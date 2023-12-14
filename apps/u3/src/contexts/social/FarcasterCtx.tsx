@@ -7,6 +7,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +35,10 @@ import {
   BIOLINK_PLATFORMS,
   farcasterHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
+import {
+  UserData,
+  userDataObjFromArr,
+} from '@/utils/social/farcaster/user-data';
 
 export type Token = {
   token: string;
@@ -73,6 +78,7 @@ export type FarcasterChannel = {
 export interface FarcasterContextData {
   currFid: number | undefined;
   setCurrFid: React.Dispatch<React.SetStateAction<number | undefined>>;
+  currUserInfoObj: UserData | undefined;
   currUserInfo:
     | {
         [key: string]: { type: number; value: string }[];
@@ -254,6 +260,17 @@ export default function FarcasterProvider({
     }
   }, [session, profile, signer, currFid, currUserInfo]);
 
+  const currUserInfoObj = useMemo(() => {
+    if (!currUserInfo || !currUserInfo[currFid]) return undefined;
+    const data = userDataObjFromArr(
+      currUserInfo[currFid].map((item) => ({
+        fid: `${currFid}`,
+        ...item,
+      }))
+    );
+    return data[currFid];
+  }, [currFid, currUserInfo]);
+
   return (
     <FarcasterContext.Provider
       // TODO: fix this
@@ -263,6 +280,7 @@ export default function FarcasterProvider({
         setCurrFid,
         setSigner,
         currUserInfo,
+        currUserInfoObj,
         isConnected: signer.isConnected,
         token,
         encryptedSigner,
