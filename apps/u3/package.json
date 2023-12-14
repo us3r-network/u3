@@ -19,7 +19,7 @@
     "@reduxjs/toolkit": "^1.8.3",
     "@types/validator": "^13.11.7",
     "@us3r-network/auth-with-rainbowkit": "^0.2.1",
-    "@us3r-network/link": "0.3.0-alpha.0",
+    "@us3r-network/link": "0.3.0-alpha.1",
     "@us3r-network/profile": "0.6.0",
     "@xmtp/content-type-remote-attachment": "^1.1.2",
     "@xmtp/xmtp-js": "^11.1.1",

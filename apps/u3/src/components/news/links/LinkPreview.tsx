@@ -2,10 +2,10 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-05 18:35:31
+ * @LastEditTime: 2023-12-13 19:43:03
  * @Description: file description
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
@@ -16,6 +16,7 @@ import useFullScreen from '../../../hooks/shared/useFullScreen';
 import ButtonFullScreen from '../../common/button/ButtonFullScreen';
 import LinkContentBox, { Tab } from './LinkContentBox';
 import LinkPost from './LinkPost';
+import { SaveButton } from '@/components/shared/button/SaveButton';
 
 export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: LinkListItem;
@@ -31,7 +32,14 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   //     setTab('readerView');
   //   }
   // }, [data]);
-
+  const [linkParam, setLinkParam] = useState(null);
+  useEffect(() => {
+    setLinkParam({
+      url: data.url,
+      type: 'link',
+      title: data.metadata.title,
+    });
+  }, [data.url]);
   return (
     data && (
       <PreviewWrapper {...otherProps}>
@@ -39,6 +47,7 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
           <Header>
             <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
             <HeaderRight>
+              <SaveButton linkId={null} link={linkParam} />
               <LinkShareMenuBtn
                 shareLink={getLinkShareUrl(data.url)}
                 shareLinkDefaultText={LINK_SHARE_TITLE}

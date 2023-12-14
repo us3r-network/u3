@@ -33,6 +33,7 @@ import { PostCardMenuBtn } from '../PostCardMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { getEmbeds } from '../../../utils/social/farcaster/getEmbeds';
 import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
+import { SaveButton } from '@/components/shared/button/SaveButton';
 
 export default function FCast({
   cast,
@@ -95,6 +96,17 @@ export default function FCast({
     return following.includes(userData.fid);
   }, [isFollowing, following, userData.fid]);
 
+  const [linkParam, setLinkParam] = useState(null);
+  useEffect(() => {
+    setLinkParam({
+      url: getOfficialCastUrl(
+        userData.userName,
+        Buffer.from(castId.hash).toString('hex')
+      ),
+      type: 'link',
+      title: cast.text,
+    });
+  }, [castId.hash]);
   return (
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
@@ -194,11 +206,12 @@ export default function FCast({
           />
         </PostCardActionsWrapper>
         {!simpleLayout && (
-          <div
+          <PostCardActionsWrapper
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
+            <SaveButton linkId={null} link={linkParam} />
             <PostShareMenuBtn
               offialUrl={getOfficialCastUrl(
                 userData.userName,
@@ -211,7 +224,7 @@ export default function FCast({
               shareLinkEmbedTitle={cast.text}
               popoverConfig={{ placement: 'top end', offset: 0 }}
             />
-          </div>
+          </PostCardActionsWrapper>
         )}
       </PostCardFooterWrapper>
     </PostCardWrapper>
