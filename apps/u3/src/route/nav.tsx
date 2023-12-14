@@ -6,13 +6,16 @@
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
+import { isMobile } from 'react-device-detect';
 import { ReactComponent as CompassSvg } from './svgs/compass.svg';
 import { ReactComponent as NewsSvg } from './svgs/news.svg';
 import { ReactComponent as SocialSvg } from './svgs/social.svg';
 import { ReactComponent as DappSvg } from './svgs/dapp.svg';
 import { ReactComponent as BookmarkSvg } from './svgs/bookmark.svg';
+import { ReactComponent as BellSvg } from './svgs/bell.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
+import NotificationButton from '@/components/layout/NotificationButton';
 
 export type CustomNavObject = {
   name: string;
@@ -21,6 +24,7 @@ export type CustomNavObject = {
   children?: CustomNavObject[];
   key?: string;
   route?: CutomRouteObject;
+  component?: JSX.Element;
 };
 export const navs: CustomNavObject[] = [
   {
@@ -93,10 +97,15 @@ export const navs: CustomNavObject[] = [
   //   icon: React.createElement(ImageSvg),
   //   route: getRoute(RouteKey.gallery),
   // },
-  // {
-  //   name: 'notification',
-  //   activeRouteKeys: [RouteKey.notification],
-  //   icon: React.createElement(BellSvg),
-  //   route: getRoute(RouteKey.notification),
-  // },
+  ...(isMobile
+    ? []
+    : [
+        {
+          name: 'notifications',
+          activeRouteKeys: [RouteKey.notification],
+          icon: React.createElement(BellSvg),
+          route: getRoute(RouteKey.notification),
+          component: <NotificationButton />,
+        },
+      ]),
 ];
