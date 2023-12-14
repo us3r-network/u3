@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-07 15:31:30
+ * @LastEditTime: 2023-12-14 18:01:45
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
@@ -61,18 +61,18 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  // {
-  //   name: 'Apps',
-  //   activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
-  //   icon: React.createElement(DappSvg),
-  //   route: getRoute(RouteKey.dappStore),
-  // },
-  // {
-  //   name: 'Save',
-  //   activeRouteKeys: [RouteKey.save],
-  //   icon: React.createElement(BookmarkSvg),
-  //   route: getRoute(RouteKey.save),
-  // },
+  {
+    name: 'Apps',
+    activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
+    icon: React.createElement(DappSvg),
+    route: getRoute(RouteKey.dappStore),
+  },
+  {
+    name: 'Save',
+    activeRouteKeys: [RouteKey.save],
+    icon: React.createElement(BookmarkSvg),
+    route: getRoute(RouteKey.save),
+  },
   // {
   //   name: 'profile',
   //   activeRouteKeys: [RouteKey.profile],
