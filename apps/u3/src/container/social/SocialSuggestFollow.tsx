@@ -1,12 +1,13 @@
 import {
   Profile,
+  ProfileId,
   useFollow,
   useRecommendedProfiles,
 } from '@lens-protocol/react-web';
 import styled from 'styled-components';
 import useFarcasterCurrFid from 'src/hooks/social/farcaster/useFarcasterCurrFid';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { SocialButtonPrimary } from '../../components/social/button/SocialButton';
@@ -27,25 +28,58 @@ import { getBio, getHandle, getName } from '../../utils/social/lens/profile';
 
 const SUGGEST_NUM = 20;
 export default function SocialSuggestFollow() {
-  const [loading, setLoading] = useState(false);
-
   const { socialPlatform } = useOutletContext<{
     socialPlatform: SocialPlatform | '';
   }>();
   const { isLogin: isLoginU3 } = useLogin();
   const { isLogin: isLoginLens, sessionProfile: lensProfile } = useLensCtx();
-  const { data: lensProfiles, loading: loadingLens } = useRecommendedProfiles({
-    for: lensProfile?.id,
+  const fid = Number(useFarcasterCurrFid());
+  console.log(socialPlatform, fid, lensProfile);
+  return (
+    isLoginU3 && (
+      <Wrapper>
+        {fid > 0 &&
+          (socialPlatform === SocialPlatform.Farcaster ||
+            socialPlatform === '') && <FarcasterFollowList fid={fid} />}
+        {isLoginLens &&
+          (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
+          lensProfile &&
+          lensProfile.id && <LensFollowList lensProfileId={lensProfile.id} />}
+      </Wrapper>
+    )
+  );
+}
+
+function LensFollowList({ lensProfileId }: { lensProfileId: ProfileId }) {
+  const { data: lensProfiles, loading } = useRecommendedProfiles({
+    for: lensProfileId,
   });
   const lensRecommendedProfiles: Profile[] = useMemo(
     () =>
       lensProfiles
         ?.filter((profile) => !!getName(profile))
         .slice(0, SUGGEST_NUM),
-    [lensProfiles, isLoginLens]
+    [lensProfiles]
   );
-  const fid = Number(useFarcasterCurrFid());
-  const { farcasterRecommendedProfileData, loading: loadingFarcaster } =
+  if (loading) {
+    return (
+      <LoadingWrapper>
+        <Loading />
+      </LoadingWrapper>
+    );
+  }
+  return (
+    <FollowListWrapper>
+      {lensRecommendedProfiles &&
+        lensRecommendedProfiles.map((profile) => (
+          <LensFollowItem key={profile.id} profile={profile} />
+        ))}
+    </FollowListWrapper>
+  );
+}
+
+function FarcasterFollowList({ fid }: { fid: number }) {
+  const { farcasterRecommendedProfileData, loading } =
     useFarcasterRecommendedProfile({
       fid,
       num: SUGGEST_NUM,
@@ -57,40 +91,22 @@ export default function SocialSuggestFollow() {
       </LoadingWrapper>
     );
   }
-
-  useEffect(() => {
-    setLoading(loadingLens && loadingFarcaster);
-  }, [loadingLens, loadingFarcaster]);
-
+  console.log(fid, farcasterRecommendedProfileData);
   return (
-    isLoginU3 &&
-    (fid || isLoginLens) && (
-      <Wrapper>
-        <FollowListWrapper>
-          {fid > 0 &&
-            (socialPlatform === SocialPlatform.Farcaster ||
-              socialPlatform === '') &&
-            farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
-            farcasterRecommendedProfileData.recommendedFids.map(
-              (recommendedFid) => (
-                <FarcasterFollowItem
-                  key={recommendedFid}
-                  fid={recommendedFid}
-                  farcasterUserData={
-                    farcasterRecommendedProfileData.farcasterUserData
-                  }
-                />
-              )
-            )}
-          {isLoginLens &&
-            (socialPlatform === SocialPlatform.Lens || socialPlatform === '') &&
-            lensRecommendedProfiles &&
-            lensRecommendedProfiles.map((profile) => (
-              <LensFollowItem key={profile.id} profile={profile} />
-            ))}
-        </FollowListWrapper>
-      </Wrapper>
-    )
+    <FollowListWrapper>
+      {farcasterRecommendedProfileData?.recommendedFids?.length > 0 &&
+        farcasterRecommendedProfileData.recommendedFids.map(
+          (recommendedFid) => (
+            <FarcasterFollowItem
+              key={recommendedFid}
+              fid={recommendedFid}
+              farcasterUserData={
+                farcasterRecommendedProfileData.farcasterUserData
+              }
+            />
+          )
+        )}
+    </FollowListWrapper>
   );
 }
 
