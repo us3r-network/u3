@@ -24,10 +24,53 @@ const defaultLinkDomians: LinkDomians = {
   excludeDomains: [],
 };
 const defaultLinkURLHash = ':link';
+
+const getLinks = async ({
+  domains,
+  currentSearchParams,
+  link,
+  endCursor,
+  token,
+}: {
+  domains: LinkDomians;
+  currentSearchParams: any;
+  link: string;
+  endCursor: string;
+  token: string;
+}) => {
+  const { keywords, orderBy } = currentSearchParams;
+  const { data } = await fetchLinks(
+    {
+      keywords: keywords.split(' ') || [],
+      includeDomains: domains.includeDomains || [],
+      excludeDomains: domains.excludeDomains || [],
+      urls: link === defaultLinkURLHash ? [] : [link],
+      orderBy,
+      endCursor,
+    },
+    token
+  );
+  const newLinks = data.data.data;
+  newLinks.forEach((item) => {
+    item.metadata =
+      item.metadata && item.metadata.title
+        ? processMetadata(item.metadata)
+        : null;
+    item.supportIframe = checkSupportIframe(item.url);
+  });
+  const { pageInfo } = data.data;
+  return {
+    newLinks: newLinks.filter((l) => l.metadata && l.metadata?.title),
+    pageInfo,
+  };
+};
+
 export default function useFeedLinks() {
   const { user } = useLogin();
+  const { token } = user || {};
   const [links, setLinks] = useState<Array<LinkListItem>>([]);
   const [loading, setLoading] = useState(false);
+  const [moreLoading, setMoreLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [endCursor, setEndCursor] = useState('');
   const loadMore = useCallback(
@@ -36,40 +79,48 @@ export default function useFeedLinks() {
       currentSearchParams = defaultLinkSearchParams,
       link = defaultLinkURLHash
     ) => {
-      if (loading) return;
-      // console.log('currentSearchParams: ', currentSearchParams);
-      const { keywords, orderBy } = currentSearchParams;
-      console.log('keywords: ', keywords);
+      if (loading || moreLoading) return;
+      try {
+        setMoreLoading(true);
+        const { newLinks, pageInfo } = await getLinks({
+          domains,
+          currentSearchParams,
+          link,
+          endCursor,
+          token,
+        });
+        setLinks(unionBy(links, newLinks, (l) => l.url));
+        setEndCursor(pageInfo.endFarcasterCursor);
+        setHasMore(pageInfo.hasNextPage);
+      } catch (error) {
+        console.error(error.message || messages.common.error);
+        setHasMore(false);
+      } finally {
+        setMoreLoading(false);
+      }
+    },
+    [links, endCursor, token, loading, moreLoading]
+  );
+
+  const load = useCallback(
+    async (
+      domains = defaultLinkDomians,
+      currentSearchParams = defaultLinkSearchParams,
+      link = defaultLinkURLHash
+    ) => {
+      setEndCursor('');
       try {
         setLoading(true);
-        const { data } = await fetchLinks(
-          {
-            keywords: keywords.split(' ') || [],
-            includeDomains: domains.includeDomains || [],
-            excludeDomains: domains.excludeDomains || [],
-            urls: link === defaultLinkURLHash ? [] : [link],
-            orderBy,
-            endCursor,
-          },
-          user?.token
-        );
-        const newLinks = data.data.data;
-        newLinks.forEach((item) => {
-          item.metadata =
-            item.metadata && item.metadata.title
-              ? processMetadata(item.metadata)
-              : null;
-          item.supportIframe = checkSupportIframe(item.url);
+        const { newLinks, pageInfo } = await getLinks({
+          domains,
+          currentSearchParams,
+          link,
+          endCursor: '',
+          token,
         });
-        setLinks(
-          unionBy(
-            links,
-            newLinks.filter((l) => l.metadata && l.metadata?.title),
-            (l) => l.url
-          )
-        );
-        setEndCursor(data.data.pageInfo.endFarcasterCursor);
-        setHasMore(data.data.pageInfo.hasNextPage);
+        setLinks(unionBy([], newLinks, (l) => l.url));
+        setEndCursor(pageInfo.endFarcasterCursor);
+        setHasMore(pageInfo.hasNextPage);
       } catch (error) {
         console.error(error.message || messages.common.error);
         setHasMore(false);
@@ -77,22 +128,10 @@ export default function useFeedLinks() {
         setLoading(false);
       }
     },
-    [links, endCursor]
+    [token]
   );
 
-  const load = useCallback(
-    (
-      domains = defaultLinkDomians,
-      currentSearchParams = defaultLinkSearchParams,
-      link = defaultLinkURLHash
-    ) => {
-      setEndCursor('');
-      loadMore(domains, currentSearchParams, link);
-    },
-    []
-  );
-
-  return { links, loading, hasMore, endCursor, load, loadMore };
+  return { links, loading, moreLoading, hasMore, endCursor, load, loadMore };
 }
 
 const DOMAINS_DO_NOT_SUPPORT_IFRAME = [
