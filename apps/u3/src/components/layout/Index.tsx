@@ -13,7 +13,7 @@ import { useLocation } from 'react-router-dom';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
-import Menu from './Menu';
+import Menu from './menu';
 import DappMenu from '../dapp/launcher/DappMenu';
 import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';

@@ -56,25 +56,19 @@ export default function NotificationButtonContainer() {
   );
 }
 function NotificationButton() {
-  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
+  const { openNotificationModal, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStore();
 
   return (
     <>
-      <PcNavItem
+      <NotificationButtonStyled
+        unreadCount={unreadCount}
         isActive={openNotificationModal}
         onClick={() => {
           if (unreadCount && !openNotificationModal) clearUnread();
           switchNavModal(NavModalName.Notification);
         }}
-      >
-        <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg />
-          {unreadCount > 0 && <RedDot />}
-        </PcNavItemIconBox>
-        {renderNavItemText(`Notifications`)}
-        {unreadCount > 0 && <UnreadCountBadge>{unreadCount}</UnreadCountBadge>}
-      </PcNavItem>
+      />
 
       <NotificationModal />
     </>
@@ -82,50 +76,73 @@ function NotificationButton() {
 }
 
 function NotificationButtonNoLens() {
-  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
+  const { openNotificationModal, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStoreNoLens();
 
   return (
     <>
-      <PcNavItem
+      <NotificationButtonStyled
+        unreadCount={unreadCount}
         isActive={openNotificationModal}
         onClick={() => {
           if (unreadCount && !openNotificationModal) clearUnread();
           switchNavModal(NavModalName.Notification);
         }}
-      >
-        <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg />
-          {unreadCount > 0 && <RedDot />}
-        </PcNavItemIconBox>
-        {renderNavItemText(`Notifications`)}
-        {unreadCount > 0 && <UnreadCountBadge>{unreadCount}</UnreadCountBadge>}
-      </PcNavItem>
+      />
       <NotificationModalNoLens />
     </>
   );
 }
 
-const UnreadCountBadge = styled.div`
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-  background: #f81775;
-  font-size: 10px;
-  color: #fff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-left: auto;
-`;
-const RedDot = styled.div`
-  min-width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #f81775;
-  font-size: 10px;
-  color: #fff;
-  position: absolute;
-  right: 0;
-  top: 0;
-`;
+function NotificationButtonStyled({
+  unreadCount,
+  isActive,
+  onClick,
+}: {
+  unreadCount: number;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const { renderNavItemText } = useNav();
+  return (
+    <PcNavItem isActive={isActive} onClick={onClick}>
+      <PcNavItemIconBox isActive={isActive}>
+        <BellSvg />
+        {unreadCount > 0 && (
+          <div
+            className="
+              min-w-[6px]
+              h-[6px]
+              rounded-[50%]
+              bg-[#f81775]
+              text-[10px]
+              text-[#fff]
+              absolute
+              right-[0]
+              top-[0]
+            "
+          />
+        )}
+      </PcNavItemIconBox>
+      {renderNavItemText(`Notifications`)}
+      {unreadCount > 0 && (
+        <div
+          className="
+            w-[16px]
+            h-[16px]
+            rounded-[4px]
+            bg-[#f81775]
+            text-[10px]
+            text-[#fff]
+            flex
+            justify-center
+            items-center
+            ml-auto
+          "
+        >
+          {unreadCount}
+        </div>
+      )}
+    </PcNavItem>
+  );
+}
