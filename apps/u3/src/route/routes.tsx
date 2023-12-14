@@ -61,6 +61,8 @@ export enum RouteKey {
   dappCreate = 'dappCreate',
   // save
   save = 'save',
+  // notification
+  notification = 'notification',
   // others
   noMatch = 'noMatch',
   policy = 'policy',
@@ -364,6 +366,12 @@ export const routes: CutomRouteObject[] = [
     path: '/policy',
     element: loadContainerElement('Policy'),
     key: RouteKey.policy,
+  },
+  // notification
+  {
+    path: '/notification',
+    element: loadContainerElement('Notification'),
+    key: RouteKey.notification,
   },
   NoMatchRoute,
 

@@ -24,68 +24,70 @@ export default function NotificationModal() {
     useNotificationStore();
   return (
     <Wrapper open={openNotificationModal}>
-      <Header>
-        <Title>Notifications</Title>
-        <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
-      </Header>
-      {notifications && notifications.length > 0 && (
-        <NotificationListWraper id="notification-list-wraper">
-          <InfiniteScroll
-            dataLength={notifications.length}
-            next={() => {
-              if (loading) return;
-              loadMore();
-            }}
-            hasMore={hasMore}
-            loader={
-              loading ? (
-                <LoadingMoreWrapper>
-                  <Loading scale={0.3} />
-                </LoadingMoreWrapper>
-              ) : null
-            }
-            scrollableTarget="notification-list-wraper"
-            scrollThreshold="200px"
-            endMessage="No More Notifications!"
-            style={{
-              color: '#718096',
-              textAlign: 'center',
-              lineHeight: '32px',
-              fontSize: '14px',
-            }}
-          >
-            <NotificationList>
-              {notifications.map((notification) => {
-                if ('message_hash' in notification) {
-                  return (
-                    <FarcasterNotificationItem
-                      notification={notification}
-                      farcasterUserData={farcasterUserData}
-                      key={Buffer.from(notification.message_hash).toString(
-                        'hex'
-                      )}
-                    />
-                  );
-                }
-                if ('id' in notification) {
-                  return (
-                    <LensNotificationItem
-                      key={notification.id}
-                      notification={notification}
-                    />
-                  );
-                }
-                return null;
-              })}
-              {/* {hasMore && (
+      <Body>
+        <Header>
+          <Title>Notifications</Title>
+          <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
+        </Header>
+        {notifications && notifications.length > 0 && (
+          <NotificationListWraper id="notification-list-wraper">
+            <InfiniteScroll
+              dataLength={notifications.length}
+              next={() => {
+                if (loading) return;
+                loadMore();
+              }}
+              hasMore={hasMore}
+              loader={
+                loading ? (
+                  <LoadingMoreWrapper>
+                    <Loading scale={0.3} />
+                  </LoadingMoreWrapper>
+                ) : null
+              }
+              scrollableTarget="notification-list-wraper"
+              scrollThreshold="200px"
+              endMessage="No More Notifications!"
+              style={{
+                color: '#718096',
+                textAlign: 'center',
+                lineHeight: '32px',
+                fontSize: '14px',
+              }}
+            >
+              <NotificationList>
+                {notifications.map((notification) => {
+                  if ('message_hash' in notification) {
+                    return (
+                      <FarcasterNotificationItem
+                        notification={notification}
+                        farcasterUserData={farcasterUserData}
+                        key={Buffer.from(notification.message_hash).toString(
+                          'hex'
+                        )}
+                      />
+                    );
+                  }
+                  if ('id' in notification) {
+                    return (
+                      <LensNotificationItem
+                        key={notification.id}
+                        notification={notification}
+                      />
+                    );
+                  }
+                  return null;
+                })}
+                {/* {hasMore && (
                 <button type="submit" onClick={loadMore} disabled={loading}>
                   Load More
                 </button>
               )} */}
-            </NotificationList>
-          </InfiniteScroll>
-        </NotificationListWraper>
-      )}
+              </NotificationList>
+            </InfiniteScroll>
+          </NotificationListWraper>
+        )}
+      </Body>
     </Wrapper>
   );
 }
@@ -360,6 +362,15 @@ function LensNotificationItem({
 
 export const Wrapper = styled.div<{ open: boolean }>`
   z-index: 3;
+
+  position: absolute;
+  bottom: 20px;
+  right: 0px;
+  transform: translateX(100%);
+
+  display: ${({ open }) => (open ? 'block' : 'none')};
+`;
+export const Body = styled.div`
   width: 400px;
   height: 760px;
   max-height: 80vh;
@@ -370,12 +381,7 @@ export const Wrapper = styled.div<{ open: boolean }>`
   border: 1px solid #39424c;
   background: #1b1e23;
 
-  position: absolute;
-  bottom: 20px;
-  right: -10px;
-  transform: translateX(100%);
-
-  display: ${({ open }) => (open ? 'block' : 'none')};
+  margin-left: 10px;
 `;
 export const Header = styled.div`
   display: flex;

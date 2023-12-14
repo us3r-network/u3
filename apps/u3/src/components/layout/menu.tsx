@@ -11,36 +11,15 @@ import { useState } from 'react';
 import LoginButton from './LoginButton';
 import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
-// import LogoutConfirmModal from './LogoutConfirmModal';
-// import useLogin from '../../hooks/useLogin';
 import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
 import MessageModal from '../message/MessageModal';
-import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
-import {
-  useNotificationStore,
-  NotificationStoreProvider,
-} from '../../contexts/notification/NotificationStoreCtx';
-import {
-  useNotificationStore as useNotificationStoreNoLens,
-  NotificationStoreProvider as NotificationStoreProviderNoLens,
-} from '../../contexts/notification/NotificationStoreCtx_NoLens';
-import NotificationModal from '../notification/NotificationModal';
-import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
-import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { NavModalName, useNav } from '../../contexts/NavCtx';
-import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import ContactUsModal from './ContactUsModal';
 
 export default function Menu() {
-  // const { logout } = useLogin();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  // const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
-
-  const { sessionProfile: lensSessionProfile } = useLensCtx();
-  const { id: lensSessionProfileId } = lensSessionProfile || {};
-  const fid = Number(useFarcasterCurrFid());
 
   return (
     <MenuWrapper
@@ -59,55 +38,14 @@ export default function Menu() {
         <Nav onlyIcon={!isOpen} />
       </NavListBox>
       <FooterBox>
-        {/* TODO: 这里使用了非常不优雅的做法，因为在没有拿到Lens
-        Profile的情况下，无法使用Lens的useUnreadLensNotificationCount，所以这里使用了两套Notification组件，
-        等Lens Hooks V2这里需要重构 */}
         <NavWrapper>
-          {lensSessionProfileId ? (
-            <NotificationStoreProvider
-              config={{
-                fid,
-                lensProfileId: lensSessionProfileId,
-              }}
-            >
-              <NotificationButton />
-            </NotificationStoreProvider>
-          ) : (
-            fid > 0 && (
-              <NotificationStoreProviderNoLens
-                config={{
-                  fid,
-                }}
-              >
-                <NotificationButtonNoLens />
-              </NotificationStoreProviderNoLens>
-            )
-          )}
           <MessageButton />
           <ContactUsButton />
         </NavWrapper>
         <LoginButtonBox>
-          <LoginButton
-            onlyIcon={!isOpen}
-            // onLogout={() => {
-            //   setOpenLogoutConfirm(true);
-            // }}
-          />
+          <LoginButton onlyIcon={!isOpen} />
         </LoginButtonBox>
       </FooterBox>
-      {/* <LogoutConfirmModal
-        isOpen={openLogoutConfirm}
-        onClose={() => {
-          setOpenLogoutConfirm(false);
-        }}
-        onConfirm={() => {
-          logout();
-          setOpenLogoutConfirm(false);
-        }}
-        onAfterOpen={() => {
-          setIsOpen(false);
-        }}
-      /> */}
     </MenuWrapper>
   );
 }
@@ -153,62 +91,9 @@ function MessageButton() {
   );
 }
 
-function NotificationButton() {
-  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
-  const { unreadCount, clearUnread } = useNotificationStore();
-
-  return (
-    <>
-      <PcNavItem
-        isActive={openNotificationModal}
-        onClick={() => {
-          if (unreadCount && !openNotificationModal) clearUnread();
-          switchNavModal(NavModalName.Notification);
-        }}
-      >
-        <PcNavItemIconBox isActive={openNotificationModal}>
-          {/* <BellSvg fill={unreadCount ? 'red' : 'black'} /> */}
-          <BellSvg />
-          {unreadCount > 0 && <RedDot />}
-        </PcNavItemIconBox>
-        {renderNavItemText(
-          unreadCount > 0 ? `Notification(${unreadCount})` : `Notification`
-        )}
-      </PcNavItem>
-
-      <NotificationModal />
-    </>
-  );
-}
-
-function NotificationButtonNoLens() {
-  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
-  const { unreadCount, clearUnread } = useNotificationStoreNoLens();
-
-  return (
-    <>
-      <PcNavItem
-        isActive={openNotificationModal}
-        onClick={() => {
-          if (unreadCount && !openNotificationModal) clearUnread();
-          switchNavModal(NavModalName.Notification);
-        }}
-      >
-        <PcNavItemIconBox isActive={openNotificationModal}>
-          <BellSvg fill={unreadCount && 'red'} />
-        </PcNavItemIconBox>
-        {renderNavItemText(
-          unreadCount ? `Notification(${unreadCount})` : `Notification`
-        )}
-      </PcNavItem>
-      <NotificationModalNoLens />
-    </>
-  );
-}
-
 const MenuWrapper = styled.div<{ isOpen: boolean }>`
   background: #1b1e23;
-  width: ${({ isOpen }) => (isOpen ? '180px' : '60px')};
+  width: ${({ isOpen }) => (isOpen ? '200px' : '60px')};
   height: 100%;
   position: fixed;
   top: 0;
@@ -268,27 +153,4 @@ const FooterBox = styled.div`
 const LoginButtonBox = styled.div`
   width: 100%;
   transition: all 0.3s ease-out;
-`;
-// const UnreadCountBadge = styled.div`
-//   width: 6px;
-//   height: 6px;
-//   border-radius: 50%;
-//   background-color: red;
-//   font-size: 10px;
-//   color: #fff;
-//   position: absolute;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;
-const RedDot = styled.div`
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: red;
-  font-size: 10px;
-  color: #fff;
-  position: absolute;
-  right: -4px;
-  top: -4px;
 `;
