@@ -12,7 +12,10 @@ import {
   useNotificationStore,
   NotificationStoreProvider,
 } from '../../contexts/notification/NotificationStoreCtx';
-import { NotificationStoreProvider as NotificationStoreProviderNoLens } from '../../contexts/notification/NotificationStoreCtx_NoLens';
+import {
+  useNotificationStore as useNotificationStoreNoLens,
+  NotificationStoreProvider as NotificationStoreProviderNoLens,
+} from '../../contexts/notification/NotificationStoreCtx_NoLens';
 import NotificationModal from '../notification/NotificationModal';
 import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
@@ -37,7 +40,6 @@ export default function NotificationButtonContainer() {
           }}
         >
           <NotificationButton />
-          <NotificationModal />
         </NotificationStoreProvider>
       ) : (
         fid > 0 && (
@@ -46,8 +48,7 @@ export default function NotificationButtonContainer() {
               fid,
             }}
           >
-            <NotificationButton />
-            <NotificationModalNoLens />
+            <NotificationButtonNoLens />
           </NotificationStoreProviderNoLens>
         )
       )}
@@ -57,23 +58,54 @@ export default function NotificationButtonContainer() {
 function NotificationButton() {
   const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStore();
+
   return (
-    <PcNavItem
-      isActive={openNotificationModal}
-      onClick={() => {
-        if (unreadCount && !openNotificationModal) clearUnread();
-        switchNavModal(NavModalName.Notification);
-      }}
-    >
-      <PcNavItemIconBox isActive={openNotificationModal}>
-        <BellSvg />
-        {unreadCount > 0 && <RedDot />}
-      </PcNavItemIconBox>
-      {renderNavItemText(`Notifications`)}
-      {unreadCount > 0 && <UnreadCountBadge>{unreadCount}</UnreadCountBadge>}
-    </PcNavItem>
+    <>
+      <PcNavItem
+        isActive={openNotificationModal}
+        onClick={() => {
+          if (unreadCount && !openNotificationModal) clearUnread();
+          switchNavModal(NavModalName.Notification);
+        }}
+      >
+        <PcNavItemIconBox isActive={openNotificationModal}>
+          <BellSvg />
+          {unreadCount > 0 && <RedDot />}
+        </PcNavItemIconBox>
+        {renderNavItemText(`Notifications`)}
+        {unreadCount > 0 && <UnreadCountBadge>{unreadCount}</UnreadCountBadge>}
+      </PcNavItem>
+
+      <NotificationModal />
+    </>
   );
 }
+
+function NotificationButtonNoLens() {
+  const { openNotificationModal, renderNavItemText, switchNavModal } = useNav();
+  const { unreadCount, clearUnread } = useNotificationStoreNoLens();
+
+  return (
+    <>
+      <PcNavItem
+        isActive={openNotificationModal}
+        onClick={() => {
+          if (unreadCount && !openNotificationModal) clearUnread();
+          switchNavModal(NavModalName.Notification);
+        }}
+      >
+        <PcNavItemIconBox isActive={openNotificationModal}>
+          <BellSvg />
+          {unreadCount > 0 && <RedDot />}
+        </PcNavItemIconBox>
+        {renderNavItemText(`Notifications`)}
+        {unreadCount > 0 && <UnreadCountBadge>{unreadCount}</UnreadCountBadge>}
+      </PcNavItem>
+      <NotificationModalNoLens />
+    </>
+  );
+}
+
 const UnreadCountBadge = styled.div`
   width: 16px;
   height: 16px;
