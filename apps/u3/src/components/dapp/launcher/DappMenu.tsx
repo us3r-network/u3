@@ -5,6 +5,7 @@ import useLogin from '../../../hooks/shared/useLogin';
 import DappWebsiteModal from './DappWebsiteModal';
 import { ReactComponent as PlusSquareSvg } from '../../common/assets/svgs/plus-square.svg';
 import DappInstallList from './DappInstallList';
+import ExploreDappsNavBtn from './ExploreDappsNavBtn';
 
 export default function DappMenu() {
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ export default function DappMenu() {
           }}
         >
           <Title>Your Dapps</Title>
+          <ExploreDappsNavBtn />
           <DappInstallList ref={dappInstallListRef} />
         </ListInner>
         {isAdmin && (

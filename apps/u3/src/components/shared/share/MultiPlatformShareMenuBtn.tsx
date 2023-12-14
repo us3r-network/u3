@@ -17,6 +17,9 @@ import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { tweetShare } from '../../../utils/shared/twitter';
 import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
 import { SocialPlatform } from '../../../services/social/types';
+import HeyIcon from '@/components/common/icons/HeyIcon';
+import WarpcastIcon from '@/components/common/icons/warpcast';
+import InternetIcon from '@/components/common/icons/InternetIcon';
 
 interface MultiPlatformShareMenuBtnProps
   extends StyledComponentPropsWithRef<'button'> {
@@ -107,22 +110,19 @@ export function MultiPlatformShareMenuBtn({
             <TwitterLine />
             <MenuOptionText>Share to Twitter</MenuOptionText>
           </MenuOption>
-          <MenuOption
-            onClick={async () => {
-              await window.navigator.clipboard.writeText(shareLink);
-              toast.success('Copied link!');
-            }}
-          >
-            <CopyIcon stroke="#fff" />
-            <MenuOptionText>Copy link</MenuOptionText>
-          </MenuOption>
           {offialUrl && (
             <MenuOption
               onClick={() => {
                 window.open(offialUrl);
               }}
             >
-              <CopyIcon stroke="#fff" />
+              {offialUrl.indexOf(WARPCAST_HOST) === 0 ? (
+                <WarpcastIcon />
+              ) : offialUrl.indexOf(HEY_HOST) === 0 ? (
+                <HeyIcon />
+              ) : (
+                <InternetIcon />
+              )}
               <MenuOptionText>
                 Open in{' '}
                 {offialUrl.indexOf(WARPCAST_HOST) === 0
@@ -133,6 +133,15 @@ export function MultiPlatformShareMenuBtn({
               </MenuOptionText>
             </MenuOption>
           )}
+          <MenuOption
+            onClick={async () => {
+              await window.navigator.clipboard.writeText(shareLink);
+              toast.success('Copied link!');
+            }}
+          >
+            <CopyIcon stroke="#fff" />
+            <MenuOptionText>Copy link</MenuOptionText>
+          </MenuOption>
         </MenuWrapper>
       </PopoverBase>
     </>
@@ -164,6 +173,9 @@ const MenuOption = styled.div`
   svg {
     width: 12px;
     height: 12px;
+    path {
+      stroke: #fff;
+    }
   }
 `;
 const MenuOptionText = styled.span`

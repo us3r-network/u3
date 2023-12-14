@@ -12,6 +12,7 @@ import { DappExploreListParams } from '../../services/dapp/types/dapp';
 import SearchInput from '../common/input/SearchInput';
 import GridSvgUrl from '../common/assets/svgs/grid2.svg';
 import ListChoice from '../common/select/ListChoice';
+import getIconWithGoogleFavicons from '@/utils/shared/getIconWithGoogleFavicons';
 
 export type DappExploreListFilterValues = Pick<
   DappExploreListParams,
@@ -43,6 +44,7 @@ export default function DappExploreListFilter({
   onChange,
 }: DappExploreListFilterProps) {
   const { topics } = useConfigsTopics();
+
   const chainOptions = useMemo(
     () => [
       defaultChainOption,
@@ -50,6 +52,7 @@ export default function DappExploreListFilter({
         value: item.chainEnum,
         label: item.name,
         iconUrl: item.image,
+        errorIconUrl: getIconWithGoogleFavicons(item.link),
       })),
     ],
     [topics]

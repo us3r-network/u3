@@ -9,6 +9,7 @@ export type ListChoiceOption = {
   value: ValueType;
   label: string;
   iconUrl?: string;
+  errorIconUrl?: string;
 };
 export type Props = StyledComponentPropsWithRef<'div'> & {
   label?: string;
@@ -41,7 +42,18 @@ export default function ListChoice({
               onClick={() => {}}
             >
               {item.iconUrl && (
-                <OptionIcon src={item.iconUrl} className="option-item-icon" />
+                <OptionIcon
+                  src={item.iconUrl}
+                  className="option-item-icon"
+                  onError={(e) => {
+                    if (
+                      item?.errorIconUrl &&
+                      e.currentTarget.src !== item.errorIconUrl
+                    ) {
+                      e.currentTarget.src = item.errorIconUrl;
+                    }
+                  }}
+                />
               )}
               <OptionLabel className="option-item-label">
                 {item.label}
