@@ -99,15 +99,16 @@ export default function FCast({
 
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
-    setLinkParam({
-      url: getOfficialCastUrl(
-        userData.userName,
-        Buffer.from(castId.hash).toString('hex')
-      ),
-      type: 'link',
-      title: cast.text,
-    });
-  }, [castId.hash]);
+    if (isDetail)
+      setLinkParam({
+        url: getOfficialCastUrl(
+          userData.userName,
+          Buffer.from(castId.hash).toString('hex')
+        ),
+        type: 'link',
+        title: cast.text.slice(0, 200), // todo: expand this limit at model
+      });
+  }, [castId.hash, isDetail]);
   return (
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
@@ -212,7 +213,7 @@ export default function FCast({
               e.stopPropagation();
             }}
           >
-            <SaveButton linkId={null} link={linkParam} />
+            {isDetail && <SaveButton linkId={null} link={linkParam} />}
             <PostShareMenuBtn
               offialUrl={getOfficialCastUrl(
                 userData.userName,

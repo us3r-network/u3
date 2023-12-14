@@ -2,7 +2,7 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-12-06 17:17:59
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-13 19:59:53
+ * @LastEditTime: 2023-12-14 18:40:16
  * @FilePath: /u3/apps/u3/src/components/social/PostCard.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -89,16 +89,18 @@ export default function PostCard({
   followAction,
   shareLink,
   shareLinkEmbedTitle,
+  isDetail,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
-    setLinkParam({
-      url: getOfficialPublicationUrl(id),
-      type: 'link',
-      title: data?.content,
-    });
-  }, [id]);
+    if (isDetail)
+      setLinkParam({
+        url: getOfficialPublicationUrl(id),
+        type: 'link',
+        title: data?.content.slice(0, 200), // todo: expand this limit at model
+      });
+  }, [id, isDetail]);
   return (
     <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>
@@ -153,7 +155,7 @@ export default function PostCard({
               e.stopPropagation();
             }}
           >
-            <SaveButton linkId={null} link={linkParam} />
+            {isDetail && <SaveButton linkId={null} link={linkParam} />}
             <PostShareMenuBtn
               offialUrl={getOfficialPublicationUrl(id)}
               shareLink={shareLink}

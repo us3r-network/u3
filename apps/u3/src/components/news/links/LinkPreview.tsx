@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-13 19:43:03
+ * @LastEditTime: 2023-12-14 18:24:21
  * @Description: file description
  */
 import { useEffect, useMemo, useState } from 'react';
@@ -35,9 +35,9 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
     setLinkParam({
-      url: data.url,
+      url: data.url.slice(0, 100), // todo: expand this limit at model
       type: 'link',
-      title: data.metadata.title,
+      title: data.metadata.title.slice(0, 200),
     });
   }, [data.url]);
   return (
