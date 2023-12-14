@@ -141,8 +141,6 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     return img as string;
   }, [data.cast]);
 
-  if (!castImg) return null;
-
   return (
     <PostCardCastWrapper
       onClick={(e) => {
@@ -204,23 +202,24 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
 }
 
 export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
-  if (!item.image) return null;
+  if (!item.image && !item.icon) return null;
+  const img = item.image || item.icon;
   return (
     <PostCardEmbedWrapper
       href={item.url}
       target="_blank"
       onClick={(e) => e.stopPropagation()}
     >
-      {(isImg(item.image || '') && (
+      {(isImg(img || '') && (
         <div
           className="img"
           style={{
-            backgroundImage: `url(${item.image})`,
+            backgroundImage: `url(${img})`,
           }}
         />
       )) || (
         <div className="img">
-          <img src={item.image} alt="" />
+          <img src={img} alt="" />
         </div>
       )}
       <div className="intro">

@@ -1,4 +1,3 @@
-/* eslint-disable react/function-component-definition */
 /* eslint-disable react/prop-types */
 
 'use client';
@@ -176,17 +175,17 @@ const DropdownMenuSeparator = React.forwardRef<
 ));
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName;
 
-const DropdownMenuShortcut = ({
+function DropdownMenuShortcut({
   className,
   ...props
-}: React.HTMLAttributes<HTMLSpanElement>) => {
+}: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <span
       className={cn('ml-auto text-xs tracking-widest opacity-60', className)}
       {...props}
     />
   );
-};
+}
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';
 
 export {
