@@ -1,11 +1,11 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-14 10:28:05
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-01-29 14:36:56
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-13 16:07:10
  * @Description: file description
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import useFullScreen from '../../../hooks/shared/useFullScreen';
@@ -18,6 +18,7 @@ import ContentShowerBox, {
 } from './ContentShowerBox';
 import { ContentItemActions } from './ListItem';
 import { getContentShareUrl } from '../../../utils/shared/share';
+import { SaveButton } from '@/components/shared/button/SaveButton';
 
 export type ContentPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: ContentListItem;
@@ -46,7 +47,13 @@ export default function ContentPreview({
       setTab('original');
     }
   }, [data]);
-
+  const linkParam = useMemo(() => {
+    return {
+      url: data.link,
+      type: 'content',
+      title: data.title,
+    };
+  }, [data.link]);
   return (
     <ContentPreviewWrapper {...otherProps}>
       {data && (
@@ -54,6 +61,7 @@ export default function ContentPreview({
           <Header>
             <ContentShowerTabs tab={tab} setTab={(t) => setTab(t)} />
             <HeaderRight>
+              <SaveButton linkId="" link={linkParam} />
               <ContentItemActions
                 id={data.id}
                 editorScore={data.editorScore}
