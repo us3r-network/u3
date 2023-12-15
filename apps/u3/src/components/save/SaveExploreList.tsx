@@ -1,9 +1,17 @@
+/*
+ * @Author: bufan bufan@hotmail.com
+ * @Date: 2023-11-24 18:31:36
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-14 10:19:49
+ * @FilePath: /u3/apps/u3/src/components/save/SaveExploreList.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import styled from 'styled-components';
 import AnimatedListItem, {
   useAnimatedListTransition,
 } from '../common/animation/AnimatedListItem';
-import CardBase from '../common/card/CardBase';
 import SaveExploreListItem from './SaveExploreListItem';
+import { MEDIA_BREAK_POINTS } from '@/constants';
 
 export type SaveExploreListItemData = {
   id: string;
@@ -38,18 +46,13 @@ export default function SaveExploreList({
     </SaveExploreListWrapper>
   );
 }
-const SaveExploreListWrapper = styled(CardBase)`
-  padding: 0;
+const SaveExploreListWrapper = styled.div`
   width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  & > div {
-    & {
-      border-bottom: 1px solid rgba(57, 66, 76, 0.5);
-    }
-    &:last-child:not(:first-child) {
-      border-bottom: none;
-    }
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(4, minmax(calc((100% - 20px * 3) / 4), 1fr));
+
+  @media (min-width: ${MEDIA_BREAK_POINTS.md}px) and (max-width: ${MEDIA_BREAK_POINTS.xxl}px) {
+    grid-template-columns: repeat(6, minmax(calc((100% - 20px * 2) / 3), 1fr));
   }
 `;

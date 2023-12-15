@@ -2,12 +2,12 @@
  * @Author: bufan bufan@hotmail.com
  * @Date: 2023-12-06 17:17:59
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-07 13:24:31
+ * @LastEditTime: 2023-12-14 18:55:48
  * @FilePath: /u3/apps/u3/src/components/social/PostCard.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import dayjs from 'dayjs';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { getOfficialPublicationUrl } from 'src/utils/social/lens/getLensExternalLink';
@@ -25,6 +25,7 @@ import {
 import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
 import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../constants';
+import { SaveButton } from '../shared/button/SaveButton';
 
 export type PostCardData = {
   platform: SocialPlatform;
@@ -88,8 +89,18 @@ export default function PostCard({
   followAction,
   shareLink,
   shareLinkEmbedTitle,
+  isDetail,
   ...wrapperProps
 }: StyledComponentPropsWithRef<'div'> & PostCardProps) {
+  const [linkParam, setLinkParam] = useState(null);
+  useEffect(() => {
+    if (isDetail)
+      setLinkParam({
+        url: getOfficialPublicationUrl(id),
+        type: 'link',
+        title: data?.content.slice(0, 200), // todo: expand this limit at model
+      });
+  }, [id, isDetail]);
   return (
     <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>
@@ -139,11 +150,12 @@ export default function PostCard({
               repostAction={repostAction}
             />
           </PostCardActionsWrapper>
-          <div
+          <PostCardActionsWrapper
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
+            {isDetail && <SaveButton linkId={null} link={linkParam} />}
             <PostShareMenuBtn
               offialUrl={getOfficialPublicationUrl(id)}
               shareLink={shareLink}
@@ -151,7 +163,7 @@ export default function PostCard({
               shareLinkEmbedTitle={shareLinkEmbedTitle}
               popoverConfig={{ placement: 'top end', offset: 0 }}
             />
-          </div>
+          </PostCardActionsWrapper>
         </PostCardFooterWrapper>
       )}
     </PostCardWrapper>
