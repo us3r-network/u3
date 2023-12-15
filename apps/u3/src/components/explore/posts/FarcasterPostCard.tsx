@@ -17,10 +17,12 @@ import FarcasterImgUrl from '../../common/assets/pngs/farcaster.png';
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+  idx: number;
 }
 export default function FarcasterPostCard({
   data,
   farcasterUserData,
+  idx,
   ...wrapperProps
 }: Props) {
   const userData = useFarcasterUserData({ fid: data?.fid, farcasterUserData });
@@ -59,7 +61,7 @@ export default function FarcasterPostCard({
 
   const platformIconUrl = channel?.image || FarcasterImgUrl;
 
-  if (!data.text && (imgs.length > 0 || metadata.length > 0)) {
+  if (imgs.length > 0 || metadata.length > 0) {
     let img = imgs[0]?.url;
     if (!img) {
       const firstMetadata = metadata[0];
@@ -77,6 +79,7 @@ export default function FarcasterPostCard({
     if (img) {
       const viewData: ImgPostCardData = {
         img,
+        title: data?.text,
         likesCount: Number(data.like_count || data.likesCount || 0),
         authorAvatar: userData.pfp,
         authorDisplayName: userData.display,
@@ -84,7 +87,7 @@ export default function FarcasterPostCard({
         recReason,
         platformIconUrl,
       };
-      return <ImgPostCard data={viewData} {...wrapperProps} />;
+      return <ImgPostCard data={viewData} idx={idx} {...wrapperProps} />;
     }
   }
   const viewData: PostCardData = {
