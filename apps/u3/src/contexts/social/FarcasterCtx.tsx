@@ -39,6 +39,7 @@ import {
   UserData,
   userDataObjFromArr,
 } from '@/utils/social/farcaster/user-data';
+import usePinupHashes from '@/hooks/social/farcaster/usePinupHashes';
 
 export type Token = {
   token: string;
@@ -99,6 +100,8 @@ export interface FarcasterContextData {
   userChannels: { parent_url: string }[];
   getUserChannels: () => Promise<void>;
   setSignerSelectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  pinupHashes: Set<string>;
+  updatePinupHashes: () => Promise<void>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -162,6 +165,7 @@ export default function FarcasterProvider({
     qrUserData,
   } = useFarcasterQR();
 
+  const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels } = useFarcasterTrendChannel();
 
   const openFarcasterSelectModal = useCallback(() => {
@@ -241,6 +245,7 @@ export default function FarcasterProvider({
   const session = useSession();
   const { profile } = useProfileState();
   const { upsertBioLink } = useBioLinkActions();
+
   useEffect(() => {
     const findUserInfo = currUserInfo?.[currFid]?.find(
       (item) => item.type === UserDataType.USERNAME
@@ -295,6 +300,8 @@ export default function FarcasterProvider({
         unPinChannel,
         getUserChannels,
         setSignerSelectModalOpen,
+        updatePinupHashes,
+        pinupHashes,
       }}
     >
       {children}
