@@ -38,6 +38,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { pinupCastApi } from '@/services/social/api/farcaster';
 import useLogin from '@/hooks/shared/useLogin';
+import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
+import { SaveButton } from '@/components/shared/button/SaveButton';
 
 export default function FCast({
   cast,
@@ -133,6 +135,18 @@ export default function FCast({
     }
   }, [pinupHashes, cast.hash]);
 
+  const [linkParam, setLinkParam] = useState(null);
+  useEffect(() => {
+    if (isDetail)
+      setLinkParam({
+        url: getOfficialCastUrl(
+          userData.userName,
+          Buffer.from(castId.hash).toString('hex')
+        ),
+        type: 'link',
+        title: cast.text.slice(0, 200), // todo: expand this limit at model
+      });
+  }, [castId.hash, isDetail]);
   return (
     <PostCardWrapper
       id={Buffer.from(cast.hash.data).toString('hex')}
@@ -251,11 +265,12 @@ export default function FCast({
           />
         </PostCardActionsWrapper>
         {!simpleLayout && (
-          <div
+          <PostCardActionsWrapper
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
+            {isDetail && <SaveButton linkId={null} link={linkParam} />}
             <PostShareMenuBtn
               offialUrl={getOfficialCastUrl(
                 userData.userName,
@@ -268,7 +283,7 @@ export default function FCast({
               shareLinkEmbedTitle={cast.text}
               popoverConfig={{ placement: 'top end', offset: 0 }}
             />
-          </div>
+          </PostCardActionsWrapper>
         )}
       </PostCardFooterWrapper>
     </PostCardWrapper>

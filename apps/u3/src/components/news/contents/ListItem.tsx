@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Share } from '../../common/icons/share';
+// import { Share } from '../../common/icons/share';
 // import { EyeClose } from '../icons/eyeClose';
 import { defaultFormatFromNow } from '../../../utils/shared/time';
 import LinkBox from './LinkBox';
-import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 import { getContentPlatformLogoWithJsonValue } from '../../../utils/news/content';
 import type { ContentExploreListItemData } from './ContentList';
-import { VoteButtonBase } from '../../shared/button/VoteButtonBase';
+// import { VoteButtonBase } from '../../shared/button/VoteButtonBase';
 import { MultiPlatformShareMenuBtn } from '../../shared/share/MultiPlatformShareMenuBtn';
 import { CONTENT_SHARE_TITLE } from '../../../constants';
 
@@ -20,7 +19,12 @@ export default function ListItem({
   isActive: boolean;
   clickAction: () => void;
 }) {
-  const { value, link, createdAt, title, hidden, linkStreamId } = data;
+  const { value, link, createdAt, title, hidden } = data;
+  // const currentLink = {
+  //   url: link,
+  //   title,
+  //   type: 'content',
+  // };
   const itemRef = useRef<HTMLDivElement & { isActive: boolean }>();
   const [height, setHeight] = useState('fit-content');
   const [classNames, setClassNames] = useState('');
@@ -51,9 +55,9 @@ export default function ListItem({
       isActive={isActive}
     >
       <ItemInner isActive={isActive} height={height}>
-        <div className="left">
-          {linkStreamId && <VoteButtonStyled linkId={linkStreamId} />}
-        </div>
+        {/* <div className="left">
+          <VoteButtonStyled linkId={linkStreamId} link={currentLink} />
+        </div> */}
 
         <div className={isActive ? 'right active' : 'right'}>
           <p>{title}</p>
@@ -68,18 +72,18 @@ export default function ListItem({
     </ContentItem>
   );
 }
-const VoteButtonStyled = styled(VoteButtonBase)`
-  width: 60px;
-  height: 60px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-`;
+// const VoteButtonStyled = styled(VoteButtonBase)`
+//   width: 60px;
+//   height: 60px;
+//   padding: 0;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 5px;
+//   svg {
+//     width: 18px;
+//     height: 18px;
+//   }
+// `;
 
 export function ContentItemActions({
   id,
@@ -265,7 +269,7 @@ const ItemInner = styled.div<{ isActive: boolean; height: string }>`
   }
 
   & div.right {
-    width: calc(100% - 62px);
+    width: 100%;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -291,19 +295,19 @@ const ItemInner = styled.div<{ isActive: boolean; height: string }>`
     }
   }
 `;
-const ContentItemLeftVoteButton = styled(ButtonPrimaryLine)`
-  width: 50px;
-  height: 50px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0;
-  > span {
-    color: #ffffff;
-    font-size: 12px;
-    line-height: 14px;
-  }
-`;
+// const ContentItemLeftVoteButton = styled(ButtonPrimaryLine)`
+//   width: 50px;
+//   height: 50px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   gap: 0;
+//   > span {
+//     color: #ffffff;
+//     font-size: 12px;
+//     line-height: 14px;
+//   }
+// `;
 const ContentItemTitle = styled.div`
   display: flex;
   align-items: center;
@@ -346,13 +350,4 @@ const ContentItemActionsWrapper = styled.div`
   gap: 10px;
   justify-content: end;
   align-items: center;
-`;
-
-const ContentHandleButton = styled(ButtonPrimaryLine)`
-  padding: 6px;
-  height: 32px;
-`;
-
-const ContentHandleButtonVote = styled(ContentHandleButton)`
-  width: 190px;
 `;

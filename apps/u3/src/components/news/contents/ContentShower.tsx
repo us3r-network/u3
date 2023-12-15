@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { ContentListItem } from '../../../services/news/types/contents';
@@ -36,6 +36,14 @@ export default function ContentShower({
     () => getContentPlatformLogoWithJsonValue(value),
     [value]
   );
+  const [linkParam, setLinkParam] = useState(null);
+  useEffect(() => {
+    setLinkParam({
+      url: link,
+      type: 'content',
+      title,
+    });
+  }, [link, title]);
   return (
     <Shower>
       <ContentWrapper>
@@ -55,12 +63,15 @@ export default function ContentShower({
           </div>
         </ContentTitle>
         <ContentBody dangerouslySetInnerHTML={{ __html: contentFix }} />
-        {!isMobile && data.linkStreamId && (
-          <ContentActionsStyled linkId={data.linkStreamId} />
+        {!isMobile && (
+          <ContentActionsStyled linkId={data.linkStreamId} link={linkParam} />
         )}
       </ContentWrapper>
-      {!isMobile && data.linkStreamId && (
-        <ContentCommentLayoutStyled linkId={data.linkStreamId} />
+      {!isMobile && (
+        <ContentCommentLayoutStyled
+          linkId={data.linkStreamId}
+          link={linkParam}
+        />
       )}
     </Shower>
   );
