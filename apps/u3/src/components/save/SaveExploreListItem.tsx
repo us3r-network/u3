@@ -12,21 +12,17 @@ export default function SaveExploreListItem({
   data,
   ...props
 }: SaveExploreListItemProps) {
+  console.log('save item', data);
   return (
     <Wrapper {...props}>
       <ListItemInner>
-        <TopBox>
-          <TitleText>{data.title}</TitleText>
-
-          {!!data?.createAt && (
-            <TimeText className="timeText">
-              {defaultFormatFromNow(data.createAt)}
-            </TimeText>
-          )}
-        </TopBox>
-        <BottomBox className="bottomBox">
-          <IconLink text={data.url} logo={data?.logo} className="iconLink" />
-        </BottomBox>
+        <IconLink text={data.url} logo={data?.logo} className="iconLink" />
+        <TitleText>{data.title || data.url}</TitleText>
+        {!!data?.createAt && (
+          <TimeText className="timeText">
+            {defaultFormatFromNow(data.createAt)}
+          </TimeText>
+        )}
       </ListItemInner>
     </Wrapper>
   );
@@ -34,10 +30,15 @@ export default function SaveExploreListItem({
 
 const Wrapper = styled.div`
   width: 100%;
-  height: 105px;
+  height: 200px;
   padding: 20px;
   box-sizing: border-box;
+  background: #1b1e23;
+  border: 1px solid #39424c;
+  border-radius: 20px;
+  position: relative;
   cursor: pointer;
+  color: #ffffff;
   &:hover {
     background: rgba(20, 23, 26, 0.3);
   }
@@ -49,13 +50,9 @@ const ListItemInner = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
-`;
-const TopBox = styled.div`
-  display: flex;
   gap: 20px;
-  align-items: center;
 `;
+
 const TitleText = styled(EllipsisText)`
   flex: 1;
   font-weight: 500;
@@ -71,20 +68,14 @@ const TimeText = styled.span`
 
   color: #718096;
 `;
-const BottomBox = styled.div`
-  display: flex;
-  gap: 20px;
-  align-items: center;
-`;
 
 const IconLink = styled(LinkBox)`
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 8px 20px 8px 16px;
+  padding: 0;
   box-sizing: border-box;
-  gap: 8px;
-  height: 36px;
+  gap: 6px;
   background: #14171a;
   border-radius: 100px;
 
@@ -95,7 +86,7 @@ const IconLink = styled(LinkBox)`
   span {
     font-weight: 400;
     font-size: 14px;
-    line-height: 17px;
+    line-height: 18px;
     color: #718096;
   }
 `;

@@ -5,9 +5,9 @@
   "dependencies": {
     "@airstack/airstack-react": "^0.4.7",
     "@farcaster/hub-web": "^0.6.2",
-    "@lens-protocol/metadata": "1.0.4",
-    "@lens-protocol/react-web": "2.0.0-alpha.23",
-    "@lens-protocol/wagmi": "3.0.0-alpha.20",
+    "@lens-protocol/metadata": "^1.1.3",
+    "@lens-protocol/react-web": "^2.0.0-alpha.25",
+    "@lens-protocol/wagmi": "^3.0.0-alpha.22",
     "@livepeer/react": "^2.8.8",
     "@loadable/component": "^5.15.2",
     "@multiavatar/multiavatar": "^1.0.7",
@@ -18,13 +18,13 @@
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-slot": "^1.0.2",
-    "@rainbow-me/rainbowkit": "^1.0.11",
+    "@rainbow-me/rainbowkit": "^1.3.1",
     "@react-spring/web": "^9.6.1",
     "@reduxjs/toolkit": "^1.8.3",
     "@types/validator": "^13.11.7",
-    "@us3r-network/auth-with-rainbowkit": "^0.2.0-alpha.1",
-    "@us3r-network/link": "0.2.5",
-    "@us3r-network/profile": "0.5.10-alpha.1",
+    "@us3r-network/auth-with-rainbowkit": "^0.2.1",
+    "@us3r-network/link": "0.3.0-alpha.2",
+    "@us3r-network/profile": "0.6.0",
     "@xmtp/content-type-remote-attachment": "^1.1.2",
     "@xmtp/xmtp-js": "^11.1.1",
     "@zoralabs/zdk": "^2.4.0",
@@ -87,8 +87,8 @@
     "tslib": "^2.3.0",
     "typescript": "^5.2.2",
     "validator": "^13.11.0",
-    "viem": "^1.16.6",
-    "wagmi": "^1.4.3",
+    "viem": "^1.20.0",
+    "wagmi": "^1.4.12",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",
     "workbox-broadcast-update": "^6.6.0",
@@ -172,8 +172,5 @@
     "url": "^0.11.0",
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.6.0"
-  },
-  "resolutions": {
-    "did-session": "2.0.1"
   }
 }

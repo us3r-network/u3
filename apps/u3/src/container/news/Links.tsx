@@ -19,7 +19,8 @@ import { LinkGroup } from 'src/components/news/header/NewsMenu';
 function Links() {
   const { group, link } = useParams();
   const { currentSearchParams, searchParamsChange } = useLinksSearchParams();
-  const { loading, hasMore, links, load, loadMore } = useFeedLinks();
+  const { loading, moreLoading, hasMore, links, load, loadMore } =
+    useFeedLinks();
 
   useEffect(() => {
     const linkGroup = LinkGroup.find((item) => item.group === group);
@@ -30,14 +31,14 @@ function Links() {
   }, [group, currentSearchParams]);
 
   const getMore = useCallback(() => {
-    if (loading) return;
+    if (moreLoading) return;
     if (!hasMore) return;
     const linkGroup = LinkGroup.find((item) => item.group === group);
     const groupDomain = {
       includeDomains: linkGroup?.includeDomains,
     };
     loadMore(groupDomain, currentSearchParams, link);
-  }, [hasMore, load, loading, currentSearchParams, group]);
+  }, [hasMore, loadMore, moreLoading, currentSearchParams, group]);
 
   return isMobile ? (
     <LinksPageMobile

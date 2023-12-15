@@ -4,6 +4,7 @@ import { useFavorAction } from '@us3r-network/link';
 import { useProfileState } from '@us3r-network/profile';
 import { MultiPlatformShareMenuBtn } from 'src/components/shared/share/MultiPlatformShareMenuBtn';
 import { getDappShareUrl } from 'src/utils/shared/share';
+import { useEffect, useState } from 'react';
 import { formatFilterShowName } from '../../../utils/shared/filter';
 import {
   DappExploreListItemResponse,
@@ -23,6 +24,7 @@ import { Edit } from '../../common/icons/edit';
 import useLogin from '../../../hooks/shared/useLogin';
 import Badge from '../Badge';
 import { DappMintButton } from '../DappMintButton';
+import { SaveButton } from '@/components/shared/button/SaveButton';
 
 type Props = StyledComponentPropsWithRef<'div'> & {
   data: DappExploreListItemResponse;
@@ -48,6 +50,16 @@ export default function Header({
   );
   const isU3Dapp = data?.url?.startsWith('https://u3.xyz');
   const u3DappRoutePath = data?.url?.replace('https://u3.xyz', '');
+
+  const [linkParam, setLinkParam] = useState(null);
+  console.log('linkParam', data);
+  useEffect(() => {
+    setLinkParam({
+      url: data.url,
+      type: 'dapp',
+      title: data.name,
+    });
+  }, [data.url]);
 
   return (
     <HeaderWrapper {...otherProps}>
@@ -79,6 +91,9 @@ export default function Header({
       </HeaderCenter>
       <HeaderRight>
         <RightButtons>
+          {data?.id && (
+            <SaveButton linkId={data?.linkStreamId} link={linkParam} />
+          )}
           {data?.id && (
             <DappShareMenuBtn
               shareLink={getDappShareUrl(data.id)}

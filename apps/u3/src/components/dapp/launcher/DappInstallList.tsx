@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-29 18:44:14
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-10-27 12:14:05
+ * @LastEditTime: 2023-12-13 14:40:52
  * @Description: file description
  */
 import {
@@ -274,7 +274,7 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
     </Wrapper>
   );
 });
-
+/*
 function UninstallOptionItem({
   linkId,
   onSuccessfullyFavor,
@@ -301,6 +301,7 @@ function UninstallOptionItem({
     </OptionItem>
   );
 }
+*/
 const Wrapper = styled.div`
   position: relative;
 `;
