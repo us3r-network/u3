@@ -1,6 +1,7 @@
 import axios, { AxiosPromise } from 'axios';
 import { ApiResp, FarCast, FarCastEmbedMeta } from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
+import request from '@/services/shared/api/request';
 
 // console.log({ REACT_APP_API_SOCIAL_URL });
 
@@ -368,6 +369,26 @@ export function getFarcasterUserInfoWithFname(fname): AxiosPromise<{
 }> {
   return axios({
     url: `https://api.farcaster.u3.xyz/v1/userNameProofByName?name=${fname}`,
+    method: 'get',
+  });
+}
+
+export function pinupCastApi(hash: string, unpinup?: boolean) {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/pinup/${hash}`,
+    method: 'post',
+    params: {
+      unpinup,
+    },
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function getPinupHashes() {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/pinup-hashes`,
     method: 'get',
   });
 }
