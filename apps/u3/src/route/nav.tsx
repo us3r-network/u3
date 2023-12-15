@@ -2,7 +2,7 @@
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-12 13:59:01
  * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-14 18:01:45
+ * @LastEditTime: 2023-12-15 09:18:03
  * @Description: file description
  */
 import React, { ReactNode } from 'react';
@@ -61,12 +61,16 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  {
-    name: 'Apps',
-    activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
-    icon: React.createElement(DappSvg),
-    route: getRoute(RouteKey.dappStore),
-  },
+  ...(isMobile
+    ? [
+        {
+          name: 'Apps',
+          activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
+          icon: React.createElement(DappSvg),
+          route: getRoute(RouteKey.dappStore),
+        },
+      ]
+    : []),
   {
     name: 'Save',
     activeRouteKeys: [RouteKey.save],
