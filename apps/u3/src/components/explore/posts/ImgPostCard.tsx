@@ -121,7 +121,11 @@ function RightCard({ idx, data, ...wrapperProps }: Props) {
           alt=""
         />
 
-        <div className={cn('w-[0px] flex-[1] h-full flex flex-col gap-[10px]')}>
+        <div
+          className={cn(
+            'overflow-hidden flex-[1] h-full flex flex-col gap-[10px]'
+          )}
+        >
           {title && <Title className="line-clamp-1">{title}</Title>}
           <div className="flex justify-between items-end gap-[10px] mt-auto">
             <div className="flex flex-col gap-[10px]">
@@ -172,8 +176,12 @@ function BottomCard({ idx, data, ...wrapperProps }: Props) {
           alt=""
         />
 
-        <div className={cn('flex-[1] h-full flex flex-col gap-[10px]')}>
-          {title && <Title className="line-clamp-1">{title}</Title>}
+        <div
+          className={cn(
+            'overflow-hidden flex-[1] h-full flex flex-col gap-[10px]'
+          )}
+        >
+          <Title className="line-clamp-1">{title}</Title>
           <div className="flex justify-between items-end gap-[10px] mt-auto">
             <div className="flex flex-col gap-[10px]">
               <div className="flex items-center gap-[10px]">
