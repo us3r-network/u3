@@ -62,6 +62,17 @@ export const navs: CustomNavObject[] = [
     route: getRoute(RouteKey.socialLayout),
   },
   ...(isMobile
+    ? []
+    : [
+        {
+          name: 'notifications',
+          activeRouteKeys: [RouteKey.notification],
+          icon: React.createElement(BellSvg),
+          route: getRoute(RouteKey.notification),
+          component: <NotificationButton />,
+        },
+      ]),
+  ...(isMobile
     ? [
         {
           name: 'Apps',
@@ -101,15 +112,4 @@ export const navs: CustomNavObject[] = [
   //   icon: React.createElement(ImageSvg),
   //   route: getRoute(RouteKey.gallery),
   // },
-  ...(isMobile
-    ? []
-    : [
-        {
-          name: 'notifications',
-          activeRouteKeys: [RouteKey.notification],
-          icon: React.createElement(BellSvg),
-          route: getRoute(RouteKey.notification),
-          component: <NotificationButton />,
-        },
-      ]),
 ];
