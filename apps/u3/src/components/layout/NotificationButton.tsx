@@ -6,6 +6,7 @@
  * @Description: file description
  */
 import styled from 'styled-components';
+import { useIsAuthenticated } from '@us3r-network/auth-with-rainbowkit';
 import { PcNavItem, PcNavItemIconBox } from './Nav';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
@@ -21,14 +22,13 @@ import NotificationModalNoLens from '../notification/NotificationModal_NoLens';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
 import { NavModalName, useNav } from '../../contexts/NavCtx';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
-import useLogin from '@/hooks/shared/useLogin';
 
 export default function NotificationButtonContainer() {
-  const { isLogin } = useLogin();
+  const isAuthenticated = useIsAuthenticated();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
   const fid = Number(useFarcasterCurrFid());
-  if (!isLogin) return null;
+  if (!isAuthenticated) return null;
   return (
     <>
       {/* TODO: 这里使用了非常不优雅的做法，因为在没有拿到Lens

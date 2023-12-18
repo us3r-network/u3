@@ -10,6 +10,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { isMobile } from 'react-device-detect';
 import { useLocation } from 'react-router-dom';
+import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
@@ -19,11 +20,12 @@ import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';
 
 function Layout() {
+  const { ready } = useAuthentication();
   const location = useLocation();
   useGAPageView();
   return (
     <LayoutWrapper id="layout-wrapper">
-      {isMobile ? <MobileHeader /> : <Menu />}
+      {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
       {isMobile ? <MobileNav /> : null}
       {isMobile ? (
         <MobileContentBox>
