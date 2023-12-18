@@ -31,8 +31,19 @@ export default function Menu() {
         <LogoIconBox onlyIcon={!isOpen}>
           <LogoIconSvg />
         </LogoIconBox>
-
-        <LogoText>Alpha</LogoText>
+        {isOpen ? (
+          <span className={'font-medium text-[24px] text-[#ffffff]'}>
+            U3.XYZ
+          </span>
+        ) : (
+          <span
+            className={
+              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[linear-gradient(52deg,_#CD62FF_35.31%,_#62AAFF_89.64%)] text-[#ffffff] text-[10px] font-medium'
+            }
+          >
+            Alpha
+          </span>
+        )}
       </LogoBox>
       <NavListBox>
         <Nav onlyIcon={!isOpen} />
@@ -111,9 +122,11 @@ const MenuWrapper = styled.div<{ isOpen: boolean }>`
 `;
 const LogoBox = styled.div<{ onlyIcon?: boolean }>`
   width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
+  height: 94px;
   display: flex;
-  gap: 10px;
-  align-items: flex-end;
+  flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
+  gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};
+  align-items: 'flex-start';
   overflow: hidden;
   transition: all 0.3s ease-out;
   cursor: pointer;
@@ -131,16 +144,11 @@ const LogoIconBox = styled.div<{ onlyIcon?: boolean }>`
     }
   `};
 `;
-const LogoText = styled.span`
-  font-weight: 500;
-  font-size: 16px;
-  color: #ffffff;
-`;
 const NavListBox = styled.div`
   width: 100%;
   flex: 1;
   display: flex;
-  align-items: center;
+  align-items: start;
 `;
 const FooterBox = styled.div`
   width: 100%;
