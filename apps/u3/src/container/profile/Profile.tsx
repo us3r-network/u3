@@ -255,6 +255,18 @@ function ProfileView({
 
   return (
     <ProfileWrapper id="profile-wrapper">
+      {isLoginUser && (
+        <LogoutConfirmModal
+          isOpen={openLogoutConfirm}
+          onClose={() => {
+            setOpenLogoutConfirm(false);
+          }}
+          onConfirm={() => {
+            logout();
+            setOpenLogoutConfirm(false);
+          }}
+        />
+      )}
       {isMobile && (
         <ProfileInfoMobileWrapper>
           <ProfileInfoMobile did={did} identity={identity} isSelf={isSelf} />
@@ -357,24 +369,12 @@ function ProfileView({
               }}
             />
             {isLoginUser && (
-              <>
-                <LogoutButton
-                  className="logout-button"
-                  onClick={() => {
-                    setOpenLogoutConfirm(true);
-                  }}
-                />
-                <LogoutConfirmModal
-                  isOpen={openLogoutConfirm}
-                  onClose={() => {
-                    setOpenLogoutConfirm(false);
-                  }}
-                  onConfirm={() => {
-                    logout();
-                    setOpenLogoutConfirm(false);
-                  }}
-                />
-              </>
+              <LogoutButton
+                className="logout-button"
+                onClick={() => {
+                  setOpenLogoutConfirm(true);
+                }}
+              />
             )}
           </MainLeft>
         )}

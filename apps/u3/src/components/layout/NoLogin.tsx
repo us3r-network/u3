@@ -63,6 +63,7 @@ const NoLoginContainer = styled.div`
   gap: 20px;
   background: #1b1e23;
   border-radius: 20px;
+  padding: 24px;
 `;
 const Icon = styled.img`
   width: 100px;
