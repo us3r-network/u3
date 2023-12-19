@@ -69,7 +69,7 @@ export const navs: CustomNavObject[] = [
           activeRouteKeys: [RouteKey.notification],
           icon: React.createElement(BellSvg),
           route: getRoute(RouteKey.notification),
-          component: <NotificationButton />,
+          component: <NotificationButton key={RouteKey.notification} />,
         },
       ]),
   ...(isMobile
