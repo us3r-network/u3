@@ -29,25 +29,26 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
       <div
         className={cn(
           'w-full h-full flex [transition:all_0.3s] hover:scale-105',
-          isMobile
-            ? '[flex-flow:row-reverse] p-[10px] box-border gap-[10px]'
-            : ''
+          'max-sm:[flex-flow:row-reverse] max-sm:p-[10px] max-sm:box-border max-sm:gap-[10px]'
         )}
       >
         <div
           className={cn(
             'w-[0] flex-[1] px-[20px] py-[15px] box-border flex flex-col',
-            isMobile ? 'p-0' : ''
+            'max-sm:p-0'
           )}
         >
           <span className="text-[#fff] text-[16px] font-medium line-clamp-1">
             {name}
           </span>
-          {!isMobile && (
-            <span className="text-[14px] font-normal bg-[linear-gradient(52deg,_#cd62ff_35.31%,_#62aaff_89.64%)] bg-clip-text mt-auto text-transparent">
-              {recReason}
-            </span>
-          )}
+          <span
+            className={cn(
+              'text-[14px] font-normal bg-[linear-gradient(52deg,_#cd62ff_35.31%,_#62aaff_89.64%)] bg-clip-text mt-auto text-transparent',
+              'max-sm:hidden'
+            )}
+          >
+            {recReason}
+          </span>
           <div
             className="
               flex
@@ -75,7 +76,7 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
         <div
           className={cn(
             'w-[110px] h-full',
-            isMobile ? 'w-[48px] h-[48px] flex-shrink-0' : ''
+            'max-sm:w-[48px] max-sm:h-[48px] max-sm:flex-shrink-0'
           )}
         >
           <img
@@ -83,7 +84,7 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
             alt=""
             className={cn(
               'w-full h-full object-cover',
-              isMobile ? 'rounded-[10px]' : ''
+              'max-sm:rounded-[10px]'
             )}
           />
         </div>
