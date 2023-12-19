@@ -84,8 +84,8 @@ const CardsLayout = styled.div`
   }
   ${isMobile &&
   `
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   `}
 `;
