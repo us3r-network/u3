@@ -14,7 +14,7 @@ export const lensUploadToArweave = async (data: any): Promise<string> => {
     const resData = upload?.data?.data;
     const { id }: { id: string } = resData || {};
 
-    return `ar://${id}`;
+    return `https://arweave.net/${id}`;
   } catch (e: any) {
     console.error(e);
 
