@@ -180,11 +180,11 @@ export default function AddPostForm({
           text: castBody?.text || text,
           embeds: [...uploadedImgs, ...embedWebsiteLinks],
           embedsDeprecated: [],
-          mentions: castBody.mentions || [],
-          mentionsPositions: castBody.mentionsPositions || [],
+          mentions: castBody?.mentions || [],
+          mentionsPositions: castBody?.mentionsPositions || [],
           parentUrl,
         };
-        console.log('castBodySubmit', castBodySubmit);
+        // console.log('castBodySubmit', castBodySubmit);
         // eslint-disable-next-line no-underscore-dangle
         const cast = (
           await makeCastAdd(
