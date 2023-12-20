@@ -47,7 +47,11 @@ export default function TopLinks({
                   key={item.url}
                   data={item}
                   onClick={() =>
-                    navigate(`${ROUTE_PREFIX}/all/${encodeLinkURL(item?.url)}`)
+                    isMobile
+                      ? window.open(item?.url, '_blank')
+                      : navigate(
+                          `${ROUTE_PREFIX}/all/${encodeLinkURL(item?.url)}`
+                        )
                   }
                 />
               );
