@@ -212,6 +212,7 @@ export default function AddPostForm({
       channelValue,
       farcasterUserFid,
       embedWebsiteLink,
+      selectedImages,
     ]
   );
 
@@ -232,7 +233,7 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createPostToLens, embedWebsiteLink]);
+  }, [text, createPostToLens, embedWebsiteLink, selectedImages]);
 
   const handleSubmit = useCallback(async () => {
     if (platforms.has(SocialPlatform.Farcaster) && platforms.size === 1) {
