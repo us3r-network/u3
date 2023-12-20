@@ -14,9 +14,9 @@ import {
 } from '../utils/news/content';
 import { getDappLinkDataWithJsonValue } from '../utils/dapp/dapp';
 import { getEventLinkDataWithJsonValue } from '../utils/news/event';
-import { DappLinkData } from '../services/dapp/types/dapp';
-import { ContentLinkData } from '../services/news/types/contents';
-import { EventLinkData } from '../services/news/types/event';
+// import { DappLinkData } from '../services/dapp/types/dapp';
+// import { ContentLinkData } from '../services/news/types/contents';
+// import { EventLinkData } from '../services/news/types/event';
 
 function EmptyList() {
   return (
@@ -101,12 +101,14 @@ export default function Save() {
             }}
           />
         ) : (
-          <SaveExploreList
-            data={list}
-            onItemClick={(item) => {
-              window.open(item.url, '_blank');
-            }}
-          />
+          <SaveExploreListWraper>
+            <SaveExploreList
+              data={list}
+              onItemClick={(item) => {
+                window.open(item.url, '_blank');
+              }}
+            />
+          </SaveExploreListWraper>
         )}
       </ContentWrapper>
     </Wrapper>
@@ -124,4 +126,8 @@ const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+const SaveExploreListWraper = styled.div`
+  width: 100%;
+  height: 100%;
 `;
