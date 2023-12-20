@@ -101,14 +101,14 @@ export default function Save() {
             }}
           />
         ) : (
-          <SaveExploreListWraper>
+          <div className="w-full h-full">
             <SaveExploreList
               data={list}
               onItemClick={(item) => {
                 window.open(item.url, '_blank');
               }}
             />
-          </SaveExploreListWraper>
+          </div>
         )}
       </ContentWrapper>
     </Wrapper>
@@ -126,8 +126,4 @@ const ContentWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-const SaveExploreListWraper = styled.div`
-  width: 100%;
-  height: 100%;
 `;
