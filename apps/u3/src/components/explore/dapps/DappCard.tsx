@@ -1,10 +1,10 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { ScoresAvg } from '@us3r-network/link';
 import { isMobile } from 'react-device-detect';
-import EllipsisText from '../../common/text/EllipsisText';
 import CardBase from '../../common/card/CardBase';
 import Badge from '../../dapp/Badge';
 import { formatFilterShowName } from '../../../utils/shared/filter';
+import { cn } from '@/lib/utils';
 
 export type DappData = {
   logo: string;
@@ -26,21 +26,69 @@ export default function LinkCard({ data, ...wrapperProps }: Props) {
   } = data;
   return (
     <CardWrapper {...wrapperProps}>
-      <CardBody>
-        <Left>
-          <Name>{name}</Name>
-          {!isMobile && <RecReason>{recReason}</RecReason>}
-          <LeftBottom>
-            <TypesWrapper>
+      <div
+        className={cn(
+          'w-full h-full flex [transition:all_0.3s] hover:scale-105',
+          'max-sm:[flex-flow:row-reverse] max-sm:p-[10px] max-sm:box-border max-sm:gap-[10px]'
+        )}
+      >
+        <div
+          className={cn(
+            'w-[0] flex-[1] px-[20px] py-[15px] box-border flex flex-col',
+            'max-sm:p-0'
+          )}
+        >
+          <span className="text-[#fff] text-[16px] font-medium line-clamp-1">
+            {name}
+          </span>
+          <span
+            className={cn(
+              'text-[14px] font-normal bg-[linear-gradient(52deg,_#cd62ff_35.31%,_#62aaff_89.64%)] bg-clip-text mt-auto text-transparent',
+              'max-sm:hidden'
+            )}
+          >
+            {recReason}
+          </span>
+          <div
+            className="
+              flex
+              items-center
+              gap-[10px]
+              mt-[6px]
+            "
+          >
+            <div
+              className="
+              w-[0]
+              flex-[1]
+              flex
+              gap-[10px]
+              overflow-hidden
+            "
+            >
               {types.map((item) => (
                 <Badge key={item} text={formatFilterShowName(item)} />
               ))}
-            </TypesWrapper>
+            </div>
             {linkStreamId && <ScoresAvg linkId={data.linkStreamId} />}
-          </LeftBottom>
-        </Left>
-        <Logo src={logo} />
-      </CardBody>
+          </div>
+        </div>
+        <div
+          className={cn(
+            'w-[110px] h-full',
+            'max-sm:w-[48px] max-sm:h-[48px] max-sm:flex-shrink-0'
+          )}
+        >
+          <img
+            src={logo}
+            alt=""
+            className={cn(
+              'w-full h-full object-cover',
+              'max-sm:rounded-[10px]'
+            )}
+          />
+        </div>
+      </div>
     </CardWrapper>
   );
 }
@@ -51,87 +99,4 @@ const CardWrapper = styled(CardBase)`
   overflow: hidden;
   cursor: pointer;
   padding: 0;
-  ${isMobile &&
-  `
-    width: 200px;
-    height: 294px;
-    display: inline-block;
-    margin-right: 10px;
-  `}
-`;
-const CardBody = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  transition: all 0.3s;
-  &:hover {
-    transform: scale(1.05);
-  }
-  ${isMobile &&
-  `
-    flex-direction: column;
-    flex-direction: column-reverse;
-  `}
-`;
-const Left = styled.div`
-  width: 0;
-  flex: 1;
-  padding: 15px 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  ${isMobile &&
-  `
-    width: 100%;
-    padding: 10px;
-    padding-top: 20px;
-    gap: 8px;
-    justify-content: space-between;
-  `}
-`;
-const Name = styled(EllipsisText)`
-  color: #fff;
-
-  /* medium-16 */
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-`;
-const RecReason = styled.span`
-  /* Regular-14 */
-  font-family: Rubik;
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  background: linear-gradient(52deg, #cd62ff 35.31%, #62aaff 89.64%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-top: auto;
-`;
-const LeftBottom = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 6px;
-`;
-const TypesWrapper = styled.div`
-  width: 0;
-  flex: 1;
-  display: flex;
-  gap: 10px;
-  overflow: hidden;
-`;
-const Logo = styled.img`
-  width: 110px;
-  height: 100%;
-  object-fit: cover;
-  ${isMobile &&
-  `
-    width: 100%;
-    height: 200px;
-  `}
 `;

@@ -6,11 +6,12 @@ import {
   useRef,
   useState,
 } from 'react';
-import { UserDataType, makeCastAdd } from '@farcaster/hub-web';
+import { CastAddBody, UserDataType, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
+
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 import {
@@ -44,6 +45,7 @@ import ChannelSelect from './ChannelSelect';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
+import FarcasterInput from './FarcasterInput';
 
 export type EmbedWebsiteLink = {
   link: string;
@@ -66,6 +68,11 @@ export default function AddPostForm({
   embedWebsiteLink?: EmbedWebsiteLink;
 }) {
   const { user, isLogin: isLoginU3, login } = useLogin();
+  const farcasterInputRef = useRef<{
+    handleFarcasterSubmit: () => void;
+  }>();
+  const [farcasterInputText, setFarcasterInputText] = useState('');
+
   const {
     encryptedSigner,
     isConnected: isLoginFarcaster,
@@ -154,52 +161,65 @@ export default function AddPostForm({
     }
   };
 
-  const handleSubmitToFarcaster = useCallback(async () => {
-    if (!text || !encryptedSigner) return;
-    // const currFid = getCurrFid();
-    if (!farcasterUserFid) return;
-    let parentUrl;
-    if (channelValue !== 'Home') {
-      const ch = getChannelFromId(channelValue);
-      parentUrl = ch?.parent_url;
-    }
-    try {
-      const uploadedImgs = await uploadSelectedImages();
-      const embedWebsiteLinks = embedWebsiteLink?.link
-        ? [{ url: embedWebsiteLink?.link }]
-        : [];
-      // eslint-disable-next-line no-underscore-dangle
-      const cast = (
-        await makeCastAdd(
-          {
-            text,
-            embeds: [...uploadedImgs, ...embedWebsiteLinks],
-            embedsDeprecated: [],
-            mentions: [],
-            mentionsPositions: [],
-            parentUrl,
-          },
-          { fid: farcasterUserFid, network: FARCASTER_NETWORK },
-          encryptedSigner
-        )
-      )._unsafeUnwrap();
-      const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
-      if (result.isErr()) {
-        throw new Error(result.error.message);
+  const handleSubmitToFarcaster = useCallback(
+    async (castBody?: CastAddBody) => {
+      if (!text && !castBody) return;
+      if (!encryptedSigner) return;
+      // const currFid = getCurrFid();
+      if (!farcasterUserFid) return;
+      let parentUrl;
+      if (channelValue !== 'Home') {
+        const ch = getChannelFromId(channelValue);
+        parentUrl = ch?.parent_url;
       }
-      toast.success('successfully posted to farcaster');
-    } catch (error: unknown) {
-      console.error(error);
-      toast.error('failed to post to farcaster');
-    }
-  }, [
-    text,
-    encryptedSigner,
-    channel,
-    channelValue,
-    farcasterUserFid,
-    embedWebsiteLink,
-  ]);
+      try {
+        const uploadedImgs = await uploadSelectedImages();
+        const embedWebsiteLinks = embedWebsiteLink?.link
+          ? [{ url: embedWebsiteLink?.link }]
+          : [];
+        const castBodySubmit = {
+          text: castBody?.text || text,
+          embeds: [
+            ...(castBody?.embeds || []),
+            ...uploadedImgs,
+            ...embedWebsiteLinks,
+          ],
+          embedsDeprecated: [],
+          mentions: castBody?.mentions || [],
+          mentionsPositions: castBody?.mentionsPositions || [],
+          parentUrl,
+        };
+        // console.log('castBodySubmit', castBodySubmit);
+        // eslint-disable-next-line no-underscore-dangle
+        const cast = (
+          await makeCastAdd(
+            castBodySubmit,
+            { fid: farcasterUserFid, network: FARCASTER_NETWORK },
+            encryptedSigner
+          )
+        )._unsafeUnwrap();
+        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
+        if (result.isErr()) {
+          throw new Error(result.error.message);
+        }
+        cleanImage();
+        if (onSuccess) onSuccess();
+        toast.success('successfully posted to farcaster');
+      } catch (error: unknown) {
+        console.error(error);
+        toast.error('failed to post to farcaster');
+      }
+    },
+    [
+      text,
+      encryptedSigner,
+      channel,
+      channelValue,
+      farcasterUserFid,
+      embedWebsiteLink,
+      selectedImages,
+    ]
+  );
 
   const handleSubmitToLens = useCallback(async () => {
     if (!text) return;
@@ -218,9 +238,13 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createPostToLens, embedWebsiteLink]);
+  }, [text, createPostToLens, embedWebsiteLink, selectedImages]);
 
   const handleSubmit = useCallback(async () => {
+    if (platforms.has(SocialPlatform.Farcaster) && platforms.size === 1) {
+      farcasterInputRef.current?.handleFarcasterSubmit();
+      return;
+    }
     if (!text) {
       toast.warn('Please input text to publish.');
       return;
@@ -343,13 +367,22 @@ export default function AddPostForm({
         <UserPostWrapepr>
           {/* <UserAvatarStyled /> */}
           <ContentWrapper>
-            <ContentInput
-              placeholder="Create a post..."
-              disabled={!isLoginU3 || isPending}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              onPaste={handleImageUpload}
-            />
+            {(platforms.size === 1 &&
+              platforms.has(SocialPlatform.Farcaster) && (
+                <FarcasterInput
+                  ref={farcasterInputRef}
+                  farcasterSubmit={handleSubmitToFarcaster}
+                  textCb={setFarcasterInputText}
+                />
+              )) || (
+              <ContentInput
+                placeholder="Create a post..."
+                disabled={!isLoginU3 || isPending}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onPaste={handleImageUpload}
+              />
+            )}
             {isUploadingImages && (
               <ImagePreview
                 imagesPreview={imagesPreview}
@@ -401,7 +434,11 @@ export default function AddPostForm({
             Post to more than one protocol cannot mention other users
           </Description>
           <SubmitBtn
-            disabled={text === '' || platforms.size === 0 || isPending}
+            disabled={
+              (text || farcasterInputText) === '' ||
+              platforms.size === 0 ||
+              isPending
+            }
             onClick={() => {
               if (!isLoginU3) {
                 login();

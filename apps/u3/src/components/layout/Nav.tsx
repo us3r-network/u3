@@ -179,12 +179,8 @@ export const PcNavItem = styled.div<{ isActive?: boolean; disabled?: boolean }>`
     `};
 `;
 export const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
-  width: 16px;
-  height: 16px;
   flex-shrink: 0;
   svg {
-    width: 16px;
-    max-height: 16px;
     path {
       stroke: ${({ isActive }) => (isActive ? `#fff` : '#718096')};
       transition: all 0.3s ease-out;

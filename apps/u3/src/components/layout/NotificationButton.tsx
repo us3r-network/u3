@@ -6,6 +6,7 @@
  * @Description: file description
  */
 import styled from 'styled-components';
+import { useIsAuthenticated } from '@us3r-network/auth-with-rainbowkit';
 import { PcNavItem, PcNavItemIconBox } from './Nav';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
@@ -23,16 +24,25 @@ import { NavModalName, useNav } from '../../contexts/NavCtx';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 
 export default function NotificationButtonContainer() {
+  const isAuthenticated = useIsAuthenticated();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
   const fid = Number(useFarcasterCurrFid());
-
+  if (!isAuthenticated) return null;
   return (
     <>
       {/* TODO: 这里使用了非常不优雅的做法，因为在没有拿到Lens
         Profile的情况下，无法使用Lens的useUnreadLensNotificationCount，所以这里使用了两套Notification组件，
         等Lens Hooks V2这里需要重构 */}
-      {lensSessionProfileId ? (
+      {!lensSessionProfileId ? (
+        <NotificationStoreProviderNoLens
+          config={{
+            fid,
+          }}
+        >
+          <NotificationButtonNoLens />
+        </NotificationStoreProviderNoLens>
+      ) : (
         <NotificationStoreProvider
           config={{
             fid,
@@ -41,16 +51,6 @@ export default function NotificationButtonContainer() {
         >
           <NotificationButton />
         </NotificationStoreProvider>
-      ) : (
-        fid > 0 && (
-          <NotificationStoreProviderNoLens
-            config={{
-              fid,
-            }}
-          >
-            <NotificationButtonNoLens />
-          </NotificationStoreProviderNoLens>
-        )
       )}
     </>
   );

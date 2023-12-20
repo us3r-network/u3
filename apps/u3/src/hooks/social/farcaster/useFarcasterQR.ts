@@ -197,7 +197,10 @@ export default function useFarcasterQR() {
       // console.log('farcasterBiolinks', farcasterBiolinks);
       if (farcasterBiolinks?.data?.data?.length > 0) {
         const farsignBiolinks = farcasterBiolinks.data.data.filter(
-          (item) => item.data?.farcasterSignerType === FarcasterSignerType.QR
+          (item) =>
+            item.data?.farcasterSignerType === FarcasterSignerType.QR ||
+            (item.data?.farcasterSignerType === undefined &&
+              item.data?.signedKeyRequest)
         );
         const farsignBiolinkData = farsignBiolinks[0]
           ?.data as FarcasterBioLinkData;

@@ -1,9 +1,10 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
-import isURL from 'validator/lib/isURL';
+import { ArrowUpIcon } from '@radix-ui/react-icons';
+import { toast } from 'react-toastify';
 
 import { UserData } from 'src/utils/social/farcaster/user-data';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
@@ -33,6 +34,10 @@ import { PostCardMenuBtn } from '../PostCardMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { getEmbeds } from '../../../utils/social/farcaster/getEmbeds';
 import FCastText from './FCastText';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { pinupCastApi } from '@/services/social/api/farcaster';
+import useLogin from '@/hooks/shared/useLogin';
 import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
 import { SaveButton } from '@/components/shared/button/SaveButton';
 
@@ -66,9 +71,34 @@ export default function FCast({
     farcasterUserDataObj,
   });
   const [showMore, setShowMore] = useState(false);
-  const { following } = useFarcasterCtx();
+  const { following, pinupHashes, updatePinupHashes } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =
     useFarcasterFollowAction();
+  const { isAdmin } = useLogin();
+
+  const [pinuping, setPinuping] = useState(false);
+  const [hasPinup, setHasPinup] = useState(false);
+
+  const pinupAction = useCallback(
+    async (unPinup?: boolean) => {
+      if (pinuping) return;
+      setPinuping(true);
+      try {
+        await pinupCastApi(
+          Buffer.from(cast.hash.data).toString('hex'),
+          unPinup
+        );
+        await updatePinupHashes();
+        toast.success(`${unPinup ? 'Unpin' : 'pin'} to top success`);
+      } catch (e) {
+        console.error(e);
+        toast.error(`${unPinup ? 'Unpin' : 'pin'} to top failed`);
+      } finally {
+        setPinuping(false);
+      }
+    },
+    [pinuping]
+  );
 
   const embeds = useMemo(() => getEmbeds(cast), [cast]);
 
@@ -96,6 +126,14 @@ export default function FCast({
     if (isFollowing !== undefined) return isFollowing;
     return following.includes(userData.fid);
   }, [isFollowing, following, userData.fid]);
+
+  useEffect(() => {
+    if (pinupHashes.has(Buffer.from(cast.hash.data).toString('hex'))) {
+      setHasPinup(true);
+    } else {
+      setHasPinup(false);
+    }
+  }, [pinupHashes, cast.hash]);
 
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
@@ -131,30 +169,49 @@ export default function FCast({
             createdAt: cast.created_at || cast.createdAt,
           }}
         />
-        {showMenuBtn && (
-          <div
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            <PostCardMenuBtn
-              data={{
-                name: userData.display,
-                handle: userData.userName,
+        <div
+          className="flex items-center gap-2"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          {isAdmin && (
+            <Button
+              className={cn(
+                'w-5 h-5 p-0 rounded-full bg-inherit text-white hover:border',
+                hasPinup &&
+                  'border border-white bg-white text-black hover:bg-white'
+              )}
+              onClick={() => {
+                if (pinuping) return;
+                if (hasPinup) pinupAction(true);
+                else pinupAction();
               }}
-              isFollowed={followed}
-              followPending={isPending}
-              unfollowPending={isPending}
-              followAction={() => {
-                if (followed) {
-                  unfollowAction(userData.fid);
-                } else {
-                  followAction(userData.fid);
-                }
-              }}
-            />
-          </div>
-        )}
+            >
+              <ArrowUpIcon />
+            </Button>
+          )}
+          {showMenuBtn && (
+            <div>
+              <PostCardMenuBtn
+                data={{
+                  name: userData.display,
+                  handle: userData.userName,
+                }}
+                isFollowed={followed}
+                followPending={isPending}
+                unfollowPending={isPending}
+                followAction={() => {
+                  if (followed) {
+                    unfollowAction(userData.fid);
+                  } else {
+                    followAction(userData.fid);
+                  }
+                }}
+              />
+            </div>
+          )}
+        </div>
       </PostCardHeaderWrapper>
 
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>

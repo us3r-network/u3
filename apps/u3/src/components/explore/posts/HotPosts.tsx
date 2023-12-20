@@ -33,7 +33,7 @@ export default function HotPosts({
           </LoadingWrapper>
         ) : (
           <CardsLayout>
-            {posts.map(({ platform, data }) => {
+            {posts.map(({ platform, data }, idx) => {
               if (platform === SocialPlatform.Farcaster) {
                 const id = Buffer.from(data.hash.data).toString('hex');
                 return (
@@ -42,6 +42,7 @@ export default function HotPosts({
                     data={data}
                     farcasterUserData={farcasterUserData}
                     onClick={() => navigate(`/social/post-detail/fcast/${id}`)}
+                    idx={idx}
                   />
                 );
               }

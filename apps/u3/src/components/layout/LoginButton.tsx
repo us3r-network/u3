@@ -86,31 +86,35 @@ const Button = styled(ButtonPrimaryLine)<{ onlyIcon?: boolean }>`
   `}
 `;
 const LoginUser = styled(Button)<{ onlyIcon?: boolean }>`
-  gap: 0;
+  gap: 4px !important;
+  padding: 8px 10px !important;
   [data-us3r-component='UserAvatar'] {
-    width: 30px;
-    height: 30px;
+    width: 16px !important;
+    height: 16px !important;
   }
   [data-us3r-component='UserName'] {
-    flex: 1;
-    font-weight: 400;
-    line-height: 17px;
+    flex: 1 !important;
+    text-align: left !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    line-height: 17px !important;
 
-    color: #718096;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    color: #fff !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
   }
   ${({ onlyIcon }) =>
     onlyIcon &&
     `
+    padding: 0px !important;
     [data-us3r-component='UserAvatar'] {
-      width: 40px;
-      height: 40px;
+      width: 40px !important;
+      height: 40px !important;
     }
     [data-us3r-component="UserName"] {
-      flex: 0;
-      width: 0;
+      flex: 0 !important;
+      width: 0 !important;
     }
   `}
 `;
