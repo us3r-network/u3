@@ -197,6 +197,8 @@ export default function AddPostForm({
         if (result.isErr()) {
           throw new Error(result.error.message);
         }
+        cleanImage();
+        if (onSuccess) onSuccess();
         toast.success('successfully posted to farcaster');
       } catch (error: unknown) {
         console.error(error);
