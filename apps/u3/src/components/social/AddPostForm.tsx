@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
+
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 import {
@@ -178,7 +179,11 @@ export default function AddPostForm({
           : [];
         const castBodySubmit = {
           text: castBody?.text || text,
-          embeds: [...uploadedImgs, ...embedWebsiteLinks],
+          embeds: [
+            ...(castBody?.embeds || []),
+            ...uploadedImgs,
+            ...embedWebsiteLinks,
+          ],
           embedsDeprecated: [],
           mentions: castBody?.mentions || [],
           mentionsPositions: castBody?.mentionsPositions || [],

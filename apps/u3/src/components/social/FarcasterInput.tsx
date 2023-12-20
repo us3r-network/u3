@@ -1,5 +1,7 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { EditorContent, useEditor } from '@mod-protocol/react-editor';
 import { fetchUrlMetadata } from '@mod-protocol/core';
+
 import {
   formatPlaintextToHubCastMessage,
   getFarcasterMentions,
@@ -26,27 +28,28 @@ export default forwardRef(function FarcasterInput(
   },
   ref
 ) {
-  const { editor, handleSubmit, getText } = useEditor({
-    fetchUrlMetadata: getUrlMetadata,
-    onError: (error) => console.error(error),
-    onSubmit: async (cast) => {
-      const { text, embeds } = cast;
-      const formattedCast = await formatPlaintextToHubCastMessage({
-        text,
-        embeds,
-        parentUrl: undefined,
-        getMentionFidsByUsernames: getMentionFids,
-      });
-      if (formattedCast) {
-        farcasterSubmit(formattedCast);
-      }
-      return Promise.resolve(true);
-    }, // submit to your hub
-    linkClassName: 'text-[#2594ef]',
-    renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
-      getResults: getMentions,
-    }),
-  });
+  const { editor, handleSubmit, getText, getEmbeds, setEmbeds, addEmbed } =
+    useEditor({
+      fetchUrlMetadata: getUrlMetadata,
+      onError: (error) => console.error(error),
+      onSubmit: async (cast) => {
+        const { text, embeds } = cast;
+        const formattedCast = await formatPlaintextToHubCastMessage({
+          text,
+          embeds,
+          parentUrl: undefined,
+          getMentionFidsByUsernames: getMentionFids,
+        });
+        if (formattedCast) {
+          farcasterSubmit(formattedCast);
+        }
+        return Promise.resolve(true);
+      }, // submit to your hub
+      linkClassName: 'text-[#2594ef]',
+      renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
+        getResults: getMentions,
+      }),
+    });
 
   useImperativeHandle(ref, () => ({
     handleFarcasterSubmit() {
