@@ -1,13 +1,13 @@
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-07-05 15:35:42
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2023-03-02 14:35:16
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-20 09:59:26
  * @Description: 首页任务看板
  */
 import { useMemo } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
 import { MainWrapper } from '../../layout/Index';
@@ -23,7 +23,7 @@ export default function ContentsPageMobile({
   contents,
   getMore,
 }: ContentsPageProps) {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const renderMoreLoading = useMemo(
     () =>
@@ -60,7 +60,8 @@ export default function ContentsPageMobile({
             <ContentListMobile
               data={contents}
               onItemClick={(item) => {
-                navigate(`/contents/${item?.id || item?.uid}`);
+                // navigate(`/contents/${item?.id || item?.uid}`);
+                window.open(item?.link, '_blank');
               }}
             />
             {renderMoreLoading}
