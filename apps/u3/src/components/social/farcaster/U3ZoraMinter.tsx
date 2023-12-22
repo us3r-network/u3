@@ -43,6 +43,7 @@ export default function U3ZoraMinter({
   const [transactionData, setTransactionData] = useState<ModTransactionData>(); // [data, setData
   const [modMetadataCheckDone, setModMetadataCheckDone] = useState(false);
   const { address } = useAccount();
+  const [resultUrl, setResultUrl] = useState(url);
   const { walletAddress, isLogin, login } = useLogin();
   const network = useNetwork();
   //   const { currFid } = useFarcasterCtx();
@@ -51,14 +52,27 @@ export default function U3ZoraMinter({
     [key: string]: UrlMetadata;
   }>({});
   const modData = useMemo(() => {
-    return modMetadata[url];
-  }, [modMetadata, url]);
+    return modMetadata[resultUrl];
+  }, [modMetadata, resultUrl]);
 
   const getModMetadata = useCallback(async () => {
-    const data = await getMetadataWithMod([url]);
+    const img = embedMetadata.image;
+    const imgTokenId = img.split('/').pop();
+    const urlArr = url.split('/');
+    const urlTokenId = urlArr.pop();
+    if (imgTokenId !== urlTokenId) {
+      // console.log('replace tokenId', { imgTokenId }, { urlTokenId });
+      urlArr.push(imgTokenId);
+    } else {
+      urlArr.push(urlTokenId);
+    }
+    const urlResult = urlArr.join('/');
+    const data = await getMetadataWithMod([urlResult]);
+    // console.log('data', resultUrl, data);
+    setResultUrl(urlResult);
     setModMetadata(data);
     setModMetadataCheckDone(true);
-  }, [url]);
+  }, [url, embedMetadata]);
 
   const sendEthTransactionAction = useCallback(
     async ({ data, chainId }: { data: any; chainId: string }) => {
