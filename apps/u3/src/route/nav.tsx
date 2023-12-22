@@ -15,7 +15,8 @@ import { ReactComponent as BookmarkSvg } from './svgs/bookmark.svg';
 import { ReactComponent as BellSvg } from './svgs/bell.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
-import NotificationButton from '@/components/layout/NotificationButton';
+import NotificationButton from '@/components/notification/NotificationNavBtn';
+import MobileNotificationNavBtn from '@/components/notification/MobileNotificationNavBtn';
 
 export type CustomNavObject = {
   name: string;
@@ -61,17 +62,15 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  ...(isMobile
-    ? []
-    : [
-        {
-          name: 'notifications',
-          activeRouteKeys: [RouteKey.notification],
-          icon: React.createElement(BellSvg),
-          route: getRoute(RouteKey.notification),
-          component: <NotificationButton key={RouteKey.notification} />,
-        },
-      ]),
+  {
+    name: 'notifications',
+    activeRouteKeys: [RouteKey.notification],
+    component: isMobile ? (
+      <MobileNotificationNavBtn key={RouteKey.notification} />
+    ) : (
+      <NotificationButton key={RouteKey.notification} />
+    ),
+  },
   ...(isMobile
     ? [
         {
@@ -82,12 +81,17 @@ export const navs: CustomNavObject[] = [
         },
       ]
     : []),
-  {
-    name: 'Save',
-    activeRouteKeys: [RouteKey.save],
-    icon: React.createElement(BookmarkSvg),
-    route: getRoute(RouteKey.save),
-  },
+  ...(isMobile
+    ? []
+    : [
+        {
+          name: 'Save',
+          activeRouteKeys: [RouteKey.save],
+          icon: React.createElement(BookmarkSvg),
+          route: getRoute(RouteKey.save),
+        },
+      ]),
+
   // {
   //   name: 'profile',
   //   activeRouteKeys: [RouteKey.profile],
