@@ -9,7 +9,7 @@ import {
 } from '@mod-protocol/farcaster';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { CastAddBody } from '@farcaster/hub-web';
-import { createRenderMentionsSuggestionConfig } from './farcaster/createRenderMentionsSuggestionConfig';
+import { createRenderMentionsSuggestionConfig } from './createRenderMentionsSuggestionConfig';
 
 const MOD_API_URL = 'https://api.modprotocol.org/api';
 const getMentions = getFarcasterMentions(MOD_API_URL);

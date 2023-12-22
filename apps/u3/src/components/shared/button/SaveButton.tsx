@@ -15,7 +15,6 @@ export function SaveButton({ ...props }: FavorButtonProps) {
   return (
     <FavorButtonStyled {...props}>
       {({ isFavoring, isFavored, favorsCount }) => {
-        console.log(isFavoring, isFavored, favorsCount);
         return (
           <div title={`This is saved ${favorsCount} times`}>
             {(() => {

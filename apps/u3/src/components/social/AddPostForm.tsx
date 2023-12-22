@@ -45,7 +45,7 @@ import ChannelSelect from './ChannelSelect';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
-import FarcasterInput from './FarcasterInput';
+import FarcasterInput from './farcaster/FarcasterInput';
 
 export type EmbedWebsiteLink = {
   link: string;
