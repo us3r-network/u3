@@ -1,4 +1,5 @@
 import axios, { AxiosPromise } from 'axios';
+import { UrlMetadata } from '@mod-protocol/core';
 import { ApiResp, FarCast, FarCastEmbedMeta } from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import request from '@/services/shared/api/request';
@@ -391,4 +392,21 @@ export function getPinupHashes() {
     url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/pinup-hashes`,
     method: 'get',
   });
+}
+
+export async function getMetadataWithMod(
+  urls: string[]
+): Promise<{ [key: string]: UrlMetadata }> {
+  const resp = await fetch(
+    'https://api.modprotocol.org/api/cast-embeds-metadata/by-url',
+    {
+      body: JSON.stringify(urls),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+  const metadata = await resp.json();
+  return metadata;
 }
