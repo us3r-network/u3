@@ -27,7 +27,7 @@ function Layout() {
   return (
     <LayoutWrapper id="layout-wrapper">
       {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
-      {isMobile ? <MobileNav /> : null}
+      {ready && isMobile ? <MobileNav /> : null}
       {isMobile ? (
         <MobileContentBox>
           <Main />

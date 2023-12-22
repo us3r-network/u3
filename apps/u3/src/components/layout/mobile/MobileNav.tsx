@@ -38,15 +38,6 @@ const MobileNavWrapper = styled.div`
       flex: 1;
       justify-content: center;
       background: transparent !important;
-      div:last-of-type {
-        display: none;
-      }
-    }
-    & > div:nth-child(5) {
-      display: none;
-    }
-    & > div:nth-child(6) {
-      display: none;
     }
   }
 `;

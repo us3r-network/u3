@@ -372,6 +372,7 @@ export const routes: CutomRouteObject[] = [
     path: '/notification',
     element: loadContainerElement('Notification'),
     key: RouteKey.notification,
+    title: 'Notifications',
   },
   NoMatchRoute,
 
