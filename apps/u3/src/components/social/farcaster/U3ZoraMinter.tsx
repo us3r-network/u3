@@ -70,14 +70,14 @@ export default function U3ZoraMinter({
           await switchNetwork({ chainId: parsedChainId });
 
         // Send the transaction
-        console.log('data', data, { chainId });
+        // console.log('data', data, { chainId });
         const { hash } = await sendTransaction({
           ...data,
           value: data.value ? BigInt(data.value) : 0n,
           //   data: (data.data as `0x${string}`) || '0x',
           chainId: parsedChainId,
         });
-        console.log('hash', hash);
+        // console.log('hash', hash);
         // onSubmitted(hash);
 
         const { status } = await waitForTransaction({
@@ -107,13 +107,13 @@ export default function U3ZoraMinter({
     }
     try {
       setMinting(true);
-      console.log('modData', modData);
+      // console.log('modData', modData);
       const data = await getTransactionDataFromMod(address, modData);
       if (data.message) {
         toast.error(data.message);
         return;
       }
-      console.log('transactionData', data);
+      // console.log('transactionData', data);
       setTransactionData(data);
       await sendEthTransactionAction(data);
     } catch (e) {
