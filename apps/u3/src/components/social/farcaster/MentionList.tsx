@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+
 'use client';
 
 import { FarcasterMention } from '@mod-protocol/farcaster';
