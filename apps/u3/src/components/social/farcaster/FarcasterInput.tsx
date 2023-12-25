@@ -1,5 +1,7 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { EditorContent, useEditor } from '@mod-protocol/react-editor';
 import { fetchUrlMetadata } from '@mod-protocol/core';
+
 import {
   formatPlaintextToHubCastMessage,
   getFarcasterMentions,
@@ -7,7 +9,7 @@ import {
 } from '@mod-protocol/farcaster';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { CastAddBody } from '@farcaster/hub-web';
-import { createRenderMentionsSuggestionConfig } from './farcaster/createRenderMentionsSuggestionConfig';
+import { createRenderMentionsSuggestionConfig } from './createRenderMentionsSuggestionConfig';
 
 const MOD_API_URL = 'https://api.modprotocol.org/api';
 const getMentions = getFarcasterMentions(MOD_API_URL);
@@ -26,27 +28,28 @@ export default forwardRef(function FarcasterInput(
   },
   ref
 ) {
-  const { editor, handleSubmit, getText } = useEditor({
-    fetchUrlMetadata: getUrlMetadata,
-    onError: (error) => console.error(error),
-    onSubmit: async (cast) => {
-      const { text, embeds } = cast;
-      const formattedCast = await formatPlaintextToHubCastMessage({
-        text,
-        embeds,
-        parentUrl: undefined,
-        getMentionFidsByUsernames: getMentionFids,
-      });
-      if (formattedCast) {
-        farcasterSubmit(formattedCast);
-      }
-      return Promise.resolve(true);
-    }, // submit to your hub
-    linkClassName: 'text-[#2594ef]',
-    renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
-      getResults: getMentions,
-    }),
-  });
+  const { editor, handleSubmit, getText, getEmbeds, setEmbeds, addEmbed } =
+    useEditor({
+      fetchUrlMetadata: getUrlMetadata,
+      onError: (error) => console.error(error),
+      onSubmit: async (cast) => {
+        const { text, embeds } = cast;
+        const formattedCast = await formatPlaintextToHubCastMessage({
+          text,
+          embeds,
+          parentUrl: undefined,
+          getMentionFidsByUsernames: getMentionFids,
+        });
+        if (formattedCast) {
+          farcasterSubmit(formattedCast);
+        }
+        return Promise.resolve(true);
+      }, // submit to your hub
+      linkClassName: 'text-[#2594ef]',
+      renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
+        getResults: getMentions,
+      }),
+    });
 
   useImperativeHandle(ref, () => ({
     handleFarcasterSubmit() {

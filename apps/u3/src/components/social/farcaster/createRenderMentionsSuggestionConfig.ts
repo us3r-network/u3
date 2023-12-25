@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
+
 import tippy from 'tippy.js';
 import { ReactRenderer } from '@tiptap/react';
 import { FarcasterMention } from '@mod-protocol/farcaster';

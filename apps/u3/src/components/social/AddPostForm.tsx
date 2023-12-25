@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
+
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 
 import {
@@ -44,7 +45,7 @@ import ChannelSelect from './ChannelSelect';
 import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
-import FarcasterInput from './FarcasterInput';
+import FarcasterInput from './farcaster/FarcasterInput';
 
 export type EmbedWebsiteLink = {
   link: string;
@@ -178,7 +179,11 @@ export default function AddPostForm({
           : [];
         const castBodySubmit = {
           text: castBody?.text || text,
-          embeds: [...uploadedImgs, ...embedWebsiteLinks],
+          embeds: [
+            ...(castBody?.embeds || []),
+            ...uploadedImgs,
+            ...embedWebsiteLinks,
+          ],
           embedsDeprecated: [],
           mentions: castBody?.mentions || [],
           mentionsPositions: castBody?.mentionsPositions || [],
@@ -212,6 +217,7 @@ export default function AddPostForm({
       channelValue,
       farcasterUserFid,
       embedWebsiteLink,
+      selectedImages,
     ]
   );
 
@@ -232,7 +238,7 @@ export default function AddPostForm({
       console.error(error);
       toast.error('failed to post to lens');
     }
-  }, [text, createPostToLens, embedWebsiteLink]);
+  }, [text, createPostToLens, embedWebsiteLink, selectedImages]);
 
   const handleSubmit = useCallback(async () => {
     if (platforms.has(SocialPlatform.Farcaster) && platforms.size === 1) {

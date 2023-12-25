@@ -18,6 +18,7 @@ import Menu from './menu';
 import DappMenu from '../dapp/launcher/DappMenu';
 import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';
+import { MobileGuide } from './mobile/MobileGuide';
 
 function Layout() {
   const { ready } = useAuthentication();
@@ -26,7 +27,7 @@ function Layout() {
   return (
     <LayoutWrapper id="layout-wrapper">
       {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
-      {isMobile ? <MobileNav /> : null}
+      {ready && isMobile ? <MobileNav /> : null}
       {isMobile ? (
         <MobileContentBox>
           <Main />
@@ -45,7 +46,7 @@ function Layout() {
           <DappMenu />
         </RightBox>
       )}
-
+      <MobileGuide />
       <ToastContainer
         position="top-right"
         autoClose={3000}
