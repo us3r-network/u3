@@ -6,21 +6,29 @@ import { FarcasterChannel } from './useFarcasterChannel';
 export default function useFarcasterTrendChannel(
   farcasterChannels: FarcasterChannel[]
 ) {
+  const [loading, setLoading] = useState<boolean>(false);
   const [trendChannel, setTrendChannel] = useState<
     {
       parent_url: string;
       rootParentUrl: string;
       count: string;
+      followerCount: string;
     }[]
   >([]);
 
   const loadTrendChannel = async () => {
-    const resp = await getFarcasterChannelTrends();
-    if (resp.data.code !== 0) {
-      console.error(resp.data.msg);
-      return;
+    try {
+      setLoading(true);
+      const resp = await getFarcasterChannelTrends();
+      if (resp.data.code !== 0) {
+        console.error(resp.data.msg);
+        setLoading(false);
+        return;
+      }
+      setTrendChannel(resp.data.data.data);
+    } finally {
+      setLoading(false);
     }
-    setTrendChannel(resp.data.data.data);
   };
 
   const channels = useMemo(() => {
@@ -34,6 +42,7 @@ export default function useFarcasterTrendChannel(
           return {
             ...c,
             count: '0',
+            followerCount: '0',
           };
         return {
           ...trend,
@@ -52,5 +61,6 @@ export default function useFarcasterTrendChannel(
   return {
     channels,
     trendChannel,
+    loading,
   };
 }

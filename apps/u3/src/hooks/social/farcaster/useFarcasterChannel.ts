@@ -12,6 +12,7 @@ export type FarcasterChannel = {
   image: string;
   channel_id: string;
   count?: string; // trendingCount
+  followerCount?: string; // followerCount
 };
 
 export default function useFarcasterChannel({

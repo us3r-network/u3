@@ -252,7 +252,12 @@ export function getFarcasterChannelFeeds({
 
 export function getFarcasterChannelTrends(limit = 500): AxiosPromise<
   ApiResp<{
-    data: { parent_url: string; rootParentUrl: string; count: string }[];
+    data: {
+      parent_url: string;
+      rootParentUrl: string;
+      count: string;
+      followerCount: string;
+    }[];
   }>
 > {
   return axios({

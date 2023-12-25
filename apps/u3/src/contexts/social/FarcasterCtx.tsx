@@ -98,6 +98,7 @@ export interface FarcasterContextData {
   pinupHashes: Set<string>;
   updatePinupHashes: () => Promise<void>;
   trendChannels: FarcasterChannel[];
+  trendChannelsLoading: boolean;
   farcasterChannels: FarcasterChannel[];
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
@@ -172,7 +173,7 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
 
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
-  const { channels: trendChannels } =
+  const { channels: trendChannels, loading: trendChannelsLoading } =
     useFarcasterTrendChannel(farcasterChannels);
 
   const openFarcasterSelectModal = useCallback(() => {
@@ -309,6 +310,7 @@ export default function FarcasterProvider({
         updatePinupHashes,
         pinupHashes,
         trendChannels,
+        trendChannelsLoading,
         farcasterChannels,
         getChannelFromId,
         getChannelFromUrl,
