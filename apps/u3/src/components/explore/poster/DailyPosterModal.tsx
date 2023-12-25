@@ -6,6 +6,7 @@ import DailyPosterLayout, {
 import ModalBase from '../../common/modal/ModalBase';
 import PosterModalBtns from './PosterModalBtns';
 import { API_BASE_URL } from '@/constants';
+import SubscribePosterForm from './SubscribePosterForm';
 
 type Props = DailyPosterLayoutProps & {
   open: boolean;
@@ -26,6 +27,7 @@ export default function DailyPosterModal({
       <ModalBody>
         <PosterModalBtns posterImg={posterImg} onClose={closeModal} />
         <PosterImg src={posterImg} />
+        <SubscribePosterForm />
 
         <DailyPosterLayout
           id="posterLayout"

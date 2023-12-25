@@ -23,6 +23,7 @@ export default function ModalContainer({
   afterCloseAction,
   zIndex,
   contentTop,
+  contentTransform,
 }: {
   children: React.ReactNode;
   open: boolean;
@@ -30,6 +31,7 @@ export default function ModalContainer({
   afterCloseAction?: () => void;
   zIndex?: number;
   contentTop?: string;
+  contentTransform?: string;
 }) {
   return (
     <Modal
@@ -41,6 +43,7 @@ export default function ModalContainer({
         content: {
           ...modalStyles.content,
           top: contentTop || '50%',
+          transform: contentTransform || 'translate(-50%, -50%)',
         },
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',

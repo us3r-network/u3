@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from 'react-aria-components';
 import ArrowDown from '../common/icons/ArrowDown';
-import { getChannel } from '../../utils/social/farcaster/getChannel';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function ChannelSelect({
   selectChannelId,
@@ -18,6 +18,7 @@ export default function ChannelSelect({
   selectChannelId: string;
   setSelectChannelId: (id: string) => void;
 }) {
+  const { farcasterChannels } = useFarcasterCtx();
   const [value, setValue] = useState('');
   const options = useMemo(() => {
     return [
@@ -26,7 +27,7 @@ export default function ChannelSelect({
         channel_id: 'Home',
         image: '/social/imgs/channel-home.png',
       },
-      ...getChannel().map((c) => ({
+      ...farcasterChannels.map((c) => ({
         name: c.name,
         channel_id: c.channel_id,
         image: c.image,
@@ -34,7 +35,7 @@ export default function ChannelSelect({
     ].filter((c) => {
       return c.name.toLowerCase().includes(value.toLowerCase());
     });
-  }, [value]);
+  }, [value, farcasterChannels]);
 
   const channel = useMemo(() => {
     return options.find((c) => c.channel_id === selectChannelId);

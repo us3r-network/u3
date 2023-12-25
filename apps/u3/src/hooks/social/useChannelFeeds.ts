@@ -5,14 +5,14 @@ import {
   getFarcasterChannelFeeds,
 } from 'src/services/social/api/farcaster';
 import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
-import { getChannel } from 'src/utils/social/farcaster/getChannel';
 
 import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function useChannelFeeds() {
   const { channelId } = useParams();
   const [mounted, setMounted] = useState(false);
-
+  const { farcasterChannels } = useFarcasterCtx();
   const [feeds, setFeeds] = useState<{ [key: string]: any[] }>({});
   const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
@@ -21,9 +21,11 @@ export default function useChannelFeeds() {
   const [moreLoading, setMoreLoading] = useState(false);
 
   const channel = useMemo(() => {
-    const channelData = getChannel().find((c) => c.channel_id === channelId);
+    const channelData = farcasterChannels.find(
+      (c) => c.channel_id === channelId
+    );
     return channelData;
-  }, [channelId]);
+  }, [channelId, farcasterChannels]);
 
   const loadChannelCasts = useCallback(async () => {
     if (!channel) return;

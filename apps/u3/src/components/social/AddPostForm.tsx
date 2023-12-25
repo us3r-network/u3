@@ -42,7 +42,6 @@ import useLogin from '../../hooks/shared/useLogin';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import { Channel } from '../../services/social/types/farcaster';
 import ChannelSelect from './ChannelSelect';
-import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
 import FarcasterInput from './farcaster/FarcasterInput';
@@ -79,6 +78,7 @@ export default function AddPostForm({
     currFid: farcasterUserFid,
     currUserInfo: farcasterUserInfo,
     openFarcasterQR,
+    getChannelFromId,
   } = useFarcasterCtx();
   const {
     sessionProfile: lensSessionProfile,
@@ -218,6 +218,7 @@ export default function AddPostForm({
       farcasterUserFid,
       embedWebsiteLink,
       selectedImages,
+      getChannelFromId,
     ]
   );
 

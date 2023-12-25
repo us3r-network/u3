@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { getFarcasterChannelTrends } from 'src/services/social/api/farcaster';
-import FarcasterChannelData from '../../../constants/warpcast.json';
 
-export default function useFarcasterTrendChannel() {
+import { getFarcasterChannelTrends } from 'src/services/social/api/farcaster';
+import { FarcasterChannel } from './useFarcasterChannel';
+
+export default function useFarcasterTrendChannel(
+  farcasterChannels: FarcasterChannel[]
+) {
   const [loading, setLoading] = useState<boolean>(false);
   const [trendChannel, setTrendChannel] = useState<
     {
@@ -29,24 +32,27 @@ export default function useFarcasterTrendChannel() {
   };
 
   const channels = useMemo(() => {
-    return FarcasterChannelData.map((c) => {
-      const trend = trendChannel.find(
-        (t) => t.parent_url === c.parent_url || t.rootParentUrl === c.parent_url
-      );
-      if (!trend)
+    return farcasterChannels
+      .map((c) => {
+        const trend = trendChannel.find(
+          (t) =>
+            t.parent_url === c.parent_url || t.rootParentUrl === c.parent_url
+        );
+        if (!trend)
+          return {
+            ...c,
+            count: '0',
+            followerCount: '0',
+          };
         return {
+          ...trend,
           ...c,
-          count: '0',
-          followerCount: '0',
         };
-      return {
-        ...trend,
-        ...c,
-      };
-    }).sort((a, b) => {
-      return Number(b.count) - Number(a.count);
-    });
-  }, [trendChannel]);
+      })
+      .sort((a, b) => {
+        return Number(b.count) - Number(a.count);
+      });
+  }, [trendChannel, farcasterChannels]);
 
   useEffect(() => {
     loadTrendChannel();

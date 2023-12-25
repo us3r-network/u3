@@ -399,6 +399,13 @@ export function getPinupHashes() {
   });
 }
 
+export function getFarcasterChannels() {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/channels`,
+    method: 'get',
+  });
+}
+
 export async function getMetadataWithMod(
   urls: string[]
 ): Promise<{ [key: string]: UrlMetadata }> {

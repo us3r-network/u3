@@ -10,7 +10,7 @@ import {
 import { processMetadata } from '../utils/news/link';
 import ExploreLayout from '../components/explore/ExploreLayout';
 import { TopChannelsData } from '@/components/explore/channels/TopChannels';
-import useFarcasterTrendChannel from '@/hooks/social/farcaster/useFarcasterTrendChannel';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 type HotPostsState = {
@@ -124,10 +124,10 @@ export default function Explore() {
       });
   }, []);
 
-  const { channels, loading } = useFarcasterTrendChannel();
+  const { trendChannels, trendChannelsLoading } = useFarcasterCtx();
   useEffect(() => {
     setTopChannels({
-      channels: (channels || []).splice(0, 4).map((item) => {
+      channels: (trendChannels || []).splice(0, 4).map((item) => {
         return {
           channel_id: item.channel_id,
           logo: item?.image,
@@ -136,9 +136,9 @@ export default function Explore() {
           postCount: Number(item?.count),
         };
       }),
-      isLoading: loading,
+      isLoading: trendChannelsLoading,
     });
-  }, [channels, loading]);
+  }, [trendChannels, trendChannelsLoading]);
 
   return (
     <ExploreLayout

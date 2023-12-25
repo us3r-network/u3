@@ -19,7 +19,8 @@ export default function MultiPlatformShareModal({
       open={open}
       closeModal={closeModal}
       zIndex={300}
-      contentTop="30%"
+      contentTop="60px"
+      contentTransform="translateX(-50%)"
     >
       <ModalBody isMobile={isMobile}>
         <CloseBtn onClick={closeModal} />
