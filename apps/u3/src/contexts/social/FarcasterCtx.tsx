@@ -88,7 +88,6 @@ export interface FarcasterContextData {
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
-  channels: FarcasterChannel[];
   following: string[];
   setFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   joinChannel: (parent_url: string) => Promise<void>;
@@ -98,6 +97,7 @@ export interface FarcasterContextData {
   setSignerSelectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   pinupHashes: Set<string>;
   updatePinupHashes: () => Promise<void>;
+  trendChannels: FarcasterChannel[];
   farcasterChannels: FarcasterChannel[];
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
@@ -172,7 +172,8 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
 
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
-  const { channels } = useFarcasterTrendChannel(farcasterChannels);
+  const { channels: trendChannels } =
+    useFarcasterTrendChannel(farcasterChannels);
 
   const openFarcasterSelectModal = useCallback(() => {
     setSignerSelectModalOpen(true);
@@ -298,7 +299,6 @@ export default function FarcasterProvider({
         openFarcasterQR: openFarcasterSelectModal,
         farcasterUserData,
         setFarcasterUserData,
-        channels,
         following,
         setFollowing,
         userChannels,
@@ -308,6 +308,7 @@ export default function FarcasterProvider({
         setSignerSelectModalOpen,
         updatePinupHashes,
         pinupHashes,
+        trendChannels,
         farcasterChannels,
         getChannelFromId,
         getChannelFromUrl,
