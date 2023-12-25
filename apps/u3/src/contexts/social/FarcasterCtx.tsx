@@ -21,7 +21,10 @@ import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
 import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
 import useFarcasterTrendChannel from 'src/hooks/social/farcaster/useFarcasterTrendChannel';
 import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
-import useFarcasterChannel from 'src/hooks/social/farcaster/useFarcasterChannel';
+import useFarcasterChannel, {
+  FarcasterChannel,
+} from 'src/hooks/social/farcaster/useFarcasterChannel';
+
 import {
   getDefaultFarcaster,
   setDefaultFarcaster,
@@ -69,13 +72,6 @@ export type FarcasterUserData = {
   [key: string]: { type: number; value: string }[];
 };
 
-export type FarcasterChannel = {
-  name?: string;
-  parent_url: string;
-  image: string;
-  channel_id: string;
-  count: string;
-};
 export interface FarcasterContextData {
   currFid: number | undefined;
   setCurrFid: React.Dispatch<React.SetStateAction<number | undefined>>;
@@ -92,7 +88,6 @@ export interface FarcasterContextData {
   openFarcasterQR: () => void;
   farcasterUserData: FarcasterUserData;
   setFarcasterUserData: React.Dispatch<React.SetStateAction<FarcasterUserData>>;
-  channels: FarcasterChannel[];
   following: string[];
   setFollowing: React.Dispatch<React.SetStateAction<string[]>>;
   joinChannel: (parent_url: string) => Promise<void>;
@@ -102,6 +97,10 @@ export interface FarcasterContextData {
   setSignerSelectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   pinupHashes: Set<string>;
   updatePinupHashes: () => Promise<void>;
+  trendChannels: FarcasterChannel[];
+  farcasterChannels: FarcasterChannel[];
+  getChannelFromId: (id: string) => FarcasterChannel | null;
+  getChannelFromUrl: (url: string) => FarcasterChannel | null;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -142,10 +141,17 @@ export default function FarcasterProvider({
   useEffect(() => {
     setFollowing(farcasterFollowData?.followingData || []);
   }, [farcasterFollowData]);
-  const { userChannels, getUserChannels, joinChannel, unPinChannel } =
-    useFarcasterChannel({
-      currFid,
-    });
+  const {
+    userChannels,
+    getUserChannels,
+    joinChannel,
+    unPinChannel,
+    farcasterChannels,
+    getChannelFromId,
+    getChannelFromUrl,
+  } = useFarcasterChannel({
+    currFid,
+  });
 
   const { walletCheckStatus, walletUserData, walletFid, walletSigner } =
     useFarcasterWallet();
@@ -166,7 +172,8 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
 
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
-  const { channels } = useFarcasterTrendChannel();
+  const { channels: trendChannels } =
+    useFarcasterTrendChannel(farcasterChannels);
 
   const openFarcasterSelectModal = useCallback(() => {
     setSignerSelectModalOpen(true);
@@ -292,7 +299,6 @@ export default function FarcasterProvider({
         openFarcasterQR: openFarcasterSelectModal,
         farcasterUserData,
         setFarcasterUserData,
-        channels,
         following,
         setFollowing,
         userChannels,
@@ -302,6 +308,10 @@ export default function FarcasterProvider({
         setSignerSelectModalOpen,
         updatePinupHashes,
         pinupHashes,
+        trendChannels,
+        farcasterChannels,
+        getChannelFromId,
+        getChannelFromUrl,
       }}
     >
       {children}

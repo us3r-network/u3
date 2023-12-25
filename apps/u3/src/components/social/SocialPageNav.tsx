@@ -1,11 +1,12 @@
+import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
-import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
 import PinChannelBtn from './PinChannelBtn';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -57,8 +58,12 @@ export function SocialBackNav({
   isChannel?: boolean;
   channelId?: string;
 }) {
+  const { getChannelFromId } = useFarcasterCtx();
   const navigate = useNavigate();
-  const channel = isChannel ? getChannelFromId(channelId) : null;
+  const channel = useMemo(() => {
+    return isChannel ? getChannelFromId(channelId) : null;
+  }, [channelId, getChannelFromId]);
+
   return (
     <SocialNavWrapper>
       {!isMobile && (
@@ -80,10 +85,10 @@ export function SocialBackNav({
             {channel && (
               <>
                 <span>#</span>
-                <img src={channel.image} alt="" />
+                <img src={channel?.image} alt="" />
               </>
             )}
-            <span>{isChannel ? channel.name : title}</span>
+            <span>{isChannel && channel ? channel.name : title}</span>
           </div>
         </div>
         {isChannel && channel && (

@@ -3,16 +3,65 @@ import {
   getUserChannels,
   pinFarcasterChannel,
   unPinFarcasterChannel,
+  getFarcasterChannels,
 } from 'src/services/social/api/farcaster';
+
+export type FarcasterChannel = {
+  name: string;
+  parent_url: string;
+  image: string;
+  channel_id: string;
+  count?: string; // trendingCount
+};
 
 export default function useFarcasterChannel({
   currFid,
 }: {
   currFid: string | number;
 }) {
+  const [farcasterChannels, setFarcasterChannels] = useState<
+    FarcasterChannel[]
+  >([]);
   const [userChannels, setUserChannels] = useState<{ parent_url: string }[]>(
     []
   );
+  const [mounted, setMounted] = useState(false);
+
+  const getAllChannels = useCallback(async () => {
+    try {
+      const resp = await getFarcasterChannels();
+      if (resp.data.code === 0) {
+        const { channels } = resp.data.data;
+
+        setFarcasterChannels(channels);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const getChannelFromId = useCallback(
+    (id: string) => {
+      const channel = farcasterChannels.find((c) => c.channel_id === id);
+      if (channel) {
+        return channel;
+      }
+      return null;
+    },
+    [farcasterChannels]
+  );
+
+  const getChannelFromUrl = useCallback(
+    (url: string) => {
+      const channel = farcasterChannels.find((c) => c.parent_url === url);
+      if (channel) {
+        return channel;
+      }
+      return null;
+    },
+    [farcasterChannels]
+  );
+
   const getUserChannelsAction = useCallback(async () => {
     if (!currFid) return;
     try {
@@ -53,11 +102,20 @@ export default function useFarcasterChannel({
   );
 
   useEffect(() => {
+    if (!mounted) return;
     getUserChannelsAction();
-  }, [getUserChannelsAction]);
+    getAllChannels();
+  }, [mounted, getUserChannelsAction, getAllChannels]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return {
+    farcasterChannels,
     userChannels,
+    getChannelFromUrl,
+    getChannelFromId,
     getUserChannels: getUserChannelsAction,
     joinChannel,
     unPinChannel,

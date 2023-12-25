@@ -13,7 +13,8 @@ import ChannelItem from './ChannelItem';
 
 export default function TrendChannel() {
   const navigate = useNavigate();
-  const { channels } = useFarcasterCtx();
+  const { trendChannels: channels } = useFarcasterCtx();
+
   if (channels.length === 0) {
     return null;
   }
