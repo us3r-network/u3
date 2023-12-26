@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { useNetwork, useSwitchNetwork, useWalletClient } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { TokenInfo, useMint } from '../../hooks/dapp/useMint';
 import { ButtonPrimary } from '../common/button/ButtonBase';
 import { useCreate1155Token } from '../../hooks/dapp/useCreate1155Token';
@@ -320,10 +321,13 @@ function NFTDetailModal({
 }: NFTDetailModalProps) {
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient, isLoading: isLoadingWalletClient } =
+    useWalletClient();
+  const { openConnectModal } = useConnectModal();
   const switchChain = () => {
-    walletClient.addChain({ chain: zoraDappsNetwork });
-    switchNetwork(ziraChainId);
+    if (!isLoadingWalletClient && !walletClient) openConnectModal?.();
+    walletClient?.addChain({ chain: zoraDappsNetwork });
+    switchNetwork?.(ziraChainId);
   };
   return (
     <ModalContainer open={open} closeModal={closeModal} zIndex={100}>

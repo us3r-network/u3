@@ -52,7 +52,7 @@ export default function Header({
   const u3DappRoutePath = data?.url?.replace('https://u3.xyz', '');
 
   const [linkParam, setLinkParam] = useState(null);
-  console.log('linkParam', data);
+  // console.log('linkParam', data);
   useEffect(() => {
     setLinkParam({
       url: data.url,
