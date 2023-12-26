@@ -74,47 +74,53 @@ export default function U3ZoraMinter({
     setModMetadataCheckDone(true);
   }, [url, embedMetadata]);
 
-  const sendEthTransactionAction = useCallback(
-    async ({ data, chainId }: { data: any; chainId: string }) => {
-      try {
-        const parsedChainId = parseInt(chainId, 10);
+  const sendEthTransactionAction = async ({
+    data,
+    chainId,
+  }: {
+    data: any;
+    chainId: string;
+  }) => {
+    try {
+      const parsedChainId = parseInt(chainId, 10);
 
-        // Switch chains if the user is not on the right one
-        if (network.chain?.id !== parsedChainId)
-          await switchNetwork({ chainId: parsedChainId });
+      // Switch chains if the user is not on the right one
+      if (network.chain?.id !== parsedChainId)
+        await switchNetwork({ chainId: parsedChainId });
 
-        // Send the transaction
-        // console.log('data', data, { chainId });
-        const { hash } = await sendTransaction({
-          ...data,
-          value: data.value ? BigInt(data.value) : 0n,
-          //   data: (data.data as `0x${string}`) || '0x',
-          chainId: parsedChainId,
-        });
-        // console.log('hash', hash);
-        // onSubmitted(hash);
+      // Send the transaction
+      // console.log('data', data, { chainId });
+      const { hash } = await sendTransaction({
+        ...data,
+        value: data.value ? BigInt(data.value) : 0n,
+        //   data: (data.data as `0x${string}`) || '0x',
+        chainId: parsedChainId,
+      });
+      // console.log('hash', hash);
+      // onSubmitted(hash);
 
-        const { status } = await waitForTransaction({
-          hash,
-          chainId: parsedChainId,
-        });
-        if (status === 'success') {
-          setTransactionHash(hash);
-          toast.success('mint action success');
-        } else {
-          console.error('transaction failed', hash, status);
-          toast.error(`mint action failed: ${status}`);
-        }
-      } catch (e: any) {
-        console.error(e);
-        toast.error(e.message.split('\n')[0]);
+      const { status } = await waitForTransaction({
+        hash,
+        chainId: parsedChainId,
+      });
+      if (status === 'success') {
+        setTransactionHash(hash);
+        toast.success('mint action success');
+      } else {
+        console.error('transaction failed', hash, status);
+        toast.error(`mint action failed: ${status}`);
       }
-    },
-    []
-  );
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e.message.split('\n')[0]);
+    }
+  };
 
   const transactionAction = useCallback(async () => {
-    if (!modData) return;
+    if (!modData) {
+      toast.error('No valid transaction data');
+      return;
+    }
     if (!isLogin) {
       login();
       return;
@@ -140,7 +146,7 @@ export default function U3ZoraMinter({
     } finally {
       setMinting(false);
     }
-  }, [modData, address, isLogin, login, sendEthTransactionAction]);
+  }, [modData, address, isLogin, login]);
 
   useEffect(() => {
     if (!mounted) return;
