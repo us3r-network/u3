@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { UrlMetadata } from '@mod-protocol/core';
 import { useAccount, useNetwork } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
   sendTransaction,
   switchNetwork,
@@ -43,6 +44,7 @@ export default function U3ZoraMinter({
   const [transactionData, setTransactionData] = useState<ModTransactionData>(); // [data, setData
   const [modMetadataCheckDone, setModMetadataCheckDone] = useState(false);
   const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const [resultUrl, setResultUrl] = useState(url);
   const { walletAddress, isLogin, login } = useLogin();
   const network = useNetwork();
@@ -126,7 +128,8 @@ export default function U3ZoraMinter({
       return;
     }
     if (!address) {
-      toast.error('Please connect wallet first');
+      console.log('Please connect wallet first');
+      openConnectModal();
       return;
     }
     try {
