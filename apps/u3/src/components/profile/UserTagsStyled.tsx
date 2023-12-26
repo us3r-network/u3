@@ -10,7 +10,7 @@ export default function UserTagsStyled(props: UserTagsProps) {
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   return (
     <UserTagsWrapper {...props}>
-      {({ isLoginUser }) => {
+      {({ isLoginUser, tags }) => {
         return (
           <>
             <div className="header">
@@ -28,7 +28,9 @@ export default function UserTagsStyled(props: UserTagsProps) {
               )}
             </div>
             <UserTags.List>
-              {(item) => <UserTags.Item key={item.tag} value={item} />}
+              {tags.map((item) => (
+                <UserTags.Item key={item} value={{ tag: item }} />
+              ))}
             </UserTags.List>
             {isLoginUser && (
               <Modal
