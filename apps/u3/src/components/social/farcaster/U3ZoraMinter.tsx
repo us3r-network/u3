@@ -119,6 +119,10 @@ export default function U3ZoraMinter({
       login();
       return;
     }
+    if (!address) {
+      toast.error('Please connect wallet first');
+      return;
+    }
     try {
       setMinting(true);
       // console.log('modData', modData);
