@@ -17,7 +17,7 @@ export default function UserWalletsStyled(props: UserWalletsProps) {
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   return (
     <UserWalletsWrapper {...props}>
-      {({ isLoginUser }) => {
+      {({ isLoginUser, wallets }) => {
         return (
           <>
             <div className="header">
@@ -35,7 +35,7 @@ export default function UserWalletsStyled(props: UserWalletsProps) {
               )}
             </div>
             <UserWallets.List>
-              {(item) => (
+              {wallets.map((item) => (
                 <UserWallets.Item value={item} key={item.address}>
                   <div className="text">
                     <UserWallets.Address />
@@ -56,7 +56,7 @@ export default function UserWalletsStyled(props: UserWalletsProps) {
                     </UserWallets.Copy>
                   </div>
                 </UserWallets.Item>
-              )}
+              ))}
             </UserWallets.List>
             {isLoginUser && (
               <Modal
