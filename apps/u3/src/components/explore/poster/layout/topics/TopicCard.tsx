@@ -1,16 +1,16 @@
 import { ComponentPropsWithRef } from 'react';
 import { cn } from '@/lib/utils';
 
-export type DappData = {
+export type TopicData = {
   logo: string;
   name: string;
-  types: string[];
+  postCount: number;
 };
 interface Props extends ComponentPropsWithRef<'div'> {
-  data: DappData;
+  data: TopicData;
 }
-export default function DappCard({ data, className, ...wrapperProps }: Props) {
-  const { logo, name, types } = data;
+export default function TopicCard({ data, className, ...wrapperProps }: Props) {
+  const { logo, name, postCount } = data;
   return (
     <div className={cn('w-full flex gap-[5px]', className)} {...wrapperProps}>
       {logo && (
@@ -24,15 +24,13 @@ export default function DappCard({ data, className, ...wrapperProps }: Props) {
         >
           {name}
         </span>
-        <div
+        <span
           className={cn(
             'text-[#5D5E62] text-[16px] font-bold leading-none line-clamp-1'
           )}
         >
-          {types.map((type) => (
-            <span>{type}</span>
-          ))}
-        </div>
+          {postCount} new posts
+        </span>
       </div>
     </div>
   );

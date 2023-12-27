@@ -3,6 +3,9 @@ module.exports = {
   darkMode: ['class'],
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
+    fontFamily: {
+      poster: ['DIN Condensed'],
+    },
     container: {
       center: true,
       padding: '2rem',

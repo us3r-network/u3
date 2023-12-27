@@ -17,6 +17,7 @@ const posterImg = `${API_BASE_URL}/static-assets/poster/poster.webp`;
 export default function DailyPosterModal({
   posts,
   farcasterUserData,
+  topics,
   dapps,
   links,
   open,
@@ -33,6 +34,7 @@ export default function DailyPosterModal({
           id="posterLayout"
           posts={posts}
           farcasterUserData={farcasterUserData}
+          topics={topics}
           dapps={dapps}
           links={links}
         />

@@ -1,20 +1,20 @@
-import DappCard, { DappData } from './DappCard';
+import TopicCard, { TopicData } from './TopicCard';
 
-export type HighScoreDappsData = Array<DappData & { id: number }>;
-export type HighScoreDappsProps = {
-  dapps: HighScoreDappsData;
+export type TopTopicsData = Array<TopicData>;
+export type TopTopicsProps = {
+  topics: TopTopicsData;
 };
-export default function HighScoreDapps({ dapps }: HighScoreDappsProps) {
+export default function TopTopics({ topics }: TopTopicsProps) {
   return (
     <div className="w-0 flex-1">
       <p className="text-[#000] text-[16px] font-bold leading-normal underline mb-[10px]">
-        Highly Rated Dapps
+        Top Topics
       </p>
       <div className="flex divide-x divide-[#808684]">
-        {dapps.map((item) => {
+        {topics.map((item) => {
           return (
-            <DappCard
-              key={item.id}
+            <TopicCard
+              key={item.name}
               data={item}
               className="first:pr-[10px] last:pl-[10px]"
             />
