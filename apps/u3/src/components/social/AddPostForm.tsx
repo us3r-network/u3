@@ -169,7 +169,7 @@ export default function AddPostForm({
       if (!encryptedSigner) return;
       // const currFid = getCurrFid();
       if (!farcasterUserFid) return;
-      const parentUrl = channelValue?.parent_url;
+      const parentUrl = channelValue?.parent_url || undefined;
       try {
         const uploadedImgs = await uploadSelectedImages();
         const embedWebsiteLinks = embedWebsiteLink?.link
