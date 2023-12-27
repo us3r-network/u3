@@ -1,18 +1,9 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import PinChannelBtn from '../PinChannelBtn';
+import { FarcasterChannel } from '@/hooks/social/farcaster/useFarcasterChannel';
 
-export default function ChannelItem({
-  data,
-}: {
-  data: {
-    name?: string;
-    parent_url: string;
-    image: string;
-    channel_id: string;
-    count: string;
-  };
-}) {
+export default function ChannelItem({ data }: { data: FarcasterChannel }) {
   return (
     <ItemWrapper>
       <LeftWrapper to={`/social/channel/${data.channel_id}`}>
@@ -21,7 +12,7 @@ export default function ChannelItem({
           <img src={data.image} alt="" />
           <NameText>{data.name}</NameText>
         </NameWrapper>
-        <HandleText>{`${data.count} posts today`}</HandleText>
+        <HandleText>{`${data.count || 0} posts today`}</HandleText>
       </LeftWrapper>
       <PinChannelBtn parent_url={data.parent_url} />
     </ItemWrapper>

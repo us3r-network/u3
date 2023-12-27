@@ -24,7 +24,7 @@ export default function AddPostModal({
     <ModalContainer
       open={open}
       closeModal={closeModal}
-      zIndex={100}
+      zIndex={40}
       contentTop="30%"
     >
       <ModalBody isMobile={isMobile}>

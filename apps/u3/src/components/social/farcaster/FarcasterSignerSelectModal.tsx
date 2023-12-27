@@ -61,6 +61,7 @@ export default function FarcasterSignerSelectModal({
       open={open}
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
+      id="farcaster-signer-select-modal"
     >
       <ModalBody>
         <ModalHeader>

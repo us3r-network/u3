@@ -1,16 +1,8 @@
-/*
- * @Author: bufan bufan@hotmail.com
- * @Date: 2023-11-01 10:27:40
- * @LastEditors: bufan bufan@hotmail.com
- * @LastEditTime: 2023-12-06 13:58:51
- * @FilePath: /u3/apps/u3/src/components/social/PinedChannels.tsx
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- */
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
-import { getChannelFromUrl } from 'src/utils/social/farcaster/getChannel';
 
 import PinChannelBtn from './PinChannelBtn';
 
@@ -29,17 +21,24 @@ export default function PinedChannels() {
 }
 
 function PinedChannelItem({ parent_url }: { parent_url: string }) {
-  const item = getChannelFromUrl(parent_url);
+  const { getChannelFromUrl } = useFarcasterCtx();
   const navigate = useNavigate();
+
+  const item = useMemo(() => {
+    return getChannelFromUrl(parent_url);
+  }, [parent_url, getChannelFromUrl]);
+
+  if (!item) return null;
+
   return (
     <ItemBox
       onClick={() => {
-        navigate(`/social/channel/${item?.channel_id}`);
+        navigate(`/social/channel/${item.channel_id}`);
       }}
     >
       <div>
-        <img src={item?.image} alt={item?.name} />
-        <div className="name">{item?.name}</div>
+        <img src={item.image} alt={item.name} />
+        <div className="name">{item.name}</div>
       </div>
       <PinChannelBtn parent_url={item.parent_url} />
     </ItemBox>

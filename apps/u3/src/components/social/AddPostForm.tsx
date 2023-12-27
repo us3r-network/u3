@@ -11,14 +11,13 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
+import { Channel } from '@mod-protocol/farcaster';
 
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-
 import {
   FARCASTER_NETWORK,
   FARCASTER_WEB_CLIENT,
 } from '../../constants/farcaster';
-
 import { SocialPlatform } from '../../services/social/types';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
 import { useCreateLensPost } from '../../hooks/social/lens/useCreateLensPost';
@@ -40,12 +39,11 @@ import { ImagePreview } from './ImagePreview';
 import { uploadImage } from '../../services/shared/api/upload';
 import useLogin from '../../hooks/shared/useLogin';
 import getAvatar from '../../utils/social/lens/getAvatar';
-import { Channel } from '../../services/social/types/farcaster';
-import ChannelSelect from './ChannelSelect';
-import { getChannelFromId } from '../../utils/social/farcaster/getChannel';
+
 import ShareEmbedCard from '../shared/share/ShareEmbedCard';
 import { getHandle, getName } from '../../utils/social/lens/profile';
-import FarcasterInput from './FarcasterInput';
+import FarcasterInput from './farcaster/FarcasterInput';
+import { FCastChannelPicker } from './farcaster/FCastChannelPicker';
 
 export type EmbedWebsiteLink = {
   link: string;
@@ -79,6 +77,7 @@ export default function AddPostForm({
     currFid: farcasterUserFid,
     currUserInfo: farcasterUserInfo,
     openFarcasterQR,
+    getChannelFromId,
   } = useFarcasterCtx();
   const {
     sessionProfile: lensSessionProfile,
@@ -87,9 +86,12 @@ export default function AddPostForm({
   } = useLensCtx();
   const { createPost: createPostToLens } = useCreateLensPost();
 
-  const [channelValue, setChannelValue] = useState(
-    channel?.channel_id || 'Home'
-  );
+  const [channelValue, setChannelValue] = useState<Channel>({
+    name: 'Home',
+    parent_url: '',
+    image: 'https://warpcast.com/~/channel-images/home.png',
+    channel_id: 'home',
+  });
   const [text, setText] = useState('');
   const [platforms, setPlatforms] = useState<Set<SocialPlatform>>(new Set());
   const [isPending, setIsPending] = useState(false);
@@ -167,11 +169,7 @@ export default function AddPostForm({
       if (!encryptedSigner) return;
       // const currFid = getCurrFid();
       if (!farcasterUserFid) return;
-      let parentUrl;
-      if (channelValue !== 'Home') {
-        const ch = getChannelFromId(channelValue);
-        parentUrl = ch?.parent_url;
-      }
+      const parentUrl = channelValue?.parent_url || undefined;
       try {
         const uploadedImgs = await uploadSelectedImages();
         const embedWebsiteLinks = embedWebsiteLink?.link
@@ -218,6 +216,7 @@ export default function AddPostForm({
       farcasterUserFid,
       embedWebsiteLink,
       selectedImages,
+      getChannelFromId,
     ]
   );
 
@@ -268,7 +267,7 @@ export default function AddPostForm({
 
   useEffect(() => {
     if (channel) {
-      setChannelValue(channel.channel_id || 'Home');
+      setChannelValue(channel);
     }
   }, [channel]);
 
@@ -417,11 +416,9 @@ export default function AddPostForm({
             <EmojiIcon />
           </SendEmojiBtn> */}
 
-          <ChannelSelect
-            selectChannelId={channelValue}
-            setSelectChannelId={(v) => {
-              setChannelValue(v);
-            }}
+          <FCastChannelPicker
+            channelSelected={{ ...channelValue }}
+            setChannelSelected={setChannelValue}
           />
           <Description
             hidden={

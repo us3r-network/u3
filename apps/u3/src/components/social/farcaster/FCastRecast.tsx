@@ -1,13 +1,15 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/no-shadow */
 import {
+  CastAddBody,
   CastId,
   ReactionType,
   makeCastAdd,
   makeReactionAdd,
   makeReactionRemove,
 } from '@farcaster/hub-web';
-import { useCallback, useState } from 'react';
+import { Channel } from '@mod-protocol/farcaster';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { LoopIcon, Pencil2Icon, Cross2Icon } from '@radix-ui/react-icons';
 
@@ -29,19 +31,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+
 import { UserData } from '@/utils/social/farcaster/user-data';
 import FCastText from './FCastText';
 import FCastTitle from './FCastTitle';
 import useFarcasterUserData from '@/hooks/social/farcaster/useFarcasterUserData';
-import FCastPost from './FCastPost';
+import { CurrentUserInfoAvatar } from './CurrUserInfo';
+import FarcasterInput from './FarcasterInput';
+import { FCastChannelPicker } from './FCastChannelPicker';
+import { Button } from '@/components/ui/button';
+import ModalContainer from '@/components/common/modal/ModalContainer';
 
 export default function FCastRecast({
   cast,
@@ -198,8 +197,8 @@ function Repost({
 }) {
   const [open, setOpen] = useState(false);
   const castId: CastId = useFarcasterCastId({ cast });
-  const { encryptedSigner, currFid } = useFarcasterCtx();
-  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
+  const { encryptedSigner, currFid, isConnected, openFarcasterQR } =
+    useFarcasterCtx();
 
   const creatorData = useFarcasterUserData({
     fid: cast.fid,
@@ -208,7 +207,7 @@ function Repost({
   });
 
   const quoteCast = useCallback(
-    async (text: string) => {
+    async (data: { castBody: CastAddBody; channel: Channel }) => {
       if (!encryptedSigner) return;
       const url = `https://warpcast.com/${creatorData.userName}/0x${Buffer.from(
         castId.hash
@@ -220,11 +219,12 @@ function Repost({
         const cast = (
           await makeCastAdd(
             {
-              text,
+              text: data.castBody.text,
               embeds: [{ url }],
               embedsDeprecated: [],
-              mentions: [],
-              mentionsPositions: [],
+              mentions: data.castBody.mentions || [],
+              mentionsPositions: data.castBody.mentionsPositions || [],
+              parentUrl: data.channel.parent_url || undefined,
             },
             { fid: currFid, network: FARCASTER_NETWORK },
             encryptedSigner
@@ -246,7 +246,7 @@ function Repost({
   );
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
+    <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div
@@ -268,19 +268,33 @@ function Repost({
               <LoopIcon className="w-3 h-3" />
               <span>Repost</span>
             </DropdownMenuItem>
-            <AlertDialogTrigger asChild>
-              <DropdownMenuItem className="gap-2 focus:bg-inherit focus:text-white hover:bg-inherit hover:cursor-pointer">
-                <Pencil2Icon className="w-3 h-3" />
-                <span>Quote</span>
-              </DropdownMenuItem>
-            </AlertDialogTrigger>
+            <DropdownMenuItem
+              className="gap-2 focus:bg-inherit focus:text-white hover:bg-inherit hover:cursor-pointer"
+              onClick={() => {
+                if (!isConnected) {
+                  openFarcasterQR();
+                  return;
+                }
+                setOpen(true);
+              }}
+            >
+              <Pencil2Icon className="w-3 h-3" />
+              <span>Quote</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <AlertDialogContent className="flex flex-col gap-5 bg-[#1B1E23] text-white border-[#39424C] rounded-xl md:rounded-[20px] md:max-w-none md:w-[600px]">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center justify-between ">
+      <ModalContainer
+        open={open}
+        closeModal={() => {
+          setOpen(false);
+        }}
+        zIndex={50}
+        contentTop="40%"
+      >
+        <div className="flex flex-col gap-5 p-5 bg-[#1B1E23] text-white border-[#39424C] rounded-xl md:rounded-[20px] md:max-w-none md:w-[600px]">
+          <div className="flex items-center justify-between text-lg font-semibold">
             <span>Quote Post</span>
             <div
               className="p-1 hover:cursor-pointer"
@@ -290,24 +304,88 @@ function Repost({
             >
               <Cross2Icon className="h-5 w-5" />
             </div>
-          </AlertDialogTitle>
-        </AlertDialogHeader>
-        <div className="flex flex-col gap-3 text-sm">
-          <FCastTitle cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
-          <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
+          </div>
+          <div className="flex flex-col gap-3 text-sm">
+            <FCastTitle
+              cast={cast}
+              farcasterUserDataObj={farcasterUserDataObj}
+            />
+            <FCastText
+              cast={cast}
+              farcasterUserDataObj={farcasterUserDataObj}
+            />
+          </div>
+          <div>
+            <QuoteCast quoteCast={quoteCast} />
+          </div>
         </div>
-        <AlertDialogFooter className="flex-col sm:justify-start">
-          <FCastPost
-            postAction={(text) => {
+      </ModalContainer>
+    </div>
+  );
+}
+
+function QuoteCast({
+  quoteCast,
+}: {
+  quoteCast: ({
+    castBody,
+    channel,
+  }: {
+    castBody: CastAddBody;
+    channel: Channel;
+  }) => void;
+}) {
+  const { isLogin: isLoginU3, login: loginU3 } = useLogin();
+  const farcasterInputRef = useRef<{
+    handleFarcasterSubmit: () => void;
+  }>();
+  const [channelSelected, setChannelSelected] = useState<Channel>({
+    name: 'Home',
+    parent_url: '',
+    image: 'https://warpcast.com/~/channel-images/home.png',
+    channel_id: 'home',
+  });
+  const [, setFarcasterInputText] = useState('');
+  const handleSubmitToFarcaster = useCallback(
+    (castBody: CastAddBody) => {
+      console.log(castBody, channelSelected);
+      quoteCast({ castBody, channel: channelSelected });
+    },
+    [channelSelected]
+  );
+
+  return (
+    <div className="flex gap-3 w-full">
+      <div>
+        <CurrentUserInfoAvatar />
+      </div>
+      <div className="flex flex-grow flex-col gap-3">
+        <FarcasterInput
+          ref={farcasterInputRef}
+          farcasterSubmit={handleSubmitToFarcaster}
+          textCb={setFarcasterInputText}
+          className="bg-[#14171A] border-none p-[10px] rounded-[10px]"
+        />
+        <div className="flex items-center">
+          <FCastChannelPicker
+            channelSelected={channelSelected}
+            setChannelSelected={setChannelSelected}
+          />
+          <div className="flex-grow" />
+          <Button
+            className="h-10 rounded-[10px] text-black text-[16px] bg-gradient-to-r from-[#cd62ff] to-[#62aaff]"
+            onClick={() => {
               if (!isLoginU3) {
                 loginU3();
                 return;
               }
-              quoteCast(text);
+              farcasterInputRef.current?.handleFarcasterSubmit();
             }}
-          />
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          >
+            Post
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -2,18 +2,23 @@ import { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import isInstalledPwa from '@/utils/shared/isInstalledPwa';
 
-const mobileGuideKey = 'mobile-guide';
+const mobileGuideTimeKey = 'last-mobile-guide-time';
+const mobileGuideTimeInterval = 1000 * 60 * 60 * 24 * 3; // 3天显示一次
 export function storeMobileGuideSkip() {
-  localStorage.setItem(mobileGuideKey, 'true');
+  localStorage.setItem(mobileGuideTimeKey, new Date().getTime().toString());
 }
-export function isMobileGuideSkipped() {
-  return localStorage.getItem(mobileGuideKey) === 'true';
+export function isShowMobileGuide() {
+  if (!isMobile) return false;
+  if (isInstalledPwa()) return false;
+  const lastTime = Number(localStorage.getItem(mobileGuideTimeKey));
+  if (!lastTime) return true;
+  return new Date().getTime() - lastTime > mobileGuideTimeInterval;
 }
+
 export function MobileGuide() {
-  const [show, setShow] = useState(
-    Boolean(isMobile && !isMobileGuideSkipped())
-  );
+  const [show, setShow] = useState(isShowMobileGuide());
   if (!show) return null;
   return (
     <div

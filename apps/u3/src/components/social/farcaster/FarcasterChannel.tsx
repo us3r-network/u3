@@ -1,10 +1,15 @@
+import { useMemo } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-import FarcasterChannelData from '../../../constants/warpcast.json';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function FarcasterChannel({ url }: { url: string }) {
-  const channel = FarcasterChannelData.find((c) => c.parent_url === url);
+  const { farcasterChannels } = useFarcasterCtx();
+
+  const channel = useMemo(() => {
+    return farcasterChannels.find((c) => c.parent_url === url);
+  }, [farcasterChannels, url]);
 
   if (channel) {
     return (

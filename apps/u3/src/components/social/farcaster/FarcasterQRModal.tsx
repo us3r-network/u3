@@ -33,6 +33,7 @@ export default function FarcasterQRModal({
       open={open}
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
+      id="farcaster-qr-modal"
     >
       <ModalBody>
         <ModalHeader>

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
-import { getChannel } from 'src/utils/social/farcaster/getChannel';
 
 import {
   FarCast,
@@ -13,6 +12,7 @@ import ImgPostCard, { ImgPostCardData } from './ImgPostCard';
 import { getEmbeds, isImg } from '../../../utils/social/farcaster/getEmbeds';
 import { getFarcasterEmbedMetadata } from '../../../services/social/api/farcaster';
 import FarcasterImgUrl from '../../common/assets/pngs/farcaster.png';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 interface Props extends StyledComponentPropsWithRef<'div'> {
   data: FarCast;
@@ -25,12 +25,13 @@ export default function FarcasterPostCard({
   idx,
   ...wrapperProps
 }: Props) {
+  const { farcasterChannels } = useFarcasterCtx();
   const userData = useFarcasterUserData({ fid: data?.fid, farcasterUserData });
 
   const channel = useMemo(() => {
     const channelUrl = data.parent_url || data.rootParentUrl;
-    return getChannel().find((c) => c.parent_url === channelUrl);
-  }, [data]);
+    return farcasterChannels.find((c) => c.parent_url === channelUrl);
+  }, [data, farcasterChannels]);
 
   const embeds = useMemo(() => getEmbeds(data), [data]);
   const { imgs, webpages } = embeds;

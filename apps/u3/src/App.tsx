@@ -1,8 +1,8 @@
 /*
  * @Author:
  * @Date: 2022-07-01 15:09:50
- * @LastEditors: shixuewen friendlysxw@163.com
- * @LastEditTime: 2022-12-17 10:51:29
+ * @LastEditors: bufan bufan@hotmail.com
+ * @LastEditTime: 2023-12-25 11:28:31
  * @Description:
  */
 import { Provider as ReduxProvider } from 'react-redux';
@@ -15,6 +15,7 @@ import { init } from '@airstack/airstack-react';
 
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import { enableMapSet } from 'immer';
 import Layout from './components/layout/Index';
 import { store } from './store/store';
 import GlobalStyle from './styles/GlobalStyle';
@@ -39,6 +40,7 @@ dayjs.extend(relativeTime);
 
 injectStore(store);
 
+enableMapSet();
 Modal.setAppElement('#root');
 function App() {
   return (

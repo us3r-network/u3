@@ -255,7 +255,6 @@ export default function FCast({
           <FCastComment
             openFarcasterQR={openFarcasterQR}
             cast={cast}
-            farcasterUserData={farcasterUserData}
             farcasterUserDataObj={farcasterUserDataObj}
           />
           <FCastRecast

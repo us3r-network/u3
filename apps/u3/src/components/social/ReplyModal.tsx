@@ -42,9 +42,10 @@ export default function ReplyModal({
 }
 const ModalBody = styled.div`
   max-width: 600px;
-  width: fit-content;
   flex-shrink: 0;
   position: relative;
+  border-radius: 20px;
+  overflow: hidden;
 `;
 const CloseBtn = styled(ModalCloseBtn)`
   position: absolute;

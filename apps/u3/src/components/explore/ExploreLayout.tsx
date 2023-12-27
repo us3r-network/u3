@@ -6,10 +6,12 @@ import TopLinks from './links/TopLinks';
 import HighScoreDapps from './dapps/HighScoreDapps';
 import type { ExploreState } from '../../container/Explore';
 import CreatePosterBtn from './poster/CreatePosterBtn';
+import TopChannels from './channels/TopChannels';
 
 export default function ExploreLayout({
   hotPosts,
   topLinks,
+  topChannels,
   highScoreDapps,
 }: ExploreState) {
   return (
@@ -37,6 +39,10 @@ export default function ExploreLayout({
           <TopLinks links={topLinks.links} isLoading={topLinks.isLoading} />
         </MainRight>
       </Main>
+      <TopChannels
+        channels={topChannels.channels}
+        isLoading={topChannels.isLoading}
+      />
       <Footer>
         <HighScoreDapps
           dapps={highScoreDapps.dapps}

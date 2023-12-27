@@ -18,6 +18,7 @@ import {
 } from './PostCard';
 import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
+import U3ZoraMinter from './farcaster/U3ZoraMinter';
 
 export default function Embed({
   embedImgs,
@@ -154,7 +155,12 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     >
       <div>
         <div>
-          <img src={userData.img} alt="" loading="lazy" />
+          <img
+            src={userData.img}
+            alt=""
+            loading="lazy"
+            className="object-cover"
+          />
           <div>
             <span className="username">{userData.username}</span>
             <span className="uname">
@@ -172,7 +178,10 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
 }
 
 function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
-  // const { setIframeUrl } = useFarcasterCtx();
+  if (item.url.startsWith('https://zora.co/collect')) {
+    return <U3ZoraMinter url={item.url} embedMetadata={item} />;
+  }
+
   return (
     <PostCardNftWrapper
       key={item.url}
@@ -187,14 +196,10 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
           type="button"
           onClick={(e) => {
             e.stopPropagation();
-            // if (item.url.includes('zora.co')) {
-            //   setIframeUrl(item.url);
-            // } else {
             window.open(item.url, '_blank');
-            // }
           }}
         >
-          Mint
+          View
         </button>
       </div>
     </PostCardNftWrapper>

@@ -11,6 +11,7 @@ export default function ConfirmModal({
   closeModal: () => void;
   confirmAction: () => void;
 }) {
+  if (!show) return null;
   return (
     <Modal
       isOpen={show}

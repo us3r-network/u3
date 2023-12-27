@@ -8,6 +8,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import { isMobile } from 'react-device-detect';
 import useLogin from '../../hooks/shared/useLogin';
 import { CustomNavObject, navs } from '../../route/nav';
 import useRoute from '../../route/useRoute';
@@ -72,7 +73,7 @@ export default function Nav({ onlyIcon }: Props) {
           onClick={() => navigate(nav.route.path)}
         >
           <PcNavItemIconBox isActive={isActive}>{nav.icon}</PcNavItemIconBox>
-          {renderNavItemText(nav)}
+          {!isMobile && renderNavItemText(nav)}
         </PcNavItem>
       );
     },
@@ -118,7 +119,7 @@ export default function Nav({ onlyIcon }: Props) {
                 <PcNavItemIconBox isActive={groupIsActive}>
                   {item.icon}
                 </PcNavItemIconBox>
-                {renderNavItemText(item)}
+                {!isMobile && renderNavItemText(item)}
               </PcNavItem>
               <GroupChildrenBox>
                 <GroupChildrenInner

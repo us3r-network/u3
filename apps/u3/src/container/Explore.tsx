@@ -9,6 +9,8 @@ import {
 } from '../services/shared/api/explore';
 import { processMetadata } from '../utils/news/link';
 import ExploreLayout from '../components/explore/ExploreLayout';
+import { TopChannelsData } from '@/components/explore/channels/TopChannels';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 type HotPostsState = {
@@ -20,6 +22,10 @@ type TopLinksState = {
   links: TopLinksData;
   isLoading: boolean;
 };
+type TopChannelsState = {
+  channels: TopChannelsData;
+  isLoading: boolean;
+};
 type HighScoreDappsState = {
   dapps: HighScoreDappsData;
   isLoading: boolean;
@@ -27,6 +33,7 @@ type HighScoreDappsState = {
 export type ExploreState = {
   hotPosts: HotPostsState;
   topLinks: TopLinksState;
+  topChannels: TopChannelsState;
   highScoreDapps: HighScoreDappsState;
 };
 
@@ -39,6 +46,11 @@ export default function Explore() {
 
   const [topLinks, setTopLinks] = useState<TopLinksState>({
     links: [],
+    isLoading: true,
+  });
+
+  const [topChannels, setTopChannels] = useState<TopChannelsState>({
+    channels: [],
     isLoading: true,
   });
 
@@ -111,10 +123,28 @@ export default function Explore() {
         setHighScoreDapps((pre) => ({ ...pre, dapps: [], isLoading: false }));
       });
   }, []);
+
+  const { trendChannels, trendChannelsLoading } = useFarcasterCtx();
+  useEffect(() => {
+    setTopChannels({
+      channels: (trendChannels || []).splice(0, 4).map((item) => {
+        return {
+          channel_id: item.channel_id,
+          logo: item?.image,
+          name: item.name,
+          followerCount: Number(item?.followerCount || 0),
+          postCount: Number(item?.count),
+        };
+      }),
+      isLoading: trendChannelsLoading,
+    });
+  }, [trendChannels, trendChannelsLoading]);
+
   return (
     <ExploreLayout
       hotPosts={hotPosts}
       topLinks={topLinks}
+      topChannels={topChannels}
       highScoreDapps={highScoreDapps}
     />
   );

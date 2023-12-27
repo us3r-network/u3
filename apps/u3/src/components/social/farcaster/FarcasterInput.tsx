@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { EditorContent, useEditor } from '@mod-protocol/react-editor';
 import { fetchUrlMetadata } from '@mod-protocol/core';
+import Placeholder from '@tiptap/extension-placeholder';
 
 import {
   formatPlaintextToHubCastMessage,
@@ -9,7 +10,8 @@ import {
 } from '@mod-protocol/farcaster';
 import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { CastAddBody } from '@farcaster/hub-web';
-import { createRenderMentionsSuggestionConfig } from './farcaster/createRenderMentionsSuggestionConfig';
+import { createRenderMentionsSuggestionConfig } from './createRenderMentionsSuggestionConfig';
+import { cn } from '@/lib/utils';
 
 const MOD_API_URL = 'https://api.modprotocol.org/api';
 const getMentions = getFarcasterMentions(MOD_API_URL);
@@ -22,9 +24,11 @@ export default forwardRef(function FarcasterInput(
   {
     farcasterSubmit,
     textCb,
+    className,
   }: {
     farcasterSubmit: (body: CastAddBody) => void;
     textCb: (text: string) => void;
+    className?: string;
   },
   ref
 ) {
@@ -49,6 +53,18 @@ export default forwardRef(function FarcasterInput(
       renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
         getResults: getMentions,
       }),
+      editorOptions: {
+        extensions: [
+          Placeholder.configure({
+            placeholder: 'Create a post...',
+          }),
+        ],
+        editorProps: {
+          attributes: {
+            class: 'prose mx-auto border-none outline-none h-full',
+          },
+        },
+      },
     });
 
   useImperativeHandle(ref, () => ({
@@ -63,11 +79,11 @@ export default forwardRef(function FarcasterInput(
   }, [getText]);
 
   return (
-    <div>
+    <div className={cn(className || '')}>
       <EditorContent
         editor={editor}
         autoFocus
-        className="w-full h-full text-white min-h-[200px]"
+        className="w-full h-full text-white min-h-[100px]"
       />
     </div>
   );

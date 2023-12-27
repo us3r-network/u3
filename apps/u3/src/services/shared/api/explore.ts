@@ -26,7 +26,7 @@ export function getHighScoreDapps(): RequestPromise<DappExploreListResponse> {
   return request({
     url: `/dapps/searching`,
     params: {
-      pageSize: 8,
+      pageSize: 4,
       pageNumber: 0,
       keywords: '',
       type: '',
