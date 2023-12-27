@@ -53,6 +53,9 @@ function ModalBase({
     overlay: { ...overlay, ...(style?.overlay || {}) },
     content: { ...content, ...(style?.content || {}) },
   };
+
+  if (!otherProps.isOpen) return null;
+
   return (
     <ReactModal style={styles as ReactModal.Styles} {...otherProps}>
       {children}

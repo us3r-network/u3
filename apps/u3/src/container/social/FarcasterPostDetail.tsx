@@ -1,6 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+/* eslint-disable no-underscore-dangle */
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
+import { Channel } from '@mod-protocol/farcaster';
+import { CastAddBody, makeCastAdd } from '@farcaster/hub-web';
+import { toast } from 'react-toastify';
 
 import { getFarcasterCastInfo } from '../../services/social/api/farcaster';
 import { FarCast } from '../../services/social/types';
@@ -11,16 +15,22 @@ import {
   PostDetailWrapper,
 } from '../../components/social/PostDetail';
 import Loading from '../../components/common/loading/Loading';
-import FarcasterCommentForm from '../../components/social/farcaster/FarcasterCommentForm';
+
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
 import { LoadingWrapper } from './CommonStyles';
 import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
+import useLogin from '@/hooks/shared/useLogin';
+
+import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
+import { ReplyCast } from '@/components/social/farcaster/FCastReply';
 
 export default function FarcasterPostDetail() {
   const { castId } = useParams();
   const [loading, setLoading] = useState(true);
   const [cast, setCast] = useState<FarCast>();
-  const { openFarcasterQR } = useFarcasterCtx();
+  const { currFid, openFarcasterQR, isConnected, encryptedSigner } =
+    useFarcasterCtx();
+  const { isLogin: isLoginU3, login } = useLogin();
   const [comments, setComments] =
     useState<{ data: FarCast; platform: 'farcaster' }[]>();
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
@@ -48,6 +58,52 @@ export default function FarcasterPostDetail() {
       console.error(error);
     }
   }, [castId]);
+
+  const replyCastAction = useCallback(
+    async (data: { cast: CastAddBody; channel: Channel }) => {
+      if (!isLoginU3) {
+        login();
+        return;
+      }
+      if (!isConnected || !encryptedSigner) {
+        openFarcasterQR();
+        return;
+      }
+
+      try {
+        const castToReply = (
+          await makeCastAdd(
+            {
+              text: data.cast.text,
+              embeds: data.cast.embeds || [],
+              embedsDeprecated: data.cast.embedsDeprecated || [],
+              mentions: data.cast.mentions || [],
+              mentionsPositions: data.cast.mentionsPositions || [],
+              parentCastId: {
+                hash: Buffer.from(cast.hash.data),
+                fid: Number(cast.fid),
+              },
+              // parentUrl, // parentUrl parentCastId only one of them
+            },
+            { fid: currFid, network: FARCASTER_NETWORK },
+            encryptedSigner
+          )
+        )._unsafeUnwrap();
+        const result = await FARCASTER_WEB_CLIENT.submitMessage(castToReply);
+        if (result.isErr()) {
+          throw new Error(result.error.message);
+        }
+        toast.success('post created');
+        loadCastInfo();
+      } catch (error) {
+        console.error(error);
+        toast.error('error creating post');
+      } finally {
+        // setIsPending(false);
+      }
+    },
+    [cast, loadCastInfo]
+  );
 
   useEffect(() => {
     if (!mounted) return;
@@ -82,13 +138,13 @@ export default function FarcasterPostDetail() {
           isDetail
           showMenuBtn
         />
-        <FarcasterCommentForm
-          castId={{
-            hash: Buffer.from(cast.hash.data),
-            fid: Number(cast.fid),
-          }}
-          successAction={loadCastInfo}
-        />
+        <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">
+          <ReplyCast
+            replyAction={async (data) => {
+              await replyCastAction(data);
+            }}
+          />
+        </div>
         <PostDetailCommentsWrapper>
           {(comments || []).map((item) => {
             const key = Buffer.from(item.data.hash.data).toString('hex');

@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useHotkeys } from 'react-hotkeys-hook';
+
 import AddPostModal from './AddPostModal';
 import useLogin from '../../hooks/shared/useLogin';
 import { SocialButtonPrimary } from './button/SocialButton';
@@ -7,6 +9,7 @@ import { SocialButtonPrimary } from './button/SocialButton';
 export default function AddPost() {
   const [open, setOpen] = useState(false);
   const { isLogin, login } = useLogin();
+
   return (
     <>
       <AddButton

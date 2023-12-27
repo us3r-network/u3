@@ -20,15 +20,16 @@ import { Button } from '@/components/ui/button';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { cn } from '@/lib/utils';
 
-export function FCastChannelPicker() {
+export function FCastChannelPicker({
+  channelSelected,
+  setChannelSelected,
+}: {
+  channelSelected: Channel;
+  setChannelSelected: (channel: Channel) => void;
+}) {
   const { farcasterChannels } = useFarcasterCtx();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<Channel>({
-    name: 'Home',
-    parent_url: '',
-    image: 'https://warpcast.com/~/channel-images/home.png',
-    channel_id: 'home',
-  });
+
   const [channelResults, setChannelResults] = useState<Channel[]>([]);
 
   useEffect(() => {
@@ -38,9 +39,9 @@ export function FCastChannelPicker() {
   const handleSelect = useCallback(
     (channel: Channel) => {
       setOpen(false);
-      setValue(channel);
+      setChannelSelected(channel);
     },
-    [setValue, setOpen]
+    [setChannelSelected, setOpen]
   );
 
   // console.log(farcasterChannels);
@@ -60,19 +61,19 @@ export function FCastChannelPicker() {
           )}
         >
           <img
-            src={value.image ?? ''}
-            alt={value.name}
+            src={channelSelected.image ?? ''}
+            alt={channelSelected.name}
             className="mr-2 -ml-2 h-5 w-5"
           />
-          {value.name}
+          {channelSelected.name}
           <CaretDownIcon className="-mr-2 ml-2" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
-        className={cn('w-[400px] p-0', 'bg-[#14171A] border-none')}
+        className={cn('w-[400px] p-0', 'bg-black border-none')}
         align="start"
       >
-        <Command className="bg-[#14171A] hover:bg-[#14171A] focus:bg-[#14171A]">
+        <Command className="bg-black hover:bg-black focus:bg-black">
           <CommandInput
             placeholder="Search Channels"
             // value={query}
@@ -83,28 +84,29 @@ export function FCastChannelPicker() {
             No Channel found.
           </CommandEmpty>
           <CommandGroup className="max-h-[300px] overflow-y-auto">
-            {(channelResults.length === 0 ? [value] : channelResults).map(
-              (channel) => (
-                <CommandItem
-                  key={channel.parent_url || 'home'}
-                  value={channel.name || 'home'}
-                  className={cn(
-                    'cursor-pointer text-white hover:bg-[#14171A] focus:bg-[#14171A]',
-                    'aria-selected:bg-[#14171A] aria-selected:text-white'
-                  )}
-                  onSelect={() => handleSelect(channel)}
-                >
-                  <img
-                    src={channel.image ?? ''}
-                    alt={channel.name}
-                    width={24}
-                    height={24}
-                    className="mr-2"
-                  />
-                  {channel.name}
-                </CommandItem>
-              )
-            )}
+            {(channelResults.length === 0
+              ? [channelSelected]
+              : channelResults
+            ).map((channel) => (
+              <CommandItem
+                key={channel.parent_url || 'home'}
+                value={channel.name || 'home'}
+                className={cn(
+                  'cursor-pointer text-white hover:bg-[#14171A] focus:bg-[#14171A]',
+                  'aria-selected:bg-[#14171A] aria-selected:text-white'
+                )}
+                onSelect={() => handleSelect(channel)}
+              >
+                <img
+                  src={channel.image ?? ''}
+                  alt={channel.name}
+                  width={24}
+                  height={24}
+                  className="mr-2"
+                />
+                {channel.name}
+              </CommandItem>
+            ))}
           </CommandGroup>
         </Command>
       </PopoverContent>

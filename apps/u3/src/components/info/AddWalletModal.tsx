@@ -13,6 +13,7 @@ export default function AddWalletModal({
   confirmAction: (addr: string) => Promise<boolean>;
 }) {
   const [text, setText] = useState('');
+  if (!show) return null;
   return (
     <Modal
       isOpen={show}
