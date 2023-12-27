@@ -6,7 +6,7 @@ import { CastAddBody } from '@farcaster/hub-web';
 import { CurrentUserInfoAvatar } from '@/components/social/farcaster/CurrUserInfo';
 import useLogin from '@/hooks/shared/useLogin';
 
-// import { FCastChannelPicker } from '@/components/social/farcaster/FCastChannelPicker';
+import { FCastChannelPicker } from '@/components/social/farcaster/FCastChannelPicker';
 import FarcasterInput from '@/components/social/farcaster/FarcasterInput';
 import { Button } from '@/components/ui/button';
 
@@ -54,10 +54,11 @@ export function ReplyCast({
           className="bg-[#14171A] border-none p-[10px] rounded-[10px]"
         />
         <div className="flex items-center">
-          {/* <FCastChannelPicker
-              channelSelected={channelSelected}
-              setChannelSelected={setChannelSelected}
-            /> */}
+          <FCastChannelPicker
+            channelSelected={channelSelected}
+            setChannelSelected={setChannelSelected}
+            disabled
+          />
           <div className="flex-grow" />
           <Button
             className="h-10 rounded-[10px] text-black text-[16px] bg-gradient-to-r from-[#cd62ff] to-[#62aaff]"
