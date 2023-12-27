@@ -41,6 +41,7 @@ export default function GridModal({
       setTab('original');
     }
   }, [selectContent]);
+  if (!show) return null;
   return (
     <Modal
       isOpen={show}

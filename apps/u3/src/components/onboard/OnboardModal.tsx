@@ -10,6 +10,7 @@ export default function OnboardModal({
   lists: ItemData[];
   finishAction: (data: { tags: string[]; langs: string[] }) => void;
 }) {
+  if (!show) return null;
   return (
     <Modal
       isOpen={!!show}

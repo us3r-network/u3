@@ -155,7 +155,12 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
     >
       <div>
         <div>
-          <img src={userData.img} alt="" loading="lazy" />
+          <img
+            src={userData.img}
+            alt=""
+            loading="lazy"
+            className="object-cover"
+          />
           <div>
             <span className="username">{userData.username}</span>
             <span className="uname">
