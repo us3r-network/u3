@@ -75,7 +75,7 @@ export function PostCard({ data, className, ...wrapperProps }: Props) {
       className={cn('w-full flex flex-col gap-[6px]', className)}
       {...wrapperProps}
     >
-      <span className="text-[#000] text-[20px] font-bold leading-none">
+      <span className="text-[#000] text-[20px] font-bold leading-none line-clamp-1">
         {authorDisplayName || authorHandle}
       </span>
       <div className="w-full flex items-end gap-[10px]">

@@ -28,6 +28,9 @@ export default function DailyPosterModal({
         content: {
           inset: '115px',
         },
+        overlay: {
+          zIndex: 30,
+        },
       }}
     >
       <div

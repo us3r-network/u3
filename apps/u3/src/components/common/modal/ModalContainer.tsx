@@ -21,6 +21,7 @@ export default function ModalContainer({
   contentTop,
   contentTransform,
   id,
+  className,
 }: {
   children: React.ReactNode;
   open: boolean;
@@ -30,10 +31,12 @@ export default function ModalContainer({
   contentTop?: string;
   zIndex?: number;
   id?: string;
+  className?: string;
 }) {
   if (!open) {
     return null;
   }
+
   return (
     <Modal
       id={id}
@@ -53,8 +56,9 @@ export default function ModalContainer({
         },
       }}
       className={cn(
-        'fixed w-full md:w-[600px] top-[50%] left-[50%]',
-        'focus-visible:border-none focus-visible:outline-none '
+        'fixed top-[50%] left-[50%]',
+        'focus-visible:border-none focus-visible:outline-none',
+        className || ''
       )}
     >
       {children}
