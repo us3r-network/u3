@@ -1,14 +1,10 @@
-import styled from 'styled-components';
+import dayjs from 'dayjs';
 
 export default function Footer() {
-  return <Wrapper>U3.XYZ | Your Data, Your Content, Your Web3.</Wrapper>;
+  return (
+    <div className="w-full flex justify-between text-[#000] text-[12px] font-bold leading-[normal] mt-[20px]">
+      <span>{dayjs().format('MMMM D, YYYY')}</span>
+      <span>From u3.xyz</span>
+    </div>
+  );
 }
-const Wrapper = styled.div`
-  color: var(--14171-a, #14171a);
-  font-family: Marion;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  letter-spacing: 19px;
-`;

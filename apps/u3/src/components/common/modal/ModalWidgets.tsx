@@ -1,29 +1,24 @@
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import styled from 'styled-components';
+import { ComponentPropsWithRef } from 'react';
 import { ReactComponent as Close } from '../assets/svgs/close.svg';
+import { cn } from '@/lib/utils';
 
-export function ModalCloseBtn(props: StyledComponentPropsWithRef<'div'>) {
+export function ModalCloseBtn({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
   return (
-    <ModalCloseBtnWrapper {...props}>
-      <Close />
-    </ModalCloseBtnWrapper>
+    <div
+      className={cn(
+        'w-[24px] h-[24px] rounded-[50%] flex-shrink-0 flex justify-center items-center bg-[#14171a] cursor-pointer',
+        className
+      )}
+      {...props}
+    >
+      <Close className="w-[18px] h-[18px]" />
+    </div>
   );
 }
-
-const ModalCloseBtnWrapper = styled.div`
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #14171a;
-  cursor: pointer;
-  svg {
-    width: 18px;
-    height: 18px;
-  }
-`;
 
 export const ModalTitle = styled.h3`
   color: #fff;

@@ -5,7 +5,7 @@ import LinkLogo from '../../news/links/LinkLogo';
 
 export type LinkCardData = {
   logo: string;
-  name: string;
+  title: string;
   url: string;
   errorLogo?: string;
 };
@@ -13,13 +13,13 @@ interface Props extends StyledComponentPropsWithRef<'div'> {
   data: LinkCardData;
 }
 export default function LinkCard({ data, ...wrapperProps }: Props) {
-  const { logo, name, url, errorLogo } = data;
+  const { logo, title, url, errorLogo } = data;
   return (
     <CardWrapper {...wrapperProps}>
       <CardBody>
         <Logo logo={logo} link={url} errorLogo={errorLogo} />
         <Right>
-          <Name>{name}</Name>
+          <Title>{title}</Title>
           <Url>{url}</Url>
         </Right>
       </CardBody>
@@ -71,7 +71,7 @@ const Right = styled.div`
     gap: 4px;
   `}
 `;
-const Name = styled(EllipsisText)`
+const Title = styled(EllipsisText)`
   color: #fff;
 
   /* medium-16 */

@@ -16,7 +16,7 @@ import Loading from '../../common/loading/Loading';
 import { encodeLinkURL } from '../../../utils/news/link';
 
 const ROUTE_PREFIX = '/b/links';
-export type TopLinksData = Array<{ logo: string; name: string; url: string }>;
+export type TopLinksData = Array<{ logo: string; title: string; url: string }>;
 
 export default function TopLinks({
   links,
