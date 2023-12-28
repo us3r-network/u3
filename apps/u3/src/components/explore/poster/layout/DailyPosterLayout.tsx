@@ -25,7 +25,7 @@ export default function DailyPosterLayout({
   return (
     <div
       className={cn(
-        'w-[560px] flex flex-col items-start p-[30px] border-[2px] border-solid border-[#000] bg-[#F6F6F4]',
+        'w-[560px] h-fit flex-shrink-0 flex flex-col items-start p-[30px] border-[2px] border-solid border-[#000] bg-[#F6F6F4]',
         'font-poster',
         className
       )}
