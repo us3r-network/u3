@@ -1,48 +1,47 @@
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
-import EllipsisText from '../../../../common/text/EllipsisText';
+import { ComponentPropsWithRef } from 'react';
+import { cn } from '@/lib/utils';
+import LinkLogo from '@/components/news/links/LinkLogo';
 
 export type LinkCardData = {
-  name: string;
+  logo: string;
+  errorLogo?: string;
+  title: string;
   url: string;
 };
-interface Props extends StyledComponentPropsWithRef<'div'> {
+interface Props extends ComponentPropsWithRef<'div'> {
   data: LinkCardData;
 }
-export default function LinkCard({ data, ...wrapperProps }: Props) {
-  const { name, url } = data;
+export default function LinkCard({ data, className, ...wrapperProps }: Props) {
+  const { logo, errorLogo, title, url } = data;
   return (
-    <CardWrapper {...wrapperProps}>
-      <Url>{url}</Url>
-      <Title row={2}>{name}</Title>
-    </CardWrapper>
+    <div className={cn('w-full flex gap-[10px]', className)} {...wrapperProps}>
+      {logo && (
+        <LinkLogo
+          className="w-[50px] h-[50px] object-cover"
+          logo={logo}
+          link={url}
+          errorLogo={errorLogo}
+          alt=""
+        />
+      )}
+      <div className="w-0 flex-1 flex flex-col gap-[10px]">
+        <span
+          className={cn(
+            'text-[#000] text-[20px] font-bold leading-none line-clamp-1'
+          )}
+        >
+          {title}
+        </span>
+        {url && (
+          <span
+            className={cn(
+              'text-[#5D5E62] text-[16px] font-bold leading-none line-clamp-1'
+            )}
+          >
+            {url}
+          </span>
+        )}
+      </div>
+    </div>
   );
 }
-
-const CardWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  padding: 20px;
-  box-sizing: border-box;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 20px;
-  overflow: hidden;
-`;
-const Title = styled(EllipsisText)`
-  align-self: stretch;
-  color: var(--14171-a, #14171a);
-  font-family: Marion;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-`;
-const Url = styled(EllipsisText)`
-  color: #000;
-  font-family: Marion;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;

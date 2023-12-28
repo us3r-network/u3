@@ -92,7 +92,7 @@ export default function Explore() {
             const metadata = processMetadata(item?.metadata);
             return {
               logo: metadata?.icon,
-              name: metadata?.title,
+              title: metadata?.title,
               url: item?.url,
               errorLogo: metadata?.image,
             };

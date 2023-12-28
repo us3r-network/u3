@@ -54,12 +54,14 @@ export type EmbedWebsiteLink = {
 };
 export default function AddPostForm({
   onSuccess,
+  onSubmitEnd,
   channel,
   selectedPlatforms,
   defaultText,
   embedWebsiteLink,
 }: {
   onSuccess?: () => void;
+  onSubmitEnd?: () => void;
   channel?: Channel;
   selectedPlatforms?: SocialPlatform[];
   defaultText?: string;
@@ -263,7 +265,15 @@ export default function AddPostForm({
     setText('');
     cleanImage();
     if (onSuccess) onSuccess();
-  }, [text, platforms, handleSubmitToFarcaster, handleSubmitToLens, onSuccess]);
+    if (onSubmitEnd) onSubmitEnd();
+  }, [
+    text,
+    platforms,
+    handleSubmitToFarcaster,
+    handleSubmitToLens,
+    onSuccess,
+    onSubmitEnd,
+  ]);
 
   useEffect(() => {
     if (channel) {

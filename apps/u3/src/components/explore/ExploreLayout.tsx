@@ -23,8 +23,9 @@ export default function ExploreLayout({
           }
           posts={hotPosts.posts}
           farcasterUserData={hotPosts.farcasterUserData}
-          dapps={highScoreDapps.dapps.slice(0, 6)}
-          links={topLinks.links.slice(0, 3)}
+          topics={topChannels.channels.slice(0, 2)}
+          dapps={highScoreDapps.dapps.slice(0, 2)}
+          links={topLinks.links.slice(0, 4)}
         />
       )}
       <Main>

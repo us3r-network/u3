@@ -5,15 +5,15 @@
  * @LastEditTime: 2023-02-07 17:35:08
  * @Description: file description
  */
-import { useEffect, useState } from 'react';
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { ComponentPropsWithRef, useEffect, useState } from 'react';
 import {
   fetchPlatformImgUrlByLink,
   platformLogoReplaceMap,
 } from '../../../utils/shared/platform';
 import LinkSvgUrl from '../../common/assets/svgs/link.svg';
+import { cn } from '@/lib/utils';
 
-type LinkLogoProps = StyledComponentPropsWithRef<'img'> & {
+type LinkLogoProps = ComponentPropsWithRef<'img'> & {
   logo: string;
   link: string;
   errorLogo?: string;
@@ -22,6 +22,7 @@ export default function LinkLogo({
   logo,
   link,
   errorLogo,
+  className,
   ...otherProps
 }: LinkLogoProps) {
   const [url, setUrl] = useState(platformLogoReplaceMap[logo] || logo);
@@ -39,8 +40,10 @@ export default function LinkLogo({
       });
   }, [logo, link]);
   return (
-    <PlatformImg
+    <img
+      className={cn('w-[16px] h-[16px] object-cover flex-shrink-0', className)}
       src={url}
+      alt=""
       onError={(e) => {
         if (errorLogo && e.currentTarget.src !== errorLogo) {
           e.currentTarget.src = errorLogo;
@@ -52,12 +55,3 @@ export default function LinkLogo({
     />
   );
 }
-
-const PlatformImg = styled.img`
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  margin-left: auto;
-`;

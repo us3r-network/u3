@@ -1,65 +1,19 @@
-import styled from 'styled-components';
-import LinkCard from './LinkCard';
-import ContentDividingLine from '../ContentDividingLine';
-import qrCodeU3 from '../../../../common/assets/imgs/qrcode_u3.xyz.png';
+import LinkCard, { type LinkCardData } from './LinkCard';
 
-export type TopLinksData = Array<{ logo: string; name: string; url: string }>;
+export type TopLinksData = Array<LinkCardData>;
 export type TopLinksProps = { links: TopLinksData };
 
 export default function TopLinks({ links }: TopLinksProps) {
   return (
-    <Wrapper>
-      <HorizontalLine />
-      <CardsWrapper>
-        {links.map((item, idx) => {
-          return (
-            <>
-              {idx !== 0 && <VerticalLine />}
-              <LinkCardStyled key={item.url} data={item} />
-            </>
-          );
+    <div className="w-0 flex-1">
+      <p className="text-[#000] text-[16px] font-bold leading-normal underline">
+        Top Links
+      </p>
+      <div className="grid grid-cols-1 gap-[10px] divide-y divide-[#808684]">
+        {links.map((item) => {
+          return <LinkCard key={item.url} data={item} className="pt-[10px]" />;
         })}
-        <VerticalLine />
-        <QrCodeU3 src={qrCodeU3} />
-      </CardsWrapper>
-      <ContentDividingLine />
-    </Wrapper>
+      </div>
+    </div>
   );
 }
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-`;
-const CardsWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  height: 200px;
-  align-items: center;
-  gap: 20px;
-`;
-const LinkCardStyled = styled(LinkCard)`
-  width: 0px;
-  flex: 1;
-`;
-const HorizontalLine = styled.span`
-  display: inline-block;
-  width: 100%;
-  height: 1px;
-  background: #000;
-`;
-const VerticalLine = styled.span`
-  display: inline-block;
-  width: 100px;
-  height: 1px;
-  transform: rotate(-90deg);
-  flex-shrink: 0;
-  background: #000;
-`;
-const QrCodeU3 = styled.img`
-  width: 200px;
-  height: 200px;
-  border-radius: 20px;
-`;
