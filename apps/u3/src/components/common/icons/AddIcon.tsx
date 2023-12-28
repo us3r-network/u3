@@ -14,5 +14,5 @@ export default function AddIcon() {
         fill="#718096"
       />
     </svg>
-  )
+  );
 }
