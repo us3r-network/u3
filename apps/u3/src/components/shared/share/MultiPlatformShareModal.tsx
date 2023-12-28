@@ -25,8 +25,15 @@ export default function MultiPlatformShareModal({
       <ModalBody isMobile={isMobile}>
         <CloseBtn onClick={closeModal} />
         <AddPostForm
-          onSuccess={closeModal}
-          selectedPlatforms={[shareLinkModalState.shareLinkDefaultPlatform]}
+          onSubmitEnd={() => {
+            closeModal();
+            shareLinkModalState?.onSubmitEnd?.();
+          }}
+          selectedPlatforms={
+            shareLinkModalState?.platforms || [
+              shareLinkModalState.shareLinkDefaultPlatform,
+            ]
+          }
           defaultText={shareLinkModalState?.shareLinkDefaultText}
           embedWebsiteLink={{
             link: shareLinkModalState?.shareLink,

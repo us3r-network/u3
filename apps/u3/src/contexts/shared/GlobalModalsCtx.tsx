@@ -11,11 +11,13 @@ import { SocialPlatform } from '../../services/social/types';
 type ShareLinkModalState = {
   isOpen: boolean;
   shareLink: string;
-  shareLinkDefaultPlatform: SocialPlatform;
+  shareLinkDefaultPlatform?: SocialPlatform;
   shareLinkDefaultText: string;
   shareLinkEmbedTitle: string;
   shareLinkEmbedImg?: string;
   shareLinkDomain?: string;
+  platforms?: SocialPlatform[];
+  onSubmitEnd?: () => void;
 };
 type CommentLinkModalState = {
   isOpen: boolean;
