@@ -53,7 +53,7 @@ export default function ModalContainer({
         },
       }}
       className={cn(
-        'fixed w-full md:w-[600px] top-[50%] left-[50%]',
+        'fixed top-[50%] left-[50%]',
         'focus-visible:border-none focus-visible:outline-none '
       )}
     >

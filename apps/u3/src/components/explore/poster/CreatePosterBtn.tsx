@@ -59,7 +59,7 @@ const Wrapper = styled(ButtonPrimary)`
   font-style: normal;
   font-weight: 700;
   line-height: normal;
-  z-index: 100;
+  z-index: 20;
 
   cursor: pointer;
   &:hover {
