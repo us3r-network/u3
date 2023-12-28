@@ -19,12 +19,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { cn } from '@/lib/utils';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 export function FCastChannelPicker({
   channelSelected,
@@ -53,37 +47,7 @@ export function FCastChannelPicker({
   );
 
   if (disabled) {
-    return (
-      <TooltipProvider delayDuration={300}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              type="button"
-              className={cn(
-                'border-none px-6',
-                'bg-[#14171A] hover:bg-[#14171A] focus:bg-[#14171A]',
-                'hover:text-[#718096] focus:text-[#718096] text-[#718096]',
-                'cursor-not-allowed'
-              )}
-            >
-              <img
-                src={channelSelected.image ?? ''}
-                alt={channelSelected.name}
-                className="mr-2 -ml-2 h-5 w-5"
-              />
-              {channelSelected.name}
-              <CaretDownIcon className="-mr-2 ml-2" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent className="bg-[#14171A]">
-            Does not support selecting channels when replying
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    );
+    return null;
   }
 
   return (
@@ -97,8 +61,7 @@ export function FCastChannelPicker({
           className={cn(
             'border-none px-6',
             'bg-[#14171A] hover:bg-[#14171A] focus:bg-[#14171A]',
-            'hover:text-white focus:text-white text-white',
-            disabled && 'cursor-not-allowed'
+            'hover:text-white focus:text-white text-white'
           )}
         >
           <img
