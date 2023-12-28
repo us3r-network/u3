@@ -5,7 +5,7 @@ import { TwitterLine } from '@/components/common/icons/twitter';
 import { POSTER_SHARE_DOMAIN } from '@/constants';
 import { SocialPlatform } from '@/services/social/types';
 import { getMetaTitle } from '@/utils/shared/html-meta';
-import ColorButton from './ColorButton';
+import ColorButton from '../../common/button/ColorButton';
 import { cn } from '@/lib/utils';
 import useLogin from '@/hooks/shared/useLogin';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
