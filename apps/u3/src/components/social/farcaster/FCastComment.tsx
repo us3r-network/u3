@@ -139,6 +139,7 @@ function ReplyModal({
         setOpen(false);
       }}
       contentTop="40%"
+      className="w-full md:w-[600px]"
     >
       <div className="flex flex-col gap-5 p-5 bg-[#1B1E23] text-white border-[#39424C] rounded-xl md:rounded-[20px] md:max-w-none md:w-[600px]">
         <div className="flex flex-col gap-3 text-sm">

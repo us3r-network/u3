@@ -24,6 +24,7 @@ export default function ReplyModal({
       open={open}
       closeModal={closeModal}
       afterCloseAction={() => setContent('')}
+      className="w-full md:w-[600px]"
     >
       <ModalBody>
         <CloseBtn onClick={closeModal} />
