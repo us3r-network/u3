@@ -8,10 +8,10 @@ export function PinRed() {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <path d="M0 16.12H16V0.12H0V16.12Z" fill="url(#pattern0)" />
+      <path d="M0 16.12H16V0.12H0V16.12Z" fill="url(#pattern0-pin-red)" />
       <defs>
         <pattern
-          id="pattern0"
+          id="pattern0-pin-red"
           patternContentUnits="objectBoundingBox"
           width="1"
           height="1"
