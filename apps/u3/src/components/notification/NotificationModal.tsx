@@ -114,10 +114,10 @@ export function FarcasterNotificationItem({
           onClick={() => {
             navigate(
               `/social/post-detail/fcast/${Buffer.from(
-                notification.parent_hash
-              ).toString('hex')}#${Buffer.from(notification.hash).toString(
-                'hex'
-              )}`
+                notification.replies_parent_hash
+              ).toString('hex')}#${Buffer.from(
+                notification.casts_hash
+              ).toString('hex')}`
             );
             setOpenNotificationModal(false);
           }}
@@ -127,7 +127,7 @@ export function FarcasterNotificationItem({
             <UserAction>
               <u>{userData.userName}</u> commented on your cast
             </UserAction>
-            <PostText>{notification.text}</PostText>
+            <PostText>{notification.replies_text}</PostText>
             <DateText>
               {dayjs(notification.message_timestamp).fromNow()}
             </DateText>
@@ -144,7 +144,7 @@ export function FarcasterNotificationItem({
               onClick={() => {
                 navigate(
                   `/social/post-detail/fcast/${Buffer.from(
-                    notification.hash
+                    notification.casts_hash
                   ).toString('hex')}`
                 );
                 setOpenNotificationModal(false);
@@ -155,7 +155,7 @@ export function FarcasterNotificationItem({
                 <UserAction>
                   <u>{userData.userName}</u> like your cast
                 </UserAction>
-                <PostText>{notification.text}</PostText>
+                <PostText>{notification.casts_text}</PostText>
                 <DateText>
                   {dayjs(notification.message_timestamp).fromNow()}
                 </DateText>
@@ -170,7 +170,7 @@ export function FarcasterNotificationItem({
               onClick={() => {
                 navigate(
                   `/social/post-detail/fcast/${Buffer.from(
-                    notification.hash
+                    notification.casts_hash
                   ).toString('hex')}`
                 );
                 setOpenNotificationModal(false);
@@ -181,7 +181,7 @@ export function FarcasterNotificationItem({
                 <UserAction>
                   <u>{userData.userName}</u> recast your cast
                 </UserAction>
-                <PostText>{notification.text}</PostText>
+                <PostText>{notification.casts_text}</PostText>
                 <DateText>
                   {dayjs(notification.message_timestamp).fromNow()}
                 </DateText>

@@ -46,7 +46,7 @@ export default function useFarcasterNotifications(
         }
       });
       setFarcasterNotifications(
-        uniqBy([...farcasterNotifications, ...notifications], 'id')
+        uniqBy([...farcasterNotifications, ...notifications], 'message_hash')
       );
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
@@ -87,7 +87,7 @@ export default function useFarcasterNotifications(
           temp[item.fid] = [item];
         }
       });
-      setFarcasterNotifications(uniqBy(notifications, 'id'));
+      setFarcasterNotifications(uniqBy(notifications, 'message_hash'));
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
         setHasMore(pageInfo.hasNextPage);

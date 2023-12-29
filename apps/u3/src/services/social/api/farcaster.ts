@@ -11,12 +11,13 @@ export type FarcasterNotification = {
   message_type: number;
   message_timestamp: string;
   message_hash: Buffer;
-  reaction_type?: number;
-  id?: string;
-  hash?: Buffer;
-  text?: string;
   userData: unknown;
-  parent_hash?: Buffer;
+  reaction_type?: number;
+  casts_id?: string;
+  casts_hash?: Buffer;
+  casts_text?: string;
+  replies_text?: string;
+  replies_parent_hash?: Buffer;
 };
 
 export type FarcasterPageInfo = {

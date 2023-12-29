@@ -49,7 +49,7 @@ export default function FarcasterNotificationItem({
       actionType,
       userName: userData.userName,
       userAvatar: userData.pfp,
-      text: notification.text,
+      text: notification.replies_text,
     };
   }, [notification, userData]);
 
@@ -58,8 +58,10 @@ export default function FarcasterNotificationItem({
       case MessageType.CAST_ADD:
         navigate(
           `/social/post-detail/fcast/${Buffer.from(
-            notification.parent_hash
-          ).toString('hex')}#${Buffer.from(notification.hash).toString('hex')}`
+            notification.replies_parent_hash
+          ).toString('hex')}#${Buffer.from(notification.casts_hash).toString(
+            'hex'
+          )}`
         );
         break;
       case MessageType.REACTION_ADD:
@@ -68,7 +70,7 @@ export default function FarcasterNotificationItem({
           case ReactionType.RECAST:
             navigate(
               `/social/post-detail/fcast/${Buffer.from(
-                notification.hash
+                notification.casts_hash
               ).toString('hex')}`
             );
             break;
