@@ -236,7 +236,7 @@ export function getLinkFeeds({
   }>
 > {
   return axiosInstance({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/castWithEmbedLinks`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/castWithEmbedLinks`,
     method: 'get',
     params: {
       link,

@@ -24,6 +24,7 @@ export default function useFarcasterNotifications(
     if (loading || !hasMore) {
       return;
     }
+    if (!fid) return;
     setLoading(true);
     try {
       const resp = await getFarcasterNotifications({
@@ -67,6 +68,8 @@ export default function useFarcasterNotifications(
   ]);
 
   const loadFarcasterNotifications = async () => {
+    if (loading) return;
+    if (!fid) return;
     setLoading(true);
     try {
       const resp = await getFarcasterNotifications({ fid, pageSize });
