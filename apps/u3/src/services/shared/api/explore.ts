@@ -14,7 +14,7 @@ export function getHotPosts() {
 
 export function getTopLinks(): RequestPromise<LinksListResponse> {
   return request({
-    url: `/3r/farcaster/embedLinks`,
+    url: `/3r-farcaster/embedLinks`,
     params: {
       pageSize: 6,
       orderBy: 'TRENDING',
