@@ -23,7 +23,7 @@ export function MobileGuide() {
   return (
     <div
       className={cn(
-        'z-10 fixed top-[0] left-[0] w-screen h-screen overflow-y-auto bg-[#14171A] p-[20px] pt-[50px] box-border'
+        'z-10 fixed top-[0] left-[0] w-screen h-screen overflow-y-auto bg-[#14171A] p-[20px] pt-[30px] box-border'
       )}
     >
       <div
@@ -60,7 +60,7 @@ export function MobileGuide() {
           <span>Home Screen</span>
         </div>
       </div>
-      <div className="inline-flex flex-col items-start gap-[15px] mt-[60px]">
+      <div className="inline-flex flex-col items-start gap-[10px] mt-[30px]">
         <div className="flex w-full items-center gap-[10px]">
           <img
             src="guide/imgs/chrome.png"
@@ -76,7 +76,7 @@ export function MobileGuide() {
           <GrayText>option.</GrayText>
         </div>
       </div>
-      <div className="inline-flex flex-col items-start gap-[15px] mt-[60px]">
+      <div className="inline-flex flex-col items-start gap-[10px] mt-[30px]">
         <div className="flex w-full items-center gap-[10px]">
           <img
             src="guide/imgs/browser.png"
@@ -102,7 +102,7 @@ export function MobileGuide() {
           </span>
         </div>
       </div>
-      <div className="w-full flex flex-row items-center  mt-[60px]">
+      <div className="w-full flex flex-row items-center  mt-[30px] mb-[48px]">
         <Button
           className="
             w-[140px]
@@ -116,6 +116,7 @@ export function MobileGuide() {
             font-medium
             leading-[24px]
             mx-[auto]
+            hover:bg-[#FFF]
           "
           onClick={() => {
             storeMobileGuideSkip();

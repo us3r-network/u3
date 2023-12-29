@@ -11,12 +11,13 @@ export type FarcasterNotification = {
   message_type: number;
   message_timestamp: string;
   message_hash: Buffer;
-  reaction_type?: number;
-  id?: string;
-  hash?: Buffer;
-  text?: string;
   userData: unknown;
-  parent_hash?: Buffer;
+  reaction_type?: number;
+  casts_id?: string;
+  casts_hash?: Buffer;
+  casts_text?: string;
+  replies_text?: string;
+  replies_parent_hash?: Buffer;
 };
 
 export type FarcasterPageInfo = {
@@ -116,7 +117,7 @@ export function getFarcasterNotifications({
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/notifications`,
     method: 'get',
     params: {
       fid,
@@ -138,7 +139,7 @@ export function getFarcasterUnreadNotificationCount({
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications/unreadCount`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/notifications/unreadCount`,
     method: 'get',
     params: {
       fid,
@@ -156,7 +157,7 @@ export function clearFarcasterUnreadNotification({
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/notifications/clearUnread`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/notifications/clearUnread`,
     method: 'post',
     data: {
       fid,
@@ -211,7 +212,7 @@ export function getFarcasterRecommendedProfile(
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/farcaster/recommendedProfile`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/recommendedProfile`,
     method: 'get',
     params: {
       fid,

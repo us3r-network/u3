@@ -24,6 +24,7 @@ export default function useFarcasterNotifications(
     if (loading || !hasMore) {
       return;
     }
+    if (!fid) return;
     setLoading(true);
     try {
       const resp = await getFarcasterNotifications({
@@ -45,7 +46,7 @@ export default function useFarcasterNotifications(
         }
       });
       setFarcasterNotifications(
-        uniqBy([...farcasterNotifications, ...notifications], 'id')
+        uniqBy([...farcasterNotifications, ...notifications], 'message_hash')
       );
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
@@ -67,6 +68,8 @@ export default function useFarcasterNotifications(
   ]);
 
   const loadFarcasterNotifications = async () => {
+    if (loading) return;
+    if (!fid) return;
     setLoading(true);
     try {
       const resp = await getFarcasterNotifications({ fid, pageSize });
@@ -84,7 +87,7 @@ export default function useFarcasterNotifications(
           temp[item.fid] = [item];
         }
       });
-      setFarcasterNotifications(uniqBy(notifications, 'id'));
+      setFarcasterNotifications(uniqBy(notifications, 'message_hash'));
       setFarcasterUserData({ ...farcasterUserData, ...temp });
       if (pageInfo) {
         setHasMore(pageInfo.hasNextPage);

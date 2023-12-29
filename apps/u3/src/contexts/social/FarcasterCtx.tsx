@@ -11,7 +11,7 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useHotkeys } from 'react-hotkeys-hook';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
 
@@ -43,6 +43,7 @@ import {
   userDataObjFromArr,
 } from '@/utils/social/farcaster/user-data';
 import usePinupHashes from '@/hooks/social/farcaster/usePinupHashes';
+import AddPostModal from '@/components/social/AddPostModal';
 
 export type Token = {
   token: string;
@@ -102,6 +103,8 @@ export interface FarcasterContextData {
   farcasterChannels: FarcasterChannel[];
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
+  openPostModal: boolean;
+  setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -115,7 +118,7 @@ export default function FarcasterProvider({
   const [farcasterUserData, setFarcasterUserData] = useState<FarcasterUserData>(
     {}
   );
-  const { isLogin } = useLogin();
+  const { isLogin, login } = useLogin();
   const [signer, setSigner] = useState<Signer>({
     SignedKeyRequest: {
       deeplinkUrl: '',
@@ -171,7 +174,7 @@ export default function FarcasterProvider({
     qrCheckStatus,
     qrUserData,
   } = useFarcasterQR();
-
+  const [openPostModal, setOpenPostModal] = useState(false);
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels: trendChannels, loading: trendChannelsLoading } =
     useFarcasterTrendChannel(farcasterChannels);
@@ -273,6 +276,19 @@ export default function FarcasterProvider({
     }
   }, [session, profile, signer, currFid, currUserInfo]);
 
+  useHotkeys(
+    'meta+p',
+    (e) => {
+      e.preventDefault();
+      if (!isLogin) {
+        login();
+        return;
+      }
+      setOpenPostModal(true);
+    },
+    [isLogin]
+  );
+
   const currUserInfoObj = useMemo(() => {
     if (!currUserInfo || !currUserInfo[currFid]) return undefined;
     const data = userDataObjFromArr(
@@ -314,6 +330,8 @@ export default function FarcasterProvider({
         farcasterChannels,
         getChannelFromId,
         getChannelFromUrl,
+        openPostModal,
+        setOpenPostModal,
       }}
     >
       {children}
@@ -368,6 +386,13 @@ export default function FarcasterProvider({
         selectType={selectType}
         setSelectType={(type: string) => {
           setSelectType(type);
+        }}
+      />
+
+      <AddPostModal
+        open={openPostModal}
+        closeModal={() => {
+          setOpenPostModal(false);
         }}
       />
     </FarcasterContext.Provider>
