@@ -286,7 +286,7 @@ export default function AddPostForm({
   }, [defaultText]);
 
   useEffect(() => {
-    setPlatforms(new Set(selectedPlatforms || []));
+    setPlatforms(new Set(selectedPlatforms || [SocialPlatform.Farcaster]));
   }, [selectedPlatforms]);
 
   return (
