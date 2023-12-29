@@ -116,6 +116,7 @@ export function MobileGuide() {
             font-medium
             leading-[24px]
             mx-[auto]
+            hover:bg-[#FFF]
           "
           onClick={() => {
             storeMobileGuideSkip();
