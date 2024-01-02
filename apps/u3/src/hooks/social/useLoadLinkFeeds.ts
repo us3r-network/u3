@@ -1,18 +1,14 @@
 import { useCallback, useState } from 'react';
-import {
-  FeedsDataItem,
-  FeedsPageInfo,
-  getLinkFeeds,
-} from '../../services/social/api/feeds';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { SocialPlatform } from '../../services/social/types';
+import { getLinkFeeds } from '@/services/social/api/farcaster';
 
 export function useLoadLinkFeeds() {
   const { setFarcasterUserData } = useFarcasterCtx();
 
-  const [feeds, setFeeds] = useState<Array<FeedsDataItem>>([]);
+  const [feeds, setFeeds] = useState([]);
 
-  const [pageInfo, setPageInfo] = useState<FeedsPageInfo>({
+  const [pageInfo, setPageInfo] = useState({
     hasNextPage: false,
     endFarcasterCursor: '',
     endLensCursor: '',
@@ -39,7 +35,7 @@ export function useLoadLinkFeeds() {
           platforms: opts?.platforms?.length > 0 ? opts.platforms : undefined,
         });
         const {
-          data,
+          casts,
           farcasterUserData,
           pageInfo: newPageInfo,
         } = res.data.data;
@@ -51,7 +47,7 @@ export function useLoadLinkFeeds() {
             temp[item.fid] = [item];
           }
         });
-        setFeeds(data);
+        setFeeds(casts);
         setFarcasterUserData((pre) => ({ ...pre, ...temp }));
         setPageInfo(newPageInfo);
       } catch (error) {

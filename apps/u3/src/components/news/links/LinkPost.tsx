@@ -138,7 +138,7 @@ const Title = styled.div`
   font-weight: 600;
   font-style: italic;
   color: #fff;
-  margin: 18px 0;
+  margin: 14px 0;
   padding-left: 12px;
   border-left: 2px solid #fff;
 `;
