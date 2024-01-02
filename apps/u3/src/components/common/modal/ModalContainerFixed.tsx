@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils';
 const modalStyles = {
   content: {
     backdropFilter: 'blur(10px)',
-    transform: 'translate(-50%, -50%)',
     borderRadius: '20px',
     background: '#1B1E23',
     padding: '0px',
@@ -12,14 +11,12 @@ const modalStyles = {
   },
 };
 
-export default function ModalContainer({
+export default function ModalContainerFixed({
   children,
   open,
   closeModal,
   afterCloseAction,
   zIndex,
-  contentTop,
-  contentTransform,
   id,
   className,
   onAfterOpen,
@@ -29,8 +26,6 @@ export default function ModalContainer({
   closeModal: () => void;
   afterCloseAction?: () => void;
   onAfterOpen?: () => void;
-  contentTransform?: string;
-  contentTop?: string;
   zIndex?: number;
   id?: string;
   className?: string;
@@ -50,8 +45,6 @@ export default function ModalContainer({
       style={{
         content: {
           ...modalStyles.content,
-          top: contentTop || '50%',
-          transform: contentTransform || 'translate(-50%, -50%)',
         },
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -59,8 +52,9 @@ export default function ModalContainer({
         },
       }}
       className={cn(
-        'fixed top-[50%] left-[50%]',
+        'fixed top-[100px] left-[50%]',
         'focus-visible:border-none focus-visible:outline-none',
+        'transform -translate-x-1/2',
         className || ''
       )}
     >

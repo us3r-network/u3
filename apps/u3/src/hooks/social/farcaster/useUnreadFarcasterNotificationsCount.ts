@@ -13,6 +13,7 @@ export default function useUnreadFarcasterNotificationsCount(fid: number) {
   const [lastTime, setLastTime] = useState(null);
 
   const getUnreadNotificationCount = async () => {
+    if (!fid) return;
     setLoading(true);
     try {
       const resp = await getFarcasterUnreadNotificationCount({ fid });
