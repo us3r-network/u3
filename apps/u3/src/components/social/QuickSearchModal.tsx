@@ -51,7 +51,7 @@ export default function QuickSearchModal({
       .filter((channel) => {
         return channel.name.toLowerCase().includes(searchText.toLowerCase());
       })
-      .slice(0, 10);
+      .slice(0, 5);
   }, [searchText, trendChannels]);
 
   return (
@@ -62,9 +62,9 @@ export default function QuickSearchModal({
         inputRef.current?.focus();
       }}
       zIndex={40}
-      className="top-[100px] md:w-[800px] w-full max-h-[calc(100vh-120px)] mb-2 box-border overflow-hidden"
+      className="top-[100px] md:w-[800px] w-full max-h-[600px] mb-2 box-border overflow-hidden"
     >
-      <div className="flex flex-col w-full min-h-min overflow-hidden text-white p-2 bg-inherit">
+      <div className="flex flex-col w-full overflow-hidden text-white p-2 bg-inherit">
         <div className="flex px-2 pb-2 gap-1 items-center border-b border-[#39424C] z-50">
           <span>
             <SearchIcon className="w-5 h-5" />
