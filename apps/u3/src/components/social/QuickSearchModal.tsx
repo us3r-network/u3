@@ -36,7 +36,6 @@ export default function QuickSearchModal({
   const navigate = useNavigate();
 
   const getUsers = async (text: string) => {
-    console.log('getUsers', text);
     if (!text) {
       setUsers([]);
       return;
@@ -117,6 +116,9 @@ export default function QuickSearchModal({
                 );
               })}
           </div>
+
+          <hr className="border-[#39424C] py-1 mt-2" />
+
           <h3 className="font-light italic p-2 pb-1 sticky top-[0px] z-40 w-full bg-inherit">
             Users
           </h3>
