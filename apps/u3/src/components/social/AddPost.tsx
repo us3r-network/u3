@@ -12,7 +12,7 @@ export default function AddPost() {
   return (
     <ColorButton
       className={cn(
-        'flex items-center gap-2 text-black text-[16px]',
+        'flex items-center gap-2 text-white text-[16px]',
         'h-[60px] p-[16px] rounded-[20px] gap-[8px] box-border'
       )}
       onClick={() => {
