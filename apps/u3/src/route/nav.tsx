@@ -35,7 +35,7 @@ export const navs: CustomNavObject[] = [
     route: getRoute(RouteKey.home),
   },
   {
-    name: 'Browse',
+    name: 'Apps',
     activeRouteKeys: [
       RouteKey.newsLayout,
       RouteKey.links,

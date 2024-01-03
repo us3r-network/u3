@@ -49,7 +49,7 @@ DappsPageProps) {
             >
               <DappExploreList
                 data={dapps}
-                onItemClick={(item) => navigate(`/dapp-store/${item.id}`)}
+                onItemClick={(item) => navigate(`/apps/${item.id}`)}
               />
               {isLoadingMore ? (
                 <MoreLoading>

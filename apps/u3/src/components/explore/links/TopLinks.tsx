@@ -29,7 +29,7 @@ export default function TopLinks({
   return (
     <Wrapper>
       <Title
-        text="👍 Top Links"
+        text="👍 App Feeds"
         viewAllAction={() => {
           navigate(`${ROUTE_PREFIX}/all`);
         }}

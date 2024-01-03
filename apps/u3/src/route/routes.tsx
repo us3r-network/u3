@@ -142,7 +142,7 @@ export const routes: CutomRouteObject[] = [
     path: '/b',
     element: loadContainerElement('news/NewsLayout'),
     key: RouteKey.newsLayout,
-    title: 'Browse',
+    title: 'Apps',
     children: [
       {
         path: '',
@@ -338,19 +338,19 @@ export const routes: CutomRouteObject[] = [
   },
   // apps
   {
-    path: '/dapp-store',
+    path: '/apps',
     element: loadContainerElement('dapp/Dapps'),
     key: RouteKey.dappStore,
-    title: 'Explore Dapps',
+    title: 'Explore Apps',
   },
   {
-    path: '/dapp-store/:id',
+    path: '/apps/:id',
     element: loadContainerElement('dapp/Dapp'),
     key: RouteKey.dapp,
-    title: 'Dapp',
+    title: 'Apps',
   },
   {
-    path: '/dapp-store/create',
+    path: '/apps/create',
     element: loadContainerElement('dapp/DappCreate'),
     key: RouteKey.dappCreate,
     permissions: [RoutePermission.login, RoutePermission.admin],
