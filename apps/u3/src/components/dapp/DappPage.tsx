@@ -102,7 +102,7 @@ export default function DappPage({
           <RecommendDapps
             data={recommendDapps}
             loading={recommendDappsLoading}
-            onItemClick={(item) => navigate(`/dapp-store/${item.id}`)}
+            onItemClick={(item) => navigate(`/apps/${item.id}`)}
           />
         </ContentLayoutRight>
       </ContentLayout>

@@ -240,12 +240,12 @@ export default forwardRef(function DappInstallList(props: Props, ref) {
             onClick={() => {
               if (handlesItem) {
                 if (handlesItem.id) {
-                  navigate(`/dapp-store/${handlesItem.id}`);
+                  navigate(`/apps/${handlesItem.id}`);
                   setHandlesItemId(null);
                 } else {
                   fetchDappByTokenId(handlesItem.tokenId).then((r) => {
                     const { id } = r.data.data;
-                    navigate(`/dapp-store/${id}`);
+                    navigate(`/apps/${id}`);
                     setHandlesItemId(null);
                   });
                 }

@@ -19,7 +19,7 @@ export default function CreatePosterBtn({
         disabled={disabled || !DailyPosterModal}
         onClick={() => setOpen(true)}
       >
-        Create Poster
+        Share
       </Wrapper>
       {DailyPosterModal && (
         <DailyPosterModal

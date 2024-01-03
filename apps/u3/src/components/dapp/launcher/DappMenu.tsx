@@ -32,7 +32,7 @@ export default function DappMenu() {
             }
           }}
         >
-          <Title>Your Dapps</Title>
+          <Title>Your Apps</Title>
           <ExploreDappsNavBtn />
           <DappInstallList ref={dappInstallListRef} />
         </ListInner>
@@ -40,7 +40,7 @@ export default function DappMenu() {
           <PlusSquareSvg
             className="submit-btn"
             onClick={() => {
-              navigate('/dapp-store/create');
+              navigate('/apps/create');
             }}
           />
         )}

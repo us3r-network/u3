@@ -43,7 +43,7 @@ export default function DappsPageMobile({
         >
           <DappExploreListMobile
             data={dapps}
-            onItemClick={(item) => navigate(`/dapp-store/${item.id}`)}
+            onItemClick={(item) => navigate(`/apps/${item.id}`)}
           />
           {isLoadingMore ? (
             <MoreLoading>loading ...</MoreLoading>
