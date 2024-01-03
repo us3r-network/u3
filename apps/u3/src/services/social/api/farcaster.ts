@@ -1,6 +1,6 @@
 import axios, { AxiosPromise } from 'axios';
 import { UrlMetadata } from '@mod-protocol/core';
-import { ApiResp, FarCast, FarCastEmbedMeta } from '../types';
+import { ApiResp, FarCast, FarCastEmbedMeta, SocialPlatform } from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import request from '@/services/shared/api/request';
 
@@ -198,6 +198,38 @@ export function getFarcasterLinks(
     params: {
       fid,
       withInfo,
+    },
+  });
+}
+
+export function getLinkFeeds({
+  link,
+  pageSize,
+  keyword,
+  endFarcasterCursor,
+  endLensCursor,
+  activeLensProfileId,
+  platforms,
+}: {
+  link: string;
+  pageSize?: number;
+  keyword?: string;
+  endFarcasterCursor?: string;
+  endLensCursor?: string;
+  activeLensProfileId?: string;
+  platforms?: SocialPlatform[];
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/castWithEmbedLinks`,
+    method: 'get',
+    params: {
+      link,
+      pageSize,
+      keyword,
+      endCursor: endFarcasterCursor,
+      endLensCursor,
+      activeLensProfileId,
+      platforms,
     },
   });
 }

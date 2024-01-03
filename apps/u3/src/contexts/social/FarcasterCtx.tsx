@@ -44,6 +44,9 @@ import {
 } from '@/utils/social/farcaster/user-data';
 import usePinupHashes from '@/hooks/social/farcaster/usePinupHashes';
 import AddPostModal from '@/components/social/AddPostModal';
+import QuickSearchModal, {
+  QuickSearchModalName,
+} from '@/components/social/QuickSearchModal';
 
 export type Token = {
   token: string;
@@ -174,6 +177,7 @@ export default function FarcasterProvider({
     qrCheckStatus,
     qrUserData,
   } = useFarcasterQR();
+  const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels: trendChannels, loading: trendChannelsLoading } =
@@ -289,6 +293,15 @@ export default function FarcasterProvider({
     [isLogin]
   );
 
+  useHotkeys(
+    'meta+k',
+    (e) => {
+      e.preventDefault();
+      setOpenModalName(QuickSearchModalName);
+    },
+    []
+  );
+
   const currUserInfoObj = useMemo(() => {
     if (!currUserInfo || !currUserInfo[currFid]) return undefined;
     const data = userDataObjFromArr(
@@ -393,6 +406,12 @@ export default function FarcasterProvider({
         open={openPostModal}
         closeModal={() => {
           setOpenPostModal(false);
+        }}
+      />
+      <QuickSearchModal
+        openModalName={openModalName}
+        closeModal={() => {
+          setOpenModalName('');
         }}
       />
     </FarcasterContext.Provider>
