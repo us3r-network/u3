@@ -1,5 +1,6 @@
 import { ComponentPropsWithRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useAccount } from 'wagmi';
 import ColorButton from '@/components/common/button/ColorButton';
 import useMint from '@/hooks/poster/useMint';
 
@@ -12,8 +13,10 @@ export default function FreeMintButton({
   onSuccess,
   ...props
 }: FreeMintButtonProps) {
+  const { address } = useAccount();
   const { write, isLoading, isSuccess, isError } = useMint({
     tokenId,
+    owner: address,
   });
 
   useEffect(() => {

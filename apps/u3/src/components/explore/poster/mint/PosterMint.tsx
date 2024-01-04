@@ -1,5 +1,5 @@
 import { ComponentPropsWithRef, useEffect, useState } from 'react';
-import { useNetwork } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import MintInfo from './MintInfo';
 import { cn } from '@/lib/utils';
 import useLogin from '@/hooks/shared/useLogin';
@@ -28,13 +28,14 @@ export default function PosterMint({
   ...props
 }: Props) {
   const { chain } = useNetwork();
-  const { walletAddress, isLogin, login } = useLogin();
+  const { address } = useAccount();
+  const { isLogin, login } = useLogin();
   const [firstMinted, setFirstMinted] = useState(false);
   const [minted, setMinted] = useState(false);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
   const { lastTokenFromToday, ownerMinted, lastTokenId, lastTokenInfo } =
     useCasterCollection({
-      owner: walletAddress,
+      owner: address,
     });
   const { totalMinted } = lastTokenInfo || { totalMinted: 0 };
   useEffect(() => {
@@ -91,7 +92,7 @@ export default function PosterMint({
                 onSuccess={(tokenId) => {
                   setFirstMinted(true);
                   setMinted(true);
-                  onFirstMintSuccess?.(tokenId, walletAddress);
+                  onFirstMintSuccess?.(tokenId, address);
                 }}
               />
             );

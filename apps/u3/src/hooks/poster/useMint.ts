@@ -4,24 +4,30 @@ import {
   useWaitForTransaction,
   useContractRead,
 } from 'wagmi';
-import { BigNumber, utils } from 'ethers';
+import { utils } from 'ethers';
 import {
   ZoraCreator1155ImplAbi,
   casterZora1155ToMintAddress,
   casterZoraFixedPriceStrategyAddress,
   casterRecipientAddress,
+  casterZoraChainId,
 } from '../../constants/zora';
+import { getZoraMintFeeWithChain } from '@/utils/shared/zora';
 
-export function useMint({ tokenId }: { tokenId: number }) {
+export function useMint({
+  tokenId,
+  owner,
+}: {
+  tokenId: number;
+  owner: string;
+}) {
   const { data: mintFee } = useContractRead({
     address: casterZora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'mintFee',
   });
-  console.log('mintFee', mintFee);
-  const wei = BigNumber.from(mintFee);
-  const mintValue = utils.formatUnits(wei, 'ether');
-  console.log('mintEth', mintValue);
+
+  const fee = getZoraMintFeeWithChain(casterZoraChainId, mintFee);
 
   const prepareOpts = {
     address: casterZora1155ToMintAddress, // address of collection to mint from
@@ -31,19 +37,13 @@ export function useMint({ tokenId }: { tokenId: number }) {
       casterZoraFixedPriceStrategyAddress, // `minter` contract to use
       tokenId, // `tokenId` hardcoded as 1
       1, // `mintQuantity` hardcoded as 1
-      utils.defaultAbiCoder.encode(
-        ['address'],
-        [casterRecipientAddress]
-      ) as `0x${string}`,
+      utils.defaultAbiCoder.encode(['address'], [owner]) as `0x${string}`,
       casterRecipientAddress,
     ],
-    // value: mintFee,
-    value: mintValue,
+    value: fee,
     enabled: !!tokenId && !!mintFee,
   };
-  console.log('prepareOpts', prepareOpts);
   const { config: prepareConfig } = usePrepareContractWrite(prepareOpts);
-  console.log('prepareConfig', prepareConfig);
 
   const {
     write,
