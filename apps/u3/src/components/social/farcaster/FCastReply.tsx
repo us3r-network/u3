@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { useCallback, useRef, useState } from 'react';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channelv1 } from '@mod-protocol/farcaster';
 import { CastAddBody } from '@farcaster/hub-web';
 
 import { CurrentUserInfoAvatar } from '@/components/social/farcaster/CurrUserInfo';
@@ -13,13 +13,16 @@ import { Button } from '@/components/ui/button';
 export function ReplyCast({
   replyAction,
 }: {
-  replyAction: (data: { cast: CastAddBody; channel: Channel }) => Promise<void>;
+  replyAction: (data: {
+    cast: CastAddBody;
+    channel: Channelv1;
+  }) => Promise<void>;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const farcasterInputRef = useRef<{
     handleFarcasterSubmit: () => void;
   }>();
-  const [channelSelected, setChannelSelected] = useState<Channel>({
+  const [channelSelected, setChannelSelected] = useState<Channelv1>({
     name: 'Home',
     parent_url: '',
     image: 'https://warpcast.com/~/channel-images/home.png',

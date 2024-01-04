@@ -5,6 +5,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 
 import {
   formatPlaintextToHubCastMessage,
+  getFarcasterChannels,
   getFarcasterMentions,
   getMentionFidsByUsernames,
 } from '@mod-protocol/farcaster';
@@ -12,11 +13,13 @@ import { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { CastAddBody } from '@farcaster/hub-web';
 import { createRenderMentionsSuggestionConfig } from './createRenderMentionsSuggestionConfig';
 import { cn } from '@/lib/utils';
+import { createRenderChannelsSuggestionConfig } from './createRenderChannelsSuggestionConfig';
+import { ChannelList } from './ChannelList';
 
 const MOD_API_URL = 'https://api.modprotocol.org/api';
 const getMentions = getFarcasterMentions(MOD_API_URL);
 
-// const getChannels = getFarcasterChannels(MOD_API_URL);
+const getChannels = getFarcasterChannels(MOD_API_URL);
 const getMentionFids = getMentionFidsByUsernames(MOD_API_URL);
 const getUrlMetadata = fetchUrlMetadata(MOD_API_URL);
 
@@ -26,30 +29,36 @@ export default forwardRef(function FarcasterInput(
     textCb,
     className,
   }: {
-    farcasterSubmit: (body: CastAddBody) => void;
+    farcasterSubmit: (body: CastAddBody, channel: string[]) => void;
     textCb: (text: string) => void;
     className?: string;
   },
   ref
 ) {
-  const { editor, handleSubmit, getText, getEmbeds, setEmbeds, addEmbed } =
+  const { editor, handleSubmit, getText, getEmbeds, getChannel, addEmbed } =
     useEditor({
       fetchUrlMetadata: getUrlMetadata,
       onError: (error) => console.error(error),
       onSubmit: async (cast) => {
         const { text, embeds } = cast;
+        const channelReg = /(?<=\/)(.*?)(?=\s)/g;
+        const channels: string[] = text.match(channelReg);
         const formattedCast = await formatPlaintextToHubCastMessage({
           text,
           embeds,
-          parentUrl: undefined,
+          // parentUrl: undefined,
           getMentionFidsByUsernames: getMentionFids,
         });
         if (formattedCast) {
-          farcasterSubmit(formattedCast);
+          farcasterSubmit(formattedCast, channels);
         }
         return Promise.resolve(true);
       }, // submit to your hub
       linkClassName: 'text-[#2594ef]',
+      renderChannelsSuggestionConfig: createRenderChannelsSuggestionConfig({
+        getResults: (query) => getChannels(query, true),
+        // RenderList: ChannelList,
+      }),
       renderMentionsSuggestionConfig: createRenderMentionsSuggestionConfig({
         getResults: getMentions,
       }),

@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channelv1 } from '@mod-protocol/farcaster';
 import { CastAddBody, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
 
@@ -60,7 +60,7 @@ export default function FarcasterPostDetail() {
   }, [castId]);
 
   const replyCastAction = useCallback(
-    async (data: { cast: CastAddBody; channel: Channel }) => {
+    async (data: { cast: CastAddBody; channel: Channelv1 }) => {
       if (!isLoginU3) {
         login();
         return;
