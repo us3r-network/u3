@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import { useCallback, useEffect, useState } from 'react';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channelv1 } from '@mod-protocol/farcaster';
 import { CaretDownIcon } from '@radix-ui/react-icons';
 
 import {
@@ -25,21 +25,21 @@ export function FCastChannelPicker({
   setChannelSelected,
   disabled,
 }: {
-  channelSelected: Channel;
-  setChannelSelected: (channel: Channel) => void;
+  channelSelected: Channelv1;
+  setChannelSelected: (channel: Channelv1) => void;
   disabled?: boolean;
 }) {
   const { farcasterChannels } = useFarcasterCtx();
   const [open, setOpen] = useState(false);
 
-  const [channelResults, setChannelResults] = useState<Channel[]>([]);
+  const [channelResults, setChannelResults] = useState<Channelv1[]>([]);
 
   useEffect(() => {
     setChannelResults(farcasterChannels);
   }, [farcasterChannels]);
 
   const handleSelect = useCallback(
-    (channel: Channel) => {
+    (channel: Channelv1) => {
       setOpen(false);
       setChannelSelected(channel);
     },

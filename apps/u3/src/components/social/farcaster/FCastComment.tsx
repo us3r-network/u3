@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 import { useCallback, useState } from 'react';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channelv1 } from '@mod-protocol/farcaster';
 import { CastAddBody, makeCastAdd } from '@farcaster/hub-web';
 import { Cross2Icon } from '@radix-ui/react-icons';
 import { toast } from 'react-toastify';
@@ -87,7 +87,7 @@ function ReplyModal({
     useFarcasterCtx();
 
   const replyCastAction = useCallback(
-    async (data: { cast: CastAddBody; channel: Channel }) => {
+    async (data: { cast: CastAddBody; channel: Channelv1 }) => {
       if (!isLoginU3) {
         loginU3();
         return;

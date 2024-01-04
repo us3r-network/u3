@@ -58,12 +58,14 @@ export default function QuickSearchModal({
       open={openModalName === QuickSearchModalName}
       closeModal={closeModal}
       onAfterOpen={() => {
+        setSearchText('');
+        setUsers([]);
         inputRef.current?.focus();
       }}
       zIndex={40}
-      className="top-[100px] md:w-[800px] w-full max-h-[600px] mb-2 box-border overflow-hidden"
+      className="top-[100px] md:w-[800px] w-full mb-2 box-border overflow-hidden"
     >
-      <div className="flex flex-col w-full overflow-hidden text-white p-2 bg-inherit">
+      <div className="flex flex-col w-full overflow-hidden text-white p-2 bg-inherit max-h-[600px] overflow-y-auto">
         <div className="flex px-2 pb-2 gap-1 items-center border-b border-[#39424C] z-50">
           <span>
             <SearchIcon className="w-5 h-5" />

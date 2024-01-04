@@ -8,7 +8,7 @@ import {
   makeReactionAdd,
   makeReactionRemove,
 } from '@farcaster/hub-web';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channelv1 } from '@mod-protocol/farcaster';
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { LoopIcon, Pencil2Icon, Cross2Icon } from '@radix-ui/react-icons';
@@ -197,8 +197,13 @@ function Repost({
 }) {
   const [open, setOpen] = useState(false);
   const castId: CastId = useFarcasterCastId({ cast });
-  const { encryptedSigner, currFid, isConnected, openFarcasterQR } =
-    useFarcasterCtx();
+  const {
+    encryptedSigner,
+    currFid,
+    isConnected,
+    openFarcasterQR,
+    getChannelFromId,
+  } = useFarcasterCtx();
 
   const creatorData = useFarcasterUserData({
     fid: cast.fid,
@@ -207,7 +212,11 @@ function Repost({
   });
 
   const quoteCast = useCallback(
-    async (data: { castBody: CastAddBody; channel: Channel }) => {
+    async (data: {
+      castBody: CastAddBody;
+      channel: Channelv1;
+      toChannels: string[];
+    }) => {
       if (!encryptedSigner) return;
       const url = `https://warpcast.com/${creatorData.userName}/0x${Buffer.from(
         castId.hash
@@ -215,24 +224,58 @@ function Repost({
         .toString('hex')
         .substring(0, 8)}`;
 
+      const tcs = (data.toChannels || [])
+        .map((channelId) => {
+          return getChannelFromId(channelId);
+        })
+        .filter((item) => item !== null);
+
       try {
-        const cast = (
-          await makeCastAdd(
-            {
-              text: data.castBody.text,
-              embeds: [{ url }],
-              embedsDeprecated: [],
-              mentions: data.castBody.mentions || [],
-              mentionsPositions: data.castBody.mentionsPositions || [],
-              parentUrl: data.channel.parent_url || undefined,
-            },
-            { fid: currFid, network: FARCASTER_NETWORK },
-            encryptedSigner
-          )
-        )._unsafeUnwrap();
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
+        if (tcs.length === 0) {
+          const cast = (
+            await makeCastAdd(
+              {
+                text: data.castBody.text,
+                embeds: [{ url }, { castId }],
+                embedsDeprecated: [],
+                mentions: data.castBody.mentions || [],
+                mentionsPositions: data.castBody.mentionsPositions || [],
+                parentUrl: data.channel.parent_url || undefined,
+              },
+              { fid: currFid, network: FARCASTER_NETWORK },
+              encryptedSigner
+            )
+          )._unsafeUnwrap();
+          const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
+          if (result.isErr()) {
+            throw new Error(result.error.message);
+          }
+        } else {
+          const result = await Promise.all(
+            tcs.map(async (toChannel) => {
+              const cast = (
+                await makeCastAdd(
+                  {
+                    text: data.castBody.text,
+                    embeds: [{ url }],
+                    embedsDeprecated: [],
+                    mentions: data.castBody.mentions || [],
+                    mentionsPositions: data.castBody.mentionsPositions || [],
+                    parentUrl: toChannel.parent_url,
+                  },
+                  { fid: currFid, network: FARCASTER_NETWORK },
+                  encryptedSigner
+                )
+              )._unsafeUnwrap();
+              const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
+              return result;
+            })
+          );
+          result.forEach((r) => {
+            if (r.isErr()) {
+              throw new Error(r.error.message);
+            }
+          });
         }
         toast.success('post created');
       } catch (error) {
@@ -331,16 +374,18 @@ function QuoteCast({
   quoteCast: ({
     castBody,
     channel,
+    toChannels,
   }: {
     castBody: CastAddBody;
-    channel: Channel;
+    channel: Channelv1;
+    toChannels: string[];
   }) => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
   const farcasterInputRef = useRef<{
     handleFarcasterSubmit: () => void;
   }>();
-  const [channelSelected, setChannelSelected] = useState<Channel>({
+  const [channelSelected, setChannelSelected] = useState<Channelv1>({
     name: 'Home',
     parent_url: '',
     image: 'https://warpcast.com/~/channel-images/home.png',
@@ -348,9 +393,9 @@ function QuoteCast({
   });
   const [, setFarcasterInputText] = useState('');
   const handleSubmitToFarcaster = useCallback(
-    (castBody: CastAddBody) => {
+    (castBody: CastAddBody, toChannels: string[]) => {
       console.log(castBody, channelSelected);
-      quoteCast({ castBody, channel: channelSelected });
+      quoteCast({ castBody, channel: channelSelected, toChannels });
     },
     [channelSelected]
   );
