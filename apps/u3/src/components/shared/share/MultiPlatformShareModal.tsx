@@ -18,7 +18,7 @@ export default function MultiPlatformShareModal({
     <ModalContainer
       open={open}
       closeModal={closeModal}
-      zIndex={300}
+      zIndex={30}
       contentTop="60px"
       contentTransform="translateX(-50%)"
     >

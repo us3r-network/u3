@@ -17,9 +17,9 @@ export default function HighScoreDapps({
   return (
     <div className="w-full">
       <Title
-        text="👍 Highly Rated Dapps"
+        text="👍 Highly Rated Apps"
         viewAllAction={() => {
-          navigate(`/dapp-store`);
+          navigate(`/apps`);
         }}
       />
       <div className={cn('w-full mt-[20px]', 'max-sm:mt-[10px]')}>
@@ -44,7 +44,7 @@ export default function HighScoreDapps({
                 <DappCard
                   key={item.id}
                   data={item}
-                  onClick={() => navigate(`/dapp-store/${item.id}`)}
+                  onClick={() => navigate(`/apps/${item.id}`)}
                 />
               );
             })}

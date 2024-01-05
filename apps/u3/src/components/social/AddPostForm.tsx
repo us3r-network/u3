@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import {
   ChangeEvent,
   ClipboardEvent,
@@ -11,7 +12,7 @@ import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MediaImage } from '@lens-protocol/metadata';
 import { ToggleButton } from 'react-aria-components';
-import { Channel } from '@mod-protocol/farcaster';
+import { Channel, Channelv1 } from '@mod-protocol/farcaster';
 
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import {
@@ -62,7 +63,7 @@ export default function AddPostForm({
 }: {
   onSuccess?: () => void;
   onSubmitEnd?: () => void;
-  channel?: Channel;
+  channel?: Channelv1;
   selectedPlatforms?: SocialPlatform[];
   defaultText?: string;
   embedWebsiteLink?: EmbedWebsiteLink;
@@ -88,7 +89,7 @@ export default function AddPostForm({
   } = useLensCtx();
   const { createPost: createPostToLens } = useCreateLensPost();
 
-  const [channelValue, setChannelValue] = useState<Channel>({
+  const [channelValue, setChannelValue] = useState<Channelv1>({
     name: 'Home',
     parent_url: '',
     image: 'https://warpcast.com/~/channel-images/home.png',
@@ -166,12 +167,20 @@ export default function AddPostForm({
   };
 
   const handleSubmitToFarcaster = useCallback(
-    async (castBody?: CastAddBody) => {
+    async (castBody?: CastAddBody, c?: string[]) => {
       if (!text && !castBody) return;
       if (!encryptedSigner) return;
       // const currFid = getCurrFid();
       if (!farcasterUserFid) return;
       const parentUrl = channelValue?.parent_url || undefined;
+
+      const toChannels = (c || [])
+        .map((channelId) => {
+          return getChannelFromId(channelId);
+        })
+        .filter((item) => item !== null);
+
+      // console.log('castBody', castBody, toChannels, parentUrl);
       try {
         const uploadedImgs = await uploadSelectedImages();
         const embedWebsiteLinks = embedWebsiteLink?.link
@@ -191,18 +200,46 @@ export default function AddPostForm({
         };
         // console.log('castBodySubmit', castBodySubmit);
         // eslint-disable-next-line no-underscore-dangle
-        const cast = (
-          await makeCastAdd(
-            castBodySubmit,
-            { fid: farcasterUserFid, network: FARCASTER_NETWORK },
-            encryptedSigner
-          )
-        )._unsafeUnwrap();
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
+        if (toChannels.length === 0) {
+          const cast = (
+            await makeCastAdd(
+              castBodySubmit,
+              { fid: farcasterUserFid, network: FARCASTER_NETWORK },
+              encryptedSigner
+            )
+          )._unsafeUnwrap();
+          const result = await FARCASTER_WEB_CLIENT.submitMessage(cast);
+          if (result.isErr()) {
+            throw new Error(result.error.message);
+          }
+        } else {
+          const result = await Promise.all(
+            toChannels.map(async (toChannel) => {
+              const cast = {
+                ...castBodySubmit,
+                parentUrl: toChannel.parent_url,
+              };
+              // console.log('cast', cast);
+              const r = await FARCASTER_WEB_CLIENT.submitMessage(
+                (
+                  await makeCastAdd(
+                    cast,
+                    { fid: farcasterUserFid, network: FARCASTER_NETWORK },
+                    encryptedSigner
+                  )
+                )._unsafeUnwrap()
+              );
+              return r;
+            })
+          );
+          result.forEach((r) => {
+            if (r.isErr()) {
+              throw new Error(r.error.message);
+            }
+          });
         }
-        cleanImage();
+
+        // cleanImage();
         if (onSuccess) onSuccess();
         toast.success('successfully posted to farcaster');
       } catch (error: unknown) {

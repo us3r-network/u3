@@ -19,7 +19,7 @@ export default function ExploreDappsNavBtn() {
         hover:scale-[1.2]
       "
       onClick={() => {
-        navigate('/dapp-store');
+        navigate('/apps');
       }}
     >
       <img
@@ -28,7 +28,7 @@ export default function ExploreDappsNavBtn() {
           rounded-[10px]
         "
         src={exploreDappsImgUrl}
-        alt="explore dapps"
+        alt="explore apps"
       />
       <span
         className="
@@ -41,7 +41,7 @@ export default function ExploreDappsNavBtn() {
         leading-[normal]
       "
       >
-        Explore Dapps
+        Explore Apps
       </span>
     </div>
   );

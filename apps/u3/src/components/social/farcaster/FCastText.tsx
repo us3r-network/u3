@@ -7,6 +7,7 @@ import isURL from 'validator/lib/isURL';
 import { UserData } from 'src/utils/social/farcaster/user-data';
 import { FarCast } from '../../../services/social/types';
 import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function FCastText({
   cast,
@@ -15,6 +16,8 @@ export default function FCastText({
   cast: FarCast;
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
 }) {
+  const { farcasterChannels } = useFarcasterCtx();
+
   const t = useMemo(() => {
     const { text, mentions, mentionsPositions: indices } = cast;
     const segments = splitAndInsert(
@@ -63,6 +66,23 @@ export default function FCastText({
                     {part}
                   </a>
                 );
+              }
+              if (part.startsWith('/')) {
+                const partId = part.slice(1);
+                const channel = farcasterChannels?.find(
+                  (c) => c.channel_id === partId
+                );
+                if (channel) {
+                  return (
+                    <Link
+                      to={`/social/channel/${channel.channel_id}`}
+                      key={index_}
+                      className="inline text-[#2594ef] hover:cursor-pointer hover:underline"
+                    >
+                      {part}
+                    </Link>
+                  );
+                }
               }
               return part;
             })}
