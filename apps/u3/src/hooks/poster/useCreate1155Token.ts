@@ -75,43 +75,24 @@ function constructCreate1155Calls({
 }): `0x${string}`[] {
   if (!royaltyRecipient) {
     royaltyRecipient = NO_RECIPIENT;
+  }
+
+  if (royaltyRecipient === NO_RECIPIENT) {
     autoSupplyInterval = 0;
   }
-  const verifyTokenIdExpected = encodeFunctionData({
-    abi: ZoraCreator1155ImplAbi,
-    functionName: 'assumeLastTokenIdMatches',
-    args: [nextTokenId - 1],
-  });
-  const setupNewToken = encodeFunctionData({
-    abi: ZoraCreator1155ImplAbi,
-    functionName: 'setupNewToken',
-    args: [tokenURI, maxSupply],
-  });
 
-  let royaltyConfig = null;
-  if (royaltyBPS > 0 && royaltyRecipient !== NO_RECIPIENT) {
-    royaltyConfig = encodeFunctionData({
+  const setupActions = [
+    encodeFunctionData({
       abi: ZoraCreator1155ImplAbi,
-      functionName: 'updateRoyaltiesForToken',
-      args: [
-        nextTokenId,
-        {
-          royaltyBPS,
-          royaltyRecipient,
-          royaltyMintSchedule: autoSupplyInterval,
-        },
-      ],
-    });
-  }
-
-  const contractCalls = [
-    verifyTokenIdExpected,
-    setupNewToken,
-    royaltyConfig,
-  ].filter((item) => item !== null) as `0x${string}`[];
-
-  if (typeof price !== 'undefined') {
-    const fixedPriceApproval = encodeFunctionData({
+      functionName: 'assumeLastTokenIdMatches',
+      args: [nextTokenId - 1],
+    }),
+    encodeFunctionData({
+      abi: ZoraCreator1155ImplAbi,
+      functionName: 'setupNewToken',
+      args: [tokenURI, maxSupply],
+    }),
+    encodeFunctionData({
       abi: ZoraCreator1155ImplAbi,
       functionName: 'addPermission',
       args: [
@@ -119,33 +100,48 @@ function constructCreate1155Calls({
         fixedPriceStrategyAddress,
         2 ** 2, // PERMISSION_BIT_MINTER
       ],
-    });
-
-    const saleData = encodeFunctionData({
-      abi: ZoraCreatorFixedPriceSaleStrategyAbi,
-      functionName: 'setSale',
-      args: [
-        nextTokenId,
-        {
-          pricePerToken: price,
-          saleStart,
-          saleEnd,
-          maxTokensPerAddress: mintLimit,
-          fundsRecipient: NO_RECIPIENT,
-        },
-      ],
-    });
-
-    const callSale = encodeFunctionData({
+    }),
+    encodeFunctionData({
       abi: ZoraCreator1155ImplAbi,
       functionName: 'callSale',
-      args: [nextTokenId, fixedPriceStrategyAddress, saleData],
-    });
+      args: [
+        nextTokenId,
+        fixedPriceStrategyAddress,
+        encodeFunctionData({
+          abi: ZoraCreatorFixedPriceSaleStrategyAbi,
+          functionName: 'setSale',
+          args: [
+            nextTokenId,
+            {
+              pricePerToken: price,
+              saleStart,
+              saleEnd,
+              maxTokensPerAddress: mintLimit,
+              fundsRecipient: NO_RECIPIENT,
+            },
+          ],
+        }),
+      ],
+    }),
+  ];
 
-    return [...contractCalls, fixedPriceApproval, callSale] as `0x${string}`[];
+  if (royaltyBPS > 0 && royaltyRecipient !== NO_RECIPIENT) {
+    setupActions.push(
+      encodeFunctionData({
+        abi: ZoraCreator1155ImplAbi,
+        functionName: 'updateRoyaltiesForToken',
+        args: [
+          nextTokenId,
+          {
+            royaltyBPS,
+            royaltyRecipient,
+            royaltyMintSchedule: autoSupplyInterval,
+          },
+        ],
+      })
+    );
   }
-
-  return contractCalls;
+  return setupActions;
 }
 
 export function useCreate1155Token({ tokenURI }: { tokenURI: string }) {

@@ -1,4 +1,11 @@
-import { mainnet, goerli, optimism, optimismGoerli } from 'viem/chains';
+import {
+  mainnet,
+  goerli,
+  optimism,
+  optimismGoerli,
+  sepolia,
+  zoraTestnet,
+} from 'viem/chains';
 import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
 
 export const getZoraNetworkInfo = (chainId) => {
@@ -22,6 +29,16 @@ export const getZoraNetworkInfo = (chainId) => {
         network: ZDKNetwork.Optimism,
         chain: ZDKChain.OptimismGoerli,
       }
+    : Number(chainId) === sepolia.id
+    ? {
+        network: ZDKNetwork.Ethereum,
+        chain: ZDKChain.Sepolia,
+      }
+    : Number(chainId) === zoraTestnet.id
+    ? {
+        network: ZDKNetwork.Zora,
+        chain: ZDKChain.ZoraGoerli,
+      }
     : null;
 };
 
@@ -34,6 +51,10 @@ export const getZoraNetwork = (chainId) => {
     ? optimism
     : Number(chainId) === optimismGoerli.id
     ? optimismGoerli
+    : Number(chainId) === sepolia.id
+    ? sepolia
+    : Number(chainId) === zoraTestnet.id
+    ? zoraTestnet
     : null;
 };
 
@@ -46,6 +67,10 @@ export const getZoraNetworkExplorer = (chainId) => {
     ? optimism.blockExplorers.default.url
     : Number(chainId) === optimismGoerli.id
     ? optimismGoerli.blockExplorers.default.url
+    : Number(chainId) === sepolia.id
+    ? sepolia.blockExplorers.default.url
+    : Number(chainId) === zoraTestnet.id
+    ? zoraTestnet.blockExplorers.default.url
     : null;
 };
 export const getZoraHost = (chainId) => {
@@ -53,12 +78,6 @@ export const getZoraHost = (chainId) => {
   const zoraTestnetMintHost = 'https://testnet.zora.co';
   return Number(chainId) === mainnet.id
     ? zoraMainnetMintHost
-    : Number(chainId) === goerli.id
-    ? zoraTestnetMintHost
-    : Number(chainId) === optimism.id
-    ? zoraMainnetMintHost
-    : Number(chainId) === optimismGoerli.id
-    ? zoraTestnetMintHost
     : zoraTestnetMintHost;
 };
 export const getZoraCollectChainPrefix = (chainId) => {
@@ -67,9 +86,13 @@ export const getZoraCollectChainPrefix = (chainId) => {
     : Number(chainId) === goerli.id
     ? 'gor'
     : Number(chainId) === optimism.id
-    ? 'zora'
+    ? 'op'
     : Number(chainId) === optimismGoerli.id
-    ? 'gor'
+    ? 'ogor'
+    : Number(chainId) === sepolia.id
+    ? 'sep'
+    : Number(chainId) === zoraTestnet.id
+    ? 'zgor'
     : null;
 };
 
