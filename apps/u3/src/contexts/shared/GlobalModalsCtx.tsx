@@ -12,8 +12,8 @@ type ShareLinkModalState = {
   isOpen: boolean;
   shareLink: string;
   shareLinkDefaultPlatform?: SocialPlatform;
-  shareLinkDefaultText: string;
-  shareLinkEmbedTitle: string;
+  shareLinkDefaultText?: string;
+  shareLinkEmbedTitle?: string;
   shareLinkEmbedImg?: string;
   shareLinkDomain?: string;
   platforms?: SocialPlatform[];

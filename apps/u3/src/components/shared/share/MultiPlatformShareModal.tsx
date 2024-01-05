@@ -14,6 +14,16 @@ export default function MultiPlatformShareModal({
   closeModal: () => void;
 }) {
   const { shareLinkModalState } = useGlobalModalsCtx();
+  const {
+    platforms,
+    shareLink,
+    shareLinkDefaultPlatform,
+    shareLinkDefaultText,
+    shareLinkEmbedTitle,
+    shareLinkEmbedImg,
+    shareLinkDomain,
+    onSubmitEnd,
+  } = shareLinkModalState || {};
   return (
     <ModalContainer
       open={open}
@@ -27,20 +37,17 @@ export default function MultiPlatformShareModal({
         <AddPostForm
           onSubmitEnd={() => {
             closeModal();
-            shareLinkModalState?.onSubmitEnd?.();
+            onSubmitEnd?.();
           }}
-          selectedPlatforms={
-            shareLinkModalState?.platforms || [
-              shareLinkModalState.shareLinkDefaultPlatform,
-            ]
-          }
-          defaultText={shareLinkModalState?.shareLinkDefaultText}
+          selectedPlatforms={platforms || [shareLinkDefaultPlatform]}
+          defaultText={shareLinkDefaultText}
           embedWebsiteLink={{
-            link: shareLinkModalState?.shareLink,
-            showPreview: true,
-            previewTitle: shareLinkModalState?.shareLinkEmbedTitle,
-            previewImg: shareLinkModalState?.shareLinkEmbedImg,
-            previewDomain: shareLinkModalState?.shareLinkDomain,
+            link: shareLink,
+            showPreview:
+              !!shareLinkEmbedTitle || !!shareLinkEmbedImg || !!shareLinkDomain,
+            previewTitle: shareLinkEmbedTitle,
+            previewImg: shareLinkEmbedImg,
+            previewDomain: shareLinkDomain,
           }}
         />
       </ModalBody>
