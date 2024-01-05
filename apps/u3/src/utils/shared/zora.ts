@@ -5,8 +5,21 @@ import {
   optimismGoerli,
   sepolia,
   zoraTestnet,
+  zora,
+  base,
+  pgn,
 } from 'viem/chains';
 import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
+
+export const zoraMainnetChainIds: number[] = [
+  mainnet.id,
+  zora.id,
+  optimism.id,
+  base.id,
+  pgn.id,
+];
+export const zoraMainnetMintHost = 'https://zora.co';
+export const zoraTestnetMintHost = 'https://testnet.zora.co';
 
 export const getZoraNetworkInfo = (chainId) => {
   return Number(chainId) === mainnet.id
@@ -74,19 +87,23 @@ export const getZoraNetworkExplorer = (chainId) => {
     : null;
 };
 export const getZoraHost = (chainId) => {
-  const zoraMainnetMintHost = 'https://zora.co';
-  const zoraTestnetMintHost = 'https://testnet.zora.co';
-  return Number(chainId) === mainnet.id
+  return zoraMainnetChainIds.includes(Number(chainId))
     ? zoraMainnetMintHost
     : zoraTestnetMintHost;
 };
 export const getZoraCollectChainPrefix = (chainId) => {
   return Number(chainId) === mainnet.id
+    ? 'eth'
+    : Number(chainId) === zora.id
     ? 'zora'
+    : Number(chainId) === optimism.id
+    ? 'oeth'
+    : Number(chainId) === base.id
+    ? 'base'
+    : Number(chainId) === pgn.id
+    ? 'pgn'
     : Number(chainId) === goerli.id
     ? 'gor'
-    : Number(chainId) === optimism.id
-    ? 'op'
     : Number(chainId) === optimismGoerli.id
     ? 'ogor'
     : Number(chainId) === sepolia.id

@@ -1,5 +1,7 @@
 import { ComponentPropsWithRef } from 'react';
 import { cn } from '@/lib/utils';
+import { shortPubKey } from '@/utils/shared/shortPubKey';
+import { casterZoraNetworkExplorer } from '@/constants/zora';
 
 interface Props extends ComponentPropsWithRef<'div'> {
   data: {
@@ -29,7 +31,15 @@ export default function MintInfo({ data, className, ...props }: Props) {
 
       <AttrRow>
         <AttrName>Contract</AttrName>
-        <AttrValue>{contract}</AttrValue>
+        <AttrValue>
+          <a
+            href={`${casterZoraNetworkExplorer}/address/${contract}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {shortPubKey(contract)}
+          </a>
+        </AttrValue>
       </AttrRow>
 
       {!!firstMinter && !!firstMinter?.displayName && (

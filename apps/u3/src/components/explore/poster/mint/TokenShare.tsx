@@ -45,7 +45,7 @@ export default function TokenShare({ mintLink }: TokenShareProps) {
 
   const shareLinkModalData = {
     shareLink: mintLink,
-    shareLinkDefaultText: 'My Caster Token',
+    shareLinkDefaultText: mintLink,
   };
   return (
     <div className="flex items-center gap-[10px]">

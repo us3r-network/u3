@@ -13,25 +13,6 @@ import {
   casterZoraFixedPriceStrategyAddress,
 } from '../../constants/zora';
 
-const getSaleStart = () => {
-  const timestamp = dayjs().valueOf() / 1000;
-  return Math.floor(timestamp);
-};
-const getSaleEnd = () => {
-  // get current time
-  const now = dayjs();
-
-  // get the early morning of today's date, that is, 00:00:00 time
-  const todayMidnight = now.startOf('day');
-
-  // add one day to the early morning time to get the early morning time tomorrow
-  const tomorrowMidnight = todayMidnight.add(1, 'day');
-
-  // convert to timestamp
-  const timestamp = tomorrowMidnight.valueOf() / 1000;
-  return Math.floor(timestamp);
-};
-
 const NO_RECIPIENT =
   '0x0000000000000000000000000000000000000000' as `0x${string}`;
 // hardcoded inputs for creating new token config
@@ -41,8 +22,8 @@ const create1155Input = {
   mintLimit: 1, // no mint limit per wallet
   nextTokenId: 0, // default to be overriden
   price: BigInt(0), // free to mint
-  saleEnd: BigInt(getSaleEnd()),
-  saleStart: BigInt(getSaleStart()),
+  saleEnd: BigInt('18446744073709551615'), // "forever edition value"
+  saleStart: BigInt(Math.floor(dayjs().valueOf() / 1000)), // sale begins at today
   tokenURI: '', // example metadata for 1155 token can be seen here: https://ipfs.io/ipfs/bafkreifdyhfe7fyysnu5oqoewgrnry4ot74ttrz5kpkkpl7ln77ooowog4
   royaltyBPS: 0, // no secondary royalties
   royaltyRecipient: NO_RECIPIENT, // no royalty recipient

@@ -9,7 +9,6 @@ import {
   casterZoraNetwork,
 } from '@/constants/zora';
 import { getBase64FromUrl } from '@/utils/shared/getBase64FromUrl';
-import { shortPubKey } from '@/utils/shared/shortPubKey';
 import useCasterCollection from '@/hooks/poster/useCasterCollection';
 import FirstMintButton from './FirstMintButton';
 import ColorButton from '@/components/common/button/ColorButton';
@@ -33,10 +32,15 @@ export default function PosterMint({
   const [firstMinted, setFirstMinted] = useState(false);
   const [minted, setMinted] = useState(false);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
-  const { lastTokenFromToday, ownerMinted, lastTokenId, lastTokenInfo } =
-    useCasterCollection({
-      owner: address,
-    });
+  const {
+    isAdminOrRole,
+    lastTokenFromToday,
+    ownerMinted,
+    lastTokenId,
+    lastTokenInfo,
+  } = useCasterCollection({
+    owner: address,
+  });
   const { totalMinted } = lastTokenInfo || { totalMinted: 0 };
   useEffect(() => {
     setFirstMinted(lastTokenFromToday);
@@ -64,7 +68,7 @@ export default function PosterMint({
         data={{
           network: casterZoraNetwork.name,
           standard: 'ERC1155',
-          contract: shortPubKey(casterZora1155ToMintAddress),
+          contract: casterZora1155ToMintAddress,
           firstMinter: {
             avatar: '',
             displayName: '',
@@ -85,6 +89,7 @@ export default function PosterMint({
             return <SwitchNetworkButton className="w-full" />;
           }
           if (!firstMinted) {
+            if (!isAdminOrRole) return null;
             return (
               <FirstMintButton
                 className="w-full"

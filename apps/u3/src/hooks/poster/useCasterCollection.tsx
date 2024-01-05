@@ -1,11 +1,20 @@
 import { useMemo } from 'react';
 import { useContractRead } from 'wagmi';
+import dayjs from 'dayjs';
 import {
   casterZora1155ToMintAddress,
   casterZoraFixedPriceStrategyAddress,
   ZoraCreator1155ImplAbi,
   ZoraCreatorFixedPriceSaleStrategyAbi,
 } from '../../constants/zora';
+
+function isToday(timestamp) {
+  const now = dayjs();
+  const today = now.startOf('day');
+  const tomorrow = now.add(1, 'day').startOf('day');
+
+  return timestamp >= today && timestamp < tomorrow;
+}
 
 export type TokenInfo = {
   uri: string;
@@ -18,6 +27,12 @@ export default function useCasterCollection({
 }: {
   owner: string | null;
 }) {
+  const { data: collectionName } = useContractRead({
+    address: casterZora1155ToMintAddress,
+    abi: ZoraCreator1155ImplAbi,
+    functionName: 'name',
+  });
+
   const { data: nextTokenId } = useContractRead({
     address: casterZora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
@@ -25,6 +40,13 @@ export default function useCasterCollection({
   });
 
   const lastTokenId = nextTokenId ? Number(nextTokenId) - 1 : 0;
+
+  const { data: isAdminOrRole } = useContractRead({
+    address: casterZora1155ToMintAddress,
+    abi: ZoraCreator1155ImplAbi,
+    functionName: 'isAdminOrRole',
+    args: [owner, lastTokenId, 2],
+  });
 
   const { data: lastTokenInfo } = useContractRead({
     address: casterZora1155ToMintAddress,
@@ -39,10 +61,11 @@ export default function useCasterCollection({
     functionName: 'sale',
     args: [casterZora1155ToMintAddress, lastTokenId],
   });
-  const { saleEnd } = (sale || {}) as { saleEnd: bigint };
+  const { saleStart } = (sale || {}) as { saleStart: bigint };
+
   const lastTokenFromToday = useMemo(
-    () => lastTokenId > 0 && saleEnd && Number(saleEnd) > Date.now() / 1000,
-    [lastTokenId, saleEnd]
+    () => lastTokenId > 0 && saleStart && isToday(Number(saleStart) * 1000),
+    [lastTokenId, saleStart]
   );
 
   const { data: balanceOf } = useContractRead({
@@ -57,6 +80,8 @@ export default function useCasterCollection({
   );
 
   return {
+    collectionName,
+    isAdminOrRole,
     lastTokenId,
     lastTokenInfo: lastTokenInfo as TokenInfo,
     lastTokenFromToday,
