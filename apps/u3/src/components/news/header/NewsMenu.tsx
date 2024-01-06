@@ -68,7 +68,7 @@ export const LinkGroup = [
     icon: SpotifyIcon,
   },
   {
-    label: 'Github',
+    label: 'GitHub',
     value: `${LINKS_ROUTE_PREFIX}/github`,
     group: 'github',
     includeDomains: ['github.com'],
