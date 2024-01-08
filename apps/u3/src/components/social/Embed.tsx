@@ -213,10 +213,10 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
 
 export function EmbedWebsite({
   item,
-  quickViewButton = true,
+  cardMode = true,
 }: {
   item: FarCastEmbedMeta;
-  quickViewButton?: boolean;
+  cardMode?: boolean;
 }) {
   if (!item.image && !item.icon) return null;
   const img = item.image || item.icon;
@@ -230,6 +230,7 @@ export function EmbedWebsite({
   return (
     <PostCardEmbedWrapper
       // href={item.url}
+      cardMode={cardMode}
       onClick={(e) => e.stopPropagation()}
     >
       {(isImg(img || '') && (
@@ -251,7 +252,7 @@ export function EmbedWebsite({
           <a href={item.url} target="_blank" rel="noreferrer">
             {new URL(item.url).host}
           </a>
-          {quickViewButton && (
+          {cardMode && (
             <button
               type="button"
               onClick={(e) => {

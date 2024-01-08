@@ -255,10 +255,7 @@ export default function LinkContentBox({
             }
             return (
               <WidgetWraper>
-                <EmbedWebsiteWraper
-                  item={selectLink.metadata}
-                  quickViewButton={false}
-                />
+                <EmbedWebsite item={selectLink.metadata} cardMode={false} />
               </WidgetWraper>
             );
 
@@ -345,9 +342,4 @@ const WidgetWraper = styled.div`
   display: flex;
   align-items: start;
   justify-content: center;
-`;
-
-const EmbedWebsiteWraper = styled(EmbedWebsite)`
-  width: 200px;
-  height: 100%;
 `;

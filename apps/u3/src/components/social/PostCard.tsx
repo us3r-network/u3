@@ -9,7 +9,7 @@
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
 import { getOfficialPublicationUrl } from 'src/utils/social/lens/getLensExternalLink';
 import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
@@ -492,7 +492,7 @@ export const PostCardNftWrapper = styled.div`
   }
 `;
 
-export const PostCardEmbedWrapper = styled.div`
+export const PostCardEmbedWrapper = styled.div<{ cardMode: boolean }>`
   color: #fff;
   border-radius: 10px;
   overflow: hidden;
@@ -574,12 +574,17 @@ export const PostCardEmbedWrapper = styled.div`
     }
   }
 
-  p {
-    word-break: break-all;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2; /* 这里是超出几行省略 */
-    overflow: hidden;
-  }
+  ${(props) =>
+    props.cardMode
+      ? css`
+          p {
+            word-break: break-all;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2; /* 这里是超出几行省略 */
+            overflow: hidden;
+          }
+        `
+      : ``};
 `;
