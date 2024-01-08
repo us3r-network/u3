@@ -1,6 +1,6 @@
 import { getFarcasterMentions } from '@mod-protocol/farcaster';
 import { useNavigate } from 'react-router-dom';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 
 import { Input } from '../ui/input';
@@ -9,6 +9,8 @@ import CloseIcon from '../common/icons/CloseIcon';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import ModalContainerFixed from '../common/modal/ModalContainerFixed';
 import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
+import { FarcasterChannel } from '@/hooks/social/farcaster/useFarcasterChannel';
+import { cn } from '@/lib/utils';
 
 export const QuickSearchModalName = 'QuickSearchModal';
 
@@ -17,11 +19,12 @@ const getMentions = getFarcasterMentions(MOD_API_URL);
 
 export default function QuickSearchModal({
   openModalName,
-  closeModal,
+  closeModal: closeModalAction,
 }: {
   openModalName: string;
   closeModal: () => void;
 }) {
+  const quickSearchModalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { trendChannels } = useFarcasterCtx();
   const [searchText, setSearchText] = useState<string>('');
@@ -33,6 +36,11 @@ export default function QuickSearchModal({
       username: string;
     }[]
   >([]);
+  const [channelSearchResult, setChannelSearchResult] = useState<
+    FarcasterChannel[]
+  >([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
   const navigate = useNavigate();
 
   const getUsers = async (text: string) => {
@@ -45,13 +53,81 @@ export default function QuickSearchModal({
   };
   const debouncedGetUsers = useCallback(debounce(getUsers, 500), []);
 
-  const channelSearchResult = useMemo(() => {
-    return trendChannels
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (!(e instanceof KeyboardEvent)) {
+        return false;
+      }
+      console.log('KeyboardEvent', e.key);
+      if (e.key === 'Escape') {
+        closeModal();
+        return true;
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        const len = channelSearchResult.length + users.length;
+        if (len)
+          setSelectedIndex((pre) => {
+            return (pre + len - 1) % len;
+          });
+        return true;
+      }
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const len = channelSearchResult.length + users.length;
+        if (len) setSelectedIndex((pre) => (pre + 1) % len);
+
+        return true;
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (selectedIndex < channelSearchResult.length) {
+          setSearchText('');
+          closeModal();
+          navigate(
+            `/social/channel/${channelSearchResult[selectedIndex].channel_id}`
+          );
+          return true;
+        }
+        if (users.length) {
+          setSearchText('');
+          closeModal();
+          navigate(
+            `/u/${farcasterHandleToBioLinkHandle(
+              users[selectedIndex - channelSearchResult.length].username
+            )}`
+          );
+          return true;
+        }
+        return true;
+      }
+
+      return false;
+    },
+    [channelSearchResult, users, selectedIndex]
+  );
+
+  useEffect(() => {
+    const cs = trendChannels
       .filter((channel) => {
         return channel.name.toLowerCase().includes(searchText.toLowerCase());
       })
       .slice(0, 5);
-  }, [searchText, trendChannels]);
+    setChannelSearchResult(cs);
+  }, [trendChannels, searchText]);
+
+  const closeModal = useCallback(() => {
+    closeModalAction();
+  }, [closeModalAction]);
+
+  useEffect(() => {
+    quickSearchModalRef.current?.addEventListener('keydown', onKeyDown);
+    return () => {
+      quickSearchModalRef.current?.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onKeyDown]);
 
   return (
     <ModalContainerFixed
@@ -65,7 +141,10 @@ export default function QuickSearchModal({
       zIndex={40}
       className="top-[100px] md:w-[800px] w-full mb-2 box-border overflow-hidden"
     >
-      <div className="flex flex-col w-full overflow-hidden text-white p-2 bg-inherit max-h-[600px] overflow-y-auto">
+      <div
+        ref={quickSearchModalRef}
+        className="flex flex-col w-full overflow-hidden text-white p-2 bg-inherit max-h-[600px] overflow-y-auto"
+      >
         <div className="flex px-2 pb-2 gap-1 items-center border-b border-[#39424C] z-50">
           <span>
             <SearchIcon className="w-5 h-5" />
@@ -76,6 +155,7 @@ export default function QuickSearchModal({
             className="border-none outline-none focus-visible:ring-0"
             value={searchText}
             onChange={(e) => {
+              setSelectedIndex(0);
               setSearchText(e.target.value);
               debouncedGetUsers(e.target.value);
             }}
@@ -94,15 +174,21 @@ export default function QuickSearchModal({
                 No result fount
               </div>
             )) ||
-              channelSearchResult.map((channel) => {
+              channelSearchResult.map((channel, idx) => {
                 return (
                   <div
-                    className="flex items-center gap-3 w-full cursor-pointer p-2 hover:bg-gray-700 rounded-md"
+                    className={cn(
+                      'flex items-center gap-3 w-full cursor-pointer p-2  rounded-md',
+                      idx === selectedIndex && 'bg-gray-700'
+                    )}
                     key={channel.channel_id}
                     onClick={() => {
                       setSearchText('');
                       closeModal();
                       navigate(`/social/channel/${channel.channel_id}`);
+                    }}
+                    onMouseEnter={() => {
+                      setSelectedIndex(idx);
                     }}
                   >
                     <img
@@ -130,10 +216,14 @@ export default function QuickSearchModal({
                 No result fount
               </div>
             )) ||
-              users.map((user) => {
+              users.map((user, idx) => {
+                const sIdx = idx + channelSearchResult.length;
                 return (
                   <div
-                    className="flex items-center gap-3 w-full cursor-pointer p-2 hover:bg-gray-700 rounded-md"
+                    className={cn(
+                      'flex items-center gap-3 w-full cursor-pointer p-2 rounded-md',
+                      sIdx === selectedIndex && 'bg-gray-700'
+                    )}
                     key={user.fid}
                     onClick={() => {
                       setSearchText('');
@@ -141,6 +231,9 @@ export default function QuickSearchModal({
                       navigate(
                         `/u/${farcasterHandleToBioLinkHandle(user.username)}`
                       );
+                    }}
+                    onMouseEnter={() => {
+                      setSelectedIndex(sIdx);
                     }}
                   >
                     <img
