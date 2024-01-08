@@ -408,12 +408,14 @@ export default function FarcasterProvider({
           setOpenPostModal(false);
         }}
       />
-      <QuickSearchModal
-        openModalName={openModalName}
-        closeModal={() => {
-          setOpenModalName('');
-        }}
-      />
+      {openModalName === QuickSearchModalName && (
+        <QuickSearchModal
+          openModalName={openModalName}
+          closeModal={() => {
+            setOpenModalName('');
+          }}
+        />
+      )}
     </FarcasterContext.Provider>
   );
 }
