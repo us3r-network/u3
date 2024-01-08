@@ -92,29 +92,33 @@ export default function Embed({
           />
         </>
       )}
-
-      {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-        if ((item as any).type === 'cast') {
-          const { cast } = item as FarCastEmbedMetaCast;
+      <div className="w-[70%]">
+        {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
+          if ((item as any).type === 'cast') {
+            const { cast } = item as FarCastEmbedMetaCast;
+            return (
+              <EmbedCast
+                data={item as FarCastEmbedMetaCast}
+                key={Buffer.from(cast.hash.data).toString('hex')}
+              />
+            );
+          }
+          if ((item as any).collection) {
+            return (
+              <EmbedNFT
+                item={item as FarCastEmbedMeta}
+                key={(item as any).url}
+              />
+            );
+          }
           return (
-            <EmbedCast
-              data={item as FarCastEmbedMetaCast}
-              key={Buffer.from(cast.hash.data).toString('hex')}
+            <EmbedWebsite
+              item={item as FarCastEmbedMeta}
+              key={(item as any).url}
             />
           );
-        }
-        if ((item as any).collection) {
-          return (
-            <EmbedNFT item={item as FarCastEmbedMeta} key={(item as any).url} />
-          );
-        }
-        return (
-          <EmbedWebsite
-            item={item as FarCastEmbedMeta}
-            key={(item as any).url}
-          />
-        );
-      })}
+        })}
+      </div>
     </EmbedBox>
   );
 }
@@ -226,7 +230,6 @@ export function EmbedWebsite({
   return (
     <PostCardEmbedWrapper
       // href={item.url}
-      target="_blank"
       onClick={(e) => e.stopPropagation()}
     >
       {(isImg(img || '') && (
@@ -245,7 +248,9 @@ export function EmbedWebsite({
         <h4>{item.title}</h4>
         {item.description && <p>{item.description}</p>}
         <div>
-          <span>{new URL(item.url).host}</span>
+          <a href={item.url} target="_blank" rel="noreferrer">
+            {new URL(item.url).host}
+          </a>
           {quickViewButton && (
             <button
               type="button"

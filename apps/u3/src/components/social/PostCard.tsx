@@ -452,7 +452,7 @@ export const PostCardCastWrapper = styled.div`
 
 export const PostCardNftWrapper = styled.div`
   color: #fff;
-  width: 70%;
+  width: 100%;
   border-radius: 10px;
   overflow: hidden;
   background-color: #14171a;
@@ -492,13 +492,13 @@ export const PostCardNftWrapper = styled.div`
   }
 `;
 
-export const PostCardEmbedWrapper = styled.a`
+export const PostCardEmbedWrapper = styled.div`
   color: #fff;
   border-radius: 10px;
   overflow: hidden;
   background-color: #14171a;
   text-decoration: none;
-  width: 70%;
+  width: 100%;
   min-height: 373px;
   display: flex;
   flex-direction: column;
@@ -545,7 +545,7 @@ export const PostCardEmbedWrapper = styled.a`
       justify-content: space-between;
       align-items: center;
       gap: 12px;
-      > span {
+      > a {
         color: #718096;
         font-family: Rubik;
         font-size: 12px;
