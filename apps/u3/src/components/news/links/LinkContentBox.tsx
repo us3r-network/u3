@@ -74,7 +74,7 @@ export default function LinkContentBox({
                 if (tweetId)
                   return (
                     <div className="dark">
-                      <Tweet id={tweetId} />
+                      <Tweet tweet-container-margin={0} id={tweetId} />
                     </div>
                   );
               }
@@ -302,7 +302,10 @@ export const ContentBox = styled.div`
 
   & .iframe-container {
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
+    border-radius: 12px;
+    border: 1px solid #39424c;
+    overflow: hidden;
     & iframe {
       border: 0;
       width: 100%;
@@ -316,9 +319,10 @@ export const ContentBox = styled.div`
     display: flex;
     justify-content: center;
     overflow: scroll;
-    /* & div {
+    & div {
       overflow: scroll;
-    } */
+      margin: 0 auto;
+    }
   }
 
   & .info {
@@ -338,7 +342,6 @@ const LoadingBox = styled.div`
 const WidgetWraper = styled.div`
   width: 100%;
   height: 100%;
-  padding: 20px;
   display: flex;
   align-items: start;
   justify-content: center;
