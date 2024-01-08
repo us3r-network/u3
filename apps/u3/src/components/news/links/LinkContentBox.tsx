@@ -255,7 +255,10 @@ export default function LinkContentBox({
             }
             return (
               <WidgetWraper>
-                <EmbedWebsite item={selectLink.metadata} />
+                <EmbedWebsite
+                  item={selectLink.metadata}
+                  quickViewButton={false}
+                />
               </WidgetWraper>
             );
 

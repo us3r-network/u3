@@ -19,6 +19,7 @@ import {
 import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
+import LinkModal from '../news/links/LinkModal';
 
 export default function Embed({
   embedImgs,
@@ -206,12 +207,25 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   );
 }
 
-export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
+export function EmbedWebsite({
+  item,
+  quickViewButton = true,
+}: {
+  item: FarCastEmbedMeta;
+  quickViewButton?: boolean;
+}) {
   if (!item.image && !item.icon) return null;
   const img = item.image || item.icon;
+  const [linkModalShow, setLinkModalShow] = useState(false);
+  const selectLink = useMemo(() => {
+    return {
+      url: item.url,
+      metadata: item,
+    };
+  }, [item]);
   return (
     <PostCardEmbedWrapper
-      href={item.url}
+      // href={item.url}
       target="_blank"
       onClick={(e) => e.stopPropagation()}
     >
@@ -232,17 +246,26 @@ export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
         {item.description && <p>{item.description}</p>}
         <div>
           <span>{new URL(item.url).host}</span>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              window.open(item.url, '_blank');
-            }}
-          >
-            Quick View
-          </button>
+          {quickViewButton && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLinkModalShow(true);
+              }}
+            >
+              Quick View
+            </button>
+          )}
         </div>
       </div>
+      <LinkModal
+        show={linkModalShow}
+        closeModal={() => {
+          setLinkModalShow(false);
+        }}
+        data={selectLink}
+      />
     </PostCardEmbedWrapper>
   );
 }

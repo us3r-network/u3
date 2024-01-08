@@ -502,6 +502,7 @@ export const PostCardEmbedWrapper = styled.a`
   min-height: 373px;
   display: flex;
   flex-direction: column;
+  cursor: default;
 
   > .img {
     flex-grow: 1;
