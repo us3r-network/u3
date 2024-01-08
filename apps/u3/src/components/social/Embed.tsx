@@ -230,7 +230,18 @@ export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
       <div className="intro">
         <h4>{item.title}</h4>
         {item.description && <p>{item.description}</p>}
-        <span>{new URL(item.url).host}</span>
+        <div>
+          <span>{new URL(item.url).host}</span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(item.url, '_blank');
+            }}
+          >
+            Quick View
+          </button>
+        </div>
       </div>
     </PostCardEmbedWrapper>
   );

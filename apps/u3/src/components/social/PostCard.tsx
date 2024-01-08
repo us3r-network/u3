@@ -518,15 +518,17 @@ export const PostCardEmbedWrapper = styled.a`
   }
 
   > .intro {
-    padding: 20px;
-
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
     > h4 {
       color: #fff;
       font-family: Rubik;
       font-size: 14px;
       font-style: normal;
       font-weight: 700;
-      line-height: 30px; /* 214.286% */
+      line-height: 20px; /* 214.286% */
       margin: 0;
     }
     > p {
@@ -535,16 +537,39 @@ export const PostCardEmbedWrapper = styled.a`
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
-      line-height: 30px; /* 250% */
+      line-height: 20px; /* 250% */
     }
-
-    > span {
-      color: #718096;
-      font-family: Rubik;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 30px; /* 250% */
+    > div {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      > span {
+        color: #718096;
+        font-family: Rubik;
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 20px; /* 250% */
+      }
+      > button {
+        cursor: pointer;
+        border-radius: 10px;
+        background: white;
+        padding: 10px;
+        border: none;
+        outline: none;
+        color: inherit;
+        color: #000;
+        font-family: Rubik;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: normal;
+        width: 100px;
+        flex-shrink: 0;
+        flex-grow: 0;
+      }
     }
   }
 
