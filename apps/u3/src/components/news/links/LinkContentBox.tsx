@@ -69,7 +69,7 @@ export default function LinkContentBox({
               selectLink?.url.indexOf('twitter.com') > 0 ||
               selectLink?.url.indexOf('x.com') > 0
             ) {
-              if (selectLink?.metadata?.provider === 'FixTweet / FixupX') {
+              if (selectLink?.metadata?.provider === 'FxTwitter / FixupX') {
                 const tweetId = selectLink.url.split('/status/')[1];
                 if (tweetId)
                   return (
@@ -255,7 +255,7 @@ export default function LinkContentBox({
             }
             return (
               <WidgetWraper>
-                <EmbedWebsite
+                <EmbedWebsiteWraper
                   item={selectLink.metadata}
                   quickViewButton={false}
                 />
@@ -345,4 +345,9 @@ const WidgetWraper = styled.div`
   display: flex;
   align-items: start;
   justify-content: center;
+`;
+
+const EmbedWebsiteWraper = styled(EmbedWebsite)`
+  width: 200px;
+  height: 100%;
 `;
