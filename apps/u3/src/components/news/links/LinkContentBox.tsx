@@ -184,8 +184,8 @@ export default function LinkContentBox({
             // Spotify
             if (selectLink?.url.indexOf('spotify.com') > 0) {
               if (
-                selectLink?.metadata?.provider === 'Spotify' &&
-                selectLink?.metadata?.title !== 'Spotify'
+                selectLink?.metadata?.provider === 'Spotify' ||
+                selectLink?.metadata?.provider === 'open spotify'
               ) {
                 const spotifyEmbedUrl = selectLink?.url.replace(
                   'spotify.com',
@@ -290,7 +290,7 @@ export default function LinkContentBox({
 export const ContentBox = styled.div`
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
 
   & img {
     max-width: 100%;
@@ -302,7 +302,7 @@ export const ContentBox = styled.div`
 
   & .iframe-container {
     width: 100%;
-    /* height: 100%; */
+    height: 100%;
     border-radius: 12px;
     border: 1px solid #39424c;
     overflow: hidden;
@@ -316,12 +316,14 @@ export const ContentBox = styled.div`
 
   & .dark {
     width: 100%;
+    max-height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     overflow: scroll;
     & div {
       overflow: scroll;
-      margin: 0 auto;
+      margin: 0;
     }
   }
 

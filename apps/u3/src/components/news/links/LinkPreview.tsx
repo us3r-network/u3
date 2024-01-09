@@ -66,12 +66,12 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
             />
           )}
         </Header>
-        <div className="w-full flex gap-2">
+        <LinkContentWrapper>
           <LinkContentBox selectLink={data} tab={tab} />
           <LinkPostWrapper>
             <LinkPost url={data.url} />
           </LinkPostWrapper>
-        </div>
+        </LinkContentWrapper>
       </PreviewBox>
     )
   );
@@ -84,6 +84,15 @@ const PreviewBox = styled.div`
   display: flex;
   flex-direction: column;
   padding: 12px;
+`;
+const LinkContentWrapper = styled.div`
+  width: 100%;
+  height: 0;
+  display: flex;
+  flex-direction: row;
+  padding: 12px;
+  flex-shrink: 1;
+  flex-grow: 1;
 `;
 const LinkPostWrapper = styled.div`
   width: 360px;
