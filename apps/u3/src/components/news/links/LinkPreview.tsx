@@ -5,7 +5,7 @@
  * @LastEditTime: 2023-12-14 18:48:42
  * @Description: file description
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
@@ -66,12 +66,12 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
             />
           )}
         </Header>
-        <LinkContentWrapper>
+        <div className="w-full h-[0] flex flex-row gap-[12px] flex-shrink flex-grow">
           <LinkContentBox selectLink={data} tab={tab} />
           <LinkPostWrapper>
             <LinkPost url={data.url} />
           </LinkPostWrapper>
-        </LinkContentWrapper>
+        </div>
       </PreviewBox>
     )
   );
@@ -84,15 +84,6 @@ const PreviewBox = styled.div`
   display: flex;
   flex-direction: column;
   padding: 12px;
-`;
-const LinkContentWrapper = styled.div`
-  width: 100%;
-  height: 0;
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
-  flex-shrink: 1;
-  flex-grow: 1;
 `;
 const LinkPostWrapper = styled.div`
   width: 360px;

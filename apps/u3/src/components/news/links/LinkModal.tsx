@@ -1,4 +1,3 @@
-import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import ModalContainer from 'src/components/common/modal/ModalContainer';
 import { ModalCloseBtn } from 'src/components/common/modal/ModalWidgets';
@@ -15,27 +14,13 @@ export default function LinkModal({
 }) {
   return (
     <ModalContainer open={show} closeModal={closeModal}>
-      <ModalBody>
+      <div className="mx-[auto] my-[0] w-[982px] h-[90vh]  bg-[#1b1e23] rounded-[20px] p-[20px] box-border">
         {data && <LinkPreview data={data} />}
-        <CloseBtn onClick={closeModal} />
-      </ModalBody>
+        <ModalCloseBtn
+          className="absolute top-[20px] right-[20px]"
+          onClick={closeModal}
+        />
+      </div>
     </ModalContainer>
   );
 }
-
-const ModalBody = styled.div`
-  margin: 0 auto;
-  display: relative;
-  width: 982px;
-  height: 90vh;
-
-  background: #1b1e23;
-  border-radius: 20px;
-  padding: 20px;
-  box-sizing: border-box;
-`;
-const CloseBtn = styled(ModalCloseBtn)`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-`;

@@ -9,7 +9,7 @@
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 
-import styled, { StyledComponentPropsWithRef, css } from 'styled-components';
+import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { getOfficialPublicationUrl } from 'src/utils/social/lens/getLensExternalLink';
 import { SocialPlatform } from '../../services/social/types';
 import LensIcon from '../common/icons/LensIcon';
@@ -540,51 +540,5 @@ export const PostCardEmbedWrapper = styled.div<{ cardMode: boolean }>`
       font-weight: 400;
       line-height: 20px; /* 250% */
     }
-    > div {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      > a {
-        color: #718096;
-        font-family: Rubik;
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: 20px; /* 250% */
-      }
-      > button {
-        cursor: pointer;
-        border-radius: 10px;
-        background: white;
-        padding: 10px;
-        border: none;
-        outline: none;
-        color: inherit;
-        color: #000;
-        font-family: Rubik;
-        font-size: 14px;
-        font-style: normal;
-        font-weight: 700;
-        line-height: normal;
-        width: 100px;
-        flex-shrink: 0;
-        flex-grow: 0;
-      }
-    }
   }
-
-  ${(props) =>
-    props.cardMode
-      ? css`
-          p {
-            word-break: break-all;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 2; /* 这里是超出几行省略 */
-            overflow: hidden;
-          }
-        `
-      : ``};
 `;

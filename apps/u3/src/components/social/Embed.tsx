@@ -247,13 +247,42 @@ export function EmbedWebsite({
       )}
       <div className="intro">
         <h4>{item.title}</h4>
-        {item.description && <p>{item.description}</p>}
-        <div>
-          <a href={item.url} target="_blank" rel="noreferrer">
+        {item.description && (
+          <p
+            className={
+              cardMode
+                ? 'break-all overflow-ellipsis overflow-hidden line-clamp-2'
+                : ''
+            }
+          >
+            {item.description}
+          </p>
+        )}
+        <div className="flex justify-between items-center gap-[12px]">
+          <a
+            className="text-[#718096] font-[Rubik] text-[12px] not-italic font-normal leading-[20px]"
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+          >
             {new URL(item.url).host}
           </a>
           {cardMode && (
             <button
+              className="cursor-pointer
+                          rounded-[10px]
+                          bg-[white]
+                          p-[10px]
+                          border-none
+                          outline-[none]
+                          text-[#000]
+                          text-[14px]
+                          not-italic
+                          font-bold
+                          leading-[normal]
+                          w-[100px]
+                          flex-shrink-0
+                          flex-grow-0"
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
