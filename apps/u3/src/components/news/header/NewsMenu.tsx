@@ -68,7 +68,7 @@ export const LinkGroup = [
     icon: SpotifyIcon,
   },
   {
-    label: 'Github',
+    label: 'GitHub',
     value: `${LINKS_ROUTE_PREFIX}/github`,
     group: 'github',
     includeDomains: ['github.com'],
@@ -95,11 +95,11 @@ export const LinkGroup = [
     includeDomains: ['paragraph.xyz'],
     icon: ParagraphIcon,
   },
-  {
-    label: 'News',
-    value: CONTENTS_ROUTE,
-    icon: NewsIcon,
-  },
+  // {
+  //   label: 'News',
+  //   value: CONTENTS_ROUTE,
+  //   icon: NewsIcon,
+  // },
   {
     label: 'Mirror',
     value: `${LINKS_ROUTE_PREFIX}/mirror`,

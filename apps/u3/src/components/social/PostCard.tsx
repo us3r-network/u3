@@ -452,7 +452,7 @@ export const PostCardCastWrapper = styled.div`
 
 export const PostCardNftWrapper = styled.div`
   color: #fff;
-  width: 70%;
+  width: 100%;
   border-radius: 10px;
   overflow: hidden;
   background-color: #14171a;
@@ -492,16 +492,17 @@ export const PostCardNftWrapper = styled.div`
   }
 `;
 
-export const PostCardEmbedWrapper = styled.a`
+export const PostCardEmbedWrapper = styled.div`
   color: #fff;
   border-radius: 10px;
   overflow: hidden;
   background-color: #14171a;
   text-decoration: none;
-  width: 70%;
+  width: 100%;
   min-height: 373px;
   display: flex;
   flex-direction: column;
+  cursor: default;
 
   > .img {
     flex-grow: 1;
@@ -515,45 +516,5 @@ export const PostCardEmbedWrapper = styled.a`
     > img {
       width: 100%;
     }
-  }
-
-  > .intro {
-    padding: 20px;
-
-    > h4 {
-      color: #fff;
-      font-family: Rubik;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 30px; /* 214.286% */
-      margin: 0;
-    }
-    > p {
-      color: #fff;
-      font-family: Rubik;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 30px; /* 250% */
-    }
-
-    > span {
-      color: #718096;
-      font-family: Rubik;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 30px; /* 250% */
-    }
-  }
-
-  p {
-    word-break: break-all;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2; /* 这里是超出几行省略 */
-    overflow: hidden;
   }
 `;

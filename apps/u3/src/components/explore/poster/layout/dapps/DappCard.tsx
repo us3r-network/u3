@@ -30,7 +30,7 @@ export default function DappCard({ data, className, ...wrapperProps }: Props) {
           )}
         >
           {types.map((type) => (
-            <span>{type}</span>
+            <span key={type}>{type}</span>
           ))}
         </div>
       </div>

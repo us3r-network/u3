@@ -35,7 +35,6 @@ export default function LinkPost({ url }: { url: string }) {
   return (
     <Wraper>
       <Title>Comments</Title>
-
       <ListWraper id="link-social-scroll-wrapper">
         {(firstLoading && (
           <LoadingWrapper>
@@ -112,12 +111,13 @@ const Wraper = styled.div`
   height: 100%;
   position: relative;
   overflow: hidden;
+  border: 1px solid #39424c;
+  border-radius: 12px;
 `;
 const ListWraper = styled.div`
   width: 100%;
   overflow: scroll;
   height: calc(100% - 60px);
-  border: 1px solid #39424c;
 `;
 const LoadingWrapper = styled.div`
   width: 100%;
@@ -134,13 +134,13 @@ const LoadingMoreWrapper = styled.div`
   margin-top: 20px;
 `;
 const Title = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   font-weight: 600;
   font-style: italic;
   color: #fff;
   margin: 14px 0;
   padding-left: 12px;
-  border-left: 2px solid #fff;
+  /* border-left: 2px solid #fff; */
 `;
 const PostList = styled.div`
   width: 100%;
@@ -148,7 +148,7 @@ const PostList = styled.div`
   flex-direction: column;
 `;
 const ItemWraper = styled.div`
-  border-bottom: 1px solid #39424c;
+  border-top: 1px solid #39424c;
 `;
 const CommentButton = styled(ButtonPrimaryLine)`
   position: sticky;

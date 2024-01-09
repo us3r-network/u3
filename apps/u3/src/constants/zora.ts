@@ -6,72 +6,43 @@
  * @FilePath: /u3/apps/u3/src/constants/zora.ts
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import {
-  mainnet,
-  goerli,
-  optimism,
-  optimismGoerli,
-  // base,
-  // baseGoerli,
-  // zora,
-  // zoraTestnet,
-} from 'viem/chains';
-import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
 import { ZoraCreator1155ImplAbi } from '../services/dapp/abi/zora/ZoraCreator1155ImplABI';
 import { ZoraCreatorFixedPriceSaleStrategyAbi } from '../services/dapp/abi/zora/ZoraCreatorFixedPriceSaleStrategyABI';
+import {
+  getZoraNetwork,
+  getZoraNetworkExplorer,
+  getZoraNetworkInfo,
+} from '@/utils/shared/zora';
+
+export const ZORA_API_ENDPOINT = 'https://api.zora.co/graphql';
+export const ZORA_API_KEY = '';
 
 export { ZoraCreator1155ImplAbi, ZoraCreatorFixedPriceSaleStrategyAbi };
 
+// u3 dapp
 export const zora1155ToMintAddress: `0x${string}` = process.env
   .REACT_APP_DAPP_NFT_TO_MINT as `0x${string}`;
 export const zoraFixedPriceStrategyAddress: `0x${string}` = process.env
   .REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY as `0x${string}`;
 export const ziraChainId: number = process.env
   .REACT_APP_DAPP_NFT_CHAIN_ID as unknown as number;
-export const zoraDappsNetworkInfo =
-  Number(ziraChainId) === mainnet.id
-    ? {
-        network: ZDKNetwork.Ethereum,
-        chain: ZDKChain.Mainnet,
-      }
-    : Number(ziraChainId) === goerli.id
-    ? {
-        network: ZDKNetwork.Ethereum,
-        chain: ZDKChain.Goerli,
-      }
-    : Number(ziraChainId) === optimism.id
-    ? {
-        network: ZDKNetwork.Optimism,
-        chain: ZDKChain.OptimismMainnet,
-      }
-    : Number(ziraChainId) === optimismGoerli.id
-    ? {
-        network: ZDKNetwork.Optimism,
-        chain: ZDKChain.OptimismGoerli,
-      }
-    : null;
-export const zoraDappsNetwork =
-  Number(ziraChainId) === mainnet.id
-    ? mainnet
-    : Number(ziraChainId) === goerli.id
-    ? goerli
-    : Number(ziraChainId) === optimism.id
-    ? optimism
-    : Number(ziraChainId) === optimismGoerli.id
-    ? optimismGoerli
-    : null;
-export const zoraDappsNetworkExplorer =
-  Number(ziraChainId) === mainnet.id
-    ? mainnet.blockExplorers.default.url
-    : Number(ziraChainId) === goerli.id
-    ? goerli.blockExplorers.default.url
-    : Number(ziraChainId) === optimism.id
-    ? optimism.blockExplorers.default.url
-    : Number(ziraChainId) === optimismGoerli.id
-    ? optimismGoerli.blockExplorers.default.url
-    : null;
+export const zoraDappsNetworkInfo = getZoraNetworkInfo(ziraChainId);
+export const zoraDappsNetwork = getZoraNetwork(ziraChainId);
+export const zoraDappsNetworkExplorer = getZoraNetworkExplorer(ziraChainId);
+
 export const recipientAddress: `0x${string}` = process.env
   .REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS as `0x${string}`;
 
-export const ZORA_API_ENDPOINT = 'https://api.zora.co/graphql';
-export const ZORA_API_KEY = '';
+// U3 Caster
+export const casterZora1155ToMintAddress: `0x${string}` = process.env
+  .REACT_APP_CASTER_NFT_TO_MINT as `0x${string}`;
+export const casterZoraFixedPriceStrategyAddress: `0x${string}` = process.env
+  .REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY as `0x${string}`;
+export const casterZoraChainId: number = process.env
+  .REACT_APP_CASTER_NFT_CHAIN_ID as unknown as number;
+export const casterZoraNetworkInfo = getZoraNetworkInfo(casterZoraChainId);
+export const casterZoraNetwork = getZoraNetwork(casterZoraChainId);
+export const casterZoraNetworkExplorer =
+  getZoraNetworkExplorer(casterZoraChainId);
+export const casterRecipientAddress: `0x${string}` = process.env
+  .REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS as `0x${string}`;
