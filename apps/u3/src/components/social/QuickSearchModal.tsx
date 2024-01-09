@@ -1,7 +1,7 @@
 import { getFarcasterMentions } from '@mod-protocol/farcaster';
 import { useNavigate } from 'react-router-dom';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { debounce } from 'lodash';
+import { debounce, set } from 'lodash';
 
 import { Input } from '../ui/input';
 import SearchIcon from '../common/icons/SearchIcon';
@@ -11,6 +11,8 @@ import ModalContainerFixed from '../common/modal/ModalContainerFixed';
 import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
 import { FarcasterChannel } from '@/hooks/social/farcaster/useFarcasterChannel';
 import { cn } from '@/lib/utils';
+import useDappCollection from '@/hooks/dapp/useDappCollection';
+import useLogin from '@/hooks/shared/useLogin';
 
 export const QuickSearchModalName = 'QuickSearchModal';
 
@@ -24,6 +26,7 @@ export default function QuickSearchModal({
   openModalName: string;
   closeModal: () => void;
 }) {
+  const { walletAddress } = useLogin();
   const quickSearchScrollRef = useRef<HTMLDivElement>(null);
   const quickSearchModalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -37,6 +40,9 @@ export default function QuickSearchModal({
       username: string;
     }[]
   >([]);
+  const [isMouseCtl, setIsMouseCtl] = useState(false);
+  const [dapps, setDapps] = useState([]);
+  const { dappCollection } = useDappCollection(walletAddress);
   const [channelSearchResult, setChannelSearchResult] = useState<
     FarcasterChannel[]
   >([]);
@@ -54,12 +60,17 @@ export default function QuickSearchModal({
   };
   const debouncedGetUsers = useCallback(debounce(getUsers, 500), []);
 
+  const onMouseMove = useCallback(() => {
+    setIsMouseCtl(true);
+  }, []);
+
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!(e instanceof KeyboardEvent)) {
         return false;
       }
-      console.log('KeyboardEvent', e.key);
+      // console.log('KeyboardEvent', e.key, Date.now());
+      setIsMouseCtl(false);
       if (e.key === 'Escape') {
         closeModal();
         return true;
@@ -67,7 +78,7 @@ export default function QuickSearchModal({
 
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        const len = channelSearchResult.length + users.length;
+        const len = channelSearchResult.length + users.length + dapps.length;
         if (len)
           setSelectedIndex((pre) => {
             return (pre + len - 1) % len;
@@ -76,7 +87,7 @@ export default function QuickSearchModal({
       }
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        const len = channelSearchResult.length + users.length;
+        const len = channelSearchResult.length + users.length + dapps.length;
         if (len) setSelectedIndex((pre) => (pre + 1) % len);
 
         return true;
@@ -92,7 +103,10 @@ export default function QuickSearchModal({
           );
           return true;
         }
-        if (users.length) {
+        if (
+          users.length > 0 &&
+          selectedIndex < channelSearchResult.length + users.length
+        ) {
           setSearchText('');
           closeModal();
           navigate(
@@ -102,12 +116,27 @@ export default function QuickSearchModal({
           );
           return true;
         }
+        if (
+          dapps.length > 0 &&
+          selectedIndex <
+            channelSearchResult.length + users.length + dapps.length
+        ) {
+          setSearchText('');
+          const dapp =
+            dapps[selectedIndex - channelSearchResult.length - users.length];
+
+          if (dapp) {
+            closeModal();
+            navigate(`?dappId=${dapp.id}`);
+          }
+          return true;
+        }
         return true;
       }
 
       return false;
     },
-    [channelSearchResult, users, selectedIndex, setSelectedIndex]
+    [channelSearchResult, users, dapps, selectedIndex, setSelectedIndex]
   );
 
   useEffect(() => {
@@ -119,13 +148,29 @@ export default function QuickSearchModal({
     setChannelSearchResult(cs);
   }, [trendChannels, searchText]);
 
+  useEffect(() => {
+    if (!searchText) {
+      setDapps(dappCollection.slice(0, 5));
+      return;
+    }
+    const ds = dappCollection.filter((dapp) => {
+      return dapp.name.toLowerCase().includes(searchText.toLowerCase());
+    });
+    setDapps(ds);
+  }, [dappCollection, searchText]);
+
   const closeModal = useCallback(() => {
     closeModalAction();
   }, [closeModalAction]);
 
   useEffect(() => {
+    quickSearchModalRef.current?.addEventListener('mousemove', onMouseMove);
     quickSearchModalRef.current?.addEventListener('keydown', onKeyDown);
     return () => {
+      quickSearchModalRef.current?.removeEventListener(
+        'mousemove',
+        onMouseMove
+      );
       quickSearchModalRef.current?.removeEventListener('keydown', onKeyDown);
     };
   }, [onKeyDown]);
@@ -215,7 +260,7 @@ export default function QuickSearchModal({
                     navigate(`/social/channel/${channel.channel_id}`);
                   }}
                   onMouseEnter={() => {
-                    setSelectedIndex(idx);
+                    if (isMouseCtl) setSelectedIndex(idx);
                   }}
                 >
                   <img
@@ -260,7 +305,7 @@ export default function QuickSearchModal({
                     );
                   }}
                   onMouseEnter={() => {
-                    setSelectedIndex(sIdx);
+                    if (isMouseCtl) setSelectedIndex(sIdx);
                   }}
                 >
                   <img
@@ -273,6 +318,49 @@ export default function QuickSearchModal({
                     <span className="text-[#718096] text-sm">
                       @{user.username}
                     </span>
+                  </div>
+                </div>
+              );
+            })}
+
+          <hr className="border-[#39424C] py-1 mt-2" />
+
+          <h3 className="font-light italic p-2 pb-1 sticky top-[0px] z-40 w-full bg-inherit">
+            Dapps
+          </h3>
+
+          {(searchText && dapps.length === 0 && (
+            <div className="text-center text-[#718096] p-2">
+              No result fount
+            </div>
+          )) ||
+            dapps.map((dapp, idx) => {
+              const sIdx = idx + channelSearchResult.length + users.length;
+              return (
+                <div
+                  key={dapp.id}
+                  className={cn(
+                    'scroll-item',
+                    'flex items-center gap-3 w-full cursor-pointer p-2 rounded-md',
+                    sIdx === selectedIndex && 'bg-gray-700'
+                  )}
+                  onClick={() => {
+                    setSearchText('');
+                    closeModal();
+                    navigate(`?dappId=${dapp.id}`);
+                  }}
+                  onMouseEnter={() => {
+                    if (isMouseCtl) setSelectedIndex(sIdx);
+                  }}
+                >
+                  <img
+                    src={dapp.image}
+                    className="w-8 h-8 rounded-full"
+                    alt="channel"
+                  />
+                  <div className="font-semibold">{dapp.name}</div>
+                  <div className="text-[#718096] text-sm overflow-hidden whitespace-nowrap text-ellipsis">
+                    {dapp.description}
                   </div>
                 </div>
               );
