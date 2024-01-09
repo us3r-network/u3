@@ -95,11 +95,11 @@ export const LinkGroup = [
     includeDomains: ['paragraph.xyz'],
     icon: ParagraphIcon,
   },
-  {
-    label: 'News',
-    value: CONTENTS_ROUTE,
-    icon: NewsIcon,
-  },
+  // {
+  //   label: 'News',
+  //   value: CONTENTS_ROUTE,
+  //   icon: NewsIcon,
+  // },
   {
     label: 'Mirror',
     value: `${LINKS_ROUTE_PREFIX}/mirror`,
