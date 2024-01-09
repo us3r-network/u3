@@ -230,7 +230,6 @@ export function EmbedWebsite({
   return (
     <PostCardEmbedWrapper
       // href={item.url}
-      cardMode={cardMode}
       onClick={(e) => e.stopPropagation()}
     >
       {(isImg(img || '') && (
@@ -245,14 +244,16 @@ export function EmbedWebsite({
           <img src={img} alt="" />
         </div>
       )}
-      <div className="intro">
-        <h4>{item.title}</h4>
+      <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">
+        <h4 className="text-[#fff] text-[14px] not-italic font-bold leading-[20px]">
+          {item.title}
+        </h4>
         {item.description && (
           <p
             className={
               cardMode
-                ? 'break-all overflow-ellipsis overflow-hidden line-clamp-2'
-                : ''
+                ? 'text-[#fff] text-[12px] not-italic font-normal leading-[20px] break-all overflow-ellipsis overflow-hidden line-clamp-2'
+                : 'text-[#fff] text-[12px] not-italic font-normal leading-[20px]'
             }
           >
             {item.description}
@@ -260,7 +261,7 @@ export function EmbedWebsite({
         )}
         <div className="flex justify-between items-center gap-[12px]">
           <a
-            className="text-[#718096] font-[Rubik] text-[12px] not-italic font-normal leading-[20px]"
+            className="text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
             href={item.url}
             target="_blank"
             rel="noreferrer"
