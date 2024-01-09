@@ -90,7 +90,7 @@ const LinkContentWrapper = styled.div`
   height: 0;
   display: flex;
   flex-direction: row;
-  padding: 12px;
+  gap: 12px;
   flex-shrink: 1;
   flex-grow: 1;
 `;
