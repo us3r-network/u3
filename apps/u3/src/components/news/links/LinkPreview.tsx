@@ -5,7 +5,7 @@
  * @LastEditTime: 2023-12-14 18:48:42
  * @Description: file description
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
@@ -42,65 +42,61 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   }, [data.url]);
   return (
     data && (
-      <PreviewWrapper {...otherProps}>
-        <PreviewBox ref={ref}>
-          <Header>
-            <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
-            <HeaderRight>
-              <SaveButton linkId={null} link={linkParam} />
-              <LinkShareMenuBtn
-                shareLink={getLinkShareUrl(data.url)}
-                shareLinkDefaultText={LINK_SHARE_TITLE}
-                shareLinkEmbedTitle={data?.metadata?.title}
-                popoverConfig={{ placement: 'top end', offset: 0 }}
-              />
-              <ButtonFullScreen
-                className="content-fullscreen-button"
-                isFullscreen={isFullscreen}
-                onClick={onToggle}
-              />
-            </HeaderRight>
-            {isFullscreen && (
-              <ContentPreviewFullscreen
-                isFullscreen={isFullscreen}
-                onClick={onToggle}
-              />
-            )}
-          </Header>
+      <PreviewBox ref={ref} {...otherProps}>
+        <Header>
+          <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
+          <HeaderRight>
+            <SaveButton linkId={null} link={linkParam} />
+            <LinkShareMenuBtn
+              shareLink={getLinkShareUrl(data.url)}
+              shareLinkDefaultText={LINK_SHARE_TITLE}
+              shareLinkEmbedTitle={data?.metadata?.title}
+              popoverConfig={{ placement: 'top end', offset: 0 }}
+            />
+            <ButtonFullScreen
+              className="content-fullscreen-button"
+              isFullscreen={isFullscreen}
+              onClick={onToggle}
+            />
+          </HeaderRight>
+          {isFullscreen && (
+            <ContentPreviewFullscreen
+              isFullscreen={isFullscreen}
+              onClick={onToggle}
+            />
+          )}
+        </Header>
+        <div className="w-full h-[0] flex flex-row gap-[12px] flex-shrink flex-grow">
           <LinkContentBox selectLink={data} tab={tab} />
-        </PreviewBox>
-        <LinkPostWrapper>
-          <LinkPost url={data.url} />
-        </LinkPostWrapper>
-      </PreviewWrapper>
+          <LinkPostWrapper>
+            <LinkPost url={data.url} />
+          </LinkPostWrapper>
+        </div>
+      </PreviewBox>
     )
   );
 }
 
-const PreviewWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: row;
-`;
 const PreviewBox = styled.div`
-  width: 610px;
+  width: 100%;
   height: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 12px;
 `;
 const LinkPostWrapper = styled.div`
   width: 360px;
   height: 100%;
+  flex-shrink: 0;
+  flex-grow: 0;
 `;
 const Header = styled.div`
   width: 100%;
   height: 60px;
-  padding: 12px;
   box-sizing: border-box;
   background: #1b1e23;
-  border-bottom: 1px solid #39424c;
+  /* border-bottom: 1px solid #39424c; */
   display: flex;
   justify-content: space-between;
   align-items: center;

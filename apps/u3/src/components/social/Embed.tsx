@@ -19,6 +19,7 @@ import {
 import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
+import LinkModal from '../news/links/LinkModal';
 
 export default function Embed({
   embedImgs,
@@ -91,29 +92,33 @@ export default function Embed({
           />
         </>
       )}
-
-      {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-        if ((item as any).type === 'cast') {
-          const { cast } = item as FarCastEmbedMetaCast;
+      <div className="w-[70%]">
+        {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
+          if ((item as any).type === 'cast') {
+            const { cast } = item as FarCastEmbedMetaCast;
+            return (
+              <EmbedCast
+                data={item as FarCastEmbedMetaCast}
+                key={Buffer.from(cast.hash.data).toString('hex')}
+              />
+            );
+          }
+          if ((item as any).collection) {
+            return (
+              <EmbedNFT
+                item={item as FarCastEmbedMeta}
+                key={(item as any).url}
+              />
+            );
+          }
           return (
-            <EmbedCast
-              data={item as FarCastEmbedMetaCast}
-              key={Buffer.from(cast.hash.data).toString('hex')}
+            <EmbedWebsite
+              item={item as FarCastEmbedMeta}
+              key={(item as any).url}
             />
           );
-        }
-        if ((item as any).collection) {
-          return (
-            <EmbedNFT item={item as FarCastEmbedMeta} key={(item as any).url} />
-          );
-        }
-        return (
-          <EmbedWebsite
-            item={item as FarCastEmbedMeta}
-            key={(item as any).url}
-          />
-        );
-      })}
+        })}
+      </div>
     </EmbedBox>
   );
 }
@@ -206,13 +211,25 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   );
 }
 
-export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
+export function EmbedWebsite({
+  item,
+  cardMode = true,
+}: {
+  item: FarCastEmbedMeta;
+  cardMode?: boolean;
+}) {
   if (!item.image && !item.icon) return null;
   const img = item.image || item.icon;
+  const [linkModalShow, setLinkModalShow] = useState(false);
+  const selectLink = useMemo(() => {
+    return {
+      url: item.url,
+      metadata: item,
+    };
+  }, [item]);
   return (
     <PostCardEmbedWrapper
-      href={item.url}
-      target="_blank"
+      // href={item.url}
       onClick={(e) => e.stopPropagation()}
     >
       {(isImg(img || '') && (
@@ -227,11 +244,64 @@ export function EmbedWebsite({ item }: { item: FarCastEmbedMeta }) {
           <img src={img} alt="" />
         </div>
       )}
-      <div className="intro">
-        <h4>{item.title}</h4>
-        {item.description && <p>{item.description}</p>}
-        <span>{new URL(item.url).host}</span>
+      <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">
+        <h4 className="text-[#fff] text-[14px] not-italic font-bold leading-[20px]">
+          {item.title}
+        </h4>
+        {item.description && (
+          <p
+            className={
+              cardMode
+                ? 'text-[#fff] text-[12px] not-italic font-normal leading-[20px] break-all overflow-ellipsis overflow-hidden line-clamp-2'
+                : 'text-[#fff] text-[12px] not-italic font-normal leading-[20px]'
+            }
+          >
+            {item.description}
+          </p>
+        )}
+        <div className="flex justify-between items-center gap-[12px]">
+          <a
+            className="text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {new URL(item.url).host}
+          </a>
+          {cardMode && (
+            <button
+              className="cursor-pointer
+                          rounded-[10px]
+                          bg-[white]
+                          p-[10px]
+                          border-none
+                          outline-[none]
+                          text-[#000]
+                          text-[14px]
+                          not-italic
+                          font-bold
+                          leading-[normal]
+                          w-[100px]
+                          flex-shrink-0
+                          flex-grow-0"
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setLinkModalShow(true);
+              }}
+            >
+              Quick View
+            </button>
+          )}
+        </div>
       </div>
+      <LinkModal
+        show={linkModalShow}
+        closeModal={() => {
+          setLinkModalShow(false);
+        }}
+        data={selectLink}
+      />
     </PostCardEmbedWrapper>
   );
 }

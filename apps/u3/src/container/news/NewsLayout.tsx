@@ -36,7 +36,8 @@ const Box = styled(MainWrapper)`
 `;
 const OutletWrapper = styled.div`
   width: 100%;
-  height: calc(100vh - 100px);
+  height: 0;
+  flex: 1;
 `;
 export const HeaderWraper = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {

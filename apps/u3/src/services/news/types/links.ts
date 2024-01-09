@@ -10,13 +10,13 @@ import { ApiResp } from '../../shared/types';
 import { URLParseData } from './contents';
 
 export type LinkListItem = {
-  score: number;
   url: string;
-  casts_hash: string[];
-  timestamp: string;
-  total_like_num: number;
-  total_reply_num: number;
-  total_repost_num: number;
+  casts_hash?: string[];
+  total_like_num?: number;
+  total_reply_num?: number;
+  total_repost_num?: number;
+  score?: number;
+  timestamp?: string;
   supportReaderView?: boolean;
   supportIframe?: boolean;
   metadata?: FarCastEmbedMeta;
