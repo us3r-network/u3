@@ -24,6 +24,7 @@ export default function QuickSearchModal({
   openModalName: string;
   closeModal: () => void;
 }) {
+  const quickSearchScrollRef = useRef<HTMLDivElement>(null);
   const quickSearchModalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { trendChannels } = useFarcasterCtx();
@@ -106,7 +107,7 @@ export default function QuickSearchModal({
 
       return false;
     },
-    [channelSearchResult, users, selectedIndex]
+    [channelSearchResult, users, selectedIndex, setSelectedIndex]
   );
 
   useEffect(() => {
@@ -128,6 +129,28 @@ export default function QuickSearchModal({
       quickSearchModalRef.current?.removeEventListener('keydown', onKeyDown);
     };
   }, [onKeyDown]);
+
+  useEffect(() => {
+    if (!quickSearchScrollRef.current) return;
+
+    const scrollContainer = quickSearchScrollRef.current;
+    const scrollItems = scrollContainer.getElementsByClassName('scroll-item');
+    const itemOffsetTop = (scrollItems[selectedIndex] as HTMLElement).offsetTop;
+    const itemOffsetHeight = (scrollItems[selectedIndex] as HTMLElement)
+      .offsetHeight;
+
+    const itemVisibleTop =
+      itemOffsetTop - scrollContainer.scrollTop - scrollContainer.offsetHeight;
+    if (itemVisibleTop > 0) {
+      scrollContainer.scrollTop += itemVisibleTop;
+    }
+    const itemVisibleBottom =
+      itemOffsetTop - scrollContainer.scrollTop - itemOffsetHeight - 32;
+
+    if (itemVisibleBottom < 0) {
+      scrollContainer.scrollTop += itemVisibleBottom;
+    }
+  }, [selectedIndex]);
 
   return (
     <ModalContainerFixed
@@ -164,93 +187,96 @@ export default function QuickSearchModal({
             <CloseIcon className="w-5 h-5" />
           </span>
         </div>
-        <div className=" overflow-scroll max-h-[calc(100vh-160px)] overflow-y-auto flex-grow bg-inherit">
+        <div
+          id="quick-search-scroll"
+          ref={quickSearchScrollRef}
+          className=" overflow-scroll max-h-[calc(100vh-160px)] overflow-y-auto flex-grow bg-inherit"
+        >
           <h3 className="font-light italic p-2 pb-0 sticky top-[0px] z-40 w-full bg-inherit">
             Topics
           </h3>
-          <div className="space-y-1 mt-2 w-full">
-            {(searchText && channelSearchResult.length === 0 && (
-              <div className="text-center text-[#718096] p-2">
-                No result fount
-              </div>
-            )) ||
-              channelSearchResult.map((channel, idx) => {
-                return (
-                  <div
-                    className={cn(
-                      'flex items-center gap-3 w-full cursor-pointer p-2  rounded-md',
-                      idx === selectedIndex && 'bg-gray-700'
-                    )}
-                    key={channel.channel_id}
-                    onClick={() => {
-                      setSearchText('');
-                      closeModal();
-                      navigate(`/social/channel/${channel.channel_id}`);
-                    }}
-                    onMouseEnter={() => {
-                      setSelectedIndex(idx);
-                    }}
-                  >
-                    <img
-                      src={channel.image}
-                      className="w-8 h-8 rounded-full"
-                      alt="channel"
-                    />
-                    <div className="font-semibold">{channel.name}</div>
-                    <div className="text-[#718096] text-sm">
-                      {channel.count} new posts
-                    </div>
+          {(searchText && channelSearchResult.length === 0 && (
+            <div className="text-center text-[#718096] p-2">
+              No result fount
+            </div>
+          )) ||
+            channelSearchResult.map((channel, idx) => {
+              return (
+                <div
+                  className={cn(
+                    'scroll-item',
+                    'flex items-center gap-3 w-full cursor-pointer p-2  rounded-md',
+                    idx === selectedIndex && 'bg-gray-700'
+                  )}
+                  key={channel.channel_id}
+                  onClick={() => {
+                    setSearchText('');
+                    closeModal();
+                    navigate(`/social/channel/${channel.channel_id}`);
+                  }}
+                  onMouseEnter={() => {
+                    setSelectedIndex(idx);
+                  }}
+                >
+                  <img
+                    src={channel.image}
+                    className="w-8 h-8 rounded-full"
+                    alt="channel"
+                  />
+                  <div className="font-semibold">{channel.name}</div>
+                  <div className="text-[#718096] text-sm">
+                    {channel.count} new posts
                   </div>
-                );
-              })}
-          </div>
+                </div>
+              );
+            })}
 
           <hr className="border-[#39424C] py-1 mt-2" />
 
           <h3 className="font-light italic p-2 pb-1 sticky top-[0px] z-40 w-full bg-inherit">
             Users
           </h3>
-          <div className="space-y-1 mt-2 w-full">
-            {(searchText && users.length === 0 && (
-              <div className="text-center text-[#718096] p-2">
-                No result fount
-              </div>
-            )) ||
-              users.map((user, idx) => {
-                const sIdx = idx + channelSearchResult.length;
-                return (
-                  <div
-                    className={cn(
-                      'flex items-center gap-3 w-full cursor-pointer p-2 rounded-md',
-                      sIdx === selectedIndex && 'bg-gray-700'
-                    )}
-                    key={user.fid}
-                    onClick={() => {
-                      setSearchText('');
-                      closeModal();
-                      navigate(
-                        `/u/${farcasterHandleToBioLinkHandle(user.username)}`
-                      );
-                    }}
-                    onMouseEnter={() => {
-                      setSelectedIndex(sIdx);
-                    }}
-                  >
-                    <img
-                      src={user.avatar_url}
-                      className="w-8 h-8 rounded-full"
-                      alt="channel"
-                    />
-                    <div className="font-semibold">
-                      {user.display_name}
-                      <span className="text-[#718096] text-sm">
-                        @{user.username}
-                      </span>
-                    </div>
+
+          {(searchText && users.length === 0 && (
+            <div className="text-center text-[#718096] p-2">
+              No result fount
+            </div>
+          )) ||
+            users.map((user, idx) => {
+              const sIdx = idx + channelSearchResult.length;
+              return (
+                <div
+                  className={cn(
+                    'scroll-item',
+                    'flex items-center gap-3 w-full cursor-pointer p-2 rounded-md',
+                    sIdx === selectedIndex && 'bg-gray-700'
+                  )}
+                  key={user.fid}
+                  onClick={() => {
+                    setSearchText('');
+                    closeModal();
+                    navigate(
+                      `/u/${farcasterHandleToBioLinkHandle(user.username)}`
+                    );
+                  }}
+                  onMouseEnter={() => {
+                    setSelectedIndex(sIdx);
+                  }}
+                >
+                  <img
+                    src={user.avatar_url}
+                    className="w-8 h-8 rounded-full"
+                    alt="channel"
+                  />
+                  <div className="font-semibold">
+                    {user.display_name}
+                    <span className="text-[#718096] text-sm">
+                      @{user.username}
+                    </span>
                   </div>
-                );
-              })}
-          </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </ModalContainerFixed>
