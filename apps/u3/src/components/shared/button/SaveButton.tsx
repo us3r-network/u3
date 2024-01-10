@@ -8,12 +8,17 @@
  */
 import { FavorButton, FavorButtonProps } from '@us3r-network/link';
 import { StarIcon, StarFilledIcon } from '@radix-ui/react-icons';
-import styled from 'styled-components';
-import { ButtonPrimaryLineCss } from '@/components/common/button/ButtonBase';
 
 export function SaveButton({ ...props }: FavorButtonProps) {
+  if (props.link?.url) {
+    props.link.url = props.link.url.replace('?', '%3F');
+    // todo: 临时解决方案，后续需要在link model里面去掉这个长度限制
+    if (props.link.url.length > 100) {
+      props.link.url = props.link.url.slice(0, 100);
+    }
+  }
   return (
-    <FavorButtonStyled {...props}>
+    <FavorButton className="text-[white] border-none" {...props}>
       {({ isFavoring, isFavored, favorsCount }) => {
         return (
           <div title={`This is saved ${favorsCount} times`}>
@@ -29,18 +34,6 @@ export function SaveButton({ ...props }: FavorButtonProps) {
           </div>
         );
       }}
-    </FavorButtonStyled>
+    </FavorButton>
   );
 }
-
-export const FavorButtonStyled = styled(FavorButton)`
-  ${ButtonPrimaryLineCss}
-  /* color: #fff; */
-  border: none;
-  background: none;
-  padding: 6px;
-  height: 32px;
-  &:hover {
-    border: none;
-  }
-`;
