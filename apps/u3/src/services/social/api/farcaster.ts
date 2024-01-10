@@ -91,7 +91,7 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/embed`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/embed`,
     method: 'get',
     params: {
       urls,
