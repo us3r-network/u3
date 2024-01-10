@@ -15,7 +15,7 @@ type Props = {
   closeModal: () => void;
 };
 
-export default function FirstMintSuccessModalBody({
+export default function MintSuccessModalBody({
   img,
   tokenId,
   referrerAddress,

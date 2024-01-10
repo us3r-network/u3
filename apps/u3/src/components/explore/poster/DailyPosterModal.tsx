@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DailyPosterLayout, {
   DailyPosterLayoutProps,
 } from './layout/DailyPosterLayout';
@@ -7,14 +7,13 @@ import { API_BASE_URL } from '@/constants';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 import PosterShare from './PosterShare';
 import PosterMint from './mint/PosterMint';
-import FirstMintSuccessModalBody from './mint/FirstMintSuccessModalBody';
+import MintSuccessModalBody from './mint/MintSuccessModalBody';
 
 type Props = DailyPosterLayoutProps & {
   open: boolean;
   closeModal: () => void;
 };
 const posterImg = `${API_BASE_URL}/static-assets/poster/poster.webp`;
-
 export default function DailyPosterModal({
   posts,
   farcasterUserData,
@@ -24,9 +23,20 @@ export default function DailyPosterModal({
   open,
   closeModal,
 }: Props) {
-  const [showFirstMinted, setShowFirstMinted] = useState(false);
-  const [firstMintedTokenId, setFirstMintedTokenId] = useState(0);
-  const [firstMintedWalletAddress, setFirstMintedWalletAddress] = useState('');
+  const [showMinted, setShowMinted] = useState(false);
+  const [mintedTokenId, setMintedTokenId] = useState(0);
+  const [mintedWalletAddress, setMintedWalletAddress] = useState('');
+  useEffect(() => {
+    // 后端生成poster图片时，会同时读取posterDataJson，用于创建caster nft时设置metadata
+    (window as any).posterDataJson = JSON.stringify({
+      uiVersion: 1, // poster布局版本号，如果后续poster布局有变化，考虑更新这个版本号，使用相应的布局组件
+      posts,
+      farcasterUserData,
+      topics,
+      dapps,
+      links,
+    });
+  }, [posts, farcasterUserData, topics, dapps, links]);
   return (
     <ModalBase
       isOpen={open}
@@ -49,11 +59,11 @@ export default function DailyPosterModal({
           bg-[#1b1e23]
         "
       >
-        {showFirstMinted ? (
-          <FirstMintSuccessModalBody
+        {showMinted ? (
+          <MintSuccessModalBody
             img={posterImg}
-            tokenId={firstMintedTokenId}
-            referrerAddress={firstMintedWalletAddress}
+            tokenId={mintedTokenId}
+            referrerAddress={mintedWalletAddress}
             closeModal={closeModal}
           />
         ) : (
@@ -81,9 +91,14 @@ export default function DailyPosterModal({
               <PosterMint
                 img={posterImg}
                 onFirstMintSuccess={(tokenId, walletAddress) => {
-                  setShowFirstMinted(true);
-                  setFirstMintedTokenId(tokenId);
-                  setFirstMintedWalletAddress(walletAddress);
+                  setShowMinted(true);
+                  setMintedTokenId(tokenId);
+                  setMintedWalletAddress(walletAddress);
+                }}
+                onFreeMintSuccess={(tokenId, walletAddress) => {
+                  setShowMinted(true);
+                  setMintedTokenId(tokenId);
+                  setMintedWalletAddress(walletAddress);
                 }}
               />
             </div>
