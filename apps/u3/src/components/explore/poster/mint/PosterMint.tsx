@@ -18,22 +18,24 @@ import SwitchNetworkButton from './SwitchNetworkButton';
 interface Props extends ComponentPropsWithRef<'div'> {
   img: string;
   onFirstMintSuccess: (tokenId: number, walletAddress: string) => void;
+  onFreeMintSuccess: (tokenId: number, walletAddress: string) => void;
 }
 
 export default function PosterMint({
   img,
   onFirstMintSuccess,
+  onFreeMintSuccess,
   className,
   ...props
 }: Props) {
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { isLogin, login } = useLogin();
-  const [firstMinted, setFirstMinted] = useState(false);
-  const [minted, setMinted] = useState(false);
+  const [firstMinted, setFirstMinted] = useState(true);
+  const [minted, setMinted] = useState(true);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
   const {
-    isAdminOrRole,
+    isAdmin,
     lastTokenFromToday,
     ownerMinted,
     lastTokenId,
@@ -89,7 +91,7 @@ export default function PosterMint({
             return <SwitchNetworkButton className="w-full" />;
           }
           if (!firstMinted) {
-            if (!isAdminOrRole) return null;
+            if (!isAdmin) return null;
             return (
               <FirstMintButton
                 className="w-full"
@@ -110,6 +112,7 @@ export default function PosterMint({
                 onSuccess={() => {
                   setMinted(true);
                   setUpdatedMintersCount((pre) => pre + 1);
+                  onFreeMintSuccess?.(lastTokenId, address);
                 }}
               />
             );

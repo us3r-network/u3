@@ -41,11 +41,23 @@ export default function useCasterCollection({
 
   const lastTokenId = nextTokenId ? Number(nextTokenId) - 1 : 0;
 
-  const { data: isAdminOrRole } = useContractRead({
+  const { data: contractBaseId } = useContractRead({
+    address: casterZora1155ToMintAddress,
+    abi: ZoraCreator1155ImplAbi,
+    functionName: 'CONTRACT_BASE_ID',
+  });
+
+  const { data: permissionBitAdmin } = useContractRead({
+    address: casterZora1155ToMintAddress,
+    abi: ZoraCreator1155ImplAbi,
+    functionName: 'PERMISSION_BIT_ADMIN',
+  });
+
+  const { data: isAdmin } = useContractRead({
     address: casterZora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'isAdminOrRole',
-    args: [owner, lastTokenId, 2],
+    args: [owner, contractBaseId, permissionBitAdmin],
   });
 
   const { data: lastTokenInfo } = useContractRead({
@@ -81,7 +93,7 @@ export default function useCasterCollection({
 
   return {
     collectionName,
-    isAdminOrRole,
+    isAdmin,
     lastTokenId,
     lastTokenInfo: lastTokenInfo as TokenInfo,
     lastTokenFromToday,
