@@ -11,7 +11,7 @@ import styled from 'styled-components';
 import { LinkListItem } from 'src/services/news/types/links';
 import { contentParse } from 'src/services/news/api/contents';
 import { Tweet } from 'react-tweet';
-import { extractYoutubeVideoId } from 'src/utils/news/link';
+import { checkSupportIframe, extractYoutubeVideoId } from 'src/utils/news/link';
 import { EmbedWebsite } from 'src/components/social/Embed';
 import { selectWebsite } from '../../../features/shared/websiteSlice';
 import { useAppSelector } from '../../../store/hooks';
@@ -34,6 +34,8 @@ export default function LinkContentBox({
 
   useEffect(() => {
     setIframeLoaded(false);
+    if (selectLink?.url)
+      selectLink.supportIframe = checkSupportIframe(selectLink.url);
   }, [selectLink?.url]);
 
   useEffect(() => {

@@ -14,7 +14,6 @@ import SearchInput from 'src/components/common/input/SearchInput';
 import { decodeLinkURL, encodeLinkURL } from 'src/utils/news/link';
 import Loading from '../../common/loading/Loading';
 import ListScrollBox from '../../common/box/ListScrollBox';
-import GridModal from './grid/GridModal';
 import NoResult from '../../layout/NoResult';
 import {
   Layout,
@@ -26,6 +25,7 @@ import LinkPreview from './LinkPreview';
 import LinkGridList from './grid/LinkGridList';
 import LinkList from './list/LinkList';
 import NewsToolbar from '../header/NewsToolbar';
+import LinkModal from './LinkModal';
 
 const ROUTE_PREFIX = '/b/links';
 
@@ -213,7 +213,7 @@ export default function LinksPage({
         }
       })()}
 
-      <GridModal
+      <LinkModal
         show={gridModalShow}
         closeModal={() => {
           resetRouthPath();
