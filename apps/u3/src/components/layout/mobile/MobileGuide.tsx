@@ -3,6 +3,7 @@ import { isMobile } from 'react-device-detect';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import isInstalledPwa from '@/utils/shared/isInstalledPwa';
+import InstallPWAButton from './InstallPWAButton';
 
 const mobileGuideTimeKey = 'last-mobile-guide-time';
 const mobileGuideTimeInterval = 1000 * 60 * 60 * 24 * 3; // 3天显示一次
@@ -103,6 +104,7 @@ export function MobileGuide() {
         </div>
       </div>
       <div className="w-full flex flex-row items-center  mt-[30px] mb-[48px]">
+        <InstallPWAButton />
         <Button
           className="
             w-[140px]
