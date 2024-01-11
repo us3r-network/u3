@@ -1,4 +1,4 @@
-import { SocialPlatform } from '../../../../../services/social/types';
+import { SocialPlatform } from '../../../../services/social/types';
 import FarcasterPostCard from './FarcasterPostCard';
 
 export type TopPostsData = Array<{ data: any; platform: SocialPlatform }>;

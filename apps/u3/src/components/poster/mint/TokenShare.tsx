@@ -2,9 +2,7 @@ import { ComponentPropsWithRef, useState } from 'react';
 import FarcasterIcon from '@/components/common/icons/FarcasterIcon';
 import LensIcon from '@/components/common/icons/LensIcon';
 import { TwitterLine } from '@/components/common/icons/twitter';
-import { POSTER_SHARE_DOMAIN } from '@/constants';
 import { SocialPlatform } from '@/services/social/types';
-import { getMetaTitle } from '@/utils/shared/html-meta';
 import ColorButton from '../../common/button/ColorButton';
 import { cn } from '@/lib/utils';
 import useLogin from '@/hooks/shared/useLogin';
@@ -13,15 +11,15 @@ import { useGlobalModalsCtx } from '@/contexts/shared/GlobalModalsCtx';
 import { useLensCtx } from '@/contexts/social/AppLensCtx';
 import { tweetShare } from '@/utils/shared/twitter';
 
-interface PosterShareProps {
-  posterImg: string;
+interface TokenShareProps {
+  mintLink: string;
 }
 enum SharePlatform {
   Farcaster = SocialPlatform.Farcaster,
   Lens = SocialPlatform.Lens,
   Twitter = 'twitter',
 }
-export default function PosterShare({ posterImg }: PosterShareProps) {
+export default function TokenShare({ mintLink }: TokenShareProps) {
   const { isLogin: isLoginU3, login } = useLogin();
   const {
     isConnected: isLoginFarcaster,
@@ -46,11 +44,8 @@ export default function PosterShare({ posterImg }: PosterShareProps) {
   };
 
   const shareLinkModalData = {
-    shareLink: POSTER_SHARE_DOMAIN,
-    shareLinkDefaultText: '',
-    shareLinkEmbedTitle: getMetaTitle(),
-    shareLinkEmbedImg: posterImg,
-    shareLinkDomain: POSTER_SHARE_DOMAIN,
+    shareLink: mintLink,
+    shareLinkDefaultText: mintLink,
   };
   return (
     <div className="flex items-center gap-[10px]">
@@ -123,6 +118,7 @@ function SelectOption({ className, ...props }: ComponentPropsWithRef<'div'>) {
     />
   );
 }
+
 function SelectedIcon({ className, ...props }: ComponentPropsWithRef<'svg'>) {
   return (
     <svg
