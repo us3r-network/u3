@@ -91,7 +91,7 @@ self.addEventListener('push', (event) => {
   });
 });
 
-const CALL_BACK_INTERVAL = 1000 * 60 * 60 * 24; // 7 days
+const CALL_BACK_INTERVAL = 1000 * 60;
 self.addEventListener('activate', () => {
   setInterval(() => {
     self.registration.showNotification('U3', {
