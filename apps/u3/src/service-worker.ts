@@ -93,7 +93,9 @@ self.addEventListener('push', (event) => {
 
 const CALL_BACK_INTERVAL = 1000 * 60;
 self.addEventListener('activate', () => {
+  console.log('activate interval subscribe......');
   setInterval(() => {
+    console.log('fire notification!');
     self.registration.showNotification('U3', {
       body: 'Checkout new content on Farcaster',
       icon: `${process.env.PUBLIC_URL}/logo192.png`,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import WebPushService from '@/utils/pwa/WebPushService';
-import { showNotification } from '@/utils/pwa/notification';
+import { sendNotification, showNotification } from '@/utils/pwa/notification';
 
 export function NotificationSettingsGroup() {
   const [push, setPush] = useState(false);
@@ -26,7 +26,8 @@ export function NotificationSettingsGroup() {
       subscribeToWebPush(subscription); // server
       console.log('Subscribed to web push');
       // console.log('unreadFarcasterCount', unreadFarcasterCount);
-      showNotification(`You have subscrib notifications`);
+      sendNotification(`You have subscribe notifications`);
+      showNotification('U3', { body: `You have subscribe notifications` });
     } catch (error) {
       setPush(!checked);
       console.error(error);
