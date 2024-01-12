@@ -91,7 +91,7 @@ self.addEventListener('push', (event) => {
   });
 });
 
-const CALL_BACK_INTERVAL = 1000 * 60;
+const CALL_BACK_INTERVAL = 1000 * 60 * 60;
 self.addEventListener('activate', () => {
   console.log('activate interval subscribe......');
   setInterval(() => {
