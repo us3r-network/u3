@@ -5,6 +5,7 @@ import {
   useNotificationStore,
 } from '@/contexts/notification/NotificationStoreCtx';
 import NotificationList from '@/components/notification/ui/NotificationList';
+import { NotificationSettingsGroup } from '@/components/notification/PushNotificationsToogleBtn';
 
 export default function Notification() {
   const isAuthenticated = useIsAuthenticated();
@@ -27,12 +28,18 @@ function NotificationPage() {
     useNotificationStore();
 
   return (
-    <NotificationList
-      notifications={notifications}
-      farcasterUserData={farcasterUserData}
-      loading={loading}
-      hasMore={hasMore}
-      loadMore={loadMore}
-    />
+    <>
+      <div className="text-[white] flex gap-2 m-1">
+        <NotificationSettingsGroup />
+        Subscrib Notifications
+      </div>
+      <NotificationList
+        notifications={notifications}
+        farcasterUserData={farcasterUserData}
+        loading={loading}
+        hasMore={hasMore}
+        loadMore={loadMore}
+      />
+    </>
   );
 }
