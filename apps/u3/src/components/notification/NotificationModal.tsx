@@ -17,6 +17,7 @@ import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';
+import { NotificationSettingsGroup } from './PushNotificationsToogleBtn';
 
 export default function NotificationModal() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
@@ -26,7 +27,9 @@ export default function NotificationModal() {
     <Wrapper open={openNotificationModal}>
       <Body>
         <Header>
-          <Title>Notifications</Title>
+          <Title>
+            Notifications <NotificationSettingsGroup />
+          </Title>
           <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
         </Header>
         {notifications && notifications.length > 0 && (

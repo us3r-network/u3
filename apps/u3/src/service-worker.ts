@@ -81,3 +81,22 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+// listen for push event
+self.addEventListener('push', (event) => {
+  const { title, body, icon } = event.data.json();
+  if (!body) return;
+  self.registration.showNotification(title, {
+    body,
+    icon: icon || `${process.env.PUBLIC_URL}/logo192.png`,
+  });
+});
+
+const CALL_BACK_INTERVAL = 1000 * 60 * 60 * 24; // 7 days
+self.addEventListener('activate', () => {
+  setInterval(() => {
+    self.registration.showNotification('U3', {
+      body: 'Checkout new content on Farcaster',
+      icon: `${process.env.PUBLIC_URL}/logo192.png`,
+    });
+  }, CALL_BACK_INTERVAL);
+});
