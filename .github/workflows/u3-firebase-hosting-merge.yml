@@ -47,6 +47,7 @@ jobs:
           REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
           REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
           REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -93,6 +94,7 @@ jobs:
           REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
           REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
           REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -139,6 +141,7 @@ jobs:
           REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
           REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
           REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
