@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import DailyPosterLayout, {
   DailyPosterLayoutProps,
 } from './layout/DailyPosterLayout';
-import ModalBase from '../../common/modal/ModalBase';
+import ModalBase from '../common/modal/ModalBase';
 import { API_BASE_URL } from '@/constants';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 import PosterShare from './PosterShare';

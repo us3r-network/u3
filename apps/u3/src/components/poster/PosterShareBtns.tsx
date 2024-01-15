@@ -1,13 +1,13 @@
 /* eslint-disable */
 import styled from 'styled-components';
 import { useState } from 'react';
-import { ButtonInfo, ButtonPrimary } from '../../common/button/ButtonBase';
+import { ButtonInfo, ButtonPrimary } from '../common/button/ButtonBase';
 import { ReactComponent as TwitterSvg } from '../../common/assets/imgs/twitter.svg';
 import html2canvas from 'html2canvas-strengthen';
-import useLogin from '../../../hooks/shared/useLogin';
-import { uploadImage } from '../../../services/shared/api/upload';
+import useLogin from '../../hooks/shared/useLogin';
+import { uploadImage } from '../../services/shared/api/upload';
 import { toast } from 'react-toastify';
-import Loading from '../../common/loading/Loading';
+import Loading from '../common/loading/Loading';
 
 const dataURLtoBlob = (dataURL) => {
   let array, binary, i, len;

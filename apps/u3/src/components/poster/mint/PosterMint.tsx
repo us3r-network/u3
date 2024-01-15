@@ -8,12 +8,11 @@ import {
   casterZoraChainId,
   casterZoraNetwork,
 } from '@/constants/zora';
-import { getBase64FromUrl } from '@/utils/shared/getBase64FromUrl';
-import useCasterCollection from '@/hooks/poster/useCasterCollection';
-import FirstMintButton from './FirstMintButton';
 import ColorButton from '@/components/common/button/ColorButton';
 import FreeMintButton from './FreeMintButton';
 import SwitchNetworkButton from './SwitchNetworkButton';
+import useCasterLastTokenInfo from '@/hooks/poster/useCasterLastTokenInfo';
+import useCasterOwnerInfoWithTokenId from '@/hooks/poster/useCasterOwnerInfoWithTokenId';
 
 interface Props extends ComponentPropsWithRef<'div'> {
   img: string;
@@ -31,37 +30,23 @@ export default function PosterMint({
   const { chain } = useNetwork();
   const { address } = useAccount();
   const { isLogin, login } = useLogin();
-  const [firstMinted, setFirstMinted] = useState(true);
   const [minted, setMinted] = useState(true);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
-  const {
-    isAdmin,
-    lastTokenFromToday,
-    ownerMinted,
-    lastTokenId,
-    lastTokenInfo,
-  } = useCasterCollection({
-    owner: address,
+  const { lastTokenId, totalMinted, mintInfo } = useCasterLastTokenInfo();
+  const isFirstMint = totalMinted === 0 && !mintInfo.originatorAddress;
+
+  const { isMinted } = useCasterOwnerInfoWithTokenId({
+    ownerAddress: address,
+    tokenId: lastTokenId,
   });
-  const { totalMinted } = lastTokenInfo || { totalMinted: 0 };
-  useEffect(() => {
-    setFirstMinted(lastTokenFromToday);
-  }, [lastTokenFromToday]);
-  useEffect(() => {
-    setMinted(ownerMinted);
-  }, [ownerMinted]);
 
   useEffect(() => {
-    setUpdatedMintersCount(firstMinted ? Number(totalMinted) : 0);
-  }, [firstMinted, totalMinted]);
+    setMinted(isMinted);
+  }, [isMinted]);
 
-  const [imgBase64, setPosterImgBase64] = useState('');
   useEffect(() => {
-    (async () => {
-      const response = await getBase64FromUrl(img);
-      setPosterImgBase64(response as string);
-    })();
-  }, [img]);
+    setUpdatedMintersCount(Number(totalMinted));
+  }, [totalMinted]);
 
   return (
     <div className={cn('h-0 flex-1 flex-col', className)} {...props}>
@@ -71,10 +56,7 @@ export default function PosterMint({
           network: casterZoraNetwork.name,
           standard: 'ERC1155',
           contract: casterZora1155ToMintAddress,
-          firstMinter: {
-            avatar: '',
-            displayName: '',
-          },
+          firstMinter: mintInfo?.originatorAddress || '',
           mintersCount: updatedMintersCount,
         }}
       />
@@ -90,23 +72,10 @@ export default function PosterMint({
           if (chain?.id !== Number(casterZoraChainId)) {
             return <SwitchNetworkButton className="w-full" />;
           }
-          if (!firstMinted) {
-            if (!isAdmin) return null;
-            return (
-              <FirstMintButton
-                className="w-full"
-                img={imgBase64}
-                onSuccess={(tokenId) => {
-                  setFirstMinted(true);
-                  setMinted(true);
-                  onFirstMintSuccess?.(tokenId, address);
-                }}
-              />
-            );
-          }
           if (!minted) {
             return (
               <FreeMintButton
+                isFirstMint={isFirstMint}
                 className="w-full"
                 tokenId={lastTokenId}
                 onSuccess={() => {

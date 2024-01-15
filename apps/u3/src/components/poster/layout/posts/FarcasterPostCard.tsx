@@ -3,8 +3,8 @@ import {
   FarCast,
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
-} from '../../../../../services/social/types';
-import useFarcasterUserData from '../../../../../hooks/social/farcaster/useFarcasterUserData';
+} from '../../../../services/social/types';
+import useFarcasterUserData from '../../../../hooks/social/farcaster/useFarcasterUserData';
 import { PostCard, Top1PostCard, type PostCardData } from './PostCard';
 import { getEmbeds, isImg } from '@/utils/social/farcaster/getEmbeds';
 import { getFarcasterEmbedMetadata } from '@/services/social/api/farcaster';

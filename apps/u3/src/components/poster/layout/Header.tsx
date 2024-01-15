@@ -1,5 +1,5 @@
 import LogoIcon from '../icons/LogoIcon';
-import qrCodeU3 from '../../../common/assets/imgs/qrcode_u3.xyz.png';
+import qrCodeU3 from '../../common/assets/imgs/qrcode_u3.xyz.png';
 
 export default function Header() {
   return (

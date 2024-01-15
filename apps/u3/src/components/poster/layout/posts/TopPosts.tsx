@@ -1,4 +1,5 @@
-import { SocialPlatform } from '../../../../../services/social/types';
+import { useNavigate } from 'react-router-dom';
+import { SocialPlatform } from '../../../../services/social/types';
 import FarcasterPostCard from './FarcasterPostCard';
 
 export type TopPostsData = Array<{ data: any; platform: SocialPlatform }>;
@@ -7,6 +8,7 @@ export type TopPostsProps = {
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
 };
 export default function TopPosts({ posts, farcasterUserData }: TopPostsProps) {
+  const navigate = useNavigate();
   const top1Post = posts[0];
   const topPosts = posts.slice(1, 4);
   return (
@@ -25,7 +27,9 @@ export default function TopPosts({ posts, farcasterUserData }: TopPostsProps) {
                 data={data}
                 farcasterUserData={farcasterUserData}
                 isFirst
-                className="flex-1"
+                className="flex-1 cursor-pointer"
+                onClick={() => navigate(`/social/post-detail/fcast/${id}`)}
+                title={`/social/post-detail/fcast/${id}`}
               />
             );
           }
@@ -45,7 +49,9 @@ export default function TopPosts({ posts, farcasterUserData }: TopPostsProps) {
                   key={id}
                   data={data}
                   farcasterUserData={farcasterUserData}
-                  className="pt-[10px]"
+                  className="pt-[10px] cursor-pointer"
+                  onClick={() => navigate(`/social/post-detail/fcast/${id}`)}
+                  title={`/social/post-detail/fcast/${id}`}
                 />
               );
             }
