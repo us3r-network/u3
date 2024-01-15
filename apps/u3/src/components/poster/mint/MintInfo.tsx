@@ -8,10 +8,7 @@ interface Props extends ComponentPropsWithRef<'div'> {
     network: string;
     standard: string;
     contract: string;
-    firstMinter?: {
-      avatar?: string;
-      displayName?: string;
-    };
+    firstMinter?: string;
     mintersCount?: number;
   };
 }
@@ -42,10 +39,10 @@ export default function MintInfo({ data, className, ...props }: Props) {
         </AttrValue>
       </AttrRow>
 
-      {!!firstMinter && !!firstMinter?.displayName && (
+      {!!firstMinter && (
         <AttrRow>
           <AttrName>First Minter</AttrName>
-          <AttrValue>{firstMinter.displayName}</AttrValue>
+          <AttrValue>{shortPubKey(firstMinter)}</AttrValue>
         </AttrRow>
       )}
 

@@ -2,6 +2,7 @@ import { ComponentPropsWithRef } from 'react';
 import { cn } from '@/lib/utils';
 
 export type TopicData = {
+  channel_id: string;
   logo: string;
   name: string;
   postCount: number;

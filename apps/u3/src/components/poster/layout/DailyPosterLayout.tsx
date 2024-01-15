@@ -7,11 +7,13 @@ import { cn } from '@/lib/utils';
 import TopPosts, { TopPostsProps } from './posts/TopPosts';
 import TopTopics, { TopTopicsProps } from './topics/TopTopics';
 
-export type DailyPosterLayoutProps = ComponentPropsWithRef<'div'> &
-  TopPostsProps &
+export type DailyPosterLayoutData = TopPostsProps &
   TopTopicsProps &
   HighScoreDappsProps &
   TopLinksProps;
+
+export type DailyPosterLayoutProps = ComponentPropsWithRef<'div'> &
+  DailyPosterLayoutData;
 
 export default function DailyPosterLayout({
   posts,

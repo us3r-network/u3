@@ -50,7 +50,7 @@ export default function PosterMenu({
           <MenuText>Free Mint</MenuText>
         </MenuItem>
         <MenuLine />
-        <MenuItem onClick={() => toast.info('Coming Soon!')}>
+        <MenuItem onClick={() => navigate('/poster-gallery')}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="21"

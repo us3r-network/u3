@@ -13,6 +13,8 @@ import LoadableFallback from '../components/layout/LoadableFallback';
 
 export enum RouteKey {
   home = 'home',
+  // poster
+  posterGallery = 'posterGallery',
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
@@ -101,6 +103,13 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('Explore'),
     key: RouteKey.home,
     title: 'Explore',
+  },
+  // poster
+  {
+    path: '/poster-gallery',
+    element: loadContainerElement('PosterGallery'),
+    key: RouteKey.posterGallery,
+    title: 'Poster Gallery',
   },
   // profile
   {

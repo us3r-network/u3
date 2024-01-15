@@ -6,10 +6,12 @@ import useMint from '@/hooks/poster/useMint';
 
 type FreeMintButtonProps = ComponentPropsWithRef<'button'> & {
   tokenId: number;
+  isFirstMint: boolean;
   onSuccess?: (tokenId: number) => void;
 };
 export default function FreeMintButton({
   tokenId,
+  isFirstMint,
   onSuccess,
   ...props
 }: FreeMintButtonProps) {
@@ -40,7 +42,13 @@ export default function FreeMintButton({
     >
       {(() => {
         if (isLoading) {
+          if (isFirstMint) {
+            return 'First Minting...';
+          }
           return 'Free Minting...';
+        }
+        if (isFirstMint) {
+          return 'First Mint';
         }
         return 'Free Mint';
       })()}
