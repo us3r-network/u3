@@ -7,3 +7,7 @@ export const setDefaultFarcaster = (fid: string) => {
 export const getDefaultFarcaster = () => {
   return localStorage.getItem(Key);
 };
+
+export const removeDefaultFarcaster = () => {
+  return localStorage.removeItem(Key);
+};

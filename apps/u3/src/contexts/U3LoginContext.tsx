@@ -18,7 +18,10 @@ import {
   setU3ExtensionCookie,
   UserAdaptationCookie,
 } from '../utils/shared/cookie';
-import { removeHomeBannerHiddenFromStore } from '../utils/shared/homeStore';
+import {
+  removeFarcasterInfoFromStore,
+  removeHomeBannerHiddenFromStore,
+} from '../utils/shared/homeStore';
 import { getAddressWithDidPkh } from '../utils/shared/did';
 
 interface U3LoginContextValue {
@@ -73,6 +76,7 @@ export default function U3LoginProvider({
   // u3退出登录
   const u3logout = useCallback(() => {
     setUser(null);
+    removeFarcasterInfoFromStore();
     removeHomeBannerHiddenFromStore();
     removeU3ExtensionCookie();
     needU3Login = true;
