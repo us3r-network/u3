@@ -43,7 +43,7 @@ export default function LinkMobile() {
     </StatusWrapper>
   ) : data ? (
     <MainBody>
-      <LinkShowerBox selectLink={data} tab="readerView" />
+      <LinkShowerBox selectLink={data} />
       {/* {data.linkStreamId && <Comments linkId={data.linkStreamId} />} */}
     </MainBody>
   ) : (
