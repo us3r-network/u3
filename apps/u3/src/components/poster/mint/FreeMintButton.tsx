@@ -6,7 +6,7 @@ import useMint from '@/hooks/poster/useMint';
 
 type FreeMintButtonProps = ComponentPropsWithRef<'button'> & {
   tokenId: number;
-  isFirstMint: boolean;
+  isFirstMint?: boolean;
   onSuccess?: (tokenId: number) => void;
 };
 export default function FreeMintButton({
