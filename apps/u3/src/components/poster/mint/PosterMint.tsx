@@ -33,7 +33,7 @@ export default function PosterMint({
   const [minted, setMinted] = useState(true);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
   const { lastTokenId, totalMinted, mintInfo } = useCasterLastTokenInfo();
-  const isFirstMint = totalMinted === 0 && !mintInfo.originatorAddress;
+  const isFirstMint = totalMinted === 0 && !mintInfo?.originatorAddress;
 
   const { isMinted } = useCasterOwnerInfoWithTokenId({
     ownerAddress: address,
