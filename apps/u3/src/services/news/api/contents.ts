@@ -100,9 +100,11 @@ export function updateContent(
 }
 
 export function contentParse(url: string): RequestPromise<URLParseResponse> {
-  return request({
-    url: `/contents/parser?url=${url}`,
-  });
+  // return request({
+  //   url: `/contents/parser?url=${url}`,
+  // });
+  // parse api is deprecated
+  return null;
 }
 
 export function favorsContent(id: number, token: string) {
