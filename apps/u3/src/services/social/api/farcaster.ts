@@ -18,6 +18,7 @@ export type FarcasterNotification = {
   casts_text?: string;
   replies_text?: string;
   replies_parent_hash?: Buffer;
+  casts_mentions?: number[];
 };
 
 export type FarcasterPageInfo = {
