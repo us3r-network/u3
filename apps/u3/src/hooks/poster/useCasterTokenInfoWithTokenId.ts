@@ -13,6 +13,17 @@ import {
   ZoraCreatorFixedPriceSaleStrategyAbi,
 } from '../../constants/zora';
 
+const args = {
+  endPoint: ZORA_API_ENDPOINT,
+  networks: [casterZoraNetworkInfo],
+};
+const zdk = new ZDK(args);
+
+const publicClient = createPublicClient({
+  chain: casterZoraNetwork,
+  transport: http(),
+});
+
 export type Sale = {
   saleStart: bigint;
   saleEnd: bigint;
@@ -26,16 +37,11 @@ export type TokenInfo = Token &
   };
 
 export enum SaleStatus {
+  Unknown = -1,
   NotStarted = 0,
   InProgress = 1,
   Ended = 2,
 }
-
-const args = {
-  endPoint: ZORA_API_ENDPOINT,
-  networks: [casterZoraNetworkInfo],
-};
-const zdk = new ZDK(args);
 
 export default function useCasterTokenInfoWithTokenId({
   tokenId,
@@ -49,10 +55,6 @@ export default function useCasterTokenInfoWithTokenId({
   } as TokenInfo);
   useEffect(() => {
     const readTokenInfo = async () => {
-      const publicClient = createPublicClient({
-        chain: casterZoraNetwork,
-        transport: http(),
-      });
       const res = await publicClient.readContract({
         address: casterZora1155ToMintAddress,
         abi: ZoraCreator1155ImplAbi,
@@ -62,10 +64,6 @@ export default function useCasterTokenInfoWithTokenId({
       setTokenInfo(res as TokenInfo);
     };
     const readSale = async () => {
-      const publicClient = createPublicClient({
-        chain: casterZoraNetwork,
-        transport: http(),
-      });
       const res = await publicClient.readContract({
         address: casterZoraFixedPriceStrategyAddress,
         abi: ZoraCreatorFixedPriceSaleStrategyAbi,
@@ -98,9 +96,12 @@ export default function useCasterTokenInfoWithTokenId({
 
   const saleStatus = useMemo(() => {
     const now = dayjs().toDate().getTime();
-    if (now < Number(saleStart)) return SaleStatus.NotStarted;
-    if (now > Number(saleEnd)) return SaleStatus.Ended;
-    return SaleStatus.InProgress;
+    const saleStartNum = Number(saleStart) * 1000;
+    const saleEndNum = Number(saleEnd) * 1000;
+    if (now < saleStartNum) return SaleStatus.NotStarted;
+    if (now > saleEndNum) return SaleStatus.Ended;
+    if (now >= saleStartNum && now <= saleEndNum) return SaleStatus.InProgress;
+    return SaleStatus.Unknown;
   }, [saleStart, saleEnd]);
 
   return {

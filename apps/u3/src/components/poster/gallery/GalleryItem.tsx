@@ -30,13 +30,19 @@ export default function GalleryItem({
   const createAt = metadata?.properties?.createAt;
   const posterDataJson = metadata?.properties?.posterDataJson;
   const posterData = JSON.parse(posterDataJson || '{}');
+  const zoraImg = image?.mediaEncoding?.original;
+  const previewImg = imageOriginUrl || zoraImg;
+  const previewErrImg = zoraImg || imageOriginUrl;
 
   const { isLogin, login } = useLogin();
   const { chain } = useNetwork();
   const { address } = useAccount();
-  const { totalMinted, saleStatus, saleStart } = useCasterTokenInfoWithTokenId({
-    tokenId: Number(tokenId),
-  });
+  const { totalMinted, saleStatus, saleStart, mintInfo } =
+    useCasterTokenInfoWithTokenId({
+      tokenId: Number(tokenId),
+    });
+  const isFirstMint = totalMinted === 0 && !mintInfo?.originatorAddress;
+
   const { isMinted } = useCasterOwnerInfoWithTokenId({
     tokenId: Number(tokenId),
     ownerAddress: address,
@@ -57,25 +63,25 @@ export default function GalleryItem({
   }, [totalMinted]);
 
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
+
   return (
     <div className={cn('', className)} {...props}>
       <PosterPreviewModal
         createAt={posterCreateTimestamp}
-        posterImg={imageOriginUrl || image.mediaEncoding.original}
+        posterImg={previewImg}
         posterData={posterData}
         open={openPreviewModal}
         closeModal={() => setOpenPreviewModal(false)}
       />
       <img
         className="w-full h-[300px] object-cover cursor-pointer"
-        src={imageOriginUrl}
+        src={previewImg}
         alt=""
         onClick={() => setOpenPreviewModal(true)}
         onError={(el) => {
           const target = el.target as HTMLImageElement;
-          const errImg = image.mediaEncoding.original;
-          if (errImg && target.src !== errImg) {
-            target.src = errImg;
+          if (previewErrImg && target.src !== previewErrImg) {
+            target.src = previewErrImg;
           }
         }}
       />
@@ -85,19 +91,18 @@ export default function GalleryItem({
         </span>
         <span className="text-[#718096] font-[Roboto] text-[12px] not-italic font-medium leading-[normal]">
           {(() => {
+            if (updatedMintersCount > 0) {
+              return `Minted ${updatedMintersCount} times`;
+            }
             switch (saleStatus) {
               case SaleStatus.NotStarted:
                 return 'Not Started';
               case SaleStatus.InProgress:
-                if (updatedMintersCount === 0) {
-                  return 'In Progress...';
-                }
-                return `Minted ${updatedMintersCount} times`;
+                return 'In Progress...';
               case SaleStatus.Ended:
-                if (updatedMintersCount === 0) {
-                  return 'Ended';
-                }
-                return `Minted ${updatedMintersCount} times`;
+                return 'Ended';
+              case SaleStatus.Unknown:
+                return 'Unknown';
               default:
                 return '';
             }
@@ -129,6 +134,7 @@ export default function GalleryItem({
           return (
             <FreeMintButton
               className="flex-1"
+              isFirstMint={isFirstMint}
               tokenId={Number(tokenId)}
               onSuccess={() => {
                 setMinted(true);

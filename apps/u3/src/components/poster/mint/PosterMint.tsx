@@ -62,6 +62,7 @@ export default function PosterMint({
       />
       <div className="mt-[20px]">
         {(() => {
+          if (minted) return null;
           if (!isLogin) {
             return (
               <ColorButton className="w-full" onClick={login}>

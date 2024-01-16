@@ -13,7 +13,9 @@ export type DailyPosterLayoutData = TopPostsProps &
   TopLinksProps;
 
 export type DailyPosterLayoutProps = ComponentPropsWithRef<'div'> &
-  DailyPosterLayoutData;
+  DailyPosterLayoutData & {
+    createAt?: number;
+  };
 
 export default function DailyPosterLayout({
   posts,
@@ -21,6 +23,7 @@ export default function DailyPosterLayout({
   topics,
   dapps,
   links,
+  createAt,
   className,
   ...wrapperProps
 }: DailyPosterLayoutProps) {
@@ -45,7 +48,7 @@ export default function DailyPosterLayout({
         <HighScoreDapps dapps={dapps} />
       </div>
 
-      <Footer />
+      <Footer createAt={createAt} />
     </div>
   );
 }
