@@ -6,7 +6,7 @@ import ModalBase from '../../common/modal/ModalBase';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 
 type Props = {
-  createAt: string | number;
+  createAt: number;
   posterImg: string;
   posterData: DailyPosterLayoutData;
   open: boolean;
@@ -55,6 +55,7 @@ export default function PosterPreviewModal({
             topics={topics}
             dapps={dapps}
             links={links}
+            createAt={createAt}
           />
         ) : (
           <img src={posterImg} alt="" className="w-[560px] object-cover" />
