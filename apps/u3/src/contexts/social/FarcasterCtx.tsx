@@ -281,7 +281,7 @@ export default function FarcasterProvider({
   }, [session, profile, signer, currFid, currUserInfo]);
 
   useHotkeys(
-    'meta+p',
+    'meta+p,ctrl+p',
     (e) => {
       e.preventDefault();
       if (!isLogin) {
@@ -290,15 +290,17 @@ export default function FarcasterProvider({
       }
       setOpenPostModal(true);
     },
+    { preventDefault: true },
     [isLogin]
   );
 
   useHotkeys(
-    'meta+k',
+    'meta+k,ctrl+k',
     (e) => {
       e.preventDefault();
       setOpenModalName(QuickSearchModalName);
     },
+    { preventDefault: true },
     []
   );
 
