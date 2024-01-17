@@ -455,3 +455,34 @@ export async function getMetadataWithMod(
   const metadata = await resp.json();
   return metadata;
 }
+
+export function getSavedCasts(walletAddress: string, pageSize?: number) {
+  if (walletAddress.startsWith('0x')) {
+    walletAddress = walletAddress.slice(2);
+  }
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/saved-casts`,
+    method: 'get',
+    params: {
+      walletAddress,
+      pageSize,
+    },
+  });
+}
+
+export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
+  if (walletAddress.startsWith('0x')) {
+    walletAddress = walletAddress.slice(2);
+  }
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/sync-casts`,
+    method: 'post',
+    data: {
+      walletAddress,
+      lastedId,
+    },
+    headers: {
+      needToken: true,
+    },
+  });
+}
