@@ -108,6 +108,7 @@ export interface FarcasterContextData {
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
   openPostModal: boolean;
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -347,6 +348,7 @@ export default function FarcasterProvider({
         getChannelFromUrl,
         openPostModal,
         setOpenPostModal,
+        setOpenModalName,
       }}
     >
       {children}
