@@ -396,7 +396,7 @@ export default function FarcasterProvider({
         }}
         registerAction={() => {
           setSignerSelectModalOpen(false);
-          navigate('/farcaster/signup');
+          navigate('/farcaster/signupv2');
         }}
         selectType={selectType}
         setSelectType={(type: string) => {

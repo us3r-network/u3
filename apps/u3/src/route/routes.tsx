@@ -334,8 +334,8 @@ export const routes: CutomRouteObject[] = [
         key: RouteKey.farcasterData,
       },
       {
-        path: 'signup',
-        element: loadContainerElement('social/FarcasterSignup'),
+        path: 'signupv2',
+        element: loadContainerElement('social/FarcasterSignupV2'),
         key: RouteKey.farcasterSignup,
       } as CutomRouteObject,
       {

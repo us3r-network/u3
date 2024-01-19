@@ -23,6 +23,7 @@ import {
 } from 'src/utils/profile/biolink';
 
 import { FarcasterBioLinkData } from './useFarcasterQR';
+import { IdContract } from '@/components/social/farcaster/signupv2/Contract';
 
 const opPublicClient = createPublicClient({
   chain: optimism,
@@ -92,6 +93,7 @@ export default function useFarcasterWallet() {
     if (!fid) return;
     try {
       const resp = await getFnames(fid);
+      console.log('fnameCheck: ', resp.data);
       if (resp.data.code !== 0) return;
       return resp.data.data.username;
     } catch (error) {
@@ -105,6 +107,7 @@ export default function useFarcasterWallet() {
       const resp = await axios.get(
         `https://api.farcaster.u3.xyz/v1/storageLimitsByFid?fid=${fid}`
       );
+      console.log('storageCheck: ', resp.data);
       if (resp.data.limits?.length > 0) {
         return Boolean(resp.data.limits?.[0].limit); // mainnet
       }
@@ -123,11 +126,11 @@ export default function useFarcasterWallet() {
 
   const getWalletFid = useCallback(async () => {
     const data = await opPublicClient.readContract({
-      address: IdRegistryContract,
-      abi: IdRegistryABI,
+      ...IdContract,
       functionName: 'idOf',
       args: [address],
     });
+    console.log('wallet fid: ', data);
     if (!data) {
       setWalletCheckStatus('done');
       return;
