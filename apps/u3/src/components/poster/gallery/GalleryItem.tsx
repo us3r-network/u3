@@ -1,7 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { Token } from '@zoralabs/zdk/dist/queries/queries-sdk';
 import { useAccount, useNetwork } from 'wagmi';
 import ColorButton from '@/components/common/button/ColorButton';
 import { cn } from '@/lib/utils';
@@ -15,9 +14,11 @@ import SwitchNetworkButton from '../mint/SwitchNetworkButton';
 import FreeMintButton from '../mint/FreeMintButton';
 import { Button } from '@/components/ui/button';
 import PosterPreviewModal from './PosterPreviewModal';
+import { PosterEntity, PosterMetadata } from '@/services/poster/types/poster';
+import { getSaleStatus } from '@/utils/shared/zora';
 
 interface GalleryItemProps extends ComponentPropsWithoutRef<'div'> {
-  data: Token;
+  data: PosterEntity;
 }
 
 export default function GalleryItem({
@@ -25,32 +26,38 @@ export default function GalleryItem({
   className,
   ...props
 }: GalleryItemProps) {
-  const { image, lastRefreshTime, metadata, tokenId } = data;
-  const imageOriginUrl = metadata?.properties?.imageOriginUrl;
-  const createAt = metadata?.properties?.createAt;
-  const posterDataJson = metadata?.properties?.posterDataJson;
+  const { metadata: metadataJson, tokenId } = data;
+  const metadata = JSON.parse(metadataJson || '{}') as PosterMetadata;
+
+  const { imageOriginUrl, createAt, posterDataJson } =
+    metadata?.properties || {};
   const posterData = JSON.parse(posterDataJson || '{}');
-  const zoraImg = image?.mediaEncoding?.original;
-  const previewImg = imageOriginUrl || zoraImg;
-  const previewErrImg = zoraImg || imageOriginUrl;
+  const previewImg = imageOriginUrl;
 
   const { isLogin, login } = useLogin();
   const { chain } = useNetwork();
   const { address } = useAccount();
-  const { totalMinted, saleStatus, saleStart, mintInfo } =
-    useCasterTokenInfoWithTokenId({
-      tokenId: Number(tokenId),
-    });
+  const {
+    totalMinted,
+    saleStatus: saleStatusWithToken,
+    mintInfo,
+  } = useCasterTokenInfoWithTokenId({
+    tokenId: Number(tokenId),
+  });
+  const saleStautsWithPoster = getSaleStatus(data.saleStart, data.saleEnd);
+  const saleStatus =
+    data?.saleStart && data?.saleEnd
+      ? saleStautsWithPoster
+      : saleStatusWithToken;
+
   const isFirstMint = totalMinted === 0 && !mintInfo?.originatorAddress;
 
-  const { isMinted } = useCasterOwnerInfoWithTokenId({
+  const { isMinted, isMintedLoading } = useCasterOwnerInfoWithTokenId({
     tokenId: Number(tokenId),
     ownerAddress: address,
   });
 
-  const posterCreateTimestamp = dayjs(
-    Number(createAt) * 1000 || Number(saleStart) * 1000 || lastRefreshTime
-  ).valueOf();
+  const posterCreateTimestamp = dayjs(createAt).valueOf();
 
   const [minted, setMinted] = useState(true);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);
@@ -78,12 +85,6 @@ export default function GalleryItem({
         src={previewImg}
         alt=""
         onClick={() => setOpenPreviewModal(true)}
-        onError={(el) => {
-          const target = el.target as HTMLImageElement;
-          if (previewErrImg && target.src !== previewErrImg) {
-            target.src = previewErrImg;
-          }
-        }}
       />
       <div className="mt-[10px] flex justify-between items-center">
         <span className="text-white text-[16px] italic font-bold leading-[normal]">
@@ -111,6 +112,13 @@ export default function GalleryItem({
       </div>
       <div className="mt-[10px] flex justify-between items-center">
         {(() => {
+          if (!tokenId || isMintedLoading) {
+            return (
+              <ColorButton className="flex-1" disabled>
+                Free Mint
+              </ColorButton>
+            );
+          }
           if (minted) {
             return (
               <Button

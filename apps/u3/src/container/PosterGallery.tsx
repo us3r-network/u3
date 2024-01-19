@@ -1,75 +1,27 @@
-import { SortDirection, TokenSortKey, ZDK } from '@zoralabs/zdk';
 import { useCallback, useEffect, useState } from 'react';
-import {
-  PageInfo,
-  PaginationInput,
-} from '@zoralabs/zdk/dist/queries/queries-sdk';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import {
-  ZORA_API_ENDPOINT,
-  casterZora1155ToMintAddress,
-  casterZoraNetworkInfo,
-} from '@/constants/zora';
 import Loading from '@/components/common/loading/Loading';
 import GalleryItem from '@/components/poster/gallery/GalleryItem';
+import { fetchPosterList } from '@/services/poster/api/poster';
+import { PosterPageInfo } from '@/services/poster/types/poster';
 
-const args = {
-  endPoint: ZORA_API_ENDPOINT,
-  networks: [casterZoraNetworkInfo],
-};
-const zdk = new ZDK(args);
-
-async function fetchTokensAndFormatData({
-  pagination,
-}: {
-  pagination?: PaginationInput;
-}) {
-  const res = await zdk.tokens({
-    where: {
-      collectionAddresses: [casterZora1155ToMintAddress],
-    },
-    sort: {
-      sortDirection: 'DESC' as SortDirection.Desc,
-      sortKey: 'TOKEN_ID' as TokenSortKey.TokenId,
-    },
-    includeFullDetails: true,
-    includeSalesHistory: true,
-    pagination,
-  });
-
-  // TODO zdk的排序参数设定后排序是乱的，这里手动排下序
-  const tokens = res.tokens.nodes
-    .map((node) => node.token)
-    .sort((a, b) => {
-      return Number(b.tokenId) - Number(a.tokenId);
-    });
-  return {
-    pageInfo: res.tokens.pageInfo,
-    tokens,
-  };
-}
-
-// TODO zdk的排序参数设定后排序是乱的，为了在前端可以得到正常的排序，前期先不做分页（分页调大些），后期看zdk是否修复这个bug
-const PAGE_SIZE = 100;
+const PAGE_SIZE = 16;
 
 export default function PosterGallery() {
-  const [tokens, setTokens] = useState([]);
-  const [pageInfo, setPageInfo] = useState<PageInfo>({
-    endCursor: '',
+  const [posters, setPosters] = useState([]);
+  const [pageInfo, setPageInfo] = useState<PosterPageInfo>({
     hasNextPage: true,
-    limit: PAGE_SIZE,
   });
   const [loading, setLoading] = useState(false);
   const loadFirst = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchTokensAndFormatData({
-        pagination: {
-          limit: PAGE_SIZE,
-        },
+      const res = await fetchPosterList({
+        pageSize: PAGE_SIZE,
       });
+      const data = res.data?.data;
       setPageInfo(data.pageInfo);
-      setTokens(data.tokens);
+      setPosters(data.posters);
     } catch (error) {
       console.error(error);
     } finally {
@@ -80,14 +32,13 @@ export default function PosterGallery() {
     if (loading) return;
     setLoading(true);
     try {
-      const data = await fetchTokensAndFormatData({
-        pagination: {
-          after: pageInfo.endCursor,
-          limit: pageInfo.limit,
-        },
+      const res = await fetchPosterList({
+        pageSize: PAGE_SIZE,
+        endCursor: pageInfo.endCursor,
       });
+      const data = res.data?.data;
       setPageInfo(data.pageInfo);
-      setTokens((prev) => [...prev, ...data.tokens]);
+      setPosters((prev) => [...prev, ...data.posters]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -115,14 +66,14 @@ export default function PosterGallery() {
       >
         Poster Gallery
       </div>
-      {tokens.length === 0 && loading ? (
+      {posters.length === 0 && loading ? (
         <div className="w-full h-[calc(100vh-72px)] flex justify-center items-center">
           <Loading />
         </div>
       ) : (
         <InfiniteScroll
           style={{ overflow: 'hidden', paddingBottom: '30px' }}
-          dataLength={tokens.length}
+          dataLength={posters.length}
           next={() => {
             if (loading) return;
             if (!pageInfo.hasNextPage) return;
@@ -137,7 +88,7 @@ export default function PosterGallery() {
           scrollableTarget="layout-main-wrapper"
         >
           <div className="grid grid-cols-4 gap-[30px]">
-            {tokens.map((item) => {
+            {posters.map((item) => {
               return <GalleryItem key={item.tokenId} data={item} />;
             })}
           </div>
