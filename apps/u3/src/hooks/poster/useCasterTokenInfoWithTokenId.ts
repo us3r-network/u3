@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPublicClient, http } from 'viem';
-import dayjs from 'dayjs';
 import { ZDK } from '@zoralabs/zdk';
 import { Token } from '@zoralabs/zdk/dist/queries/queries-sdk';
 import {
@@ -12,6 +11,7 @@ import {
   ZoraCreator1155ImplAbi,
   ZoraCreatorFixedPriceSaleStrategyAbi,
 } from '../../constants/zora';
+import { getSaleStatus } from '@/utils/shared/zora';
 
 const args = {
   endPoint: ZORA_API_ENDPOINT,
@@ -94,15 +94,10 @@ export default function useCasterTokenInfoWithTokenId({
 
   const { saleStart, saleEnd } = tokenInfo;
 
-  const saleStatus = useMemo(() => {
-    const now = dayjs().toDate().getTime();
-    const saleStartNum = Number(saleStart) * 1000;
-    const saleEndNum = Number(saleEnd) * 1000;
-    if (now < saleStartNum) return SaleStatus.NotStarted;
-    if (now > saleEndNum) return SaleStatus.Ended;
-    if (now >= saleStartNum && now <= saleEndNum) return SaleStatus.InProgress;
-    return SaleStatus.Unknown;
-  }, [saleStart, saleEnd]);
+  const saleStatus = useMemo(
+    () => getSaleStatus(String(saleStart), String(saleEnd)),
+    [saleStart, saleEnd]
+  );
 
   return {
     ...tokenInfo,

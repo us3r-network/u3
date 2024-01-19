@@ -20,6 +20,7 @@ export default function useCasterOwnerInfoWithTokenId({
 }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMinted, setIsMinted] = useState(false);
+  const [isMintedLoading, setIsMintedLoading] = useState(false);
 
   useEffect(() => {
     const readIsAdmin = async () => {
@@ -50,14 +51,21 @@ export default function useCasterOwnerInfoWithTokenId({
 
   useEffect(() => {
     const readIsMinted = async () => {
-      const res = await publicClient.readContract({
-        address: casterZora1155ToMintAddress,
-        abi: ZoraCreator1155ImplAbi,
-        functionName: 'balanceOf',
-        args: [ownerAddress, tokenId],
-      });
-      const minted = res && Number(res) === 1;
-      setIsMinted(minted);
+      try {
+        setIsMintedLoading(true);
+        const res = await publicClient.readContract({
+          address: casterZora1155ToMintAddress,
+          abi: ZoraCreator1155ImplAbi,
+          functionName: 'balanceOf',
+          args: [ownerAddress, tokenId],
+        });
+        const minted = res && Number(res) === 1;
+        setIsMinted(minted);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setIsMintedLoading(false);
+      }
     };
     if (tokenId && ownerAddress) {
       readIsMinted();
@@ -67,5 +75,6 @@ export default function useCasterOwnerInfoWithTokenId({
   return {
     isAdmin,
     isMinted,
+    isMintedLoading,
   };
 }
