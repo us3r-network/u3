@@ -44,7 +44,7 @@ function setPrivateKey(privateKey: string) {
 function getPrivateKey() {
   const privateKey = localStorage.getItem(
     `farsign-privateKey-${FARCASTER_CLIENT_NAME}`
-  )!;
+  );
   return privateKey;
 }
 

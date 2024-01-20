@@ -10,6 +10,7 @@ import {
   pgn,
 } from 'viem/chains';
 import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
+import { isMillisecondTimestamp, isSecondTimestamp } from './time';
 
 export const zoraMainnetChainIds: number[] = [
   mainnet.id,
@@ -135,4 +136,54 @@ export const getZoraMintFeeWithChain = (chainId, contractMintFee: any) => {
     return fixedMintFeeBigInt;
   }
   return contractMintFee;
+};
+
+export enum SaleStatus {
+  Unknown = -1,
+  NotStarted = 0,
+  InProgress = 1,
+  Ended = 2,
+}
+export const getSaleStatus = (saleStart: string, saleEnd: string) => {
+  const nowMillisecondTimestamp = Date.now();
+  const nowSecondTimestamp = Math.floor(nowMillisecondTimestamp / 1000);
+
+  const compareFn = (
+    now: string | number,
+    start: string | number,
+    end: string | number
+  ) => {
+    if (Number(now) < Number(start)) {
+      return SaleStatus.NotStarted;
+    }
+    if (Number(now) > Number(end)) {
+      return SaleStatus.Ended;
+    }
+    return SaleStatus.InProgress;
+  };
+  if (isSecondTimestamp(saleStart) && isSecondTimestamp(saleEnd)) {
+    return compareFn(nowSecondTimestamp, saleStart, saleEnd);
+  }
+
+  if (isMillisecondTimestamp(saleStart) && isMillisecondTimestamp(saleEnd)) {
+    return compareFn(nowMillisecondTimestamp, saleStart, saleEnd);
+  }
+
+  if (isMillisecondTimestamp(saleStart) && isSecondTimestamp(saleEnd)) {
+    return compareFn(nowSecondTimestamp, saleStart, Number(saleEnd) * 100);
+  }
+
+  if (isSecondTimestamp(saleStart) && isMillisecondTimestamp(saleEnd)) {
+    return compareFn(nowMillisecondTimestamp, Number(saleStart) * 100, saleEnd);
+  }
+
+  if (saleStart.length > 13) {
+    return SaleStatus.NotStarted;
+  }
+
+  if (saleEnd.length > 13) {
+    return SaleStatus.InProgress;
+  }
+
+  return SaleStatus.Unknown;
 };

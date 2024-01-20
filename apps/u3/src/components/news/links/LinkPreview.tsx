@@ -24,14 +24,6 @@ export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
 export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
-  const [tab, setTab] = useState<Tab>('original');
-  // useEffect(() => {
-  //   if (data?.supportIframe) {
-  //     setTab('original');
-  //   } else {
-  //     setTab('readerView');
-  //   }
-  // }, [data]);
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
     setLinkParam({
@@ -44,7 +36,6 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
     data && (
       <PreviewBox ref={ref} {...otherProps}>
         <Header>
-          <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
           <HeaderRight>
             <SaveButton linkId={null} link={linkParam} />
             <LinkShareMenuBtn
@@ -67,7 +58,7 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
           )}
         </Header>
         <div className="w-full h-[0] flex flex-row gap-[12px] flex-shrink flex-grow">
-          <LinkContentBox selectLink={data} tab={tab} />
+          <LinkContentBox selectLink={data} />
           <LinkPostWrapper>
             <LinkPost url={data.url} />
           </LinkPostWrapper>
@@ -115,66 +106,6 @@ const ContentPreviewFullscreen = styled(ButtonFullScreen)`
   right: 10px;
 `;
 
-function LinkRenderSwitchTabs({
-  tab,
-  setTab,
-}: {
-  tab: Tab;
-  setTab: (tab: Tab) => void;
-}) {
-  return (
-    <LinkRenderSwitchTabsWrapper className="content-shower-tabs">
-      <button
-        type="button"
-        className={tab === 'original' ? 'tab-item active' : 'tab-item'}
-        onClick={() => {
-          setTab('original');
-        }}
-      >
-        Original
-      </button>
-      <button
-        className={tab === 'readerView' ? 'tab-item active' : 'tab-item'}
-        type="button"
-        onClick={() => {
-          setTab('readerView');
-        }}
-      >
-        ReaderView
-      </button>
-    </LinkRenderSwitchTabsWrapper>
-  );
-}
-
-const LinkRenderSwitchTabsWrapper = styled.div`
-  width: 260px;
-  height: 40px;
-  background: #14171a;
-  border-radius: 100px;
-  padding: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .tab-item {
-    cursor: pointer;
-    width: 122px;
-    height: 32px;
-    border: none;
-
-    box-shadow: 0px 0px 8px rgba(20, 23, 26, 0.08),
-      0px 0px 4px rgba(20, 23, 26, 0.04);
-    border-radius: 100px;
-    outline: none;
-    background: inherit;
-    color: #a0aec0;
-
-    &.active {
-      color: #ffffff;
-      background: #21262c;
-    }
-  }
-`;
 export const LinkShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
   border: none;
   padding: 0px;

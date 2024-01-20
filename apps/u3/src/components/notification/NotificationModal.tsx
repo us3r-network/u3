@@ -109,32 +109,63 @@ export function FarcasterNotificationItem({
   });
   switch (notification.message_type) {
     case MessageType.CAST_ADD:
-      return (
-        <NotificationItem
-          onClick={() => {
-            navigate(
-              `/social/post-detail/fcast/${Buffer.from(
-                notification.replies_parent_hash
-              ).toString('hex')}#${Buffer.from(
-                notification.casts_hash
-              ).toString('hex')}`
-            );
-            setOpenNotificationModal(false);
-          }}
-        >
-          <Avatar src={userData.pfp} />
-          <UserActionWraper>
-            <UserAction>
-              <u>{userData.userName}</u> commented on your cast
-            </UserAction>
-            <PostText>{notification.replies_text}</PostText>
-            <DateText>
-              {dayjs(notification.message_timestamp).fromNow()}
-            </DateText>
-          </UserActionWraper>
-          <FarcasterIcon />
-        </NotificationItem>
-      );
+      if (notification.replies_text && notification.replies_parent_hash) {
+        return (
+          <NotificationItem
+            onClick={() => {
+              navigate(
+                `/social/post-detail/fcast/${Buffer.from(
+                  notification.replies_parent_hash
+                ).toString('hex')}#${Buffer.from(
+                  notification.casts_hash
+                ).toString('hex')}`
+              );
+              setOpenNotificationModal(false);
+            }}
+          >
+            <Avatar src={userData.pfp} />
+            <UserActionWraper>
+              <UserAction>
+                <u>{userData.userName}</u> commented on your cast
+              </UserAction>
+              <PostText>{notification.replies_text}</PostText>
+              <DateText>
+                {dayjs(notification.message_timestamp).fromNow()}
+              </DateText>
+            </UserActionWraper>
+            <FarcasterIcon />
+          </NotificationItem>
+        );
+      }
+      if (
+        notification.casts_mentions &&
+        notification.casts_mentions.length > 0
+      ) {
+        return (
+          <NotificationItem
+            onClick={() => {
+              navigate(
+                `/social/post-detail/fcast/${Buffer.from(
+                  notification.casts_hash
+                ).toString('hex')}`
+              );
+              setOpenNotificationModal(false);
+            }}
+          >
+            <Avatar src={userData.pfp} />
+            <UserActionWraper>
+              <UserAction>
+                <u>{userData.userName}</u> mentions you in his cast
+              </UserAction>
+              <PostText>{notification.casts_text}</PostText>
+              <DateText>
+                {dayjs(notification.message_timestamp).fromNow()}
+              </DateText>
+            </UserActionWraper>
+            <FarcasterIcon />
+          </NotificationItem>
+        );
+      }
       break;
     case MessageType.REACTION_ADD:
       switch (notification.reaction_type) {

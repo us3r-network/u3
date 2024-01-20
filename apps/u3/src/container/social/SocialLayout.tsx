@@ -138,11 +138,6 @@ function SocialLayout() {
           </RightWrapper>
         )}
       </MainWrapper>
-      {isMobile && (
-        <AddPostButtonWraper>
-          <AddPostMobile />
-        </AddPostButtonWraper>
-      )}
     </HomeWrapper>
   );
 }
@@ -236,9 +231,4 @@ const RightWrapper = styled(MainRight)`
     flex-direction: column;
     gap: 20px;
   }
-`;
-const AddPostButtonWraper = styled.div`
-  position: fixed;
-  right: 20px;
-  bottom: 60px;
 `;

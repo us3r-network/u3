@@ -5,7 +5,7 @@ import HotPosts from './posts/HotPosts';
 import TopLinks from './links/TopLinks';
 import HighScoreDapps from './dapps/HighScoreDapps';
 import type { ExploreState } from '../../container/Explore';
-import CreatePosterBtn from './poster/CreatePosterBtn';
+import PosterMenu from '../poster/PosterMenu';
 import TopChannels from './channels/TopChannels';
 
 export default function ExploreLayout({
@@ -17,7 +17,7 @@ export default function ExploreLayout({
   return (
     <Wrapper>
       {!isMobile && (
-        <CreatePosterBtn
+        <PosterMenu
           disabled={
             hotPosts.isLoading || topLinks.isLoading || highScoreDapps.isLoading
           }
