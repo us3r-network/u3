@@ -24,6 +24,10 @@ import {
 
 import { FarcasterBioLinkData } from './useFarcasterQR';
 import { IdContract } from '@/components/social/farcaster/signupv2/Contract';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
 
 const opPublicClient = createPublicClient({
   chain: optimism,
@@ -76,6 +80,12 @@ export default function useFarcasterWallet() {
             `signerPublicKey-${fid}`,
             farcasterBiolinkData.publicKey
           );
+          // console.log(
+          //   'get wallet signer from db: ',
+          //   fid,
+          //   getDefaultFarcaster()
+          // );
+          if (!getDefaultFarcaster() && fid) setDefaultFarcaster(`${fid}`);
           privateKey = farcasterBiolinkData.privateKey;
         }
       }

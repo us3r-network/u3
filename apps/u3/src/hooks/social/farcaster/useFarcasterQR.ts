@@ -28,6 +28,7 @@ import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
 } from 'src/utils/profile/biolink';
+import { setDefaultFarcaster } from '@/utils/social/farcaster/farcaster-default';
 
 const stopSign = {
   stop: false,
@@ -210,6 +211,9 @@ export default function useFarcasterQR() {
           setPrivateKey(farsignBiolinkData.privateKey);
           setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
           signedKeyRequest = farsignBiolinkData.signedKeyRequest;
+          // console.log('get qrcode signer from db: ', signedKeyRequest);
+          if (signedKeyRequest.userFid)
+            setDefaultFarcaster(signedKeyRequest.userFid);
         }
       }
     } else {
