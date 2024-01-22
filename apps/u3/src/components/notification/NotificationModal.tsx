@@ -227,7 +227,12 @@ export function FarcasterNotificationItem({
       break;
     case MessageType.LINK_ADD:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/u/${userData.userName}.fcast`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={userData.pfp} />
           <UserActionWraper>
             <UserAction>
@@ -348,7 +353,12 @@ function LensNotificationItem({
       break;
     case LensNotificationType.NEW_FOLLOWER:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/u/${notification.followers[0].handle.fullHandle}.lens`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={getAvatar(notification.followers[0])} />
           <UserActionWraper>
             <UserAction>
@@ -368,7 +378,12 @@ function LensNotificationItem({
       break;
     case LensNotificationType.NEW_MENTION:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/social/post-detail/lens/${notification.publication.id}`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={getAvatar(notification.publication.by)} />
           <UserActionWraper>
             <UserAction>
