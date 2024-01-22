@@ -125,32 +125,37 @@ export default function useFarcasterWallet() {
   };
 
   const getWalletFid = useCallback(async () => {
-    const data = await opPublicClient.readContract({
-      ...IdContract,
-      functionName: 'idOf',
-      args: [address],
-    });
-    console.log('wallet fid: ', data);
-    if (!data) {
-      setWalletCheckStatus('done');
-      return;
-    }
-    const fid = Number(data);
-    const checkResult = await Promise.all([
-      signerCheck(fid),
-      fnameCheck(fid),
-      storageCheck(fid),
-    ]);
-    if (!checkResult[0] || !checkResult[1] || !checkResult[2]) {
-      setWalletCheckStatus('done');
-      return;
-    }
+    try {
+      const data = await opPublicClient.readContract({
+        ...IdContract,
+        functionName: 'idOf',
+        args: [address],
+      });
+      console.log('wallet fid: ', data);
+      if (!data) {
+        setWalletCheckStatus('done');
+        return;
+      }
+      const fid = Number(data);
+      const checkResult = await Promise.all([
+        signerCheck(fid),
+        fnameCheck(fid),
+        storageCheck(fid),
+      ]);
+      if (!checkResult[0] || !checkResult[1] || !checkResult[2]) {
+        setWalletCheckStatus('done');
+        return;
+      }
 
-    setWalletFid(fid);
-    setWalletSigner(checkResult[0]);
-    setFname(checkResult[1]);
-    setHasStorage(checkResult[2]);
-    getCurrUserInfo(fid);
+      setWalletFid(fid);
+      setWalletSigner(checkResult[0]);
+      setFname(checkResult[1]);
+      setHasStorage(checkResult[2]);
+      getCurrUserInfo(fid);
+    } catch (error) {
+      console.error(error);
+      setWalletCheckStatus('done');
+    }
   }, [address]);
 
   useEffect(() => {
