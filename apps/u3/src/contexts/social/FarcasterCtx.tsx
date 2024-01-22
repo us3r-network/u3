@@ -244,7 +244,9 @@ export default function FarcasterProvider({
   }, [walletFid, walletSigner, walletUserData]);
 
   useEffect(() => {
-    if (!walletCheckStatus || !qrCheckStatus) return;
+    if (!walletCheckStatus && !qrCheckStatus) {
+      return;
+    }
     const defaultFid = getDefaultFarcaster();
     if (!defaultFid) {
       return;
