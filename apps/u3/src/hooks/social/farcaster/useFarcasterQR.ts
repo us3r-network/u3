@@ -79,6 +79,7 @@ export default function useFarcasterQR() {
     token: '',
     deepLink: '',
   });
+  const [deepLinkUrl, setDeepLinkUrl] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [qrCheckStatus, setQrCheckStatus] = useState<string>('');
   const [qrUserData, setQrUserData] = useState<
@@ -178,11 +179,9 @@ export default function useFarcasterQR() {
     setPrivateKey(keyPair.privateKey);
     pollForSigner(token, keyPair);
     setToken({ token, deepLink: deeplinkUrl });
-    if (isMobile) {
-      window.open(deeplinkUrl, '_blank');
-    } else {
-      setShowQR(true);
-    }
+
+    setDeepLinkUrl(deeplinkUrl);
+    setShowQR(true);
   }, [pollForSigner]);
 
   const restoreFromQRcode = useCallback(async () => {
@@ -271,5 +270,6 @@ export default function useFarcasterQR() {
     openQRModal,
     qrCheckStatus,
     qrUserData,
+    deepLinkUrl,
   };
 }

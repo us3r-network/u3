@@ -177,6 +177,7 @@ export default function FarcasterProvider({
     setWarpcastErr,
     qrCheckStatus,
     qrUserData,
+    deepLinkUrl,
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
@@ -355,6 +356,7 @@ export default function FarcasterProvider({
       <FarcasterQRModal
         warpcastErr={warpcastErr}
         showQR={showQR}
+        deepLinkUrl={deepLinkUrl}
         open={openQRModal}
         closeModal={() => {
           setWarpcastErr('');

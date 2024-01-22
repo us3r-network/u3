@@ -1,12 +1,8 @@
 import QRCode from 'react-qr-code';
-import styled from 'styled-components';
 
-import ModalContainer from '../../common/modal/ModalContainer';
-import {
-  ModalCloseBtn,
-  ModalDescription,
-  ModalTitle,
-} from '../../common/modal/ModalWidgets';
+import { ModalCloseBtn, ModalTitle } from '../../common/modal/ModalWidgets';
+import ModalContainerFixed from '@/components/common/modal/ModalContainerFixed';
+import { cn } from '@/lib/utils';
 
 type Token = {
   token: string;
@@ -20,115 +16,80 @@ export default function FarcasterQRModal({
   afterCloseAction,
   showQR,
   warpcastErr,
+  deepLinkUrl,
 }: {
   warpcastErr: string;
   token: Token;
   open: boolean;
   showQR: boolean;
+  deepLinkUrl: string;
   closeModal: () => void;
   afterCloseAction: () => void;
 }) {
   return (
-    <ModalContainer
+    <ModalContainerFixed
       open={open}
       closeModal={closeModal}
       afterCloseAction={afterCloseAction}
       id="farcaster-qr-modal"
+      className={cn(
+        'top-[100px] md:w-[480px] w-full mb-2 box-border overflow-hidden'
+      )}
     >
-      <ModalBody>
-        <ModalHeader>
-          <ModalTitle>Login with mobile</ModalTitle>
+      <div className="flex flex-col w-full p-6 md:w-[480px] gap-7">
+        <div className="flex justify-between items-center">
+          <div className="font-bold text-white">Login with mobile</div>
           <ModalCloseBtn onClick={closeModal} />
-        </ModalHeader>
+        </div>
         {(warpcastErr && (
-          <ModalDescription>
+          <div className="text-white font-normal text-base">
             {warpcastErr}
             <p>please try again in a few minutes</p>
-          </ModalDescription>
+          </div>
         )) || (
-          <ModalContent>
-            <Left>
-              <Description>
+          <div className="flex md:flex-row flex-col w-full gap-7">
+            <div>
+              <div className="text-[#718096] text-base">
                 Scan the QR code with the camera app on your device with
                 Warpcast installed.
-              </Description>
-              <DownloadLink
+              </div>
+              <a
                 href="https://warpcast.com/~/download"
                 target="blank"
+                className={cn(
+                  'text-base text-transparent',
+                  'bg-gradient-to-r from-[#cd62ff] to-[#62aaff]',
+                  'bg-clip-text'
+                )}
               >
                 Download Warpcast
-              </DownloadLink>
-            </Left>
-            <Right>
+              </a>
+            </div>
+            <div className="flex flex-col gap-4 items-center justify-center">
               {(showQR && <QRCode value={token.deepLink} />) || (
-                <Description>Loading QR code...</Description>
+                <div className="text-[#718096] text-base">
+                  Loading QR code...
+                </div>
               )}
-            </Right>
-          </ModalContent>
+              {showQR && deepLinkUrl && (
+                <div>
+                  <span className="pt-4 text-gray-500">
+                    On mobile?{' '}
+                    <a
+                      rel="noreferrer"
+                      className="underline"
+                      href={deepLinkUrl}
+                      target={'_blank'}
+                    >
+                      Open in Warpcast
+                    </a>
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
         )}
-      </ModalBody>
-    </ModalContainer>
+      </div>
+    </ModalContainerFixed>
   );
 }
-
-const ModalBody = styled.div`
-  width: fit-content;
-  max-width: 480px;
-  /* height: 220px; */
-  flex-shrink: 0;
-
-  padding: 30px;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-`;
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-`;
-const Description = styled.span`
-  color: #718096;
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 30px; /* 187.5% */
-`;
-const ModalContent = styled.div`
-  display: flex;
-  gap: 40px;
-  justify-content: space-between;
-`;
-const Left = styled.div`
-  width: 50%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-const Right = styled.div`
-  width: 50%;
-  height: 200px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  svg {
-    width: 200px;
-    height: 200px;
-  }
-`;
-const DownloadLink = styled.a`
-  font-family: Rubik;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 30px; /* 250% */
-
-  background: linear-gradient(88deg, #cd62ff 0%, #62aaff 99.21%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
