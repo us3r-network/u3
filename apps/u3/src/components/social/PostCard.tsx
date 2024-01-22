@@ -324,9 +324,9 @@ const Handle = styled.div`
 export const PostCardShowMoreWrapper = styled.div`
   > button {
     border: none;
-    background: linear-gradient(87deg, #cd62ff 0%, #62aaff 100%);
+    background: #454c99;
     -webkit-background-clip: text;
-    color: transparent;
+    color: #fff;
     padding: 0;
     cursor: pointer;
   }
@@ -477,12 +477,12 @@ export const PostCardNftWrapper = styled.div`
     > button {
       cursor: pointer;
       border-radius: 10px;
-      background: linear-gradient(81deg, #cd62ff 0%, #62aaff 100%);
+      background: #454c99;
       padding: 10px 20px;
       border: none;
       outline: none;
       color: inherit;
-      color: #000;
+      color: #fff;
       font-family: Rubik;
       font-size: 16px;
       font-style: normal;

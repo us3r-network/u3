@@ -53,6 +53,16 @@ export const getZoraNetworkInfo = (chainId) => {
         network: ZDKNetwork.Zora,
         chain: ZDKChain.ZoraGoerli,
       }
+    : Number(chainId) === zora.id
+    ? {
+        network: ZDKNetwork.Zora,
+        chain: ZDKChain.ZoraMainnet,
+      }
+    : Number(chainId) === base.id
+    ? {
+        network: ZDKNetwork.Base,
+        chain: ZDKChain.BaseMainnet,
+      }
     : null;
 };
 
@@ -69,6 +79,10 @@ export const getZoraNetwork = (chainId) => {
     ? sepolia
     : Number(chainId) === zoraTestnet.id
     ? zoraTestnet
+    : Number(chainId) === zora.id
+    ? zora
+    : Number(chainId) === base.id
+    ? base
     : null;
 };
 
@@ -85,6 +99,10 @@ export const getZoraNetworkExplorer = (chainId) => {
     ? sepolia.blockExplorers.default.url
     : Number(chainId) === zoraTestnet.id
     ? zoraTestnet.blockExplorers.default.url
+    : Number(chainId) === zora.id
+    ? zora.blockExplorers.default.url
+    : Number(chainId) === base.id
+    ? base.blockExplorers.default.url
     : null;
 };
 export const getZoraHost = (chainId) => {

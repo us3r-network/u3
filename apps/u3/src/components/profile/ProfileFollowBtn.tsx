@@ -172,7 +172,6 @@ export default function ProfileFollowBtn({
 }
 
 const Wrapper = styled(SocialButtonPrimary)`
-  color: #000;
   font-family: Baloo Bhai 2;
   font-size: 12px;
   font-style: normal;
