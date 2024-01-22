@@ -38,7 +38,7 @@ export default function Menu() {
         ) : (
           <span
             className={
-              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[linear-gradient(52deg,_#CD62FF_35.31%,_#62AAFF_89.64%)] text-[#ffffff] text-[10px] font-medium'
+              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
             }
           >
             Alpha
