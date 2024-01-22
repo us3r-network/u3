@@ -18,6 +18,10 @@ import useLogin from '@/hooks/shared/useLogin';
 
 import Title from './Title';
 import { KeyContract } from './Contract';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
 
 export default function AddAccountKey({
   fid,
@@ -98,6 +102,10 @@ export default function AddAccountKey({
         chainId: optimism.id,
       });
       console.log('signerAddTxReceipt', signerAddTxReceipt);
+
+      if (!getDefaultFarcaster()) {
+        setDefaultFarcaster(`${fid}`);
+      }
 
       localStorage.setItem(signerPublicKeyLocalStorageKey, publicKey);
       localStorage.setItem(

@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { isMobile } from 'react-device-detect';
 
 import {
   generateKeyPair,
@@ -28,7 +27,10 @@ import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
 } from 'src/utils/profile/biolink';
-import { setDefaultFarcaster } from '@/utils/social/farcaster/farcaster-default';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
 
 const stopSign = {
   stop: false,
@@ -114,6 +116,9 @@ export default function useFarcasterQR() {
 
       if (signedKeyRequest.state === 'completed') {
         setSignedKeyRequest(signedKeyRequest);
+        if (!getDefaultFarcaster()) {
+          setDefaultFarcaster(`${signedKeyRequest.userFid}`);
+        }
         restoreFromQRcode();
         signerSuccess = true;
         // wirte to u3 db
