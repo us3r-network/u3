@@ -38,7 +38,6 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { pinupCastApi } from '@/services/social/api/farcaster';
 import useLogin from '@/hooks/shared/useLogin';
-import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
 import { SaveButton } from '@/components/shared/button/SaveButton';
 
 export default function FCast({
@@ -235,6 +234,7 @@ export default function FCast({
         <Embed
           embedImgs={[...embeds.imgs]}
           embedWebpages={!disableRenderUrl ? embeds.webpages : []}
+          embedCasts={[...embeds.casts]}
         />
       )}
       {(cast.parent_url || cast.rootParentUrl) && (
