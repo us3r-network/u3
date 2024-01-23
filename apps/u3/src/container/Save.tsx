@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { usePersonalFavors } from '@us3r-network/link';
 import { isMobile } from 'react-device-detect';
@@ -52,6 +52,7 @@ const EmptyDesc = styled.span`
 
 export default function Save() {
   const { isFetching, personalFavors } = usePersonalFavors();
+  const [syncNum, setSyncNum] = useState(0);
   // console.log('personalFavors', personalFavors);
   const list = useMemo(
     () =>
@@ -99,8 +100,9 @@ export default function Save() {
     <Wrapper>
       {isMobile ? null : <PageTitle>Saves</PageTitle>}
       <SyncingBotSaves
-        onComplete={() => {
+        onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');
+          setSyncNum(saves.length);
         }}
       />
       <ContentWrapper>
