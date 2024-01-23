@@ -17,6 +17,7 @@ export type FarcasterNotification = {
   casts_hash?: Buffer;
   casts_text?: string;
   replies_text?: string;
+  replies_hash?: Buffer;
   replies_parent_hash?: Buffer;
   casts_mentions?: number[];
 };
@@ -98,6 +99,23 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
       urls,
       timeout: 3000,
       maxRedirects: 2,
+    },
+  });
+}
+
+export function getFarcasterEmbedCast({
+  fid,
+  hash,
+}: {
+  fid: number;
+  hash: string;
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/embed-cast`,
+    method: 'get',
+    params: {
+      fid,
+      hash,
     },
   });
 }
@@ -457,11 +475,11 @@ export async function getMetadataWithMod(
   return metadata;
 }
 
-export function getSavedCasts(walletAddress: string, pageSize?: number) {
+export async function getSavedCasts(walletAddress: string, pageSize?: number) {
   if (walletAddress.startsWith('0x')) {
     walletAddress = walletAddress.slice(2);
   }
-  return request({
+  const resp = await request({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/saved-casts`,
     method: 'get',
     params: {
@@ -469,6 +487,7 @@ export function getSavedCasts(walletAddress: string, pageSize?: number) {
       pageSize,
     },
   });
+  return resp?.data?.data?.saves;
 }
 
 export function setSavedCastsSynced(walletAddress: string, lastedId: number) {

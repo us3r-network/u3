@@ -16,7 +16,10 @@ import {
   PostCardImgWrapper,
   PostCardNftWrapper,
 } from './PostCard';
-import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
+import {
+  getFarcasterEmbedCast,
+  getFarcasterEmbedMetadata,
+} from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
@@ -24,14 +27,17 @@ import LinkModal from '../news/links/LinkModal';
 export default function Embed({
   embedImgs,
   embedWebpages,
+  embedCasts,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
+  embedCasts: { castId: { fid: number; hash: string } }[];
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
-  const [metadata, setMetadata] = useState<
-    (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
-  >([]);
+  const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
+  const [metadataCasts, setMetadataCasts] = useState<FarCastEmbedMetaCast[]>(
+    []
+  );
   const [modalImgIdx, setModalImgIdx] = useState(-1);
 
   const getEmbedWebpagesMetadata = async () => {
@@ -48,11 +54,26 @@ export default function Embed({
     }
   };
 
+  const getEmbedCastsMetadata = async () => {
+    const castIds = embedCasts.map((embed) => embed.castId);
+    if (castIds.length === 0) return;
+    try {
+      const res = await getFarcasterEmbedCast(castIds[0]);
+      const { metadata: respMetadata } = res.data.data;
+      const data = respMetadata.flatMap((m) => (m ? [m] : []));
+      setMetadataCasts(data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         getEmbedWebpagesMetadata();
+        getEmbedCastsMetadata();
         observer.disconnect();
       }
     });
@@ -64,7 +85,13 @@ export default function Embed({
     };
   }, [viewRef]);
 
-  if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
+  if (
+    embedImgs.length === 0 &&
+    embedWebpages.length === 0 &&
+    embedCasts.length === 0
+  ) {
+    return null;
+  }
 
   return (
     <EmbedBox ref={viewRef}>
@@ -93,31 +120,34 @@ export default function Embed({
         </>
       )}
       <div className="w-[70%]">
-        {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-          if ((item as any).type === 'cast') {
-            const { cast } = item as FarCastEmbedMetaCast;
+        {[...metadata, ...metadataCasts].map(
+          (item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
+            if ((item as any).type === 'cast') {
+              if ((item as any).cast === undefined) return null;
+              const { cast } = item as FarCastEmbedMetaCast;
+              return (
+                <EmbedCast
+                  data={item as FarCastEmbedMetaCast}
+                  key={Buffer.from(cast.hash.data).toString('hex')}
+                />
+              );
+            }
+            if ((item as any).collection) {
+              return (
+                <EmbedNFT
+                  item={item as FarCastEmbedMeta}
+                  key={(item as any).url}
+                />
+              );
+            }
             return (
-              <EmbedCast
-                data={item as FarCastEmbedMetaCast}
-                key={Buffer.from(cast.hash.data).toString('hex')}
-              />
-            );
-          }
-          if ((item as any).collection) {
-            return (
-              <EmbedNFT
+              <EmbedWebsite
                 item={item as FarCastEmbedMeta}
                 key={(item as any).url}
               />
             );
           }
-          return (
-            <EmbedWebsite
-              item={item as FarCastEmbedMeta}
-              key={(item as any).url}
-            />
-          );
-        })}
+        )}
       </div>
     </EmbedBox>
   );

@@ -12,7 +12,7 @@ export default function SaveExploreListItem({
   data,
   ...props
 }: SaveExploreListItemProps) {
-  console.log('save item', data);
+  // console.log('save item', data);
   return (
     <Wrapper {...props}>
       <ListItemInner>

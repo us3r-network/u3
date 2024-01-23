@@ -56,15 +56,16 @@ export default function NotificationModal() {
               }}
             >
               <NotificationList>
-                {notifications.map((notification) => {
+                {notifications.map((notification, index) => {
                   if ('message_hash' in notification) {
                     return (
                       <FarcasterNotificationItem
                         notification={notification}
                         farcasterUserData={farcasterUserData}
-                        key={Buffer.from(notification.message_hash).toString(
-                          'hex'
-                        )}
+                        key={
+                          String(index) +
+                          Buffer.from(notification.message_hash).toString('hex')
+                        }
                       />
                     );
                   }
@@ -117,7 +118,7 @@ export function FarcasterNotificationItem({
                 `/social/post-detail/fcast/${Buffer.from(
                   notification.replies_parent_hash
                 ).toString('hex')}#${Buffer.from(
-                  notification.casts_hash
+                  notification.replies_hash
                 ).toString('hex')}`
               );
               setOpenNotificationModal(false);
