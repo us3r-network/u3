@@ -117,7 +117,7 @@ export function FarcasterNotificationItem({
                 `/social/post-detail/fcast/${Buffer.from(
                   notification.replies_parent_hash
                 ).toString('hex')}#${Buffer.from(
-                  notification.casts_hash
+                  notification.replies_hash
                 ).toString('hex')}`
               );
               setOpenNotificationModal(false);

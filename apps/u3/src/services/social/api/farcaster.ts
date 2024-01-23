@@ -17,6 +17,7 @@ export type FarcasterNotification = {
   casts_hash?: Buffer;
   casts_text?: string;
   replies_text?: string;
+  replies_hash?: Buffer;
   replies_parent_hash?: Buffer;
   casts_mentions?: number[];
 };
