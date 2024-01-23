@@ -1,6 +1,6 @@
 import { useFavorAction } from '@us3r-network/link';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from '@us3r-network/data-model';
 import {
   getSavedCasts,
@@ -11,53 +11,46 @@ import { getAddressWithDidPkh } from '../../utils/shared/did';
 export default function SyncingBotSaves({
   onComplete,
 }: {
-  onComplete?: () => void;
+  onComplete?: (saves) => void;
 }) {
   const session = useSession();
   const [saves, setSaves] = useState([]);
-  const [link, setLink] = useState(null);
+  const [saveIndex, setSaveIndex] = useState(-1);
 
   useEffect(() => {
     const walletAddress = getAddressWithDidPkh(session.id);
     getSavedCasts(walletAddress).then((res) => {
-      setSaves(res);
-      console.log('getSavedCasts', res);
+      const links = res.map((item) => {
+        const { castHash, text } = item;
+        return {
+          url: `https://u3.xyz/social/post-detail/fcast/${Buffer.from(
+            castHash.data
+          ).toString('hex')}`,
+          title: text || 'Saved Farcaster Cast using U3 Bot',
+          type: 'link',
+          data: JSON.stringify(item),
+        };
+      });
+      setSaves(links);
+      setSaveIndex(0);
     });
   }, [session]);
 
-  useEffect(() => {
-    if (!saves || saves.length === 0) return;
-    syncNext();
-  }, [saves.length]);
-
-  const syncNext = useCallback(() => {
-    if (!saves || saves.length === 0) return;
-    const save = saves[0];
-    const nextLink = {
-      url: `https://u3.xyz/social/post-detail/fcast/${Buffer.from(
-        save.castHash.data
-      ).toString('hex')}`,
-      title: save.text || 'Saved Farcaster Cast using U3 Bot',
-      type: 'link',
-      data: JSON.stringify(save),
-    };
-    console.log('cast', nextLink);
-    setLink(nextLink);
-  }, [saves]);
-
-  return link ? (
+  return saves && saves.length > 0 && saveIndex >= 0 ? (
     <FavoringLink
-      link={link}
+      link={saves[saveIndex]}
       onSuccessfullyFavor={(isFavored: boolean, linkId: string) => {
         console.log('onSuccessfullyFavor', isFavored, linkId);
         if (isFavored) {
-          const linkData = JSON.parse(link.data);
+          const linkData = JSON.parse(saves[saveIndex].data);
           const { id, walletAddress } = linkData;
           console.log(id, walletAddress);
           setSavedCastsSynced(Buffer.from(walletAddress).toString('hex'), id);
-          const newSaves = saves.slice(1);
-          setSaves(newSaves);
-          if (newSaves.length === 0) onComplete();
+          if (saveIndex >= saves.length - 1) {
+            onComplete(saves);
+          } else {
+            setSaveIndex(saveIndex + 1);
+          }
         }
       }}
       onFailedFavor={(errMsg: string) => {
