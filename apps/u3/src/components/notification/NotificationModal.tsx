@@ -56,15 +56,16 @@ export default function NotificationModal() {
               }}
             >
               <NotificationList>
-                {notifications.map((notification) => {
+                {notifications.map((notification, index) => {
                   if ('message_hash' in notification) {
                     return (
                       <FarcasterNotificationItem
                         notification={notification}
                         farcasterUserData={farcasterUserData}
-                        key={Buffer.from(notification.message_hash).toString(
-                          'hex'
-                        )}
+                        key={
+                          String(index) +
+                          Buffer.from(notification.message_hash).toString('hex')
+                        }
                       />
                     );
                   }
