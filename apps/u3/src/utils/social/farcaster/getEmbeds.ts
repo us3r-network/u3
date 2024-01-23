@@ -16,11 +16,17 @@ export function getEmbeds(cast: FarCast): {
   webpages: {
     url: string;
   }[];
+  casts: {
+    castId: { fid: number; hash: string };
+  }[];
 } {
   const imgs = [];
   const webpages = [];
+  const casts = [];
   for (const embed of cast.embeds) {
-    if (embed?.url) {
+    if (embed?.castId) {
+      casts.push(embed);
+    } else if (embed?.url) {
       if (isImg(embed.url)) {
         imgs.push({
           url: embed.url,
@@ -32,5 +38,5 @@ export function getEmbeds(cast: FarCast): {
       }
     }
   }
-  return { imgs, webpages };
+  return { imgs, webpages, casts };
 }

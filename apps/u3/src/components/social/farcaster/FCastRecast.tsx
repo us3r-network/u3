@@ -218,11 +218,6 @@ function Repost({
       toChannels: string[];
     }) => {
       if (!encryptedSigner) return;
-      const url = `https://warpcast.com/${creatorData.userName}/0x${Buffer.from(
-        castId.hash
-      )
-        .toString('hex')
-        .substring(0, 8)}`;
 
       const tcs = (data.toChannels || [])
         .map((channelId) => {
@@ -236,7 +231,7 @@ function Repost({
             await makeCastAdd(
               {
                 text: data.castBody.text,
-                embeds: [{ url }, { castId }],
+                embeds: [{ castId }],
                 embedsDeprecated: [],
                 mentions: data.castBody.mentions || [],
                 mentionsPositions: data.castBody.mentionsPositions || [],
@@ -257,7 +252,7 @@ function Repost({
                 await makeCastAdd(
                   {
                     text: data.castBody.text,
-                    embeds: [{ url }],
+                    embeds: [{ castId }],
                     embedsDeprecated: [],
                     mentions: data.castBody.mentions || [],
                     mentionsPositions: data.castBody.mentionsPositions || [],

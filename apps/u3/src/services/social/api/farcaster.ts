@@ -102,6 +102,23 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
   });
 }
 
+export function getFarcasterEmbedCast({
+  fid,
+  hash,
+}: {
+  fid: number;
+  hash: string;
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/embed-cast`,
+    method: 'get',
+    params: {
+      fid,
+      hash,
+    },
+  });
+}
+
 export function getFarcasterNotifications({
   fid,
   endFarcasterCursor,
