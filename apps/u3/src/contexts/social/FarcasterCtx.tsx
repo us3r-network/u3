@@ -177,6 +177,7 @@ export default function FarcasterProvider({
     setWarpcastErr,
     qrCheckStatus,
     qrUserData,
+    deepLinkUrl,
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
@@ -243,7 +244,9 @@ export default function FarcasterProvider({
   }, [walletFid, walletSigner, walletUserData]);
 
   useEffect(() => {
-    if (!walletCheckStatus || !qrCheckStatus) return;
+    if (!walletCheckStatus && !qrCheckStatus) {
+      return;
+    }
     const defaultFid = getDefaultFarcaster();
     if (!defaultFid) {
       return;
@@ -355,6 +358,7 @@ export default function FarcasterProvider({
       <FarcasterQRModal
         warpcastErr={warpcastErr}
         showQR={showQR}
+        deepLinkUrl={deepLinkUrl}
         open={openQRModal}
         closeModal={() => {
           setWarpcastErr('');

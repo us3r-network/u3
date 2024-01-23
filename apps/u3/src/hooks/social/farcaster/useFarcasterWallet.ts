@@ -24,6 +24,10 @@ import {
 
 import { FarcasterBioLinkData } from './useFarcasterQR';
 import { IdContract } from '@/components/social/farcaster/signupv2/Contract';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
 
 const opPublicClient = createPublicClient({
   chain: optimism,
@@ -76,6 +80,12 @@ export default function useFarcasterWallet() {
             `signerPublicKey-${fid}`,
             farcasterBiolinkData.publicKey
           );
+          // console.log(
+          //   'get wallet signer from db: ',
+          //   fid,
+          //   getDefaultFarcaster()
+          // );
+          if (!getDefaultFarcaster() && fid) setDefaultFarcaster(`${fid}`);
           privateKey = farcasterBiolinkData.privateKey;
         }
       }
@@ -125,32 +135,37 @@ export default function useFarcasterWallet() {
   };
 
   const getWalletFid = useCallback(async () => {
-    const data = await opPublicClient.readContract({
-      ...IdContract,
-      functionName: 'idOf',
-      args: [address],
-    });
-    console.log('wallet fid: ', data);
-    if (!data) {
-      setWalletCheckStatus('done');
-      return;
-    }
-    const fid = Number(data);
-    const checkResult = await Promise.all([
-      signerCheck(fid),
-      fnameCheck(fid),
-      storageCheck(fid),
-    ]);
-    if (!checkResult[0] || !checkResult[1] || !checkResult[2]) {
-      setWalletCheckStatus('done');
-      return;
-    }
+    try {
+      const data = await opPublicClient.readContract({
+        ...IdContract,
+        functionName: 'idOf',
+        args: [address],
+      });
+      console.log('wallet fid: ', data);
+      if (!data) {
+        setWalletCheckStatus('done');
+        return;
+      }
+      const fid = Number(data);
+      const checkResult = await Promise.all([
+        signerCheck(fid),
+        fnameCheck(fid),
+        storageCheck(fid),
+      ]);
+      if (!checkResult[0] || !checkResult[1] || !checkResult[2]) {
+        setWalletCheckStatus('done');
+        return;
+      }
 
-    setWalletFid(fid);
-    setWalletSigner(checkResult[0]);
-    setFname(checkResult[1]);
-    setHasStorage(checkResult[2]);
-    getCurrUserInfo(fid);
+      setWalletFid(fid);
+      setWalletSigner(checkResult[0]);
+      setFname(checkResult[1]);
+      setHasStorage(checkResult[2]);
+      getCurrUserInfo(fid);
+    } catch (error) {
+      console.error(error);
+      setWalletCheckStatus('done');
+    }
   }, [address]);
 
   useEffect(() => {
