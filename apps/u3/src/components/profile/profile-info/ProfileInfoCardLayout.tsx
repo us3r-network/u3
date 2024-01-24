@@ -67,11 +67,12 @@ export default function ProfileInfoCardLayout({
   const showMessageBtn = !!address;
 
   if (loading) {
-    return (
-      <LoadingWrapper {...wrapperProps}>
-        <Loading />
-      </LoadingWrapper>
-    );
+    return null;
+    // return (
+    //   <LoadingWrapper {...wrapperProps}>
+    //     <Loading />
+    //   </LoadingWrapper>
+    // );
   }
 
   if (isU3Profile) {
@@ -139,6 +140,10 @@ export default function ProfileInfoCardLayout({
         }}
       </U3ProfileCardWrapper>
     );
+  }
+
+  if (!address) {
+    return null;
   }
 
   return (
