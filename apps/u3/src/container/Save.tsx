@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { usePersonalFavors } from '@us3r-network/link';
 import { isMobile } from 'react-device-detect';
@@ -52,10 +52,11 @@ const EmptyDesc = styled.span`
 
 export default function Save() {
   const { isFetching, personalFavors } = usePersonalFavors();
+  const [savedLink, setSavedLink] = useState([]);
   // console.log('personalFavors', personalFavors);
   const list = useMemo(
-    () =>
-      uniqBy(
+    () => [
+      ...uniqBy(
         personalFavors
           .filter((item) => !!item?.link && item.link.type !== 'test')
           .map((item) => {
@@ -92,15 +93,21 @@ export default function Save() {
           }),
         'id'
       ),
-    [personalFavors]
+      ...savedLink.map((item) => {
+        const createAt = item.createAt || new Date().getTime();
+        return { ...item, createAt };
+      }),
+    ],
+    [personalFavors, savedLink]
   );
   const isEmpty = useMemo(() => list.length === 0, [list]);
   return (
     <Wrapper>
       {isMobile ? null : <PageTitle>Saves</PageTitle>}
       <SyncingBotSaves
-        onComplete={() => {
+        onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');
+          setSavedLink(saves);
         }}
       />
       <ContentWrapper>
