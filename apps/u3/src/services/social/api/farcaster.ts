@@ -458,12 +458,13 @@ export async function getMetadataWithMod(
   return metadata;
 }
 
+const REACT_APP_API_SOCIAL_URL_PROD = 'https://api.u3.xyz';
 export async function getSavedCasts(walletAddress: string, pageSize?: number) {
   if (walletAddress.startsWith('0x')) {
     walletAddress = walletAddress.slice(2);
   }
   const resp = await request({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/saved-casts`,
+    url: `${REACT_APP_API_SOCIAL_URL_PROD}/3r-bot/saved-casts`,
     method: 'get',
     params: {
       walletAddress,
@@ -478,7 +479,7 @@ export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
     walletAddress = walletAddress.slice(2);
   }
   return request({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/sync-casts`,
+    url: `${REACT_APP_API_SOCIAL_URL_PROD}/3r-bot/sync-casts`,
     method: 'post',
     data: {
       walletAddress,
