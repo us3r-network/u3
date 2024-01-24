@@ -52,10 +52,14 @@ const EmptyDesc = styled.span`
 
 export default function Save() {
   const { isFetching, personalFavors } = usePersonalFavors();
-  const [savedLink, setSavedLink] = useState([]);
+  const [savedLinks, setSavedLinks] = useState([]);
   // console.log('personalFavors', personalFavors);
   const list = useMemo(
     () => [
+      ...savedLinks.map((item) => {
+        const createAt = item.createAt || new Date().getTime();
+        return { ...item, createAt };
+      }),
       ...uniqBy(
         personalFavors
           .filter((item) => !!item?.link && item.link.type !== 'test')
@@ -93,12 +97,8 @@ export default function Save() {
           }),
         'id'
       ),
-      ...savedLink.map((item) => {
-        const createAt = item.createAt || new Date().getTime();
-        return { ...item, createAt };
-      }),
     ],
-    [personalFavors, savedLink]
+    [personalFavors, savedLinks]
   );
   const isEmpty = useMemo(() => list.length === 0, [list]);
   return (
@@ -107,7 +107,7 @@ export default function Save() {
       <SyncingBotSaves
         onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');
-          setSavedLink(saves);
+          setSavedLinks(saves);
         }}
       />
       <ContentWrapper>
