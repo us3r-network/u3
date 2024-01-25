@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 
-import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 import { resetFarcasterFollowingData } from 'src/hooks/social/farcaster/useFarcasterFollowing';
 import { resetAllFollowingData } from 'src/hooks/social/useAllFollowing';
@@ -98,7 +97,6 @@ function SocialLayout() {
           <LeftWrapper>
             <SocialPlatformChoice />
             <AddPost />
-            <PinedChannels />
           </LeftWrapper>
         )}
 
