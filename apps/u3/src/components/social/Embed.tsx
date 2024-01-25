@@ -291,7 +291,7 @@ export function EmbedWebsite({
         )}
         <div className="flex justify-between items-center gap-[12px]">
           <a
-            className="text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
+            className="inline-block flex-1 line-clamp-1 text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
             href={item.url}
             target="_blank"
             rel="noreferrer"

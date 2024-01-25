@@ -26,6 +26,7 @@ import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNa
 import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../constants';
 import { SaveButton } from '../shared/button/SaveButton';
+import { cn } from '@/lib/utils';
 
 export type PostCardData = {
   platform: SocialPlatform;
@@ -257,11 +258,15 @@ export function PostCardUserInfo({
         <Avatar src={data.avatar} />
         <PostCardUserInfoCenter>
           <Name>
-            {data.name}
+            <div className={cn('line-clamp-1', 'max-sm:max-w-[200px]')}>
+              {data.name}
+            </div>
             {PlatFormIcon}
           </Name>
           <Handle>
-            @{data.handle} · {dayjs(data.createdAt).fromNow()}
+            <div className="line-clamp-1">
+              @{data.handle} · {dayjs(data.createdAt).fromNow()}
+            </div>
           </Handle>
         </PostCardUserInfoCenter>
       </TooltipProfileNavigateLinkWrapper>
@@ -297,6 +302,7 @@ const Avatar = styled.img`
   object-fit: cover;
 `;
 const Name = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -309,6 +315,7 @@ const Name = styled.div`
   line-height: normal;
 `;
 const Handle = styled.div`
+  width: 100%;
   display: flex;
   align-items: center;
   gap: 5px;
