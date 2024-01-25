@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { ComponentPropsWithRef, useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -7,6 +7,7 @@ import MobilePageHeader from '../layout/mobile/MobilePageHeader';
 import { ArrowLeft } from '../common/icons/ArrowLeft';
 import PinChannelBtn from './PinChannelBtn';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { cn } from '@/lib/utils';
 
 export enum FeedsType {
   FOLLOWING = 'following',
@@ -145,6 +146,24 @@ function PcFeedsTypeTable({
     </FeedsTypeTabsWrapper>
   );
 }
+function MobileFeedsTypeTableItem({
+  isActive,
+  className,
+  ...props
+}: ComponentPropsWithRef<'span'> & {
+  isActive?: boolean;
+}) {
+  return (
+    <span
+      className={cn(
+        'text-[#718096] text-[16px] font-normal',
+        className || '',
+        isActive ? 'text-white font-medium' : ''
+      )}
+      {...props}
+    />
+  );
+}
 function MobileFeedsTypeTable({
   feedsType,
   onChangeFeedsType,
@@ -160,79 +179,39 @@ function MobileFeedsTypeTable({
   const type = pathname.split('/')[3] || '';
 
   return (
-    <PageHeader>
-      <div
-        className={type === '' ? 'tab active' : 'tab'}
+    <div className="w-full h-[40px] py-[10px] flex justify-center items-center gap-[15px] flex-[1_0_0]">
+      <MobileFeedsTypeTableItem
+        isActive={type === ''}
         onClick={() => {
           onChangeFeedsType(FeedsType.TRENDING);
           navigate(`/social/${currentPlatform}`);
         }}
       >
-        trending
-      </div>
-      <div
-        className={type === 'following' ? 'tab active' : 'tab'}
+        Trending
+      </MobileFeedsTypeTableItem>
+      <div className="w-[1px] h-[10px] bg-slate-500" />
+      <MobileFeedsTypeTableItem
+        isActive={type === 'following'}
         onClick={() => {
           onChangeFeedsType(FeedsType.FOLLOWING);
           navigate(`/social/${currentPlatform}/following`);
         }}
       >
-        following
-      </div>
-      <div
-        className={type === 'whatsnew' ? 'tab active' : 'tab'}
+        Following
+      </MobileFeedsTypeTableItem>
+      <div className="w-[1px] h-[10px] bg-slate-500" />
+      <MobileFeedsTypeTableItem
+        isActive={type === 'whatsnew'}
         onClick={() => {
           onChangeFeedsType(FeedsType.WHATSNEW);
           navigate(`/social/${currentPlatform}/whatsnew`);
         }}
       >
-        {`what's new?`}
-      </div>
-    </PageHeader>
+        Newest
+      </MobileFeedsTypeTableItem>
+    </div>
   );
 }
-
-const PageHeader = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  border: 1px solid #39424c;
-  border-radius: 100px;
-  font-size: 16px;
-  line-height: 28px;
-  color: #ffffff;
-  white-space: pre;
-
-  i {
-    color: #39424c;
-  }
-
-  .tab {
-    cursor: pointer;
-    flex: 1;
-    text-align: center;
-    color: #718096;
-    padding: 5px 0;
-  }
-
-  .active {
-    color: black;
-    position: relative;
-    background: #718096;
-    box-shadow: 0px 0px 8px rgba(20, 23, 26, 0.08),
-      0px 0px 4px rgba(20, 23, 26, 0.04);
-    border-radius: 100px;
-    /* &:after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -10px;
-      width: 100%;
-      height: 2px;
-      background: white;
-    } */
-  }
-`;
 
 const SocialNavWrapper = styled.div`
   width: 100%;
@@ -240,7 +219,7 @@ const SocialNavWrapper = styled.div`
   display: flex;
   align-items: center;
   ${!isMobile &&
-  ` 
+  `
     height: 70px;
     gap: 40px;
     top: 0;
