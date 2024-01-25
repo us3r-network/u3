@@ -17,7 +17,7 @@ export default function SaveExploreListItem({
     <Wrapper {...props}>
       <ListItemInner>
         <IconLink text={data.url} logo={data?.logo} className="iconLink" />
-        <TitleText>{data.title || data.url}</TitleText>
+        <TitleText row={4}>{data.title || data.url}</TitleText>
         {!!data?.createAt && (
           <TimeText className="timeText">
             {defaultFormatFromNow(data.createAt)}
@@ -57,14 +57,14 @@ const TitleText = styled(EllipsisText)`
   flex: 1;
   font-weight: 500;
   font-size: 16px;
-  line-height: 19px;
+  line-height: 20px;
   color: #ffffff;
 `;
 
 const TimeText = styled.span`
   font-weight: 400;
   font-size: 14px;
-  line-height: 17px;
+  line-height: 18px;
 
   color: #718096;
 `;

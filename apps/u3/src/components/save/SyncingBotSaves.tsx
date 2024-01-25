@@ -26,7 +26,9 @@ export default function SyncingBotSaves({
           url: `https://u3.xyz/social/post-detail/fcast/${Buffer.from(
             castHash.data
           ).toString('hex')}`,
-          title: text || 'Saved Farcaster Cast using U3 Bot',
+          title: text
+            ? text.slice(0, 200)
+            : 'Saved Farcaster Cast using U3 Bot',
           type: 'link',
           data: JSON.stringify(item),
         };
