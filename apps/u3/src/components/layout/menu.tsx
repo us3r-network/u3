@@ -175,7 +175,7 @@ const MenuWrapper = styled.div<{ isOpen: boolean }>`
 `;
 const LogoBox = styled.div<{ onlyIcon?: boolean }>`
   width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
-  height: 94px;
+  height: ${({ onlyIcon }) => (onlyIcon ? '194px' : '94px')};
   display: flex;
   flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
   gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};

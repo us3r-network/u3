@@ -32,7 +32,7 @@ function Layout() {
       {isMobile ? (
         <MobileContentBox>
           <Main />
-          <div className="fixed right-[20px] bottom-[60px]">
+          <div className="fixed right-[20px] bottom-[80px]">
             <AddPostMobile />
           </div>
         </MobileContentBox>
