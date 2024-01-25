@@ -36,6 +36,8 @@ const MobileNavWrapper = styled.div`
     flex-direction: row;
     & > div {
       flex: 1;
+      height: 60px;
+      align-items: center;
       justify-content: center;
       background: transparent !important;
     }
