@@ -27,14 +27,14 @@ export type CustomNavObject = {
   route?: CutomRouteObject;
   component?: JSX.Element;
 };
-export const navs: CustomNavObject[] = [
-  {
+const navMap = {
+  explore: {
     name: 'Explore',
     activeRouteKeys: [RouteKey.home],
     icon: React.createElement(CompassSvg),
     route: getRoute(RouteKey.home),
   },
-  {
+  news: {
     name: 'Apps',
     activeRouteKeys: [
       RouteKey.newsLayout,
@@ -51,7 +51,7 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(NewsSvg),
     route: getRoute(RouteKey.newsLayout),
   },
-  {
+  social: {
     name: 'Social',
     activeRouteKeys: [
       RouteKey.social,
@@ -62,7 +62,7 @@ export const navs: CustomNavObject[] = [
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  {
+  notifications: {
     name: 'notifications',
     activeRouteKeys: [RouteKey.notification],
     component: isMobile ? (
@@ -71,27 +71,35 @@ export const navs: CustomNavObject[] = [
       <NotificationButton key={RouteKey.notification} />
     ),
   },
+  apps: {
+    name: 'Apps',
+    activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
+    icon: React.createElement(DappSvg),
+    route: getRoute(RouteKey.dappStore),
+  },
+  save: {
+    name: 'Save',
+    activeRouteKeys: [RouteKey.save],
+    icon: React.createElement(BookmarkSvg),
+    route: getRoute(RouteKey.save),
+  },
+};
+export const navs: CustomNavObject[] = [
   ...(isMobile
     ? [
-        {
-          name: 'Apps',
-          activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
-          icon: React.createElement(DappSvg),
-          route: getRoute(RouteKey.dappStore),
-        },
+        navMap.explore,
+        navMap.social,
+        navMap.news,
+        navMap.notifications,
+        navMap.apps,
       ]
-    : []),
-  ...(isMobile
-    ? []
     : [
-        {
-          name: 'Save',
-          activeRouteKeys: [RouteKey.save],
-          icon: React.createElement(BookmarkSvg),
-          route: getRoute(RouteKey.save),
-        },
+        navMap.explore,
+        navMap.news,
+        navMap.social,
+        navMap.notifications,
+        navMap.save,
       ]),
-
   // {
   //   name: 'profile',
   //   activeRouteKeys: [RouteKey.profile],

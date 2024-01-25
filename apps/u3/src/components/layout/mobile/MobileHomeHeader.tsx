@@ -82,6 +82,6 @@ const LogoBox = styled.div`
 `;
 const LogoIconBox = styled.div`
   path {
-    fill: #fff;
+    fill: #5057aa;
   }
 `;
