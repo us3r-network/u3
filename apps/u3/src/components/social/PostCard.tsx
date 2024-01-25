@@ -187,7 +187,7 @@ export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
     height: 12px;
     cursor: pointer;
     path {
-      stroke: #ffffff;
+      stroke: #718096;
     }
   }
 `;
@@ -333,7 +333,7 @@ export const PostCardShowMoreWrapper = styled.div`
     border: none;
     background: #454c99;
     -webkit-background-clip: text;
-    color: #fff;
+    color: #5057aa;
     padding: 0;
     cursor: pointer;
   }
