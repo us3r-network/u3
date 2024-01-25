@@ -118,7 +118,9 @@ export const PostLikeAvatarWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #fff;
+  background: #5057aa;
+  color: #fff;
+  font-size: 10px;
 `;
 export const PostLikeAvatar = styled.img`
   width: 100%;
