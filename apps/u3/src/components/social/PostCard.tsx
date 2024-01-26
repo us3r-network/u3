@@ -106,7 +106,7 @@ export default function PostCard({
     <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>
         <PostCardUserInfo data={data} />
-        {showMenuBtn && (
+        {/* {showMenuBtn && (
           <div
             onClick={(e) => {
               e.stopPropagation();
@@ -120,7 +120,7 @@ export default function PostCard({
               followAction={followAction}
             />
           </div>
-        )}
+        )} */}
       </PostCardHeaderWrapper>
       <PostCardContentWrapper>
         {contentRender ? contentRender() : data?.content}

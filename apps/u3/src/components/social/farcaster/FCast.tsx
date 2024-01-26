@@ -190,7 +190,7 @@ export default function FCast({
               <ArrowUpIcon />
             </Button>
           )}
-          {showMenuBtn && (
+          {/* {showMenuBtn && (
             <div>
               <PostCardMenuBtn
                 data={{
@@ -209,7 +209,7 @@ export default function FCast({
                 }}
               />
             </div>
-          )}
+          )} */}
         </div>
       </PostCardHeaderWrapper>
 

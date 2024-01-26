@@ -92,6 +92,7 @@ export const navs: CustomNavObject[] = [
         navMap.news,
         navMap.notifications,
         navMap.apps,
+        navMap.save,
       ]
     : [
         navMap.explore,
