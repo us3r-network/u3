@@ -75,7 +75,7 @@ function UserChannels() {
   const { userChannels, currFid } = useFarcasterCtx();
 
   if (!currFid) return null;
-  console.log('userChannels', userChannels);
+
   return (
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
       {userChannels.map(({ parent_url }) => (

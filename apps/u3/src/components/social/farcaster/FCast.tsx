@@ -39,6 +39,7 @@ import { cn } from '@/lib/utils';
 import { pinupCastApi } from '@/services/social/api/farcaster';
 import useLogin from '@/hooks/shared/useLogin';
 import { SaveButton } from '@/components/shared/button/SaveButton';
+import FCastTips from './FCastTips';
 
 export default function FCast({
   cast,
@@ -174,6 +175,7 @@ export default function FCast({
             e.stopPropagation();
           }}
         >
+          <FCastTips userData={userData} cast={cast} />
           {isAdmin && (
             <Button
               className={cn(

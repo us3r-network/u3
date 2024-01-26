@@ -507,3 +507,10 @@ export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
     },
   });
 }
+
+export function getUserinfoWithFid(fid: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo/fid/${fid}`,
+    method: 'get',
+  });
+}
