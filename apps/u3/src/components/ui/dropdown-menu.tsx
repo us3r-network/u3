@@ -10,11 +10,88 @@ import {
   DotFilledIcon,
 } from '@radix-ui/react-icons';
 
+import { isMobile } from 'react-device-detect';
 import { cn } from '@/lib/utils';
 
-const DropdownMenu = DropdownMenuPrimitive.Root;
+// see issue: https://github.com/radix-ui/primitives/issues/1912
+const TouchDeviceDropdownMenuContext = React.createContext<{
+  open: boolean;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}>({
+  open: false,
+  setOpen: () => {},
+});
 
-const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+function useTouchDeviceDropdownMenuCtx() {
+  const contex = React.useContext(TouchDeviceDropdownMenuContext);
+  if (!contex) {
+    throw new Error(
+      'useTouchDeviceDropdownMenuCtx must be used within a TouchDeviceDropdownMenuContext'
+    );
+  }
+  return contex;
+}
+
+// const DropdownMenu = DropdownMenuPrimitive.Root;
+const DropdownMenu = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>
+>(({ open: openMenu, onOpenChange, ...props }) => {
+  const [open, setOpen] = React.useState(openMenu);
+  React.useEffect(() => {
+    if (openMenu !== undefined) {
+      setOpen(openMenu);
+    }
+  }, [openMenu]);
+  return (
+    <TouchDeviceDropdownMenuContext.Provider
+      value={React.useMemo(
+        () => ({
+          open,
+          setOpen,
+        }),
+        [open, setOpen]
+      )}
+    >
+      <DropdownMenuPrimitive.Root
+        open={open}
+        onOpenChange={(o) => {
+          if (openMenu !== undefined && onOpenChange) {
+            onOpenChange(o);
+          } else {
+            setOpen(openMenu);
+          }
+        }}
+        {...props}
+      />
+    </TouchDeviceDropdownMenuContext.Provider>
+  );
+});
+
+// const DropdownMenuTrigger = DropdownMenuPrimitive.Trigger;
+
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
+>((props, ref) => {
+  const { open, setOpen } = useTouchDeviceDropdownMenuCtx();
+  return (
+    <DropdownMenuPrimitive.Trigger
+      ref={ref}
+      {...(isMobile
+        ? {
+            onPointerDown: (e) => {
+              e.preventDefault();
+            },
+            onClick: () => {
+              setOpen(!open);
+            },
+          }
+        : {})}
+      {...props}
+    />
+  );
+});
 
 const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 

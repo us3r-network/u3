@@ -7,15 +7,16 @@
  */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import LoginButton from './LoginButton';
-import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
+import Nav, { NavWrapper, PcNavItem, NavItemIconBox } from './Nav';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
 import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
 import MessageModal from '../message/MessageModal';
 import { NavModalName, useNav } from '../../contexts/NavCtx';
 import ContactUsModal from './ContactUsModal';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +39,7 @@ export default function Menu() {
         ) : (
           <span
             className={
-              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[linear-gradient(52deg,_#CD62FF_35.31%,_#62AAFF_89.64%)] text-[#ffffff] text-[10px] font-medium'
+              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
             }
           >
             Alpha
@@ -48,6 +49,15 @@ export default function Menu() {
       <NavListBox>
         <Nav onlyIcon={!isOpen} />
       </NavListBox>
+
+      <hr className="border-t border-[#39424C] my-4 w-full" />
+
+      <UserChannels />
+
+      <hr className="border-t border-[#39424C] my-4 w-full" />
+
+      <div className="flex-grow" />
+
       <FooterBox>
         <NavWrapper>
           <MessageButton />
@@ -60,6 +70,50 @@ export default function Menu() {
     </MenuWrapper>
   );
 }
+
+function UserChannels() {
+  const { userChannels, currFid } = useFarcasterCtx();
+
+  if (!currFid) return null;
+
+  return (
+    <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
+      {userChannels.map(({ parent_url }) => (
+        <ChannelItem parent_url={parent_url} key={parent_url} />
+      ))}
+    </div>
+  );
+}
+
+function ChannelItem({ parent_url }: { parent_url: string }) {
+  const { getChannelFromUrl } = useFarcasterCtx();
+  const navigate = useNavigate();
+
+  const item = useMemo(() => {
+    return getChannelFromUrl(parent_url);
+  }, [parent_url, getChannelFromUrl]);
+
+  if (!item) return null;
+
+  return (
+    <div
+      onClick={() => {
+        navigate(`/social/channel/${item.channel_id}`);
+      }}
+      className="cursor-pointer relative"
+    >
+      <div className="flex items-center gap-3">
+        <img
+          src={item.image}
+          alt={item.name}
+          className="rounded-md w-[40px] h-[40px]"
+        />
+        <div className="text-white font-bold">{item.name}</div>
+      </div>
+    </div>
+  );
+}
+
 function ContactUsButton() {
   const { openContactUsModal, renderNavItemText, switchNavModal } = useNav();
 
@@ -71,9 +125,9 @@ function ContactUsButton() {
           switchNavModal(NavModalName.ContactUs);
         }}
       >
-        <PcNavItemIconBox isActive={openContactUsModal}>
+        <NavItemIconBox isActive={openContactUsModal}>
           <ContactUsSvg />
-        </PcNavItemIconBox>
+        </NavItemIconBox>
         {renderNavItemText('Contact US')}
       </PcNavItem>
       <ContactUsModal />
@@ -92,9 +146,9 @@ function MessageButton() {
           switchNavModal(NavModalName.Message);
         }}
       >
-        <PcNavItemIconBox isActive={openMessageModal}>
+        <NavItemIconBox isActive={openMessageModal}>
           <MessageChatSquareSvg />
-        </PcNavItemIconBox>
+        </NavItemIconBox>
         {renderNavItemText('Message')}
       </PcNavItem>
       <MessageModal />
@@ -117,12 +171,11 @@ const MenuWrapper = styled.div<{ isOpen: boolean }>`
   display: flex;
   flex-direction: column;
   gap: 20;
-  justify-content: space-between;
   align-items: flex-start;
 `;
 const LogoBox = styled.div<{ onlyIcon?: boolean }>`
   width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
-  height: 94px;
+  height: ${({ onlyIcon }) => (onlyIcon ? '194px' : '94px')};
   display: flex;
   flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
   gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};

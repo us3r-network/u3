@@ -8,7 +8,7 @@ import useLogin from '@/hooks/shared/useLogin';
 
 import { FCastChannelPicker } from '@/components/social/farcaster/FCastChannelPicker';
 import FarcasterInput from '@/components/social/farcaster/FarcasterInput';
-import { Button } from '@/components/ui/button';
+import ColorButton from '@/components/common/button/ColorButton';
 
 export function ReplyCast({
   replyAction,
@@ -63,8 +63,8 @@ export function ReplyCast({
             disabled
           />
           <div className="flex-grow" />
-          <Button
-            className="h-10 rounded-[10px] text-black text-[16px] bg-gradient-to-r from-[#cd62ff] to-[#62aaff]"
+          <ColorButton
+            className="h-10 rounded-[10px] text-[16px]"
             onClick={() => {
               if (!isLoginU3) {
                 loginU3();
@@ -74,7 +74,7 @@ export function ReplyCast({
             }}
           >
             Reply
-          </Button>
+          </ColorButton>
         </div>
       </div>
     </div>

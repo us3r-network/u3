@@ -32,7 +32,7 @@ const StyledTitleBox = styled.h1`
     font-weight: 700;
     line-height: normal;
 
-    background: linear-gradient(88deg, #cd62ff 0%, #62aaff 99.21%);
+    background: #454c99;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;

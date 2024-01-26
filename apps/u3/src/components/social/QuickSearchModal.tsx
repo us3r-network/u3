@@ -207,7 +207,10 @@ export default function QuickSearchModal({
         inputRef.current?.focus();
       }}
       zIndex={40}
-      className="top-[100px] md:w-[800px] w-full mb-2 box-border overflow-hidden"
+      className={cn(
+        'top-[100px] md:w-[800px] w-full mb-2 box-border overflow-hidden',
+        'max-sm:top-[50px]'
+      )}
     >
       <div
         ref={quickSearchModalRef}
@@ -235,7 +238,10 @@ export default function QuickSearchModal({
         <div
           id="quick-search-scroll"
           ref={quickSearchScrollRef}
-          className=" overflow-scroll max-h-[calc(100vh-160px)] overflow-y-auto flex-grow bg-inherit"
+          className={cn(
+            ' overflow-scroll max-h-[calc(100vh-160px)] overflow-y-auto flex-grow bg-inherit',
+            'max-sm:max-h-[calc(100vh-200px)]'
+          )}
         >
           <h3 className="font-light italic p-2 pb-0 sticky top-[0px] z-40 w-full bg-inherit">
             Topics

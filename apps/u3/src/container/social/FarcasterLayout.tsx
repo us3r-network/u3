@@ -85,7 +85,6 @@ export default function FarcasterLayout() {
   }, [storageCheck]);
 
   useEffect(() => {
-    console.log(`Your FID is: ${idOf as string}`);
     if (idOf) {
       setFid(Number(idOf));
     } else if (chain?.id !== 1) {

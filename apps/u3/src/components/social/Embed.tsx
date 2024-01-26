@@ -10,13 +10,11 @@ import {
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
 } from '../../services/social/types';
+import { PostCardEmbedWrapper, PostCardImgWrapper } from './PostCard';
 import {
-  PostCardCastWrapper,
-  PostCardEmbedWrapper,
-  PostCardImgWrapper,
-  PostCardNftWrapper,
-} from './PostCard';
-import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
+  getFarcasterEmbedCast,
+  getFarcasterEmbedMetadata,
+} from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
@@ -24,14 +22,17 @@ import LinkModal from '../news/links/LinkModal';
 export default function Embed({
   embedImgs,
   embedWebpages,
+  embedCasts,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
+  embedCasts: { castId: { fid: number; hash: string } }[];
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
-  const [metadata, setMetadata] = useState<
-    (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
-  >([]);
+  const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
+  const [metadataCasts, setMetadataCasts] = useState<FarCastEmbedMetaCast[]>(
+    []
+  );
   const [modalImgIdx, setModalImgIdx] = useState(-1);
 
   const getEmbedWebpagesMetadata = async () => {
@@ -48,11 +49,26 @@ export default function Embed({
     }
   };
 
+  const getEmbedCastsMetadata = async () => {
+    const castIds = embedCasts.map((embed) => embed.castId);
+    if (castIds.length === 0) return;
+    try {
+      const res = await getFarcasterEmbedCast(castIds[0]);
+      const { metadata: respMetadata } = res.data.data;
+      const data = respMetadata.flatMap((m) => (m ? [m] : []));
+      setMetadataCasts(data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         getEmbedWebpagesMetadata();
+        getEmbedCastsMetadata();
         observer.disconnect();
       }
     });
@@ -64,16 +80,23 @@ export default function Embed({
     };
   }, [viewRef]);
 
-  if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
+  if (
+    embedImgs.length === 0 &&
+    embedWebpages.length === 0 &&
+    embedCasts.length === 0
+  ) {
+    return null;
+  }
 
   return (
-    <EmbedBox ref={viewRef}>
+    <div className="flex flex-col gap-[10px] overflow-hidden" ref={viewRef}>
       {embedImgs.length > 0 && (
         <>
           <PostCardImgWrapper len={embedImgs.length}>
             {embedImgs.map((img, idx) => (
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <img
+                className="max-h-[200px] object-cover"
                 src={img.url}
                 alt=""
                 loading="lazy"
@@ -92,34 +115,37 @@ export default function Embed({
           />
         </>
       )}
-      <div className="w-[70%]">
-        {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-          if ((item as any).type === 'cast') {
-            const { cast } = item as FarCastEmbedMetaCast;
+      <div className="w-full">
+        {[...metadata, ...metadataCasts].map(
+          (item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
+            if ((item as any).type === 'cast') {
+              if ((item as any).cast === undefined) return null;
+              const { cast } = item as FarCastEmbedMetaCast;
+              return (
+                <EmbedCast
+                  data={item as FarCastEmbedMetaCast}
+                  key={Buffer.from(cast.hash.data).toString('hex')}
+                />
+              );
+            }
+            if ((item as any).collection) {
+              return (
+                <EmbedNFT
+                  item={item as FarCastEmbedMeta}
+                  key={(item as any).url}
+                />
+              );
+            }
             return (
-              <EmbedCast
-                data={item as FarCastEmbedMetaCast}
-                key={Buffer.from(cast.hash.data).toString('hex')}
-              />
-            );
-          }
-          if ((item as any).collection) {
-            return (
-              <EmbedNFT
+              <EmbedWebsite
                 item={item as FarCastEmbedMeta}
                 key={(item as any).url}
               />
             );
           }
-          return (
-            <EmbedWebsite
-              item={item as FarCastEmbedMeta}
-              key={(item as any).url}
-            />
-          );
-        })}
+        )}
       </div>
-    </EmbedBox>
+    </div>
   );
 }
 
@@ -148,7 +174,8 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <PostCardCastWrapper
+    <div
+      className="w-full rounded-[10px] text-[#fff] p-[20px] cursor-pointer flex gap-[10px] justify-between bg-[#14171a]"
       onClick={(e) => {
         e.stopPropagation();
         navigate(
@@ -158,27 +185,38 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
         );
       }}
     >
-      <div>
-        <div>
+      <div className="w-0 flex-1">
+        <div className="flex items-center gap-[10px]">
           <img
+            className="w-[21px] h-[21px] rounded-[50%] object-cover"
             src={userData.img}
             alt=""
             loading="lazy"
-            className="object-cover"
           />
-          <div>
-            <span className="username">{userData.username}</span>
-            <span className="uname">
+          <div className="flex items-center gap-[5px]">
+            <span className="text-[#fff] text-[12px] font-bold mr-[5px] flex-shrink-0">
+              {userData.username}
+            </span>
+            <span className="text-[#718096] text-[12px] font-normal line-clamp-1">
               @{userData.uname}
               {'  '}·{'  '}
               {dayjs(data.cast.created_at).fromNow()}
             </span>
           </div>
         </div>
-        <p>{data.cast.text}</p>
+        <p className="text-[#c8c4c4] mb-0 mt-[10px] p-0 line-clamp-3">
+          {data.cast.text}
+        </p>
       </div>
-      {castImg && <img src={castImg} alt="" loading="lazy" />}
-    </PostCardCastWrapper>
+      {castImg && (
+        <img
+          className="flex-shrink-0 w-[100px] h-[100px] rounded-[10px] overflow-hidden object-cover"
+          src={castImg}
+          alt=""
+          loading="lazy"
+        />
+      )}
+    </div>
   );
 }
 
@@ -188,16 +226,25 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   }
 
   return (
-    <PostCardNftWrapper
+    <div
+      className="text-[#fff] w-full rounded-[10px] overflow-hidden bg-[#14171a] [cursor:initial]"
       key={item.url}
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <img src={item.image} alt="" loading="lazy" />
-      <div>
-        <h4>{item.collection}</h4>
+      <img
+        className="w-full max-h-[500px] object-cover"
+        src={item.image}
+        alt=""
+        loading="lazy"
+      />
+      <div className="flex justify-between items-center p-[20px]">
+        <h4 className="m-0 text-[#fff] text-[16px] font-normal leading-[30px]">
+          {item.collection}
+        </h4>
         <button
+          className="cursor-pointer rounded-[10px] bg-[#454c99] px-[20px] py-[10px] border-none outline-[none] text-[#fff] text-[16px] font-bold"
           type="button"
           onClick={(e) => {
             e.stopPropagation();
@@ -207,7 +254,7 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
           View
         </button>
       </div>
-    </PostCardNftWrapper>
+    </div>
   );
 }
 
@@ -234,14 +281,18 @@ export function EmbedWebsite({
     >
       {(isImg(img || '') && (
         <div
-          className="img"
+          className="img w-full max-h-[200px] object-cover"
           style={{
             backgroundImage: `url(${img})`,
           }}
         />
       )) || (
         <div className="img">
-          <img src={img} alt="" />
+          <img
+            className="img w-full max-h-[200px] object-cover"
+            src={img}
+            alt=""
+          />
         </div>
       )}
       <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">
@@ -261,7 +312,7 @@ export function EmbedWebsite({
         )}
         <div className="flex justify-between items-center gap-[12px]">
           <a
-            className="text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
+            className="inline-block flex-1 line-clamp-1 text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
             href={item.url}
             target="_blank"
             rel="noreferrer"
@@ -315,9 +366,3 @@ export function isImg(url?: string) {
     url.endsWith('.gif')
   );
 }
-
-const EmbedBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;

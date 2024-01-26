@@ -1,3 +1,9 @@
+import { removeDefaultFarcaster } from '../social/farcaster/farcaster-default';
+import {
+  removeFarsignPrivateKey,
+  removeFarsignSigner,
+} from '../social/farcaster/farsign-utils';
+
 /*
  * @Author: shixuewen friendlysxw@163.com
  * @Date: 2022-12-30 18:47:46
@@ -19,4 +25,10 @@ export function removeHomeBannerHiddenFromStore() {
 
 export function verifyHomeBannerHiddenByStore(): boolean {
   return getHomeBannerHiddenForStore() === 1;
+}
+
+export function removeFarcasterInfoFromStore() {
+  removeFarsignPrivateKey();
+  removeFarsignSigner();
+  removeDefaultFarcaster();
 }

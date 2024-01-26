@@ -1,8 +1,8 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { usePersonalFavors } from '@us3r-network/link';
 import { isMobile } from 'react-device-detect';
-
+import { uniqBy } from 'lodash';
 import { MainWrapper } from '../components/layout/Index';
 import Loading from '../components/common/loading/Loading';
 import PageTitle from '../components/layout/PageTitle';
@@ -14,6 +14,7 @@ import {
 } from '../utils/news/content';
 import { getDappLinkDataWithJsonValue } from '../utils/dapp/dapp';
 import { getEventLinkDataWithJsonValue } from '../utils/news/event';
+import SyncingBotSaves from '@/components/save/SyncingBotSaves';
 // import { DappLinkData } from '../services/dapp/types/dapp';
 // import { ContentLinkData } from '../services/news/types/contents';
 // import { EventLinkData } from '../services/news/types/event';
@@ -51,43 +52,64 @@ const EmptyDesc = styled.span`
 
 export default function Save() {
   const { isFetching, personalFavors } = usePersonalFavors();
-
-  const list = personalFavors
-    .filter((item) => !!item?.link)
-    .map((item) => {
-      const { link, createAt } = item;
-      let linkData;
-      let title = '';
-      let logo = '';
-      switch (link.type) {
-        case 'dapp':
-          linkData = getDappLinkDataWithJsonValue(link?.data);
-          title = linkData?.name || link.title;
-          logo = linkData?.image || '';
-          break;
-        case 'content':
-          linkData = getContentLinkDataWithJsonValue(link?.data);
-          title = linkData?.title || link.title;
-          logo =
-            getContentPlatformLogoWithJsonValue(linkData?.value) ||
-            linkData?.platform?.logo ||
-            '';
-          break;
-        case 'event':
-          linkData = getEventLinkDataWithJsonValue(link?.data);
-          title = linkData?.name || link.title;
-          logo = linkData?.image || linkData?.platform?.logo || '';
-          break;
-        default:
-          break;
-      }
-      return { ...link, id: link.id, title, logo, createAt };
-    });
+  const [savedLinks, setSavedLinks] = useState([]);
+  // console.log('personalFavors', personalFavors);
+  const list = useMemo(
+    () => [
+      ...savedLinks.map((item) => {
+        const createAt = item.createAt || new Date().getTime();
+        return { ...item, createAt };
+      }),
+      ...uniqBy(
+        personalFavors
+          .filter((item) => !!item?.link && item.link.type !== 'test')
+          .map((item) => {
+            const { link, createAt } = item;
+            let linkData;
+            let title = '';
+            let logo = '';
+            switch (link.type) {
+              case 'dapp':
+                linkData = getDappLinkDataWithJsonValue(link?.data);
+                title = linkData?.name || link.title;
+                logo = linkData?.image || '';
+                break;
+              case 'content':
+                linkData = getContentLinkDataWithJsonValue(link?.data);
+                title = linkData?.title || link.title;
+                logo =
+                  getContentPlatformLogoWithJsonValue(linkData?.value) ||
+                  linkData?.platform?.logo ||
+                  '';
+                break;
+              case 'event':
+                linkData = getEventLinkDataWithJsonValue(link?.data);
+                title = linkData?.name || link.title;
+                logo = linkData?.image || linkData?.platform?.logo || '';
+                break;
+              default:
+                linkData = JSON.parse(link?.data);
+                title = linkData?.title || link.title;
+                logo = linkData?.image || '';
+                break;
+            }
+            return { ...link, id: link.id, title, logo, createAt };
+          }),
+        'id'
+      ),
+    ],
+    [personalFavors, savedLinks]
+  );
   const isEmpty = useMemo(() => list.length === 0, [list]);
-
   return (
     <Wrapper>
       {isMobile ? null : <PageTitle>Saves</PageTitle>}
+      <SyncingBotSaves
+        onComplete={(saves) => {
+          console.log('onComplete SyncingBotSaves');
+          setSavedLinks(saves);
+        }}
+      />
       <ContentWrapper>
         {isFetching ? (
           <Loading />

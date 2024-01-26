@@ -473,7 +473,7 @@ export default function Rss3Content({ address, empty }: Rss3ContentProps) {
     followingMap,
   } = useAppSelector(selectFrensHandlesState);
   const feedRef = useRef(null);
-  const { getProfileWithDid, profile } = useProfileState()!;
+  const { getProfileWithDid, profile } = useProfileState();
 
   const loading = useMemo(
     () => status === AsyncRequestStatus.PENDING,

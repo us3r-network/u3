@@ -258,7 +258,7 @@ const UserDataBox = styled.div<{ select: boolean }>`
     justify-self: end;
   }
   button.go {
-    background: linear-gradient(85deg, #cd62ff 0%, #62aaff 100%);
+    background: #454c99;
     height: 40px;
     width: 40px;
     border-radius: 10px;
@@ -332,12 +332,12 @@ const Ops = styled.div`
     height: 40px;
     flex-shrink: 0;
     border-radius: 10px;
-    background: linear-gradient(85deg, #cd62ff 0%, #62aaff 100%);
+    background: #454c99;
     border: none;
     outline: none;
 
     cursor: pointer;
-    color: #000;
+    color: #fff;
     font-family: Baloo Bhai 2;
     font-size: 12px;
     font-style: normal;
