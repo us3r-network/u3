@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import LoginButton from './LoginButton';
-import Nav, { NavWrapper, PcNavItem, PcNavItemIconBox } from './Nav';
+import Nav, { NavWrapper, PcNavItem, NavItemIconBox } from './Nav';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
 import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
 import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
@@ -71,9 +71,9 @@ function ContactUsButton() {
           switchNavModal(NavModalName.ContactUs);
         }}
       >
-        <PcNavItemIconBox isActive={openContactUsModal}>
+        <NavItemIconBox isActive={openContactUsModal}>
           <ContactUsSvg />
-        </PcNavItemIconBox>
+        </NavItemIconBox>
         {renderNavItemText('Contact US')}
       </PcNavItem>
       <ContactUsModal />
@@ -92,9 +92,9 @@ function MessageButton() {
           switchNavModal(NavModalName.Message);
         }}
       >
-        <PcNavItemIconBox isActive={openMessageModal}>
+        <NavItemIconBox isActive={openMessageModal}>
           <MessageChatSquareSvg />
-        </PcNavItemIconBox>
+        </NavItemIconBox>
         {renderNavItemText('Message')}
       </PcNavItem>
       <MessageModal />

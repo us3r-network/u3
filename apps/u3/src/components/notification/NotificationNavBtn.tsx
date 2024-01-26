@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import { useIsAuthenticated } from '@us3r-network/auth-with-rainbowkit';
-import { PcNavItem, PcNavItemIconBox } from '../layout/Nav';
+import { PcNavItem, NavItemIconBox } from '../layout/Nav';
 import { ReactComponent as BellSvg } from '../../route/svgs/bell.svg';
 import {
   useNotificationStore,
@@ -63,7 +63,7 @@ function NotificationButtonStyled({
   const { renderNavItemText } = useNav();
   return (
     <PcNavItem isActive={isActive} onClick={onClick}>
-      <PcNavItemIconBox isActive={isActive}>
+      <NavItemIconBox isActive={isActive}>
         <BellSvg />
         {unreadCount > 0 && (
           <div
@@ -80,7 +80,7 @@ function NotificationButtonStyled({
             "
           />
         )}
-      </PcNavItemIconBox>
+      </NavItemIconBox>
       {renderNavItemText(`Notifications`)}
       {unreadCount > 0 && (
         <div
