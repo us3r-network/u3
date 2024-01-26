@@ -155,7 +155,7 @@ function TipTransaction({
   address: string;
   successCallback?: () => void;
 }) {
-  const tipsCount = [50, 100, 200];
+  const tipsCount = [69, 420, 42069];
   const { address: accountAddr } = useAccount();
   const result = useBalance({
     address: accountAddr,
