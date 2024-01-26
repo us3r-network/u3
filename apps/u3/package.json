@@ -33,6 +33,7 @@
     "@tiptap/react": "^2.1.13",
     "@types/validator": "^13.11.7",
     "@us3r-network/auth-with-rainbowkit": "^0.2.1",
+    "@us3r-network/data-model": "^0.7.0",
     "@us3r-network/link": "0.7.1-alpha.0",
     "@us3r-network/profile": "0.7.0",
     "@wagmi/core": "^1.4.12",

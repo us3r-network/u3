@@ -11,13 +11,13 @@ export default function SaveExploreListItem({
   data,
   ...props
 }: SaveExploreListItemProps) {
-  console.log('save item', data);
+  // console.log('save item', data);
   return (
     <Wrapper {...props}>
       <ListItemInner>
         <IconLink text={data.url} logo={data?.logo} className="iconLink" />
         <div className="flex-1 flex flex-col justify-between gap-[20px] max-sm:flex-row">
-          <div className="flex-[1] font-medium text-[16px] leading-[19px] text-[#ffffff] line-clamp-3 max-sm:line-clamp-1">
+          <div className="flex-[1] font-medium text-[16px] leading-[19px] text-[#ffffff] line-clamp-4 max-sm:line-clamp-1">
             {data.title || data.url}
           </div>
           {!!data?.createAt && (
@@ -59,7 +59,7 @@ const ListItemInner = styled.div`
 const TimeText = styled.span`
   font-weight: 400;
   font-size: 14px;
-  line-height: 17px;
+  line-height: 18px;
 
   color: #718096;
 `;

@@ -17,6 +17,7 @@ export type FarcasterNotification = {
   casts_hash?: Buffer;
   casts_text?: string;
   replies_text?: string;
+  replies_hash?: Buffer;
   replies_parent_hash?: Buffer;
   casts_mentions?: number[];
 };
@@ -474,18 +475,20 @@ export async function getMetadataWithMod(
   return metadata;
 }
 
-export function getSavedCasts(walletAddress: string, pageSize?: number) {
+const REACT_APP_API_SOCIAL_URL_PROD = 'https://api.u3.xyz';
+export async function getSavedCasts(walletAddress: string, pageSize?: number) {
   if (walletAddress.startsWith('0x')) {
     walletAddress = walletAddress.slice(2);
   }
-  return request({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/saved-casts`,
+  const resp = await request({
+    url: `${REACT_APP_API_SOCIAL_URL_PROD}/3r-bot/saved-casts`,
     method: 'get',
     params: {
       walletAddress,
       pageSize,
     },
   });
+  return resp?.data?.data?.saves;
 }
 
 export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
@@ -493,7 +496,7 @@ export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
     walletAddress = walletAddress.slice(2);
   }
   return request({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/sync-casts`,
+    url: `${REACT_APP_API_SOCIAL_URL_PROD}/3r-bot/sync-casts`,
     method: 'post',
     data: {
       walletAddress,
@@ -502,5 +505,12 @@ export function setSavedCastsSynced(walletAddress: string, lastedId: number) {
     headers: {
       needToken: true,
     },
+  });
+}
+
+export function getUserinfoWithFid(fid: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/userinfo/fid/${fid}`,
+    method: 'get',
   });
 }
