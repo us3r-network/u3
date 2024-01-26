@@ -8,7 +8,6 @@ import {
 } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 
-import PinedChannels from 'src/components/social/PinedChannels';
 import useChannelFeeds from 'src/hooks/social/useChannelFeeds';
 import { resetFarcasterFollowingData } from 'src/hooks/social/farcaster/useFarcasterFollowing';
 import { resetAllFollowingData } from 'src/hooks/social/useAllFollowing';
@@ -27,6 +26,7 @@ import SocialWhoToFollow from '../../components/social/SocialWhoToFollow';
 import TrendChannel from '../../components/social/farcaster/TrendChannel';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 import { AllFirst } from './SocialAllFollowing';
+import { cn } from '@/lib/utils';
 
 export default function SocialLayoutContainer() {
   return (
@@ -98,11 +98,16 @@ function SocialLayout() {
           <LeftWrapper>
             <SocialPlatformChoice />
             <AddPost />
-            <PinedChannels />
           </LeftWrapper>
         )}
 
-        <MainCenter id="main-center">
+        <div
+          id="main-center"
+          className={cn(
+            'w-[600px] mt-[20px] box-border h-[fit-content]',
+            'max-sm:w-full'
+          )}
+        >
           <MainOutletWrapper>
             <Outlet
               context={{
@@ -122,7 +127,7 @@ function SocialLayout() {
               }}
             />
           </MainOutletWrapper>
-        </MainCenter>
+        </div>
 
         {!isMobile && (
           <RightWrapper>
@@ -191,12 +196,6 @@ const MainLeft = styled.div`
 `;
 const MainRight = styled.div`
   width: 350px;
-`;
-const MainCenter = styled.div`
-  width: 600px;
-  margin-top: 20px;
-  box-sizing: border-box;
-  height: fit-content;
 `;
 const MainOutletWrapper = styled.div`
   width: 100%;
