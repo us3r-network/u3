@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ComponentPropsWithRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { UrlMetadata } from '@mod-protocol/core';
 import { useAccount, useNetwork } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -12,8 +18,6 @@ import { toast } from 'react-toastify';
 import { getMetadataWithMod } from '@/services/social/api/farcaster';
 import { FarCastEmbedMeta } from '@/services/social/types';
 import useLogin from '@/hooks/shared/useLogin';
-
-import { PostCardNftWrapper } from '../PostCard';
 
 type ModTransactionData = {
   status: string;
@@ -161,21 +165,28 @@ export default function U3ZoraMinter({
   }, []);
 
   return (
-    <PostCardNftWrapper
+    <div
+      className="text-[#fff] w-full rounded-[10px] overflow-hidden bg-[#14171a] [cursor:initial]"
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <img src={embedMetadata.image} alt="" loading="lazy" />
-      <div>
-        <h4>{embedMetadata.collection}</h4>
-        {(minting && <button type="button">Minting</button>) ||
+      <img
+        className="w-full max-h-[500px] object-cover"
+        src={embedMetadata.image}
+        alt=""
+        loading="lazy"
+      />
+      <div className="flex justify-between items-center p-[20px]">
+        <h4 className="m-0 text-[#fff] text-[16px] font-normal leading-[30px]">
+          {embedMetadata.collection}
+        </h4>
+        {(minting && <MintButton>Minting</MintButton>) ||
           (modMetadataCheckDone &&
             ((modData &&
               modData.nft?.tokenId &&
               ((transactionHash && (
-                <button
-                  type="button"
+                <MintButton
                   onClick={(e) => {
                     e.stopPropagation();
                     window.open(
@@ -185,30 +196,37 @@ export default function U3ZoraMinter({
                   }}
                 >
                   View NFT
-                </button>
+                </MintButton>
               )) || (
-                <button
-                  type="button"
+                <MintButton
                   onClick={(e) => {
                     e.stopPropagation();
                     transactionAction();
                   }}
                 >
                   Mint
-                </button>
+                </MintButton>
               ))) || (
-              <button
-                type="button"
+              <MintButton
                 onClick={(e) => {
                   e.stopPropagation();
                   window.open(url, '_blank');
                 }}
               >
                 View
-              </button>
+              </MintButton>
             )))}
       </div>
-    </PostCardNftWrapper>
+    </div>
+  );
+}
+function MintButton(props: ComponentPropsWithRef<'button'>) {
+  return (
+    <button
+      type="button"
+      className="cursor-pointer rounded-[10px] bg-[#454c99] px-[20px] py-[10px] border-none outline-[none] text-[#fff] text-[16px] font-bold"
+      {...props}
+    />
   );
 }
 

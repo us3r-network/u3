@@ -5,13 +5,14 @@
  * @LastEditTime: 2023-10-30 14:54:49
  * @Description: file description
  */
-import { useCallback, useRef, useState } from 'react';
+import { ComponentPropsWithRef, useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import useLogin from '../../hooks/shared/useLogin';
 import { CustomNavObject, navs } from '../../route/nav';
 import useRoute from '../../route/useRoute';
+import { cn } from '@/lib/utils';
 
 type Props = {
   onlyIcon?: boolean;
@@ -72,7 +73,7 @@ export default function Nav({ onlyIcon }: Props) {
           isActive={isActive}
           onClick={() => navigate(nav.route.path)}
         >
-          <PcNavItemIconBox isActive={isActive}>{nav.icon}</PcNavItemIconBox>
+          <NavItemIconBox isActive={isActive}>{nav.icon}</NavItemIconBox>
           {!isMobile && renderNavItemText(nav)}
         </PcNavItem>
       );
@@ -116,9 +117,9 @@ export default function Nav({ onlyIcon }: Props) {
                 isActive={groupIsActive}
                 onClick={() => handleGroupClick(item.key)}
               >
-                <PcNavItemIconBox isActive={groupIsActive}>
+                <NavItemIconBox isActive={groupIsActive}>
                   {item.icon}
-                </PcNavItemIconBox>
+                </NavItemIconBox>
                 {!isMobile && renderNavItemText(item)}
               </PcNavItem>
               <GroupChildrenBox>
@@ -179,16 +180,36 @@ export const PcNavItem = styled.div<{ isActive?: boolean; disabled?: boolean }>`
       cursor: not-allowed;
     `};
 `;
-export const PcNavItemIconBox = styled.div<{ isActive?: boolean }>`
-  flex-shrink: 0;
+export function NavItemIconBox({
+  isActive,
+  className,
+  children,
+  ...props
+}: ComponentPropsWithRef<'div'> & { isActive?: boolean }) {
+  return (
+    <div
+      className={cn(
+        'flex-shrink-0 transition-all ease-out delay-300 relative',
+        className,
+        'max-sm:w-[24px] max-sm:h-[24px]'
+      )}
+      {...props}
+    >
+      <NavItemIconInner isActive={isActive}>{children}</NavItemIconInner>
+    </div>
+  );
+}
+export const NavItemIconInner = styled.div<{ isActive?: boolean }>`
+  width: 100%;
+  height: 100%;
   svg {
+    width: 100%;
+    height: 100%;
     path {
       stroke: ${({ isActive }) => (isActive ? `#fff` : '#718096')};
       transition: all 0.3s ease-out;
     }
   }
-  transition: all 0.3s ease-out;
-  position: relative;
 `;
 export const PcNavItemTextBox = styled.div`
   overflow: hidden;
