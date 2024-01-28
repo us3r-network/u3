@@ -1,12 +1,18 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserDataType } from '@farcaster/hub-web';
-import styled from 'styled-components';
-import dayjs from 'dayjs';
-
 import {
+  CastId,
+  Message,
+  UserDataType,
+  makeFrameAction,
+} from '@farcaster/hub-web';
+import dayjs from 'dayjs';
+import { toHex } from 'viem';
+import { toast } from 'react-toastify';
+import {
+  FarCast,
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
 } from '../../services/social/types';
@@ -14,19 +20,34 @@ import { PostCardEmbedWrapper, PostCardImgWrapper } from './PostCard';
 import {
   getFarcasterEmbedCast,
   getFarcasterEmbedMetadata,
+  postFrameActionApi,
 } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
+import ColorButton from '../common/button/ColorButton';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { FARCASTER_NETWORK } from '@/constants/farcaster';
+import useFarcasterCastId from '@/hooks/social/farcaster/useFarcasterCastId';
+
+const ValidFrameButtonValue = [
+  [0, 0, 0, 0].join(''),
+  [1, 0, 0, 0].join(''),
+  [1, 1, 0, 0].join(''),
+  [1, 1, 1, 0].join(''),
+  [1, 1, 1, 1].join(''),
+];
 
 export default function Embed({
   embedImgs,
   embedWebpages,
   embedCasts,
+  cast,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
   embedCasts: { castId: { fid: number; hash: string } }[];
+  cast: FarCast;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
   const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
@@ -116,35 +137,129 @@ export default function Embed({
         </>
       )}
       <div className="w-full">
-        {[...metadata, ...metadataCasts].map(
-          (item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-            if ((item as any).type === 'cast') {
-              if ((item as any).cast === undefined) return null;
-              const { cast } = item as FarCastEmbedMetaCast;
-              return (
-                <EmbedCast
-                  data={item as FarCastEmbedMetaCast}
-                  key={Buffer.from(cast.hash.data).toString('hex')}
-                />
-              );
-            }
-            if ((item as any).collection) {
-              return (
-                <EmbedNFT
-                  item={item as FarCastEmbedMeta}
-                  key={(item as any).url}
-                />
-              );
-            }
+        {[...metadataCasts].map((item) => {
+          if (item.cast === undefined) return null;
+          return (
+            <EmbedCast
+              data={item}
+              key={Buffer.from(item.cast.hash.data).toString('hex')}
+            />
+          );
+        })}
+        {[...metadata].map((item: FarCastEmbedMeta) => {
+          if (item.collection) {
+            return <EmbedNFT item={item} key={(item as any).url} />;
+          }
+          if (checkFarcastFrameValid(item)) {
             return (
-              <EmbedWebsite
-                item={item as FarCastEmbedMeta}
-                key={(item as any).url}
-              />
+              <EmbedCastFrame data={item} key={(item as any).url} cast={cast} />
             );
           }
-        )}
+          return <EmbedWebsite item={item} key={(item as any).url} />;
+        })}
       </div>
+    </div>
+  );
+}
+
+function EmbedCastFrame({
+  data,
+  cast,
+}: {
+  data: FarCastEmbedMeta;
+  cast: FarCast;
+}) {
+  const castId: CastId = useFarcasterCastId({ cast });
+  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
+
+  const [frameData, setFrameData] = useState<FarCastEmbedMeta>(data);
+
+  const postFrameAction = useCallback(
+    async (index: number) => {
+      if (!castId) {
+        console.error('no castId');
+        toast.error('no castId');
+        return;
+      }
+      if (!encryptedSigner || !currFid) {
+        console.error('no encryptedSigner');
+        toast.error('no encryptedSigner');
+        return;
+      }
+      const url = data.fcFramePostUrl || data.url;
+      const trustedDataResult = await makeFrameAction(
+        {
+          url: Buffer.from(url),
+          buttonIndex: index,
+          castId,
+        },
+        {
+          fid: currFid,
+          network: FARCASTER_NETWORK,
+        },
+        encryptedSigner
+      );
+      if (trustedDataResult.isErr()) {
+        throw new Error(trustedDataResult.error.message);
+      }
+      const trustedDataValue = trustedDataResult.value;
+      const untrustedData = {
+        fid: currFid,
+        url,
+        messageHash: toHex(trustedDataValue.hash),
+        network: FARCASTER_NETWORK,
+        buttonIndex: index,
+        castId: {
+          fid: castId.fid,
+          hash: toHex(castId.hash),
+        },
+      };
+      const trustedData = {
+        messageBytes: Buffer.from(
+          Message.encode(trustedDataValue).finish()
+        ).toString('hex'),
+      };
+      const postData = {
+        untrustedData,
+        trustedData,
+      };
+      const resp = await postFrameActionApi(postData);
+      if (resp.status === 200 || resp.status === 201) {
+        setFrameData(resp.data.data?.metadata);
+      }
+    },
+    [frameData, currFid, encryptedSigner, castId]
+  );
+  return (
+    <div className="border rounded-xl overflow-hidden border-[#39424c]">
+      <div className="h-80 overflow-hidden flex items-center">
+        <img src={frameData.fcFrameImage} alt="" />
+      </div>
+      {isConnected && (
+        <div className="flex items-center justify-around gap-3 mt-3">
+          {[
+            frameData.fcFrameButton1,
+            frameData.fcFrameButton2,
+            frameData.fcFrameButton3,
+            frameData.fcFrameButton4,
+          ].map((item, idx) => {
+            if (!item) return null;
+            return (
+              <ColorButton
+                key={idx}
+                type="button"
+                className="flex-grow p-2 m-2 mt-1 rounded-xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  postFrameAction(idx + 1);
+                }}
+              >
+                {item}
+              </ColorButton>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -365,4 +480,21 @@ export function isImg(url?: string) {
     url.endsWith('.jpeg') ||
     url.endsWith('.gif')
   );
+}
+
+function checkFarcastFrameValid(data: FarCastEmbedMeta) {
+  if (!data.fcFrame || !data.fcFrameImage) {
+    return false;
+  }
+  const buttonValue = [
+    data.fcFrameButton1 ? 1 : 0,
+    data.fcFrameButton2 ? 1 : 0,
+    data.fcFrameButton3 ? 1 : 0,
+    data.fcFrameButton4 ? 1 : 0,
+  ].join('');
+  if (!ValidFrameButtonValue.includes(buttonValue)) {
+    return false;
+  }
+
+  return true;
 }
