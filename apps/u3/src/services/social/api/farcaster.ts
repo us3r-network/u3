@@ -514,3 +514,11 @@ export function getUserinfoWithFid(fid: string) {
     method: 'get',
   });
 }
+
+export function postFrameActionApi(data: any) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/frame-action/proxy`,
+    method: 'post',
+    data,
+  });
+}
