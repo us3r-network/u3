@@ -224,9 +224,11 @@ function EmbedCastFrame({
         trustedData,
       };
       const resp = await postFrameActionApi(postData);
-      if (resp.status === 200 || resp.status === 201) {
-        setFrameData(resp.data.data?.metadata);
+      if (resp.data.code !== 0) {
+        toast.error(resp.data.msg);
+        return;
       }
+      setFrameData(resp.data.data?.metadata);
     },
     [frameData, currFid, encryptedSigner, castId]
   );
