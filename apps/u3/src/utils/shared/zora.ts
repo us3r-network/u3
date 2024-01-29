@@ -162,15 +162,11 @@ export enum SaleStatus {
   InProgress = 1,
   Ended = 2,
 }
-export const getSaleStatus = (saleStart: string, saleEnd: string) => {
+export const getSaleStatus = (saleStart: number, saleEnd: number) => {
   const nowMillisecondTimestamp = Date.now();
   const nowSecondTimestamp = Math.floor(nowMillisecondTimestamp / 1000);
 
-  const compareFn = (
-    now: string | number,
-    start: string | number,
-    end: string | number
-  ) => {
+  const compareFn = (now: number, start: number, end: number) => {
     if (Number(now) < Number(start)) {
       return SaleStatus.NotStarted;
     }
@@ -179,6 +175,7 @@ export const getSaleStatus = (saleStart: string, saleEnd: string) => {
     }
     return SaleStatus.InProgress;
   };
+
   if (isSecondTimestamp(saleStart) && isSecondTimestamp(saleEnd)) {
     return compareFn(nowSecondTimestamp, saleStart, saleEnd);
   }
@@ -195,11 +192,11 @@ export const getSaleStatus = (saleStart: string, saleEnd: string) => {
     return compareFn(nowMillisecondTimestamp, Number(saleStart) * 100, saleEnd);
   }
 
-  if (saleStart.length > 13) {
+  if (String(saleStart).length > 13) {
     return SaleStatus.NotStarted;
   }
 
-  if (saleEnd.length > 13) {
+  if (String(saleEnd).length > 13) {
     return SaleStatus.InProgress;
   }
 
