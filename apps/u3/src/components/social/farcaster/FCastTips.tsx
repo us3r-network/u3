@@ -21,6 +21,7 @@ import { shortPubKey } from '@/utils/shared/shortPubKey';
 import Loading from '@/components/common/loading/Loading';
 import { DegenABI, DegenAddress } from '@/services/social/abi/degen/contract';
 import { FarCast } from '@/services/social/types';
+import DegenTip from '@/components/common/icons/DegenTip';
 
 export default function FCastTips({
   userData,
@@ -68,7 +69,8 @@ export default function FCastTips({
           setOpenModal(true);
         }}
       >
-        🎁 <span className="text-[#FFBB02]">Tips</span>
+        <DegenTip className={'w-5 h-5'} />
+        <span className="text-[#A36EFD]">Tips</span>
       </div>
       {openModal && (
         <TipsModal
