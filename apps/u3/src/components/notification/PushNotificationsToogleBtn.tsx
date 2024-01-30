@@ -40,8 +40,9 @@ export function NotificationSettingsGroup() {
         });
     } else {
       setSettings([]);
+      setSettingsLoading(false);
     }
-  }, []);
+  }, [isLogin]);
 
   const upsertSetting = async (setting: Partial<NotificationSetting>) => {
     if (!isLogin) return;
