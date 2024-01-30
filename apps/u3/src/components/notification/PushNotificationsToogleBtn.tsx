@@ -117,33 +117,39 @@ export function NotificationSettingsGroup() {
         toast.info('checked: false');
         const payload = await WebPushService.unsubscribe();
         toast.info(`payload: ${JSON.stringify(payload)}`);
-        if (payload) {
-          // unsubscribeFromWebPush(payload); // server
-          await upsertSetting({
-            type: NotificationSettingType.WEB_PUSH,
-            fid: currFid ? String(currFid) : undefined,
-            enable: checked,
-            subscription: JSON.stringify(payload),
-          });
-        }
+        await upsertSetting({
+          type: NotificationSettingType.WEB_PUSH,
+          fid: currFid ? String(currFid) : undefined,
+          enable: false,
+          subscription: payload ? JSON.stringify(payload) : undefined,
+        });
       } else {
         toast.info('checked: true');
         if (!WebPushService.hasPermission()) {
           await WebPushService.requestPermission();
         }
-        toast.info('requested permission');
+        toast.info(`public_key: ${process.env.REACT_APP_VAPID_PUBLIC_KEY}`);
+        toast.info(
+          `Service Worker JSON: ${JSON.stringify(
+            (navigator as any)?.serviceWorker
+          )}`
+        );
 
+        if (!(navigator as any)?.serviceWorker?.ready) {
+          toast.error('Service Worker not ready');
+        }
         let subscription = await WebPushService.getSubscription();
+        toast.info(`getSubscription: ${JSON.stringify(subscription)}`);
         if (!subscription) {
           subscription = await WebPushService.subscribe();
+          toast.info(`subscription: ${JSON.stringify(subscription)}`);
         }
-        toast.info(`subscription: ${JSON.stringify(subscription)}`);
 
         // subscribeToWebPush(subscription); // server
         await upsertSetting({
           type: NotificationSettingType.WEB_PUSH,
           fid: currFid ? String(currFid) : undefined,
-          enable: checked,
+          enable: true,
           subscription: JSON.stringify(subscription),
         });
         sendNotification(`Subscribed to notifications`);
