@@ -73,7 +73,8 @@ export default function FCastTips({
           setOpenModal(true);
         }}
       >
-        🎁 <span className="text-[#FFBB02]">Tips</span>
+        <DegenTip className={'w-5 h-5'} />
+        <span className="text-[#A36EFD]">Tips</span>
       </div>
       {openModal && (
         <TipsModal
