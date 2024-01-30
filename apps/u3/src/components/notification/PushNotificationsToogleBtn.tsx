@@ -128,7 +128,7 @@ export function NotificationSettingsGroup() {
         if (!WebPushService.hasPermission()) {
           await WebPushService.requestPermission();
         }
-        toast.info('requested permission');
+        toast.info(`public_key: ${process.env.REACT_APP_VAPID_PUBLIC_KEY}`);
         toast.info(
           `Service Worker JSON: ${JSON.stringify(
             (navigator as any)?.serviceWorker
