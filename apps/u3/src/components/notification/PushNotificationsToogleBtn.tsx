@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import WebPushService from '@/utils/pwa/WebPushService';
 import { sendNotification } from '@/utils/pwa/notification';
 import {
@@ -40,7 +41,7 @@ export function NotificationSettingsGroup() {
     } else {
       setSettings([]);
     }
-  }, [isLogin]);
+  }, []);
 
   const upsertSetting = async (setting: Partial<NotificationSetting>) => {
     if (!isLogin) return;
@@ -104,41 +105,48 @@ export function NotificationSettingsGroup() {
 
   console.log('settings', settings);
 
-  const webpushDisabled =
-    settingsLoading || loadingTypes.includes(NotificationSettingType.WEB_PUSH);
+  const webpushLoading = loadingTypes.includes(
+    NotificationSettingType.WEB_PUSH
+  );
+  const webpushDisabled = settingsLoading || webpushLoading;
 
   const handlePushChange = async (checked: boolean) => {
     try {
       if (!checked) {
+        toast.info('checked: false');
         const payload = await WebPushService.unsubscribe();
+        toast.info(`payload: ${JSON.stringify(payload)}`);
         if (payload) {
           // unsubscribeFromWebPush(payload); // server
-          upsertSetting({
+          await upsertSetting({
             type: NotificationSettingType.WEB_PUSH,
             fid: currFid ? String(currFid) : undefined,
             enable: checked,
             subscription: JSON.stringify(payload),
           });
         }
-        return;
+      } else {
+        toast.info('checked: true');
+        if (!WebPushService.hasPermission()) {
+          await WebPushService.requestPermission();
+        }
+        let subscription = await WebPushService.getSubscription();
+        if (!subscription) {
+          subscription = await WebPushService.subscribe();
+        }
+        toast.info(`subscription: ${JSON.stringify(subscription)}`);
+
+        // subscribeToWebPush(subscription); // server
+        await upsertSetting({
+          type: NotificationSettingType.WEB_PUSH,
+          fid: currFid ? String(currFid) : undefined,
+          enable: checked,
+          subscription: JSON.stringify(subscription),
+        });
+        sendNotification(`You have subscribe notifications`);
       }
-      if (!WebPushService.hasPermission()) {
-        await WebPushService.requestPermission();
-      }
-      let subscription = await WebPushService.getSubscription();
-      if (!subscription) {
-        subscription = await WebPushService.subscribe();
-      }
-      // subscribeToWebPush(subscription); // server
-      upsertSetting({
-        type: NotificationSettingType.WEB_PUSH,
-        fid: currFid ? String(currFid) : undefined,
-        enable: checked,
-        subscription: JSON.stringify(subscription),
-      });
-      // console.log('unreadFarcasterCount', unreadFarcasterCount);
-      sendNotification(`You have subscribe notifications`);
     } catch (error) {
+      toast.error(error.message);
       console.error(error);
     }
   };
@@ -146,12 +154,23 @@ export function NotificationSettingsGroup() {
   return (
     // <div>
     //   <p>Web Push</p>
-    <Switch
-      onColor="#5057AA"
-      disabled={webpushDisabled}
-      checked={webpushSubscribed}
-      onChange={handlePushChange}
-    />
+    <>
+      <Switch
+        onColor="#5057AA"
+        disabled={webpushDisabled}
+        checked={webpushSubscribed}
+        onChange={handlePushChange}
+      />
+      webpushLoading: {String(webpushLoading)}
+      <br />
+      webpushDisabled: {String(webpushDisabled)}
+      <br />
+      webpushSubscribed: {String(webpushSubscribed)}
+      <br />
+      navigator.serviceWorker: {String('serviceWorker' in navigator)}
+      <br />
+      settings: {JSON.stringify(settings)}
+    </>
     // </div>
   );
 }
