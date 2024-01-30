@@ -14,10 +14,23 @@ class WebPushService {
   }
 
   static async subscribe() {
+    const applicationServerKey = process.env.REACT_APP_VAPID_PUBLIC_KEY;
+    if (!applicationServerKey) {
+      throw new Error('VAPID public key not found');
+    }
     const registration = await navigator.serviceWorker.ready;
+    if (!registration) {
+      throw new Error('Service Worker not ready');
+    }
+    if (!registration?.pushManager) {
+      throw new Error('PushManager not ready');
+    }
+    if (!registration?.pushManager?.subscribe) {
+      throw new Error('PushManager subscribe not ready');
+    }
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: process.env.REACT_APP_VAPID_PUBLIC_KEY,
+      applicationServerKey,
     });
     return subscription;
   }
