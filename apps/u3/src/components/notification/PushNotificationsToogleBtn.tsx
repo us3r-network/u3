@@ -167,7 +167,7 @@ export function NotificationSettingsGroup() {
       <br />
       webpushSubscribed: {String(webpushSubscribed)}
       <br />
-      navigator.serviceWorker: {String(Boolean(navigator.serviceWorker))}
+      navigator.serviceWorker: {String('serviceWorker' in navigator)}
     </>
     // </div>
   );
