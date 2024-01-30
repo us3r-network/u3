@@ -8,8 +8,6 @@ export const requestPermission = async () => {
   }
 };
 
-const registration = await navigator.serviceWorker.getRegistration();
-
 export const sendNotification = async (body) => {
   console.log('sendNotification', body);
   if (Notification.permission === 'granted') {
@@ -23,11 +21,13 @@ export const sendNotification = async (body) => {
   }
 };
 
-const showNotification = (body) => {
+const showNotification = async (body) => {
+  const registration = await navigator.serviceWorker.getRegistration();
   const title = 'U3 - Your Web3 Gateway';
 
   const payload = {
     body,
+    icon: `${process.env.PUBLIC_URL}/logo192.png`,
   };
 
   if ('showNotification' in registration) {

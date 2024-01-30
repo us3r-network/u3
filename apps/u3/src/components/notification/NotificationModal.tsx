@@ -28,7 +28,8 @@ export default function NotificationModal() {
       <Body>
         <Header>
           <Title>
-            Notifications <NotificationSettingsGroup />
+            Notifications
+            {/* <NotificationSettingsGroup /> */}
           </Title>
           <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
         </Header>
