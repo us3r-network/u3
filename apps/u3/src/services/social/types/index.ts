@@ -28,6 +28,13 @@ export type FarCastEmbedMeta = {
   twitter?: string;
   provider?: string;
   video?: string;
+  fcFrame?: string;
+  fcFrameButton1?: string;
+  fcFrameButton2?: string;
+  fcFrameButton3?: string;
+  fcFrameButton4?: string;
+  fcFrameImage?: string;
+  fcFramePostUrl?: string;
 };
 
 export type FarCast = {

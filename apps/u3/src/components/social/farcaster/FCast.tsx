@@ -237,6 +237,7 @@ export default function FCast({
           embedImgs={[...embeds.imgs]}
           embedWebpages={!disableRenderUrl ? embeds.webpages : []}
           embedCasts={[...embeds.casts]}
+          cast={cast}
         />
       )}
       {(cast.parent_url || cast.rootParentUrl) && (
