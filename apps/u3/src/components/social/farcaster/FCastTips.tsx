@@ -16,12 +16,16 @@ import { UserData } from '@/utils/social/farcaster/user-data';
 import ModalContainer from '@/components/common/modal/ModalContainer';
 import { cn } from '@/lib/utils';
 import useLogin from '@/hooks/shared/useLogin';
-import { getUserinfoWithFid } from '@/services/social/api/farcaster';
+import {
+  getUserinfoWithFid,
+  notifyTipApi,
+} from '@/services/social/api/farcaster';
 import { shortPubKey } from '@/utils/shared/shortPubKey';
 import Loading from '@/components/common/loading/Loading';
 import { DegenABI, DegenAddress } from '@/services/social/abi/degen/contract';
 import { FarCast } from '@/services/social/types';
 import DegenTip from '@/components/common/icons/DegenTip';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function FCastTips({
   userData,
@@ -79,6 +83,7 @@ export default function FCastTips({
           loading={loading}
           userinfo={userinfo}
           userData={userData}
+          cast={cast}
         />
       )}
     </>
@@ -91,12 +96,14 @@ function TipsModal({
   loading,
   userinfo,
   userData,
+  cast,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
   loading: boolean;
   userData: UserData;
   userinfo: { address: string; fname: string };
+  cast: FarCast;
 }) {
   return (
     <ModalContainer
@@ -138,6 +145,7 @@ function TipsModal({
             <TipTransaction
               address={userinfo.address}
               fname={userData.userName}
+              castHash={Buffer.from(cast.hash.data).toString('hex')}
               successCallback={() => {
                 setOpen(false);
               }}
@@ -151,12 +159,15 @@ function TipsModal({
 function TipTransaction({
   fname,
   address,
+  castHash,
   successCallback,
 }: {
   fname: string;
   address: string;
+  castHash: string;
   successCallback?: () => void;
 }) {
+  const { currFid } = useFarcasterCtx();
   const tipsCount = [69, 420, 42069];
   const { address: accountAddr } = useAccount();
   const result = useBalance({
@@ -193,6 +204,13 @@ function TipTransaction({
       console.log('degenTxReceipt', degenTxReceipt);
       if (degenTxReceipt.status === 'success') {
         setTransactionHash(degenTxHash.hash);
+        // notify
+        await notifyTipApi({
+          fromFid: currFid,
+          amount: tipAmount,
+          txHash: degenTxHash.hash,
+          castHash,
+        });
         toast.success('tip success');
         successCallback?.();
       } else {
