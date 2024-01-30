@@ -31,7 +31,6 @@ function NotificationPage() {
     <>
       <div className="text-[white] flex gap-2 pt-[10px]">
         <NotificationSettingsGroup />
-        Subscrib Notifications
       </div>
       <NotificationList
         notifications={notifications}

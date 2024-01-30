@@ -131,6 +131,8 @@ export function NotificationSettingsGroup() {
         if (!WebPushService.hasPermission()) {
           await WebPushService.requestPermission();
         }
+        toast.info('requested permission');
+
         let subscription = await WebPushService.getSubscription();
         if (!subscription) {
           subscription = await WebPushService.subscribe();
@@ -144,10 +146,11 @@ export function NotificationSettingsGroup() {
           enable: checked,
           subscription: JSON.stringify(subscription),
         });
-        sendNotification(`You have subscribe notifications`);
+        sendNotification(`Subscribed to notifications`);
       }
     } catch (error) {
       toast.error(error.message);
+      toast.info(`error json: ${JSON.stringify(error)}`);
       console.error(error);
     }
   };
@@ -162,15 +165,15 @@ export function NotificationSettingsGroup() {
         checked={webpushSubscribed}
         onChange={handlePushChange}
       />
-      webpushLoading: {String(webpushLoading)}
-      <br />
-      webpushDisabled: {String(webpushDisabled)}
-      <br />
-      webpushSubscribed: {String(webpushSubscribed)}
-      <br />
-      navigator.serviceWorker: {String('serviceWorker' in navigator)}
-      <br />
-      settings: {JSON.stringify(settings)}
+      {(() => {
+        if (webpushLoading) {
+          if (webpushSubscribed) {
+            return 'Unsubscribing...';
+          }
+          return 'Subscribing...';
+        }
+        return 'Subscribe Notifications';
+      })()}
     </>
     // </div>
   );
