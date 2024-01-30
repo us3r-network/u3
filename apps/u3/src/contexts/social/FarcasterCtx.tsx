@@ -108,6 +108,7 @@ export interface FarcasterContextData {
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
   openPostModal: boolean;
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -176,6 +177,7 @@ export default function FarcasterProvider({
     setWarpcastErr,
     qrCheckStatus,
     qrUserData,
+    deepLinkUrl,
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
@@ -242,7 +244,9 @@ export default function FarcasterProvider({
   }, [walletFid, walletSigner, walletUserData]);
 
   useEffect(() => {
-    if (!walletCheckStatus || !qrCheckStatus) return;
+    if (!walletCheckStatus && !qrCheckStatus) {
+      return;
+    }
     const defaultFid = getDefaultFarcaster();
     if (!defaultFid) {
       return;
@@ -281,7 +285,7 @@ export default function FarcasterProvider({
   }, [session, profile, signer, currFid, currUserInfo]);
 
   useHotkeys(
-    'meta+p',
+    'meta+p,ctrl+p',
     (e) => {
       e.preventDefault();
       if (!isLogin) {
@@ -290,15 +294,17 @@ export default function FarcasterProvider({
       }
       setOpenPostModal(true);
     },
+    { preventDefault: true },
     [isLogin]
   );
 
   useHotkeys(
-    'meta+k',
+    'meta+k,ctrl+k',
     (e) => {
       e.preventDefault();
       setOpenModalName(QuickSearchModalName);
     },
+    { preventDefault: true },
     []
   );
 
@@ -345,12 +351,14 @@ export default function FarcasterProvider({
         getChannelFromUrl,
         openPostModal,
         setOpenPostModal,
+        setOpenModalName,
       }}
     >
       {children}
       <FarcasterQRModal
         warpcastErr={warpcastErr}
         showQR={showQR}
+        deepLinkUrl={deepLinkUrl}
         open={openQRModal}
         closeModal={() => {
           setWarpcastErr('');
@@ -394,7 +402,7 @@ export default function FarcasterProvider({
         }}
         registerAction={() => {
           setSignerSelectModalOpen(false);
-          navigate('/farcaster/signup');
+          navigate('/farcaster/signupv2');
         }}
         selectType={selectType}
         setSelectType={(type: string) => {

@@ -50,11 +50,12 @@ export default function ProfileInfoCard({
     [canNavigateToProfile, identity]
   );
   if (didLoading || hasProfileLoading) {
-    return (
-      <LoadingWrapper {...wrapperProps}>
-        <Loading />
-      </LoadingWrapper>
-    );
+    return null;
+    // return (
+    //   <LoadingWrapper {...wrapperProps}>
+    //     <Loading />
+    //   </LoadingWrapper>
+    // );
   }
   if (did && hasProfile) {
     return (
@@ -87,13 +88,13 @@ export default function ProfileInfoCard({
   return null;
 }
 
-const LoadingWrapper = styled.div`
-  padding: 20px;
-  width: 360px;
-  box-sizing: border-box;
-  background: #1b1e23;
-  border-radius: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
+// const LoadingWrapper = styled.div`
+//   padding: 20px;
+//   width: 360px;
+//   box-sizing: border-box;
+//   background: #1b1e23;
+//   border-radius: 20px;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+// `;

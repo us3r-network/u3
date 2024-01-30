@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { isMobile } from 'react-device-detect';
 
 import {
   generateKeyPair,
@@ -28,6 +27,10 @@ import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
 } from 'src/utils/profile/biolink';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
 
 const stopSign = {
   stop: false,
@@ -79,6 +82,7 @@ export default function useFarcasterQR() {
     token: '',
     deepLink: '',
   });
+  const [deepLinkUrl, setDeepLinkUrl] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [qrCheckStatus, setQrCheckStatus] = useState<string>('');
   const [qrUserData, setQrUserData] = useState<
@@ -112,6 +116,9 @@ export default function useFarcasterQR() {
 
       if (signedKeyRequest.state === 'completed') {
         setSignedKeyRequest(signedKeyRequest);
+        if (!getDefaultFarcaster()) {
+          setDefaultFarcaster(`${signedKeyRequest.userFid}`);
+        }
         restoreFromQRcode();
         signerSuccess = true;
         // wirte to u3 db
@@ -178,11 +185,9 @@ export default function useFarcasterQR() {
     setPrivateKey(keyPair.privateKey);
     pollForSigner(token, keyPair);
     setToken({ token, deepLink: deeplinkUrl });
-    if (isMobile) {
-      window.open(deeplinkUrl, '_blank');
-    } else {
-      setShowQR(true);
-    }
+
+    setDeepLinkUrl(deeplinkUrl);
+    setShowQR(true);
   }, [pollForSigner]);
 
   const restoreFromQRcode = useCallback(async () => {
@@ -211,6 +216,9 @@ export default function useFarcasterQR() {
           setPrivateKey(farsignBiolinkData.privateKey);
           setSignedKeyRequest(farsignBiolinkData.signedKeyRequest);
           signedKeyRequest = farsignBiolinkData.signedKeyRequest;
+          // console.log('get qrcode signer from db: ', signedKeyRequest);
+          if (signedKeyRequest.userFid)
+            setDefaultFarcaster(signedKeyRequest.userFid);
         }
       }
     } else {
@@ -271,5 +279,6 @@ export default function useFarcasterQR() {
     openQRModal,
     qrCheckStatus,
     qrUserData,
+    deepLinkUrl,
   };
 }

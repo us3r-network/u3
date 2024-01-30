@@ -1,18 +1,124 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import WebPushService from '@/utils/pwa/WebPushService';
 import { sendNotification } from '@/utils/pwa/notification';
+import {
+  NotificationSetting,
+  NotificationSettingType,
+} from '@/services/notification/types/notification-settings';
+import useLogin from '@/hooks/shared/useLogin';
+import {
+  addNotificationSetting,
+  fethNotificationSettings,
+  updateNotificationSetting,
+} from '@/services/notification/api/notification-settings';
+import { ApiRespCode } from '@/services/shared/types';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import Switch from '../common/switch/Switch';
 
 export function NotificationSettingsGroup() {
-  const [push, setPush] = useState(false);
+  const { currFid } = useFarcasterCtx();
+  const { isLogin } = useLogin();
+  const [settings, setSettings] = useState<NotificationSetting[]>([]);
+  const [loadingTypes, setLoadingTypes] = useState<NotificationSettingType[]>(
+    []
+  );
+  const [settingsLoading, setSettingsLoading] = useState(true);
+  useEffect(() => {
+    if (isLogin) {
+      setSettingsLoading(true);
+      fethNotificationSettings()
+        .then((res) => {
+          setSettings(res?.data?.data || []);
+        })
+        .catch((err) => {
+          console.log(err);
+          setSettings([]);
+        })
+        .finally(() => {
+          setSettingsLoading(false);
+        });
+    } else {
+      setSettings([]);
+    }
+  }, [isLogin]);
 
-  const handlePushChange = async (e) => {
-    const { checked } = e.target;
-    setPush(checked);
+  const upsertSetting = async (setting: Partial<NotificationSetting>) => {
+    if (!isLogin) return;
+    const index = settings.findIndex((s) => s.type === setting.type);
+
+    try {
+      setLoadingTypes((prev) => {
+        if (prev.includes(setting.type)) return prev;
+        return [...prev, setting.type];
+      });
+      if (index >= 0 && settings[index]?.id) {
+        // update
+        const res = await updateNotificationSetting(settings[index].id, {
+          ...settings[index],
+          ...setting,
+        });
+        if (res.data.code === ApiRespCode.SUCCESS) {
+          setSettings((prev) => {
+            return [
+              ...prev.slice(0, index),
+              {
+                ...prev[index],
+                ...setting,
+              },
+              ...prev.slice(index + 1),
+            ] as NotificationSetting[];
+          });
+        }
+      } else {
+        // add
+        const res = await addNotificationSetting({
+          type: setting.type,
+          ...setting,
+        });
+        if (res.data.code === ApiRespCode.SUCCESS) {
+          setSettings((prev) => {
+            return [...prev, res.data.data] as NotificationSetting[];
+          });
+        }
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+      throw error;
+    } finally {
+      setLoadingTypes((prev) => {
+        if (prev.includes(setting.type)) {
+          return prev.filter((t) => t !== setting.type);
+        }
+        return prev;
+      });
+    }
+  };
+
+  const webpushSubscribed = settings.some(
+    (setting) =>
+      setting.type === NotificationSettingType.WEB_PUSH &&
+      setting?.enable === true &&
+      !!setting?.subscription
+  );
+
+  console.log('settings', settings);
+
+  const webpushDisabled =
+    settingsLoading || loadingTypes.includes(NotificationSettingType.WEB_PUSH);
+
+  const handlePushChange = async (checked: boolean) => {
     try {
       if (!checked) {
         const payload = await WebPushService.unsubscribe();
         if (payload) {
-          unsubscribeFromWebPush(payload); // server
+          // unsubscribeFromWebPush(payload); // server
+          upsertSetting({
+            type: NotificationSettingType.WEB_PUSH,
+            fid: currFid ? String(currFid) : undefined,
+            enable: checked,
+            subscription: JSON.stringify(payload),
+          });
         }
         return;
       }
@@ -23,12 +129,16 @@ export function NotificationSettingsGroup() {
       if (!subscription) {
         subscription = await WebPushService.subscribe();
       }
-      subscribeToWebPush(subscription); // server
-      console.log('Subscribed to web push');
+      // subscribeToWebPush(subscription); // server
+      upsertSetting({
+        type: NotificationSettingType.WEB_PUSH,
+        fid: currFid ? String(currFid) : undefined,
+        enable: checked,
+        subscription: JSON.stringify(subscription),
+      });
       // console.log('unreadFarcasterCount', unreadFarcasterCount);
       sendNotification(`You have subscribe notifications`);
     } catch (error) {
-      setPush(!checked);
       console.error(error);
     }
   };
@@ -36,14 +146,12 @@ export function NotificationSettingsGroup() {
   return (
     // <div>
     //   <p>Web Push</p>
-    <input type="checkbox" checked={push} onChange={handlePushChange} />
+    <Switch
+      onColor="#5057AA"
+      disabled={webpushDisabled}
+      checked={webpushSubscribed}
+      onChange={handlePushChange}
+    />
     // </div>
   );
-}
-
-function unsubscribeFromWebPush(payload) {
-  // send payload to server
-}
-function subscribeToWebPush(payload) {
-  // send payload to server
 }

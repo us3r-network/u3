@@ -23,3 +23,11 @@ export const defaultFormatDate = (date: string | number | Date) =>
 
 export const defaultFormatFromNow = (date: string | number | Date) =>
   dayjs(date).fromNow();
+
+export const isSecondTimestamp = (timestamp: number) => {
+  return timestamp && timestamp.toString().length === 10;
+};
+
+export const isMillisecondTimestamp = (timestamp: number) => {
+  return timestamp && timestamp.toString().length === 13;
+};

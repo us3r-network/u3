@@ -16,7 +16,7 @@ import PageTitle from '../components/layout/PageTitle';
 import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
 
 export default function Gallery() {
-  const { profile } = useProfileState()!;
+  const { profile } = useProfileState();
   const { wallet } = useParams();
   const session = useSession();
   const sessId = session?.id;

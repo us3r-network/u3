@@ -28,7 +28,8 @@ export default function NotificationModal() {
       <Body>
         <Header>
           <Title>
-            Notifications <NotificationSettingsGroup />
+            Notifications
+            {/* <NotificationSettingsGroup /> */}
           </Title>
           <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
         </Header>
@@ -59,15 +60,16 @@ export default function NotificationModal() {
               }}
             >
               <NotificationList>
-                {notifications.map((notification) => {
+                {notifications.map((notification, index) => {
                   if ('message_hash' in notification) {
                     return (
                       <FarcasterNotificationItem
                         notification={notification}
                         farcasterUserData={farcasterUserData}
-                        key={Buffer.from(notification.message_hash).toString(
-                          'hex'
-                        )}
+                        key={
+                          String(index) +
+                          Buffer.from(notification.message_hash).toString('hex')
+                        }
                       />
                     );
                   }
@@ -112,32 +114,63 @@ export function FarcasterNotificationItem({
   });
   switch (notification.message_type) {
     case MessageType.CAST_ADD:
-      return (
-        <NotificationItem
-          onClick={() => {
-            navigate(
-              `/social/post-detail/fcast/${Buffer.from(
-                notification.replies_parent_hash
-              ).toString('hex')}#${Buffer.from(
-                notification.casts_hash
-              ).toString('hex')}`
-            );
-            setOpenNotificationModal(false);
-          }}
-        >
-          <Avatar src={userData.pfp} />
-          <UserActionWraper>
-            <UserAction>
-              <u>{userData.userName}</u> commented on your cast
-            </UserAction>
-            <PostText>{notification.replies_text}</PostText>
-            <DateText>
-              {dayjs(notification.message_timestamp).fromNow()}
-            </DateText>
-          </UserActionWraper>
-          <FarcasterIcon />
-        </NotificationItem>
-      );
+      if (notification.replies_text && notification.replies_parent_hash) {
+        return (
+          <NotificationItem
+            onClick={() => {
+              navigate(
+                `/social/post-detail/fcast/${Buffer.from(
+                  notification.replies_parent_hash
+                ).toString('hex')}#${Buffer.from(
+                  notification.replies_hash
+                ).toString('hex')}`
+              );
+              setOpenNotificationModal(false);
+            }}
+          >
+            <Avatar src={userData.pfp} />
+            <UserActionWraper>
+              <UserAction>
+                <u>{userData.userName}</u> commented on your cast
+              </UserAction>
+              <PostText>{notification.replies_text}</PostText>
+              <DateText>
+                {dayjs(notification.message_timestamp).fromNow()}
+              </DateText>
+            </UserActionWraper>
+            <FarcasterIcon />
+          </NotificationItem>
+        );
+      }
+      if (
+        notification.casts_mentions &&
+        notification.casts_mentions.length > 0
+      ) {
+        return (
+          <NotificationItem
+            onClick={() => {
+              navigate(
+                `/social/post-detail/fcast/${Buffer.from(
+                  notification.casts_hash
+                ).toString('hex')}`
+              );
+              setOpenNotificationModal(false);
+            }}
+          >
+            <Avatar src={userData.pfp} />
+            <UserActionWraper>
+              <UserAction>
+                <u>{userData.userName}</u> mentions you in his cast
+              </UserAction>
+              <PostText>{notification.casts_text}</PostText>
+              <DateText>
+                {dayjs(notification.message_timestamp).fromNow()}
+              </DateText>
+            </UserActionWraper>
+            <FarcasterIcon />
+          </NotificationItem>
+        );
+      }
       break;
     case MessageType.REACTION_ADD:
       switch (notification.reaction_type) {
@@ -199,7 +232,12 @@ export function FarcasterNotificationItem({
       break;
     case MessageType.LINK_ADD:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/u/${userData.userName}.fcast`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={userData.pfp} />
           <UserActionWraper>
             <UserAction>
@@ -320,7 +358,12 @@ function LensNotificationItem({
       break;
     case LensNotificationType.NEW_FOLLOWER:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/u/${notification.followers[0].handle.fullHandle}.lens`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={getAvatar(notification.followers[0])} />
           <UserActionWraper>
             <UserAction>
@@ -340,7 +383,12 @@ function LensNotificationItem({
       break;
     case LensNotificationType.NEW_MENTION:
       return (
-        <NotificationItem>
+        <NotificationItem
+          onClick={() => {
+            navigate(`/social/post-detail/lens/${notification.publication.id}`);
+            setOpenNotificationModal(false);
+          }}
+        >
           <Avatar src={getAvatar(notification.publication.by)} />
           <UserActionWraper>
             <UserAction>

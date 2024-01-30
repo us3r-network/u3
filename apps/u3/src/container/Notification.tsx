@@ -29,7 +29,7 @@ function NotificationPage() {
 
   return (
     <>
-      <div className="text-[white] flex gap-2 m-1">
+      <div className="text-[white] flex gap-2 pt-[10px]">
         <NotificationSettingsGroup />
         Subscrib Notifications
       </div>

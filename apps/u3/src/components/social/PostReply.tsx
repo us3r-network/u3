@@ -55,10 +55,7 @@ const PostReplyWrapper = styled.div<{
   cursor: ${(props) => (props.disabled ? '' : 'pointer')};
 
   color: #718096;
-  background: ${(props) =>
-    props.replied
-      ? 'linear-gradient(78deg, #cd62ff 0%, #62aaff 100%)'
-      : 'initial'};
+  background: ${(props) => (props.replied ? '#454C99' : 'initial')};
   background-clip: ${(props) => (props.replied ? 'text' : 'initial')};
   -webkit-background-clip: ${(props) => (props.replied ? 'text' : 'initial')};
   -webkit-text-fill-color: ${(props) =>
@@ -77,16 +74,13 @@ const PostReplyWrapper = styled.div<{
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: ${(props) =>
-      props.hover
-        ? 'linear-gradient(45deg, rgba(205, 98, 255, 0.20) 0%, rgba(98, 170, 255, 0.20) 100%);'
-        : 'transparent'};
+    background: ${(props) => (props.hover ? '#454C99' : 'transparent')};
   }
   &:hover {
     ${(props) =>
       !props.disabled &&
       `
-      background: linear-gradient(78deg, #cd62ff 0%, #62aaff 100%);
+      background: #454C99;
       background-clip: text;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;

@@ -17,6 +17,7 @@ import ButtonFullScreen from '../../common/button/ButtonFullScreen';
 import LinkContentBox, { Tab } from './LinkContentBox';
 import LinkPost from './LinkPost';
 import { SaveButton } from '@/components/shared/button/SaveButton';
+import { cn } from '@/lib/utils';
 
 export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: LinkListItem;
@@ -24,14 +25,6 @@ export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
 export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
-  const [tab, setTab] = useState<Tab>('original');
-  // useEffect(() => {
-  //   if (data?.supportIframe) {
-  //     setTab('original');
-  //   } else {
-  //     setTab('readerView');
-  //   }
-  // }, [data]);
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
     setLinkParam({
@@ -43,8 +36,12 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
   return (
     data && (
       <PreviewBox ref={ref} {...otherProps}>
-        <Header>
-          <LinkRenderSwitchTabs tab={tab} setTab={(t) => setTab(t)} />
+        <div
+          className={cn(
+            'w-full h-[60px] box-border bg-[#1b1e23] justify-between items-center relative',
+            'max-sm:hidden'
+          )}
+        >
           <HeaderRight>
             <SaveButton linkId={null} link={linkParam} />
             <LinkShareMenuBtn
@@ -65,12 +62,17 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
               onClick={onToggle}
             />
           )}
-        </Header>
+        </div>
         <div className="w-full h-[0] flex flex-row gap-[12px] flex-shrink flex-grow">
-          <LinkContentBox selectLink={data} tab={tab} />
-          <LinkPostWrapper>
+          <LinkContentBox selectLink={data} />
+          <div
+            className={cn(
+              'w-[360px] h-full flex-shrink-0 flex-grow-0',
+              'max-sm:hidden'
+            )}
+          >
             <LinkPost url={data.url} />
-          </LinkPostWrapper>
+          </div>
         </div>
       </PreviewBox>
     )
@@ -85,23 +87,6 @@ const PreviewBox = styled.div`
   flex-direction: column;
   padding: 12px;
 `;
-const LinkPostWrapper = styled.div`
-  width: 360px;
-  height: 100%;
-  flex-shrink: 0;
-  flex-grow: 0;
-`;
-const Header = styled.div`
-  width: 100%;
-  height: 60px;
-  box-sizing: border-box;
-  background: #1b1e23;
-  /* border-bottom: 1px solid #39424c; */
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: relative;
-`;
 const HeaderRight = styled.div`
   display: flex;
   align-items: center;
@@ -115,66 +100,6 @@ const ContentPreviewFullscreen = styled(ButtonFullScreen)`
   right: 10px;
 `;
 
-function LinkRenderSwitchTabs({
-  tab,
-  setTab,
-}: {
-  tab: Tab;
-  setTab: (tab: Tab) => void;
-}) {
-  return (
-    <LinkRenderSwitchTabsWrapper className="content-shower-tabs">
-      <button
-        type="button"
-        className={tab === 'original' ? 'tab-item active' : 'tab-item'}
-        onClick={() => {
-          setTab('original');
-        }}
-      >
-        Original
-      </button>
-      <button
-        className={tab === 'readerView' ? 'tab-item active' : 'tab-item'}
-        type="button"
-        onClick={() => {
-          setTab('readerView');
-        }}
-      >
-        ReaderView
-      </button>
-    </LinkRenderSwitchTabsWrapper>
-  );
-}
-
-const LinkRenderSwitchTabsWrapper = styled.div`
-  width: 260px;
-  height: 40px;
-  background: #14171a;
-  border-radius: 100px;
-  padding: 4px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  .tab-item {
-    cursor: pointer;
-    width: 122px;
-    height: 32px;
-    border: none;
-
-    box-shadow: 0px 0px 8px rgba(20, 23, 26, 0.08),
-      0px 0px 4px rgba(20, 23, 26, 0.04);
-    border-radius: 100px;
-    outline: none;
-    background: inherit;
-    color: #a0aec0;
-
-    &.active {
-      color: #ffffff;
-      background: #21262c;
-    }
-  }
-`;
 export const LinkShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
   border: none;
   padding: 0px;

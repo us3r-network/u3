@@ -38,8 +38,8 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { pinupCastApi } from '@/services/social/api/farcaster';
 import useLogin from '@/hooks/shared/useLogin';
-import { farcasterHandleToBioLinkHandle } from '@/utils/profile/biolink';
 import { SaveButton } from '@/components/shared/button/SaveButton';
+import FCastTips from './FCastTips';
 
 export default function FCast({
   cast,
@@ -175,6 +175,7 @@ export default function FCast({
             e.stopPropagation();
           }}
         >
+          <FCastTips userData={userData} cast={cast} />
           {isAdmin && (
             <Button
               className={cn(
@@ -191,7 +192,7 @@ export default function FCast({
               <ArrowUpIcon />
             </Button>
           )}
-          {showMenuBtn && (
+          {/* {showMenuBtn && (
             <div>
               <PostCardMenuBtn
                 data={{
@@ -210,7 +211,7 @@ export default function FCast({
                 }}
               />
             </div>
-          )}
+          )} */}
         </div>
       </PostCardHeaderWrapper>
 
@@ -235,6 +236,8 @@ export default function FCast({
         <Embed
           embedImgs={[...embeds.imgs]}
           embedWebpages={!disableRenderUrl ? embeds.webpages : []}
+          embedCasts={[...embeds.casts]}
+          cast={cast}
         />
       )}
       {(cast.parent_url || cast.rootParentUrl) && (

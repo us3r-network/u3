@@ -19,6 +19,7 @@ import DappMenu from '../dapp/launcher/DappMenu';
 import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';
 import { MobileGuide } from './mobile/MobileGuide';
+import AddPostMobile from '../social/AddPostMobile';
 
 function Layout() {
   const { ready } = useAuthentication();
@@ -31,6 +32,9 @@ function Layout() {
       {isMobile ? (
         <MobileContentBox>
           <Main />
+          <div className="fixed right-[20px] bottom-[80px]">
+            <AddPostMobile />
+          </div>
         </MobileContentBox>
       ) : (
         <RightBox>

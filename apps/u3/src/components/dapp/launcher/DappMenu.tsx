@@ -110,6 +110,7 @@ const ListInner = styled.div`
   overflow-y: auto;
 `;
 const Title = styled.div`
+  width: 40px;
   font-weight: 400;
   font-size: 12px;
   line-height: 14px;

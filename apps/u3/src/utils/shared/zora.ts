@@ -10,6 +10,7 @@ import {
   pgn,
 } from 'viem/chains';
 import { ZDKNetwork, ZDKChain } from '@zoralabs/zdk';
+import { isMillisecondTimestamp, isSecondTimestamp } from './time';
 
 export const zoraMainnetChainIds: number[] = [
   mainnet.id,
@@ -52,6 +53,16 @@ export const getZoraNetworkInfo = (chainId) => {
         network: ZDKNetwork.Zora,
         chain: ZDKChain.ZoraGoerli,
       }
+    : Number(chainId) === zora.id
+    ? {
+        network: ZDKNetwork.Zora,
+        chain: ZDKChain.ZoraMainnet,
+      }
+    : Number(chainId) === base.id
+    ? {
+        network: ZDKNetwork.Base,
+        chain: ZDKChain.BaseMainnet,
+      }
     : null;
 };
 
@@ -68,6 +79,10 @@ export const getZoraNetwork = (chainId) => {
     ? sepolia
     : Number(chainId) === zoraTestnet.id
     ? zoraTestnet
+    : Number(chainId) === zora.id
+    ? zora
+    : Number(chainId) === base.id
+    ? base
     : null;
 };
 
@@ -84,6 +99,10 @@ export const getZoraNetworkExplorer = (chainId) => {
     ? sepolia.blockExplorers.default.url
     : Number(chainId) === zoraTestnet.id
     ? zoraTestnet.blockExplorers.default.url
+    : Number(chainId) === zora.id
+    ? zora.blockExplorers.default.url
+    : Number(chainId) === base.id
+    ? base.blockExplorers.default.url
     : null;
 };
 export const getZoraHost = (chainId) => {
@@ -135,4 +154,51 @@ export const getZoraMintFeeWithChain = (chainId, contractMintFee: any) => {
     return fixedMintFeeBigInt;
   }
   return contractMintFee;
+};
+
+export enum SaleStatus {
+  Unknown = -1,
+  NotStarted = 0,
+  InProgress = 1,
+  Ended = 2,
+}
+export const getSaleStatus = (saleStart: number, saleEnd: number) => {
+  const nowMillisecondTimestamp = Date.now();
+  const nowSecondTimestamp = Math.floor(nowMillisecondTimestamp / 1000);
+
+  const compareFn = (now: number, start: number, end: number) => {
+    if (Number(now) < Number(start)) {
+      return SaleStatus.NotStarted;
+    }
+    if (Number(now) > Number(end)) {
+      return SaleStatus.Ended;
+    }
+    return SaleStatus.InProgress;
+  };
+
+  if (isSecondTimestamp(saleStart) && isSecondTimestamp(saleEnd)) {
+    return compareFn(nowSecondTimestamp, saleStart, saleEnd);
+  }
+
+  if (isMillisecondTimestamp(saleStart) && isMillisecondTimestamp(saleEnd)) {
+    return compareFn(nowMillisecondTimestamp, saleStart, saleEnd);
+  }
+
+  if (isMillisecondTimestamp(saleStart) && isSecondTimestamp(saleEnd)) {
+    return compareFn(nowSecondTimestamp, saleStart, Number(saleEnd) * 100);
+  }
+
+  if (isSecondTimestamp(saleStart) && isMillisecondTimestamp(saleEnd)) {
+    return compareFn(nowMillisecondTimestamp, Number(saleStart) * 100, saleEnd);
+  }
+
+  if (String(saleStart).length > 13) {
+    return SaleStatus.NotStarted;
+  }
+
+  if (String(saleEnd).length > 13) {
+    return SaleStatus.InProgress;
+  }
+
+  return SaleStatus.Unknown;
 };

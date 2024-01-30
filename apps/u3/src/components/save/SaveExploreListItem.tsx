@@ -1,6 +1,5 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { defaultFormatFromNow } from '../../utils/shared/time';
-import EllipsisText from '../common/text/EllipsisText';
 import LinkBox from '../news/contents/LinkBox';
 import type { SaveExploreListItemData } from './SaveExploreList';
 
@@ -12,17 +11,21 @@ export default function SaveExploreListItem({
   data,
   ...props
 }: SaveExploreListItemProps) {
-  console.log('save item', data);
+  // console.log('save item', data);
   return (
     <Wrapper {...props}>
       <ListItemInner>
         <IconLink text={data.url} logo={data?.logo} className="iconLink" />
-        <TitleText>{data.title || data.url}</TitleText>
-        {!!data?.createAt && (
-          <TimeText className="timeText">
-            {defaultFormatFromNow(data.createAt)}
-          </TimeText>
-        )}
+        <div className="flex-1 flex flex-col justify-between gap-[20px] max-sm:flex-row">
+          <div className="flex-[1] font-medium text-[16px] leading-[19px] text-[#ffffff] line-clamp-4 max-sm:line-clamp-1">
+            {data.title || data.url}
+          </div>
+          {!!data?.createAt && (
+            <TimeText className="timeText">
+              {defaultFormatFromNow(data.createAt)}
+            </TimeText>
+          )}
+        </div>
       </ListItemInner>
     </Wrapper>
   );
@@ -53,18 +56,10 @@ const ListItemInner = styled.div`
   gap: 20px;
 `;
 
-const TitleText = styled(EllipsisText)`
-  flex: 1;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 19px;
-  color: #ffffff;
-`;
-
 const TimeText = styled.span`
   font-weight: 400;
   font-size: 14px;
-  line-height: 17px;
+  line-height: 18px;
 
   color: #718096;
 `;
@@ -94,22 +89,4 @@ const IconLink = styled(LinkBox)`
 export const SaveExploreListItemMobile = styled(SaveExploreListItem)`
   padding: 10px;
   height: auto;
-
-  & > div {
-    position: relative;
-  }
-
-  .timeText {
-    position: absolute;
-    right: 10px;
-    bottom: 2px;
-  }
-
-  .bottomBox {
-    padding-right: 100px;
-    .iconLink {
-      padding: 0;
-      height: auto;
-    }
-  }
 `;

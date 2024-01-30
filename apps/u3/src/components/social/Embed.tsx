@@ -1,37 +1,59 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserDataType } from '@farcaster/hub-web';
-import styled from 'styled-components';
-import dayjs from 'dayjs';
-
 import {
+  CastId,
+  Message,
+  UserDataType,
+  makeFrameAction,
+} from '@farcaster/hub-web';
+import dayjs from 'dayjs';
+import { toHex } from 'viem';
+import { toast } from 'react-toastify';
+import {
+  FarCast,
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
 } from '../../services/social/types';
+import { PostCardEmbedWrapper, PostCardImgWrapper } from './PostCard';
 import {
-  PostCardCastWrapper,
-  PostCardEmbedWrapper,
-  PostCardImgWrapper,
-  PostCardNftWrapper,
-} from './PostCard';
-import { getFarcasterEmbedMetadata } from '../../services/social/api/farcaster';
+  getFarcasterEmbedCast,
+  getFarcasterEmbedMetadata,
+  postFrameActionApi,
+} from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
+import ColorButton from '../common/button/ColorButton';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { FARCASTER_NETWORK } from '@/constants/farcaster';
+import useFarcasterCastId from '@/hooks/social/farcaster/useFarcasterCastId';
+
+const ValidFrameButtonValue = [
+  [0, 0, 0, 0].join(''),
+  [1, 0, 0, 0].join(''),
+  [1, 1, 0, 0].join(''),
+  [1, 1, 1, 0].join(''),
+  [1, 1, 1, 1].join(''),
+];
 
 export default function Embed({
   embedImgs,
   embedWebpages,
+  embedCasts,
+  cast,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
+  embedCasts: { castId: { fid: number; hash: string } }[];
+  cast: FarCast;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
-  const [metadata, setMetadata] = useState<
-    (FarCastEmbedMeta | FarCastEmbedMetaCast)[]
-  >([]);
+  const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
+  const [metadataCasts, setMetadataCasts] = useState<FarCastEmbedMetaCast[]>(
+    []
+  );
   const [modalImgIdx, setModalImgIdx] = useState(-1);
 
   const getEmbedWebpagesMetadata = async () => {
@@ -48,11 +70,26 @@ export default function Embed({
     }
   };
 
+  const getEmbedCastsMetadata = async () => {
+    const castIds = embedCasts.map((embed) => embed.castId);
+    if (castIds.length === 0) return;
+    try {
+      const res = await getFarcasterEmbedCast(castIds[0]);
+      const { metadata: respMetadata } = res.data.data;
+      const data = respMetadata.flatMap((m) => (m ? [m] : []));
+      setMetadataCasts(data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         getEmbedWebpagesMetadata();
+        getEmbedCastsMetadata();
         observer.disconnect();
       }
     });
@@ -64,16 +101,23 @@ export default function Embed({
     };
   }, [viewRef]);
 
-  if (embedImgs.length === 0 && embedWebpages.length === 0) return null;
+  if (
+    embedImgs.length === 0 &&
+    embedWebpages.length === 0 &&
+    embedCasts.length === 0
+  ) {
+    return null;
+  }
 
   return (
-    <EmbedBox ref={viewRef}>
+    <div className="flex flex-col gap-[10px] overflow-hidden" ref={viewRef}>
       {embedImgs.length > 0 && (
         <>
           <PostCardImgWrapper len={embedImgs.length}>
             {embedImgs.map((img, idx) => (
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <img
+                className="max-h-[200px] object-cover"
                 src={img.url}
                 alt=""
                 loading="lazy"
@@ -92,34 +136,133 @@ export default function Embed({
           />
         </>
       )}
-      <div className="w-[70%]">
-        {metadata.map((item: FarCastEmbedMeta | FarCastEmbedMetaCast) => {
-          if ((item as any).type === 'cast') {
-            const { cast } = item as FarCastEmbedMetaCast;
-            return (
-              <EmbedCast
-                data={item as FarCastEmbedMetaCast}
-                key={Buffer.from(cast.hash.data).toString('hex')}
-              />
-            );
-          }
-          if ((item as any).collection) {
-            return (
-              <EmbedNFT
-                item={item as FarCastEmbedMeta}
-                key={(item as any).url}
-              />
-            );
-          }
+      <div className="w-full">
+        {[...metadataCasts].map((item) => {
+          if (item.cast === undefined) return null;
           return (
-            <EmbedWebsite
-              item={item as FarCastEmbedMeta}
-              key={(item as any).url}
+            <EmbedCast
+              data={item}
+              key={Buffer.from(item.cast.hash.data).toString('hex')}
             />
           );
         })}
+        {[...metadata].map((item: FarCastEmbedMeta) => {
+          if (item.collection) {
+            return <EmbedNFT item={item} key={(item as any).url} />;
+          }
+          if (checkFarcastFrameValid(item)) {
+            return (
+              <EmbedCastFrame data={item} key={(item as any).url} cast={cast} />
+            );
+          }
+          return <EmbedWebsite item={item} key={(item as any).url} />;
+        })}
       </div>
-    </EmbedBox>
+    </div>
+  );
+}
+
+function EmbedCastFrame({
+  data,
+  cast,
+}: {
+  data: FarCastEmbedMeta;
+  cast: FarCast;
+}) {
+  const castId: CastId = useFarcasterCastId({ cast });
+  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
+
+  const [frameData, setFrameData] = useState<FarCastEmbedMeta>(data);
+
+  const postFrameAction = useCallback(
+    async (index: number) => {
+      if (!castId) {
+        console.error('no castId');
+        toast.error('no castId');
+        return;
+      }
+      if (!encryptedSigner || !currFid) {
+        console.error('no encryptedSigner');
+        toast.error('no encryptedSigner');
+        return;
+      }
+      const url = data.fcFramePostUrl || data.url;
+      const trustedDataResult = await makeFrameAction(
+        {
+          url: Buffer.from(url),
+          buttonIndex: index,
+          castId,
+        },
+        {
+          fid: currFid,
+          network: FARCASTER_NETWORK,
+        },
+        encryptedSigner
+      );
+      if (trustedDataResult.isErr()) {
+        throw new Error(trustedDataResult.error.message);
+      }
+      const trustedDataValue = trustedDataResult.value;
+      const untrustedData = {
+        fid: currFid,
+        url,
+        messageHash: toHex(trustedDataValue.hash),
+        network: FARCASTER_NETWORK,
+        buttonIndex: index,
+        castId: {
+          fid: castId.fid,
+          hash: toHex(castId.hash),
+        },
+      };
+      const trustedData = {
+        messageBytes: Buffer.from(
+          Message.encode(trustedDataValue).finish()
+        ).toString('hex'),
+      };
+      const postData = {
+        untrustedData,
+        trustedData,
+      };
+      const resp = await postFrameActionApi(postData);
+      if (resp.data.code !== 0) {
+        toast.error(resp.data.msg);
+        return;
+      }
+      setFrameData(resp.data.data?.metadata);
+    },
+    [frameData, currFid, encryptedSigner, castId]
+  );
+  return (
+    <div className="border rounded-xl overflow-hidden border-[#39424c]">
+      <div className="h-80 overflow-hidden flex items-center">
+        <img src={frameData.fcFrameImage} alt="" />
+      </div>
+      {isConnected && (
+        <div className="flex items-center justify-around gap-3 mt-3">
+          {[
+            frameData.fcFrameButton1,
+            frameData.fcFrameButton2,
+            frameData.fcFrameButton3,
+            frameData.fcFrameButton4,
+          ].map((item, idx) => {
+            if (!item) return null;
+            return (
+              <ColorButton
+                key={idx}
+                type="button"
+                className="flex-grow p-2 m-2 mt-1 rounded-xl"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  postFrameAction(idx + 1);
+                }}
+              >
+                {item}
+              </ColorButton>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -148,7 +291,8 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   }, [data.cast]);
 
   return (
-    <PostCardCastWrapper
+    <div
+      className="w-full rounded-[10px] text-[#fff] p-[20px] cursor-pointer flex gap-[10px] justify-between bg-[#14171a]"
       onClick={(e) => {
         e.stopPropagation();
         navigate(
@@ -158,27 +302,38 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
         );
       }}
     >
-      <div>
-        <div>
+      <div className="w-0 flex-1">
+        <div className="flex items-center gap-[10px]">
           <img
+            className="w-[21px] h-[21px] rounded-[50%] object-cover"
             src={userData.img}
             alt=""
             loading="lazy"
-            className="object-cover"
           />
-          <div>
-            <span className="username">{userData.username}</span>
-            <span className="uname">
+          <div className="flex items-center gap-[5px]">
+            <span className="text-[#fff] text-[12px] font-bold mr-[5px] flex-shrink-0">
+              {userData.username}
+            </span>
+            <span className="text-[#718096] text-[12px] font-normal line-clamp-1">
               @{userData.uname}
               {'  '}·{'  '}
               {dayjs(data.cast.created_at).fromNow()}
             </span>
           </div>
         </div>
-        <p>{data.cast.text}</p>
+        <p className="text-[#c8c4c4] mb-0 mt-[10px] p-0 line-clamp-3">
+          {data.cast.text}
+        </p>
       </div>
-      {castImg && <img src={castImg} alt="" loading="lazy" />}
-    </PostCardCastWrapper>
+      {castImg && (
+        <img
+          className="flex-shrink-0 w-[100px] h-[100px] rounded-[10px] overflow-hidden object-cover"
+          src={castImg}
+          alt=""
+          loading="lazy"
+        />
+      )}
+    </div>
   );
 }
 
@@ -188,16 +343,25 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
   }
 
   return (
-    <PostCardNftWrapper
+    <div
+      className="text-[#fff] w-full rounded-[10px] overflow-hidden bg-[#14171a] [cursor:initial]"
       key={item.url}
       onClick={(e) => {
         e.stopPropagation();
       }}
     >
-      <img src={item.image} alt="" loading="lazy" />
-      <div>
-        <h4>{item.collection}</h4>
+      <img
+        className="w-full max-h-[500px] object-cover"
+        src={item.image}
+        alt=""
+        loading="lazy"
+      />
+      <div className="flex justify-between items-center p-[20px]">
+        <h4 className="m-0 text-[#fff] text-[16px] font-normal leading-[30px]">
+          {item.collection}
+        </h4>
         <button
+          className="cursor-pointer rounded-[10px] bg-[#454c99] px-[20px] py-[10px] border-none outline-[none] text-[#fff] text-[16px] font-bold"
           type="button"
           onClick={(e) => {
             e.stopPropagation();
@@ -207,7 +371,7 @@ function EmbedNFT({ item }: { item: FarCastEmbedMeta }) {
           View
         </button>
       </div>
-    </PostCardNftWrapper>
+    </div>
   );
 }
 
@@ -234,14 +398,18 @@ export function EmbedWebsite({
     >
       {(isImg(img || '') && (
         <div
-          className="img"
+          className="img w-full max-h-[200px] object-cover"
           style={{
             backgroundImage: `url(${img})`,
           }}
         />
       )) || (
         <div className="img">
-          <img src={img} alt="" />
+          <img
+            className="img w-full max-h-[200px] object-cover"
+            src={img}
+            alt=""
+          />
         </div>
       )}
       <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">
@@ -261,7 +429,7 @@ export function EmbedWebsite({
         )}
         <div className="flex justify-between items-center gap-[12px]">
           <a
-            className="text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
+            className="inline-block flex-1 line-clamp-1 text-[#718096] text-[12px] not-italic font-normal leading-[20px]"
             href={item.url}
             target="_blank"
             rel="noreferrer"
@@ -316,8 +484,19 @@ export function isImg(url?: string) {
   );
 }
 
-const EmbedBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
+function checkFarcastFrameValid(data: FarCastEmbedMeta) {
+  if (!data.fcFrame || !data.fcFrameImage) {
+    return false;
+  }
+  const buttonValue = [
+    data.fcFrameButton1 ? 1 : 0,
+    data.fcFrameButton2 ? 1 : 0,
+    data.fcFrameButton3 ? 1 : 0,
+    data.fcFrameButton4 ? 1 : 0,
+  ].join('');
+  if (!ValidFrameButtonValue.includes(buttonValue)) {
+    return false;
+  }
+
+  return true;
+}
