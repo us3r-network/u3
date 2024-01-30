@@ -168,6 +168,8 @@ export function NotificationSettingsGroup() {
       webpushSubscribed: {String(webpushSubscribed)}
       <br />
       navigator.serviceWorker: {String('serviceWorker' in navigator)}
+      <br />
+      settings: {JSON.stringify(settings)}
     </>
     // </div>
   );
