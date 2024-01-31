@@ -515,6 +515,13 @@ export function getUserinfoWithFid(fid: string) {
   });
 }
 
+export function getUserDegenTipAllowance(addr: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/degen-tip/allowance?address=${addr}`,
+    method: 'get',
+  });
+}
+
 export function postFrameActionApi(data: any) {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/frame-action/proxy`,
