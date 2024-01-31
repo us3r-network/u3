@@ -85,20 +85,21 @@ self.addEventListener('message', (event) => {
 self.addEventListener('push', (event) => {
   const { title, body, icon } = event.data.json();
   if (!body) return;
-  self.registration.showNotification(title, {
+  const defaultTitle = 'U3 - Your Web3 Gateway';
+  self.registration.showNotification(title || defaultTitle, {
     body,
     icon: icon || `${process.env.PUBLIC_URL}/logo192.png`,
   });
 });
 
-const CALL_BACK_INTERVAL = 1000 * 60 * 60;
-self.addEventListener('activate', () => {
-  console.log('activate interval subscribe......');
-  setInterval(() => {
-    console.log('fire notification!');
-    self.registration.showNotification('U3', {
-      body: 'Checkout new content on Farcaster',
-      icon: `${process.env.PUBLIC_URL}/logo192.png`,
-    });
-  }, CALL_BACK_INTERVAL);
-});
+// const CALL_BACK_INTERVAL = 1000 * 60 * 60;
+// self.addEventListener('activate', () => {
+//   console.log('activate interval subscribe......');
+//   setInterval(() => {
+//     console.log('fire notification!');
+//     self.registration.showNotification('U3', {
+//       body: 'Checkout new content on Farcaster',
+//       icon: `${process.env.PUBLIC_URL}/logo192.png`,
+//     });
+//   }, CALL_BACK_INTERVAL);
+// });
