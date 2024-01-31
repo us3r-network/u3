@@ -15,9 +15,15 @@ import {
 import { ApiRespCode } from '@/services/shared/types';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import Switch from '../common/switch/Switch';
+import ColorButton from '../common/button/ColorButton';
 
 export function NotificationSettingsGroup() {
-  const { currFid } = useFarcasterCtx();
+  const {
+    currFid,
+    isConnected: isLoginFarcaster,
+    currUserInfo: farcasterUserInfo,
+    openFarcasterQR,
+  } = useFarcasterCtx();
   const { isLogin } = useLogin();
   const [settings, setSettings] = useState<NotificationSetting[]>([]);
   const [loadingTypes, setLoadingTypes] = useState<NotificationSettingType[]>(
@@ -161,6 +167,15 @@ export function NotificationSettingsGroup() {
         }
         return 'Subscribe Notifications';
       })()}
+
+      {/* {!(isLoginFarcaster && farcasterUserInfo) && (
+        <ColorButton
+          className="h-[24px] text-[12px] font-normal"
+          onClick={() => openFarcasterQR()}
+        >
+          Login Farcaster
+        </ColorButton>
+      )} */}
     </>
     // </div>
   );
