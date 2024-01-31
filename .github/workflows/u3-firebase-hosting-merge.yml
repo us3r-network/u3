@@ -7,6 +7,7 @@ name: Deploy u3 to Firebase Hosting on merge
     branches:
       - u3
       - u3-dev
+      - u3-pwa
 jobs:
   prod_build_and_deploy:
     if: github.ref == 'refs/heads/u3'
@@ -46,6 +47,7 @@ jobs:
           REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
           REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
           REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -92,6 +94,7 @@ jobs:
           REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
           REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
           REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
@@ -99,4 +102,51 @@ jobs:
           channelId: live
           projectId: us3r-network
           target: u3-dev
+          entryPoint: "./apps/u3/"
+  pwa_build_and_deploy:
+    if: github.ref == 'refs/heads/u3-pwa'
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://dev.u3.xyz
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+      - run: |
+          cd apps/u3
+          yarn install --ignore-engines
+          yarn build
+        env:
+          CI: false
+          REACT_APP_NAME: "U3 DEV"
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
+          REACT_APP_S3_API_BASE_URL: "${{ vars.REACT_APP_S3_API_BASE_URL }}"
+          REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: "${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}"
+          REACT_APP_CERAMIC_HOST: "${{ vars.REACT_APP_CERAMIC_HOST }}"
+          REACT_APP_CHROME_EXTENSION_URL: "${{ vars.REACT_APP_CHROME_EXTENSION_URL }}"
+          REACT_APP_API_SOCIAL_URL: "${{ vars.REACT_APP_API_SOCIAL_URL }}"
+          REACT_APP_XMTP_ENV: "${{ vars.REACT_APP_XMTP_ENV }}"
+          REACT_APP_LENS_ENV: "${{ vars.REACT_APP_LENS_ENV }}"
+          REACT_APP_FARCASTER_HUB_URL: "${{ vars.REACT_APP_FARCASTER_HUB_URL }}"
+          REACT_APP_FARCASTER_NETWORK: "${{ vars.REACT_APP_FARCASTER_NETWORK }}"
+          REACT_APP_NFT_STORAGE_API_KEY: "${{ vars.REACT_APP_NFT_STORAGE_API_KEY }}"
+          REACT_APP_DAPP_NFT_TO_MINT: "${{ vars.REACT_APP_DAPP_NFT_TO_MINT }}"
+          REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_DAPP_NFT_FIXED_PRICE_STRATEGY }}"
+          REACT_APP_DAPP_NFT_CHAIN_ID: "${{ vars.REACT_APP_DAPP_NFT_CHAIN_ID }}"
+          REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_DAPP_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_CASTER_NFT_TO_MINT: "${{ vars.REACT_APP_CASTER_NFT_TO_MINT }}"
+          REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY: "${{ vars.REACT_APP_CASTER_NFT_FIXED_PRICE_STRATEGY }}"
+          REACT_APP_CASTER_NFT_CHAIN_ID: "${{ vars.REACT_APP_CASTER_NFT_CHAIN_ID }}"
+          REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS: "${{ vars.REACT_APP_CASTER_NFT_RECIPIENT_ADDRESS }}"
+          REACT_APP_VAPID_PUBLIC_KEY: "${{ vars.REACT_APP_VAPID_PUBLIC_KEY }}"
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_US3R_NETWORK }}"
+          channelId: live
+          projectId: us3r-network
+          target: u3-pwa
           entryPoint: "./apps/u3/"
