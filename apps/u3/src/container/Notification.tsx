@@ -6,7 +6,7 @@ import {
 } from '@/contexts/notification/NotificationStoreCtx';
 import NotificationList from '@/components/notification/ui/NotificationList';
 import { NotificationSettingsGroup } from '@/components/notification/PushNotificationsToogleBtn';
-import isInstalledPwa from '@/utils/shared/isInstalledPwa';
+// import isInstalledPwa from '@/utils/shared/isInstalledPwa';
 
 export default function Notification() {
   const isAuthenticated = useIsAuthenticated();
@@ -28,14 +28,14 @@ function NotificationPage() {
   const { notifications, loading, hasMore, loadMore, farcasterUserData } =
     useNotificationStore();
 
-  const isPwa = isInstalledPwa();
+  // const isPwa = isInstalledPwa();
   return (
     <>
-      {isPwa && (
-        <div className="text-[white] flex gap-2 pt-[10px]">
-          <NotificationSettingsGroup />
-        </div>
-      )}
+      {/* {isPwa && ( */}
+      <div className="text-[white] flex gap-2 pt-[10px]">
+        <NotificationSettingsGroup />
+      </div>
+      {/* )} */}
 
       <NotificationList
         notifications={notifications}

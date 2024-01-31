@@ -17,24 +17,20 @@ import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
 import { useNav } from '../../contexts/NavCtx';
-import { NotificationSettingsGroup } from './PushNotificationsToogleBtn';
-import isInstalledPwa from '@/utils/shared/isInstalledPwa';
+// import { NotificationSettingsGroup } from './PushNotificationsToogleBtn';
 
 export default function NotificationModal() {
   const { openNotificationModal, setOpenNotificationModal } = useNav();
   const { notifications, loading, hasMore, loadMore, farcasterUserData } =
     useNotificationStore();
-  const isPwa = isInstalledPwa();
   return (
     <Wrapper open={openNotificationModal}>
       <Body>
         <Header>
           <Title>Notifications</Title>
-          {isPwa && (
-            <div className="flex-1 text-[white] flex overflow-hidden whitespace-nowrap">
-              <NotificationSettingsGroup />
-            </div>
-          )}
+          {/* <div className="text-[white] flex gap-[100px] w-[100px] overflow-hidden whitespace-nowrap">
+            <NotificationSettingsGroup />
+          </div> */}
           <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
         </Header>
         {notifications && notifications.length > 0 && (
