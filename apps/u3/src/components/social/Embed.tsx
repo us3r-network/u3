@@ -11,6 +11,7 @@ import {
 import dayjs from 'dayjs';
 import { toHex } from 'viem';
 import { toast } from 'react-toastify';
+import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import {
   FarCast,
   FarCastEmbedMeta,
@@ -21,6 +22,7 @@ import {
   getFarcasterEmbedCast,
   getFarcasterEmbedMetadata,
   postFrameActionApi,
+  postFrameActionRedirectApi,
 } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
@@ -29,6 +31,8 @@ import ColorButton from '../common/button/ColorButton';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { FARCASTER_NETWORK } from '@/constants/farcaster';
 import useFarcasterCastId from '@/hooks/social/farcaster/useFarcasterCastId';
+import ModalContainerFixed from '../common/modal/ModalContainerFixed';
+import { cn } from '@/lib/utils';
 
 const ValidFrameButtonValue = [
   [0, 0, 0, 0].join(''),
@@ -172,6 +176,7 @@ function EmbedCastFrame({
   const castId: CastId = useFarcasterCastId({ cast });
   const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
 
+  const [frameRedirect, setFrameRedirect] = useState('');
   const [frameData, setFrameData] = useState<FarCastEmbedMeta>(data);
 
   const postFrameAction = useCallback(
@@ -186,10 +191,9 @@ function EmbedCastFrame({
         toast.error('no encryptedSigner');
         return;
       }
-      const url = data.fcFramePostUrl || data.url;
       const trustedDataResult = await makeFrameAction(
         {
-          url: Buffer.from(url),
+          url: Buffer.from(data.url),
           buttonIndex: index,
           castId,
         },
@@ -202,10 +206,11 @@ function EmbedCastFrame({
       if (trustedDataResult.isErr()) {
         throw new Error(trustedDataResult.error.message);
       }
+
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
         fid: currFid,
-        url,
+        url: data.fcFramePostUrl || data.url,
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
         buttonIndex: index,
@@ -220,49 +225,128 @@ function EmbedCastFrame({
         ).toString('hex'),
       };
       const postData = {
+        actionUrl: data.fcFramePostUrl || data.url,
         untrustedData,
         trustedData,
       };
-      const resp = await postFrameActionApi(postData);
-      if (resp.data.code !== 0) {
-        toast.error(resp.data.msg);
-        return;
+      const buttonAction = data[`fcFrameButton${index}Action`] || 'post';
+      console.log('buttonAction', buttonAction);
+      if (buttonAction === 'post') {
+        const resp = await postFrameActionApi(postData);
+        if (resp.data.code !== 0) {
+          toast.error(resp.data.msg);
+          return;
+        }
+        setFrameData(resp.data.data?.metadata);
+      } else if (buttonAction === 'post_redirect') {
+        const resp = await postFrameActionRedirectApi(postData);
+        if (resp.data.code !== 0) {
+          toast.error(resp.data.msg);
+          return;
+        }
+        setFrameRedirect(resp.data.data?.redirectUrl || '');
       }
-      setFrameData(resp.data.data?.metadata);
     },
     [frameData, currFid, encryptedSigner, castId]
   );
   return (
-    <div className="border rounded-xl overflow-hidden border-[#39424c]">
-      <div className="h-80 overflow-hidden flex items-center">
-        <img src={frameData.fcFrameImage} alt="" />
-      </div>
-      {isConnected && (
-        <div className="flex items-center justify-around gap-3 mt-3">
-          {[
-            frameData.fcFrameButton1,
-            frameData.fcFrameButton2,
-            frameData.fcFrameButton3,
-            frameData.fcFrameButton4,
-          ].map((item, idx) => {
-            if (!item) return null;
-            return (
-              <ColorButton
-                key={idx}
-                type="button"
-                className="flex-grow p-2 m-2 mt-1 rounded-xl"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  postFrameAction(idx + 1);
-                }}
-              >
-                {item}
-              </ColorButton>
-            );
-          })}
+    <>
+      <div className="border rounded-xl overflow-hidden border-[#39424c]">
+        <div className="h-80 overflow-hidden flex items-center">
+          <img src={frameData.fcFrameImage} alt="" />
         </div>
+        {isConnected && (
+          <div className="flex items-center justify-around gap-3 mt-3">
+            {[
+              frameData.fcFrameButton1,
+              frameData.fcFrameButton2,
+              frameData.fcFrameButton3,
+              frameData.fcFrameButton4,
+            ].map((item, idx) => {
+              if (!item) return null;
+              return (
+                <ColorButton
+                  key={idx}
+                  type="button"
+                  className="flex-grow p-2 m-2 mt-1 rounded-xl"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    postFrameAction(idx + 1);
+                  }}
+                >
+                  {item}
+                </ColorButton>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      {frameRedirect && (
+        <EmbedCastFrameRedirect
+          url={frameRedirect}
+          resetUrl={() => {
+            setFrameRedirect('');
+          }}
+        />
       )}
-    </div>
+    </>
+  );
+}
+
+function EmbedCastFrameRedirect({
+  url,
+  resetUrl,
+}: {
+  url: string;
+  resetUrl: () => void;
+}) {
+  return (
+    <ModalContainerFixed
+      open={!!url}
+      closeModal={() => {
+        resetUrl();
+      }}
+      className="w-full md:w-[420px]"
+    >
+      <div
+        className={cn(
+          'flex flex-col gap-5 w-full overflow-hidden rounded-2xl p-5',
+          ' text-white bg-inherit  max-h-[600px] overflow-y-auto'
+        )}
+      >
+        <div className="flex items-center justify-between text-[#718096] text-base">
+          <h3>⚠️ Leaving u3</h3>
+          <button type="button" onClick={resetUrl}>
+            <Cross2Icon />
+          </button>
+        </div>
+        <p className="">
+          You are about to leave u3, please connect your wallet carefully and
+          take care of your funds.
+        </p>
+        <div className="flex items-end justify-between gap-5">
+          <button
+            type="button"
+            className={cn(
+              'h-10 w-full bg-white text-black font-bold rounded-xl',
+              'flex items-center justify-center'
+            )}
+            onClick={resetUrl}
+          >
+            <CaretLeftIcon className="h-7 w-7" /> back to u3
+          </button>
+          <button
+            type="button"
+            className="h-10 bg-[#F41F4C] font-bold rounded-xl w-36"
+            onClick={() => {
+              window.open(url, '_blank');
+            }}
+          >
+            Still leave
+          </button>
+        </div>
+      </div>
+    </ModalContainerFixed>
   );
 }
 
