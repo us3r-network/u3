@@ -22,11 +22,11 @@ class WebPushService {
     if (!registration) {
       throw new Error('Service Worker not ready');
     }
-    if (!registration?.pushManager) {
-      throw new Error('PushManager not ready');
+    if (!('pushManager' in registration)) {
+      throw new Error("PushManager isn't available");
     }
-    if (!registration?.pushManager?.subscribe) {
-      throw new Error('PushManager subscribe not ready');
+    if (!('subscribe' in registration.pushManager)) {
+      throw new Error('subscribe method not available');
     }
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,

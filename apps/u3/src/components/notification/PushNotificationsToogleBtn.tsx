@@ -104,8 +104,6 @@ export function NotificationSettingsGroup() {
       !!setting?.subscription
   );
 
-  console.log('settings', settings);
-
   const webpushLoading = loadingTypes.includes(
     NotificationSettingType.WEB_PUSH
   );
@@ -114,9 +112,7 @@ export function NotificationSettingsGroup() {
   const handlePushChange = async (checked: boolean) => {
     try {
       if (!checked) {
-        toast.info('checked: false');
         const payload = await WebPushService.unsubscribe();
-        toast.info(`payload: ${JSON.stringify(payload)}`);
         await upsertSetting({
           type: NotificationSettingType.WEB_PUSH,
           fid: currFid ? String(currFid) : undefined,
@@ -124,28 +120,14 @@ export function NotificationSettingsGroup() {
           subscription: payload ? JSON.stringify(payload) : undefined,
         });
       } else {
-        toast.info('checked: true');
         if (!WebPushService.hasPermission()) {
           await WebPushService.requestPermission();
         }
-        toast.info(`public_key: ${process.env.REACT_APP_VAPID_PUBLIC_KEY}`);
-        toast.info(
-          `Service Worker JSON: ${JSON.stringify(
-            (navigator as any)?.serviceWorker
-          )}`
-        );
-
-        if (!(navigator as any)?.serviceWorker?.ready) {
-          toast.error('Service Worker not ready');
-        }
         let subscription = await WebPushService.getSubscription();
-        toast.info(`getSubscription: ${JSON.stringify(subscription)}`);
         if (!subscription) {
           subscription = await WebPushService.subscribe();
-          toast.info(`subscription: ${JSON.stringify(subscription)}`);
         }
 
-        // subscribeToWebPush(subscription); // server
         await upsertSetting({
           type: NotificationSettingType.WEB_PUSH,
           fid: currFid ? String(currFid) : undefined,
@@ -156,7 +138,6 @@ export function NotificationSettingsGroup() {
       }
     } catch (error) {
       toast.error(error.message);
-      toast.info(`error json: ${JSON.stringify(error)}`);
       console.error(error);
     }
   };
