@@ -44,7 +44,10 @@ export default function GalleryItem({
   } = useCasterTokenInfoWithTokenId({
     tokenId: Number(tokenId),
   });
-  const saleStautsWithPoster = getSaleStatus(data.saleStart, data.saleEnd);
+  const saleStautsWithPoster = getSaleStatus(
+    Number(data.saleStart),
+    Number(data.saleEnd)
+  );
   const saleStatus =
     data?.saleStart && data?.saleEnd
       ? saleStautsWithPoster

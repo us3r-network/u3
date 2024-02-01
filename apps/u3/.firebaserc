@@ -10,6 +10,9 @@
         ],
         "u3-dev": [
           "us3r-u3-dev"
+        ],
+        "u3-pwa": [
+          "us3r-u3-pwa"
         ]
       }
     }

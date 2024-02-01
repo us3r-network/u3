@@ -515,9 +515,37 @@ export function getUserinfoWithFid(fid: string) {
   });
 }
 
+export function getUserDegenTipAllowance(addr: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/degen-tip/allowance?address=${addr}`,
+    method: 'get',
+  });
+}
+
 export function postFrameActionApi(data: any) {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/frame-action/proxy`,
+    method: 'post',
+    data,
+  });
+}
+
+export function postFrameActionRedirectApi(data: any) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/frame-action-redirect/proxy`,
+    method: 'post',
+    data,
+  });
+}
+
+export function notifyTipApi(data: {
+  txHash: string;
+  amount: number;
+  fromFid: number;
+  castHash: string;
+}) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/tip/notify`,
     method: 'post',
     data,
   });

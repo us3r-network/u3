@@ -95,7 +95,7 @@ export default function useCasterTokenInfoWithTokenId({
   const { saleStart, saleEnd } = tokenInfo;
 
   const saleStatus = useMemo(
-    () => getSaleStatus(String(saleStart), String(saleEnd)),
+    () => getSaleStatus(Number(saleStart), Number(saleEnd)),
     [saleStart, saleEnd]
   );
 
