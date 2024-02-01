@@ -210,7 +210,7 @@ function EmbedCastFrame({
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
         fid: currFid,
-        url: data.fcFramePostUrl || data.url,
+        url: frameData.fcFramePostUrl || frameData.url,
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
         buttonIndex: index,
@@ -225,11 +225,11 @@ function EmbedCastFrame({
         ).toString('hex'),
       };
       const postData = {
-        actionUrl: data.fcFramePostUrl || data.url,
+        actionUrl: frameData.fcFramePostUrl || frameData.url,
         untrustedData,
         trustedData,
       };
-      const buttonAction = data[`fcFrameButton${index}Action`] || 'post';
+      const buttonAction = frameData[`fcFrameButton${index}Action`] || 'post';
       console.log('buttonAction', buttonAction);
       if (buttonAction === 'post') {
         const resp = await postFrameActionApi(postData);
@@ -313,6 +313,9 @@ function EmbedCastFrameRedirect({
           'flex flex-col gap-5 w-full overflow-hidden rounded-2xl p-5',
           ' text-white bg-inherit  max-h-[600px] overflow-y-auto'
         )}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
       >
         <div className="flex items-center justify-between text-[#718096] text-base">
           <h3>⚠️ Leaving u3</h3>
