@@ -29,10 +29,9 @@ import { DegenABI, DegenAddress } from '@/services/social/abi/degen/contract';
 import { FarCast } from '@/services/social/types';
 import DegenTip from '@/components/common/icons/DegenTip';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
-import { Input } from '@/components/ui/input';
-import ColorButton from '@/components/common/button/ColorButton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export default function FCastTips({
   userData,
@@ -49,6 +48,7 @@ export default function FCastTips({
     address: '',
     fname: '',
   });
+  const { currFid, encryptedSigner } = useFarcasterCtx();
   const [allowance, setAllowance] = useState<string>('0');
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +59,8 @@ export default function FCastTips({
       const { data } = await getUserinfoWithFid(userData.fid);
       setUserInfo(data.data);
       setAllowance(allowanceData.data?.[0]?.tip_allowance || '0');
+      setReplyTipAllowance(allowanceData.data?.[0]?.tip_allowance || '0');
+      setReplyTipAmountTotal('0');
     } catch (e) {
       console.error(e);
     } finally {
@@ -66,12 +68,54 @@ export default function FCastTips({
     }
   }, [userData, address]);
 
+  const directReply = useCallback(async () => {
+    const allowanceValue = getReplyTipAmount();
+    try {
+      const castToReply = (
+        await makeCastAdd(
+          {
+            text: `${allowanceValue} $DEGEN`,
+            embeds: [],
+            embedsDeprecated: [],
+            mentions: [],
+            mentionsPositions: [],
+            parentCastId: {
+              hash: Buffer.from(cast.hash.data),
+              fid: Number(cast.fid),
+            },
+          },
+          { fid: currFid, network: FARCASTER_NETWORK },
+          encryptedSigner
+        )
+      )._unsafeUnwrap();
+      const r = await FARCASTER_WEB_CLIENT.submitMessage(castToReply);
+      if (r.isErr()) {
+        throw new Error(r.error.message);
+      }
+      setReplyTipAmount(allowanceValue);
+      setReplyTipTimes(Number(getReplyTipTimes()) - 1);
+      setReplyTipAmountTotal(
+        (
+          Number(getReplyTipAmountTotal()) + Number(getReplyTipAmount())
+        ).toString()
+      );
+      toast.success('allowance tip posted');
+    } catch (error) {
+      console.error(error);
+      toast.success('allowance tip failed');
+    }
+  }, [currFid, encryptedSigner, cast]);
+
   return (
     <>
       <div
         className="flex items-center gap-2 font-[12px] cursor-pointer"
         onClick={(e) => {
           e.stopPropagation();
+          const replyDirect =
+            getUseReplyTipDefault() &&
+            Number(getReplyTipTimes()) > 0 &&
+            Number(getReplyTipAmountTotal()) < Number(getReplyTipAllowance());
           if (!isLoginU3) {
             loginU3();
             return;
@@ -80,6 +124,12 @@ export default function FCastTips({
             openConnectModal();
             return;
           }
+
+          if (replyDirect) {
+            directReply();
+            return;
+          }
+
           loadUserinfo();
           setOpenModal(true);
         }}
@@ -195,9 +245,10 @@ function TipTransaction({
   });
   const network = useNetwork();
   const [tipAmount, setTipAmount] = useState<number>(tipsCount[1]);
-  const [allowanceValue, setAllowanceValue] = useState('0');
+  const [allowanceValue, setAllowanceValue] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
   const [tab, setTab] = useState('TabReply');
+  const [count, setCount] = useState(0);
 
   const tipAction = useCallback(async () => {
     const left = result?.data?.formatted?.toString() || '0';
@@ -267,6 +318,9 @@ function TipTransaction({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      setReplyTipAmount(allowanceValue);
+      setReplyTipAmountTotal(allowanceValue);
+      setReplyTipTimes(5);
       toast.success('allowance tip posted');
       successCallback?.();
     } catch (error) {
@@ -276,11 +330,12 @@ function TipTransaction({
   }, [allowanceValue, currFid, encryptedSigner]);
 
   useEffect(() => {
-    const tabExist = localStorage.getItem('tipTab');
-    if (tabExist) {
-      setTab(tabExist);
+    if (Number(allowance) > 0) {
+      setTab('TabReply');
     }
-  }, []);
+  }, [allowance]);
+
+  const useAllowance = getUseReplyTipDefault();
 
   const allowanceNum = Number.isNaN(Number(allowance)) ? 0 : Number(allowance);
 
@@ -295,37 +350,90 @@ function TipTransaction({
       }}
       className="h-60"
     >
-      <TabsList className="grid w-full grid-cols-2 mb-5">
-        <TabsTrigger value="TabReply">Tip via Reply</TabsTrigger>
-        <TabsTrigger value="TabTransaction">Tip via Transaction</TabsTrigger>
+      <TabsList className="flex gap-5 justify-start w-full mb-7 bg-inherit">
+        <TabsTrigger
+          value="TabReply"
+          className={cn(
+            'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
+          )}
+        >
+          Allowance
+        </TabsTrigger>
+        <TabsTrigger
+          value="TabTransaction"
+          className={cn(
+            'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
+          )}
+        >
+          Token
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="TabReply">
-        <div className="flex flex-col gap-6 pt-3">
-          <div className="flex">
-            <div>Tip Allowance</div>
-            <div>: {allowance} $DEGEN</div>
+        <div className="flex flex-col gap-5">
+          <div className="flex gap-1 items-center justify-between">
+            {tipsCount.map((item) => {
+              const isAllowance = allowanceNum >= item;
+              return (
+                <div
+                  key={item}
+                  className={cn(
+                    'border bg-white text-black text-sm text-center rounded-full p-2 min-w-[100px]',
+                    allowanceValue === `${item}` && 'text-[#F41F4C]',
+                    (!isAllowance && 'cursor-not-allowed opacity-70') ||
+                      'hover:cursor-pointer'
+                  )}
+                  onClick={() => {
+                    if (isAllowance) setAllowanceValue(`${item}`);
+                  }}
+                >
+                  ${item}
+                </div>
+              );
+            })}
           </div>
-          <div className="flex items-center gap-2">
-            <Input
-              type="number"
-              className="w-full border border-[#39424C] rounded-md p-1 px-2 text-white bg-[#1B1E23] outline-none"
-              placeholder={`${allowanceNum}`}
-              value={allowanceValue}
-              onChange={(e) => {
-                setAllowanceValue(e.target.value);
-              }}
-            />
-            <span>$DEGEN</span>
+          <div className="flex items-center gap-1">
+            <span className="mr-2">or</span>
+            <div className="flex flex-grow items-center border border-[#39424C] rounded-full px-3">
+              <input
+                type="number"
+                className="w-full p-1 px-2 text-white bg-[#1B1E23] outline-none"
+                placeholder={`Max ${allowanceNum}`}
+                value={allowanceValue}
+                onChange={(e) => {
+                  setAllowanceValue(e.target.value);
+                }}
+              />
+              <span>$DEGEN</span>
+            </div>
           </div>
           <div>
-            <ColorButton
-              className="h-9 w-full"
+            <button
+              type="button"
+              className="w-full font-bold bg-[#F41F4C] text-white rounded-md p-1 hover:cursor-pointer"
               onClick={() => {
                 allowanceAction();
               }}
             >
-              Reply
-            </ColorButton>
+              Tip by Reply & Upvote
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="tip-reply-default"
+              className="border border-white"
+              checked={useAllowance}
+              onCheckedChange={(v) => {
+                if (v) {
+                  setUseReplyTipDefault();
+                } else {
+                  setUseReplyTipDefault('false');
+                }
+                setCount(count + 1);
+              }}
+            />
+            <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Use as default for next 5 tips
+            </p>
           </div>
         </div>
       </TabsContent>
@@ -337,42 +445,88 @@ function TipTransaction({
                 <div
                   key={item}
                   className={cn(
-                    'border bg-white text-black text-sm text-center rounded-full p-2 min-w-[80px] hover:cursor-pointer',
+                    'border bg-white text-black text-sm text-center rounded-full p-2 min-w-[100px] hover:cursor-pointer',
                     tipAmount === item && 'text-[#F41F4C]'
                   )}
                   onClick={() => {
                     setTipAmount(item);
                   }}
                 >
-                  {item}
+                  ${item}
                 </div>
               );
             })}
           </div>
           <div className="flex items-center gap-1">
             <span className="mr-2">or</span>
-            <input
-              type="number"
-              className="w-full border border-[#39424C] rounded-md p-1 px-2 text-white bg-[#1B1E23] outline-none"
-              value={tipAmount.toString()}
-              onChange={(e) => {
-                setTipAmount(Number(e.target.value));
-              }}
-            />
-            <span>$DEGEN</span>
+            <div className="flex flex-grow items-center border border-[#39424C] rounded-full px-3">
+              <input
+                type="number"
+                className="w-full p-1 px-2 text-white bg-[#1B1E23] outline-none"
+                value={tipAmount.toString()}
+                onChange={(e) => {
+                  setTipAmount(Number(e.target.value));
+                }}
+              />
+              <span>$DEGEN</span>
+            </div>
           </div>
-          <button
-            type="button"
-            className="w-full font-bold bg-[#F41F4C] text-white rounded-md p-1 hover:cursor-pointer"
-            onClick={tipAction}
-          >
-            Pay
-          </button>
-          <p className="text-center text-[#718096]">
-            to @{fname} (0x{shortPubKey(address, { len: 4 })})
-          </p>
+          <div>
+            <button
+              type="button"
+              className="w-full font-bold bg-[#F41F4C] text-white rounded-md p-1 hover:cursor-pointer"
+              onClick={tipAction}
+            >
+              Pay & Upvote
+            </button>
+          </div>
+          <div className=" text-[#718096]">
+            <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              to @{fname} (0x{shortPubKey(address, { len: 4 })})
+            </p>
+          </div>
         </div>
       </TabsContent>
     </Tabs>
   );
+}
+
+function setReplyTipAllowance(allowance: string) {
+  localStorage.setItem('tipAllowance', allowance);
+}
+
+function getReplyTipAllowance() {
+  return localStorage.getItem('tipAllowance') || '0';
+}
+
+function setReplyTipAmount(num: string) {
+  localStorage.setItem('tipReplyAmount', num);
+}
+
+function setReplyTipAmountTotal(num: string) {
+  localStorage.setItem('tipReplyAmountTotal', num);
+}
+
+function getReplyTipAmountTotal() {
+  return localStorage.getItem('tipReplyAmountTotal') || '0';
+}
+
+function getReplyTipAmount() {
+  return localStorage.getItem('tipReplyAmount') || '0';
+}
+
+function setReplyTipTimes(times: number) {
+  localStorage.setItem('tipReplyTimes', times.toString());
+}
+
+function getReplyTipTimes() {
+  return localStorage.getItem('tipReplyTimes') || '0';
+}
+
+function setUseReplyTipDefault(value: string = 'true') {
+  localStorage.setItem('useReplyTipDefault', value);
+}
+
+function getUseReplyTipDefault() {
+  return localStorage.getItem('useReplyTipDefault') === 'true';
 }
