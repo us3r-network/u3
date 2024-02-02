@@ -41,12 +41,12 @@ module.exports = {
 
       // Replace include option for babel loader with exclude
       // so babel will handle workspace projects as well.
-      config.module.rules[1].oneOf.forEach((r) => {
-        if (r.loader && r.loader.indexOf('babel') !== -1) {
-          r.exclude = /node_modules/;
-          delete r.include;
-        }
-      });
+      // config.module.rules[1].oneOf.forEach((r) => {
+      //   if (r.loader && r.loader.indexOf('babel') !== -1) {
+      //     r.exclude = /node_modules/;
+      //     delete r.include;
+      //   }
+      // });
       config.resolve.fallback = {
         assert: require.resolve('assert'),
         buffer: require.resolve('buffer'),

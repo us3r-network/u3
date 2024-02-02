@@ -542,11 +542,19 @@ export function notifyTipApi(data: {
   txHash: string;
   amount: number;
   fromFid: number;
+  type: string;
   castHash: string;
 }) {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-bot/tip/notify`,
     method: 'post',
     data,
+  });
+}
+
+export function getCastTipsDetail(castHash: string) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/${castHash}/tips`,
+    method: 'get',
   });
 }

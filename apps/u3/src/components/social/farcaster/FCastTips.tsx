@@ -92,6 +92,14 @@ export default function FCastTips({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      // notify
+      await notifyTipApi({
+        fromFid: currFid,
+        amount: Number(allowanceValue),
+        txHash: '',
+        type: 'Allowance',
+        castHash: Buffer.from(cast.hash.data).toString('hex'),
+      });
       setReplyTipAmount(allowanceValue);
       setReplyTipTimes(Number(getReplyTipTimes()) - 1);
       setReplyTipAmountTotal(
@@ -281,6 +289,7 @@ function TipTransaction({
           fromFid: currFid,
           amount: tipAmount,
           txHash: degenTxHash.hash,
+          type: 'Token',
           castHash,
         });
         toast.success('tip success');
@@ -318,6 +327,13 @@ function TipTransaction({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      await notifyTipApi({
+        fromFid: currFid,
+        amount: Number(allowanceValue),
+        txHash: '',
+        type: 'Allowance',
+        castHash: Buffer.from(cast.hash.data).toString('hex'),
+      });
       setReplyTipAmount(allowanceValue);
       setReplyTipAmountTotal(allowanceValue);
       setReplyTipTimes(5);
