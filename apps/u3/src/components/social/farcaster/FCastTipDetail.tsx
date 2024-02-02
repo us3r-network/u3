@@ -71,7 +71,7 @@ export default function FCastTipDetail({ cast }: { cast: FarCast }) {
           setOpen={setOpenModal}
           loading={loading}
           details={tipDetails}
-          tipsTotalAmount={cast.tipsTotalAmount}
+          tipsTotalAmount={tipDetails.reduce((acc, cur) => acc + cur.amount, 0)}
         />
       )}
     </>
