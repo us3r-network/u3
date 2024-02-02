@@ -69,6 +69,8 @@ export type FarCast = {
   repliesCount: string | null;
   comments?: string[];
   comment_count: string | null;
+
+  tipsTotalAmount: number;
 };
 
 export enum SocialPlatform {

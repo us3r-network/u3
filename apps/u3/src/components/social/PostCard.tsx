@@ -275,7 +275,7 @@ export function PostCardUserInfo({
 }
 
 const PostCardUserInfoWrapper = styled.div`
-  flex: 1;
+  /* flex: 1; */
   display: flex;
   align-items: flex-start;
   gap: 10px;

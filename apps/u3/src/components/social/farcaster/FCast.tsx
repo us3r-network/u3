@@ -22,7 +22,6 @@ import {
   PostCardActionsWrapper,
   PostCardContentWrapper,
   PostCardFooterWrapper,
-  PostCardHeaderWrapper,
   PostCardShowMoreWrapper,
   PostCardUserInfo,
   PostCardWrapper,
@@ -40,6 +39,7 @@ import { pinupCastApi } from '@/services/social/api/farcaster';
 import useLogin from '@/hooks/shared/useLogin';
 import { SaveButton } from '@/components/shared/button/SaveButton';
 import FCastTips from './FCastTips';
+import FCastTipDetail from './FCastTipDetail';
 
 export default function FCast({
   cast,
@@ -70,6 +70,7 @@ export default function FCast({
     farcasterUserData,
     farcasterUserDataObj,
   });
+  const [count, setCount] = useState(0);
   const [showMore, setShowMore] = useState(false);
   const { following, pinupHashes, updatePinupHashes } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =
@@ -159,7 +160,7 @@ export default function FCast({
         navigate(`/social/post-detail/fcast/${id}`);
       }}
     >
-      <PostCardHeaderWrapper>
+      <div className="flex items-center gap-5">
         <PostCardUserInfo
           data={{
             platform: SocialPlatform.Farcaster,
@@ -169,13 +170,21 @@ export default function FCast({
             createdAt: cast.created_at || cast.createdAt,
           }}
         />
+        <FCastTipDetail cast={cast} />
+        <div className="flex-grow" />
         <div
           className="flex items-center gap-2"
           onClick={(e) => {
             e.stopPropagation();
           }}
         >
-          <FCastTips userData={userData} cast={cast} />
+          <FCastTips
+            userData={userData}
+            cast={cast}
+            updateCb={() => {
+              setCount(count + 1);
+            }}
+          />
           {isAdmin && (
             <Button
               className={cn(
@@ -192,28 +201,8 @@ export default function FCast({
               <ArrowUpIcon />
             </Button>
           )}
-          {/* {showMenuBtn && (
-            <div>
-              <PostCardMenuBtn
-                data={{
-                  name: userData.display,
-                  handle: userData.userName,
-                }}
-                isFollowed={followed}
-                followPending={isPending}
-                unfollowPending={isPending}
-                followAction={() => {
-                  if (followed) {
-                    unfollowAction(userData.fid);
-                  } else {
-                    followAction(userData.fid);
-                  }
-                }}
-              />
-            </div>
-          )} */}
         </div>
-      </PostCardHeaderWrapper>
+      </div>
 
       <PostCardContentWrapper ref={viewRef} showMore={showMore}>
         <FCastText cast={cast} farcasterUserDataObj={farcasterUserDataObj} />
