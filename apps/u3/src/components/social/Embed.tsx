@@ -196,6 +196,7 @@ function EmbedCastFrame({
           url: Buffer.from(data.url),
           buttonIndex: index,
           castId,
+          inputText: Buffer.from(''),
         },
         {
           fid: currFid,
