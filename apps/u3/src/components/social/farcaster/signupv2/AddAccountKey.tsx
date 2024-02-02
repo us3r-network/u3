@@ -5,11 +5,17 @@ import { optimism } from 'viem/chains';
 import { toast } from 'react-toastify';
 import { NobleEd25519Signer, ViemWalletEip712Signer } from '@farcaster/hub-web';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useAccount, usePublicClient, useWalletClient } from 'wagmi';
+import {
+  useAccount,
+  useNetwork,
+  usePublicClient,
+  useWalletClient,
+} from 'wagmi';
 import {
   waitForTransaction,
   writeContract,
   prepareWriteContract,
+  switchNetwork,
 } from '@wagmi/core';
 import * as ed25519 from '@noble/ed25519';
 
@@ -37,6 +43,7 @@ export default function AddAccountKey({
   const { address } = useAccount();
   const account = useAccount();
   const wallet = useWalletClient();
+  const network = useNetwork();
 
   const publicClient = usePublicClient({
     chainId: optimism.id,
@@ -58,6 +65,9 @@ export default function AddAccountKey({
       );
       setSigner(ed25519Signer);
       return;
+    }
+    if (network.chain?.id !== optimism.id) {
+      await switchNetwork({ chainId: optimism.id });
     }
     // const privateKey = ed25519.utils.randomPrivateKey();
     // const publicKey = toHex(ed25519.getPublicKey(privateKey));
@@ -118,7 +128,7 @@ export default function AddAccountKey({
       console.error(error);
       toast.error(error.message);
     }
-  }, [fid, account, publicClient]);
+  }, [fid, account, publicClient, network]);
 
   return (
     <div
