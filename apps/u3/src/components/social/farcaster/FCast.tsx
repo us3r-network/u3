@@ -70,6 +70,7 @@ export default function FCast({
     farcasterUserData,
     farcasterUserDataObj,
   });
+  const [count, setCount] = useState(0);
   const [showMore, setShowMore] = useState(false);
   const { following, pinupHashes, updatePinupHashes } = useFarcasterCtx();
   const { followAction, unfollowAction, isPending, isFollowing } =
@@ -177,7 +178,13 @@ export default function FCast({
             e.stopPropagation();
           }}
         >
-          <FCastTips userData={userData} cast={cast} />
+          <FCastTips
+            userData={userData}
+            cast={cast}
+            updateCb={() => {
+              setCount(count + 1);
+            }}
+          />
           {isAdmin && (
             <Button
               className={cn(

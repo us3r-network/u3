@@ -36,9 +36,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 export default function FCastTips({
   userData,
   cast,
+  updateCb,
 }: {
   userData: UserData;
   cast: FarCast;
+  updateCb: () => void;
 }) {
   const [openModal, setOpenModal] = useState(false);
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -93,6 +95,8 @@ export default function FCastTips({
         throw new Error(r.error.message);
       }
       // notify
+      cast.tipsTotalAmount =
+        (cast.tipsTotalAmount || 0) + Number(allowanceValue);
       await notifyTipApi({
         fromFid: currFid,
         amount: Number(allowanceValue),
@@ -107,6 +111,7 @@ export default function FCastTips({
           Number(getReplyTipAmountTotal()) + Number(getReplyTipAmount())
         ).toString()
       );
+      updateCb();
       toast.success('allowance tip posted');
     } catch (error) {
       console.error(error);
@@ -154,6 +159,7 @@ export default function FCastTips({
           userData={userData}
           allowance={allowance}
           cast={cast}
+          updateCb={updateCb}
         />
       )}
     </>
@@ -168,6 +174,7 @@ function TipsModal({
   userData,
   cast,
   allowance,
+  updateCb,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -176,6 +183,7 @@ function TipsModal({
   userinfo: { address: string; fname: string };
   cast: FarCast;
   allowance: string;
+  updateCb: () => void;
 }) {
   return (
     <ModalContainer
@@ -221,6 +229,7 @@ function TipsModal({
               allowance={allowance}
               successCallback={() => {
                 setOpen(false);
+                updateCb();
               }}
             />
           )) || <div>connot load valid address</div>}
@@ -292,6 +301,7 @@ function TipTransaction({
           type: 'Token',
           castHash,
         });
+        cast.tipsTotalAmount = (cast.tipsTotalAmount || 0) + tipAmount;
         toast.success('tip success');
         successCallback?.();
       } else {
@@ -327,6 +337,8 @@ function TipTransaction({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      cast.tipsTotalAmount =
+        (cast.tipsTotalAmount || 0) + Number(allowanceValue);
       await notifyTipApi({
         fromFid: currFid,
         amount: Number(allowanceValue),
