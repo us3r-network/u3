@@ -36,9 +36,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 export default function FCastTips({
   userData,
   cast,
+  updateCb,
 }: {
   userData: UserData;
   cast: FarCast;
+  updateCb: () => void;
 }) {
   const [openModal, setOpenModal] = useState(false);
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
@@ -92,6 +94,16 @@ export default function FCastTips({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      // notify
+      cast.tipsTotalAmount =
+        (cast.tipsTotalAmount || 0) + Number(allowanceValue);
+      await notifyTipApi({
+        fromFid: currFid,
+        amount: Number(allowanceValue),
+        txHash: '',
+        type: 'Allowance',
+        castHash: Buffer.from(cast.hash.data).toString('hex'),
+      });
       setReplyTipAmount(allowanceValue);
       setReplyTipTimes(Number(getReplyTipTimes()) - 1);
       setReplyTipAmountTotal(
@@ -99,6 +111,7 @@ export default function FCastTips({
           Number(getReplyTipAmountTotal()) + Number(getReplyTipAmount())
         ).toString()
       );
+      updateCb();
       toast.success('allowance tip posted');
     } catch (error) {
       console.error(error);
@@ -146,6 +159,7 @@ export default function FCastTips({
           userData={userData}
           allowance={allowance}
           cast={cast}
+          updateCb={updateCb}
         />
       )}
     </>
@@ -160,6 +174,7 @@ function TipsModal({
   userData,
   cast,
   allowance,
+  updateCb,
 }: {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -168,6 +183,7 @@ function TipsModal({
   userinfo: { address: string; fname: string };
   cast: FarCast;
   allowance: string;
+  updateCb: () => void;
 }) {
   return (
     <ModalContainer
@@ -213,6 +229,7 @@ function TipsModal({
               allowance={allowance}
               successCallback={() => {
                 setOpen(false);
+                updateCb();
               }}
             />
           )) || <div>connot load valid address</div>}
@@ -281,8 +298,10 @@ function TipTransaction({
           fromFid: currFid,
           amount: tipAmount,
           txHash: degenTxHash.hash,
+          type: 'Token',
           castHash,
         });
+        cast.tipsTotalAmount = (cast.tipsTotalAmount || 0) + tipAmount;
         toast.success('tip success');
         successCallback?.();
       } else {
@@ -318,6 +337,15 @@ function TipTransaction({
       if (r.isErr()) {
         throw new Error(r.error.message);
       }
+      cast.tipsTotalAmount =
+        (cast.tipsTotalAmount || 0) + Number(allowanceValue);
+      await notifyTipApi({
+        fromFid: currFid,
+        amount: Number(allowanceValue),
+        txHash: '',
+        type: 'Allowance',
+        castHash: Buffer.from(cast.hash.data).toString('hex'),
+      });
       setReplyTipAmount(allowanceValue);
       setReplyTipAmountTotal(allowanceValue);
       setReplyTipTimes(5);
