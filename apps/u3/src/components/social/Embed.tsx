@@ -176,6 +176,7 @@ function EmbedCastFrame({
   const castId: CastId = useFarcasterCastId({ cast });
   const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
 
+  const [frameText, setFrameText] = useState('');
   const [frameRedirect, setFrameRedirect] = useState('');
   const [frameData, setFrameData] = useState<FarCastEmbedMeta>(data);
 
@@ -196,7 +197,7 @@ function EmbedCastFrame({
           url: Buffer.from(data.url),
           buttonIndex: index,
           castId,
-          inputText: Buffer.from(''),
+          inputText: Buffer.from(frameText),
         },
         {
           fid: currFid,
@@ -215,6 +216,7 @@ function EmbedCastFrame({
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
         buttonIndex: index,
+        inputText: frameText,
         castId: {
           fid: castId.fid,
           hash: toHex(castId.hash),
@@ -248,7 +250,7 @@ function EmbedCastFrame({
         setFrameRedirect(resp.data.data?.redirectUrl || '');
       }
     },
-    [frameData, currFid, encryptedSigner, castId]
+    [frameData, currFid, encryptedSigner, castId, frameText]
   );
   return (
     <>
@@ -256,8 +258,21 @@ function EmbedCastFrame({
         <div className="h-80 overflow-hidden flex items-center">
           <img src={frameData.fcFrameImage} alt="" />
         </div>
+        {frameData.fcFrameInputText && (
+          <div className="p-3">
+            <input
+              type="text"
+              className="w-full p-3 rounded-xl bg-[#39424c] border-[#39424c] text-[#fff] placeholder-[#718096] focus:outline-none"
+              placeholder={frameData.fcFrameInputText}
+              value={frameText}
+              onChange={(e) => {
+                setFrameText(e.target.value);
+              }}
+            />
+          </div>
+        )}
         {isConnected && (
-          <div className="flex items-center justify-around gap-3 mt-3">
+          <div className="flex items-center justify-around gap-3 mt-1">
             {[
               frameData.fcFrameButton1,
               frameData.fcFrameButton2,
