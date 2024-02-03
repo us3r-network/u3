@@ -35,6 +35,7 @@ export type FarCastEmbedMeta = {
   fcFrameButton4?: string;
   fcFrameImage?: string;
   fcFramePostUrl?: string;
+  fcFrameInputText?: string;
 };
 
 export type FarCast = {
