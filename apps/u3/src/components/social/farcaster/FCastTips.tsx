@@ -314,6 +314,14 @@ function TipTransaction({
   }, [address, tipAmount, result, cast]);
 
   const allowanceAction = useCallback(async () => {
+    if (
+      Number.isNaN(Number(allowanceValue)) ||
+      Number.isNaN(Number(allowance)) ||
+      Number(allowanceValue) > Number(allowance)
+    ) {
+      toast.error('not enough allowance');
+      return;
+    }
     try {
       const castToReply = (
         await makeCastAdd(
@@ -355,7 +363,7 @@ function TipTransaction({
       console.error(error);
       toast.success('allowance tip failed');
     }
-  }, [allowanceValue, currFid, encryptedSigner]);
+  }, [allowanceValue, currFid, encryptedSigner, allowance]);
 
   useEffect(() => {
     if (Number(allowance) > 0) {
