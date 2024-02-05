@@ -107,6 +107,7 @@ export default function useChannelFeeds() {
   return {
     firstLoading,
     moreLoading,
+    loadFirstFeeds: loadChannelCasts,
     loadMoreFeeds,
     channel,
     feeds: channelFeeds,

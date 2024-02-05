@@ -104,6 +104,7 @@ export interface FarcasterContextData {
   trendChannels: FarcasterChannel[];
   trendChannelsLoading: boolean;
   farcasterChannels: FarcasterChannel[];
+  farcasterChannelsLoading: boolean;
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
   openPostModal: boolean;
@@ -155,6 +156,7 @@ export default function FarcasterProvider({
     joinChannel,
     unPinChannel,
     farcasterChannels,
+    farcasterChannelsLoading,
     getChannelFromId,
     getChannelFromUrl,
   } = useFarcasterChannel({
@@ -347,6 +349,7 @@ export default function FarcasterProvider({
         trendChannels,
         trendChannelsLoading,
         farcasterChannels,
+        farcasterChannelsLoading,
         getChannelFromId,
         getChannelFromUrl,
         openPostModal,
