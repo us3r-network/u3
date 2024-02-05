@@ -100,9 +100,6 @@ export default function CommunityLayout() {
 
   // TODO links state
 
-  console.log('channel', channel);
-  console.log('farcasterChannels', farcasterChannels);
-
   const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
   const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
 
