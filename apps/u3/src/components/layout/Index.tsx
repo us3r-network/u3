@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { isMobile } from 'react-device-detect';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
@@ -20,11 +20,20 @@ import MobileHeader from './mobile/MobileHeader';
 import MobileNav from './mobile/MobileNav';
 import { MobileGuide } from './mobile/MobileGuide';
 import AddPostMobile from '../social/AddPostMobile';
+import ClaimOnboard from '../onboard/Claim';
 
 function Layout() {
   const { ready } = useAuthentication();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const claim = searchParams.get('claim');
+
   useGAPageView();
+
+  if (claim === 'true') {
+    return <ClaimOnboard />;
+  }
+
   return (
     <LayoutWrapper id="layout-wrapper">
       {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}

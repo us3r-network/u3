@@ -558,3 +558,17 @@ export function getCastTipsDetail(castHash: string) {
     method: 'get',
   });
 }
+
+export function getClaimStatusApi({ fid }: { fid: number }) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/claim/status`,
+    method: 'get',
+  });
+}
+
+export function claimRewardApi() {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/claim`,
+    method: 'post',
+  });
+}
