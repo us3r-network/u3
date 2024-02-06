@@ -27,12 +27,14 @@ const defaultLinkURLHash = ':link';
 
 const getLinks = async ({
   domains,
+  rootParentUrls,
   currentSearchParams,
   link,
   endCursor,
   token,
 }: {
   domains: LinkDomians;
+  rootParentUrls: string[];
   currentSearchParams: any;
   link: string;
   endCursor: string;
@@ -44,6 +46,7 @@ const getLinks = async ({
       keywords: keywords.split(' ') || [],
       includeDomains: domains.includeDomains || [],
       excludeDomains: domains.excludeDomains || [],
+      rootParentUrls: rootParentUrls || [],
       urls: link === defaultLinkURLHash ? [] : [link],
       orderBy,
       endCursor,
@@ -75,6 +78,7 @@ export default function useFeedLinks() {
   const loadMore = useCallback(
     async (
       domains = defaultLinkDomians,
+      rootParentUrls = [],
       currentSearchParams = defaultLinkSearchParams,
       link = defaultLinkURLHash
     ) => {
@@ -83,6 +87,7 @@ export default function useFeedLinks() {
         setMoreLoading(true);
         const { newLinks, pageInfo } = await getLinks({
           domains,
+          rootParentUrls,
           currentSearchParams,
           link,
           endCursor,
@@ -104,6 +109,7 @@ export default function useFeedLinks() {
   const load = useCallback(
     async (
       domains = defaultLinkDomians,
+      rootParentUrls = [],
       currentSearchParams = defaultLinkSearchParams,
       link = defaultLinkURLHash
     ) => {
@@ -112,6 +118,7 @@ export default function useFeedLinks() {
         setLoading(true);
         const { newLinks, pageInfo } = await getLinks({
           domains,
+          rootParentUrls,
           currentSearchParams,
           link,
           endCursor: '',

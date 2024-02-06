@@ -22,6 +22,7 @@ export default function LinksPageMobile({
   // currentSearchParams,
   // searchParamsChange,
   getMore,
+  quickView,
 }: LinksPageProps) {
   // const navigate = useNavigate();
 
@@ -67,6 +68,10 @@ export default function LinksPageMobile({
                 data={links}
                 onItemClick={(item) => {
                   // navigate(item?.url);
+                  if (quickView) {
+                    quickView(item);
+                    return;
+                  }
                   window.open(item?.url, '_blank');
                 }}
               />
