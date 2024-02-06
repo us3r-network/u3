@@ -20,9 +20,19 @@ export default function CommunityLayout() {
     id: '',
     top: 0,
   });
-  const { farcasterChannels, farcasterChannelsLoading } = useFarcasterCtx();
+  const {
+    farcasterChannels,
+    farcasterChannelsLoading,
+    setDefaultPostChannelId,
+  } = useFarcasterCtx();
   const { channelId } = useParams();
   const channel = farcasterChannels.find((c) => c.channel_id === channelId);
+  useEffect(() => {
+    setDefaultPostChannelId(channelId);
+    return () => {
+      setDefaultPostChannelId('home');
+    };
+  }, [channelId, setDefaultPostChannelId]);
 
   // mock community info
   useEffect(
