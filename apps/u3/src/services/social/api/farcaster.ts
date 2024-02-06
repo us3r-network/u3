@@ -559,16 +559,21 @@ export function getCastTipsDetail(castHash: string) {
   });
 }
 
-export function getClaimStatusApi({ fid }: { fid: number }) {
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/claim/status`,
-    method: 'get',
+export function getClaimStatusApi() {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/activity1/status`,
+    headers: {
+      needToken: true,
+    },
   });
 }
 
 export function claimRewardApi() {
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/claim`,
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/activity1/claim`,
     method: 'post',
+    headers: {
+      needToken: true,
+    },
   });
 }

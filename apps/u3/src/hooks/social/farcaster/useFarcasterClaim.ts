@@ -4,14 +4,21 @@ import { getClaimStatusApi } from '@/services/social/api/farcaster';
 export default function useFarcasterClaim({ currFid }: { currFid: number }) {
   const [mounted, setMounted] = useState(false);
   const [claimStatus, setClaimStatus] = useState({
-    claimed: false,
+    statusCode: 100,
     amount: 100,
     msg: '',
   });
 
-  const getClaimStatus = useCallback(async (fid: number) => {
+  const getClaimStatus = useCallback(async () => {
     try {
-      const data = await getClaimStatusApi({ fid });
+      const resp = await getClaimStatusApi();
+      const { data } = resp;
+      setClaimStatus({
+        statusCode: data.data.statusCode,
+        amount: data.data.amount || 100,
+        msg: data.msg,
+      });
+      console.log('getClaimStatus', data);
     } catch (e) {
       console.error('Error getting claim status', e);
     }
@@ -19,8 +26,11 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
 
   useEffect(() => {
     if (!mounted) return;
-    if (!currFid) return;
-    getClaimStatus(currFid);
+    if (!currFid) {
+      console.log('No FID', { currFid });
+      return;
+    }
+    getClaimStatus();
   }, [getClaimStatus, mounted, currFid]);
 
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAccount } from 'wagmi';
 import { useCallback } from 'react';
+import { toast } from 'react-toastify';
 
 import useLogin from '@/hooks/shared/useLogin';
 import { cn } from '@/lib/utils';
@@ -23,18 +24,24 @@ export default function ClaimOnboard() {
   const { address } = useAccount();
 
   const claimAction = useCallback(async () => {
-    if (claimStatus.claimed) {
+    console.log('claimAction', claimStatus);
+    if (claimStatus.statusCode === 102) {
       navigate('/');
       return;
     }
     try {
-      await claimRewardApi();
-      setClaimStatus({ claimed: true, amount: 0 });
+      const resp = await claimRewardApi();
+      const { data } = resp;
+      console.log('claimRewardApi', data);
+      if (data.code !== 0) {
+        toast.error(data.msg);
+        return;
+      }
+      setClaimStatus({ statusCode: 102, amount: 0 });
       navigate('/');
     } catch (e) {
       console.error(e);
     }
-    navigate('/');
   }, [currFid, claimStatus, navigate]);
 
   return (
@@ -121,14 +128,17 @@ export default function ClaimOnboard() {
           <div>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-5 italic text-xl">
-                {(isLogin && currFid && isConnected && claimStatus.claimed && (
-                  <Checked />
-                )) || <Unchecked />}
+                {(isLogin &&
+                  currFid &&
+                  isConnected &&
+                  claimStatus.statusCode === 102 && <Checked />) || (
+                  <Unchecked />
+                )}
                 <span className="text-[#F41F4C] font-bold text-2xl md:text-3xl">
                   Step 3
                 </span>
                 <span className="hidden md:inline-block">
-                  Get 💰💰💰100 $DEGEN
+                  Get 💰💰💰{claimStatus.amount} $DEGEN
                 </span>
               </div>
               <button

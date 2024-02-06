@@ -30,36 +30,36 @@ function Layout() {
 
   useGAPageView();
 
-  if (claim === 'true') {
-    return <ClaimOnboard />;
-  }
-
   return (
     <LayoutWrapper id="layout-wrapper">
-      {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
-      {ready && isMobile ? <MobileNav /> : null}
-      {isMobile ? (
-        <MobileContentBox>
-          <Main />
-          <div className="fixed right-[20px] bottom-[80px]">
-            <AddPostMobile />
-          </div>
-        </MobileContentBox>
-      ) : (
-        <RightBox>
-          <RightInner id="layout-main-wrapper">
-            {location.pathname.includes('social') ? (
+      {(claim === 'true' && <ClaimOnboard />) || (
+        <>
+          {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
+          {ready && isMobile ? <MobileNav /> : null}
+          {isMobile ? (
+            <MobileContentBox>
               <Main />
-            ) : (
-              <MainBox className="main-box">
-                <Main />
-              </MainBox>
-            )}
-          </RightInner>
-          <DappMenu />
-        </RightBox>
+              <div className="fixed right-[20px] bottom-[80px]">
+                <AddPostMobile />
+              </div>
+            </MobileContentBox>
+          ) : (
+            <RightBox>
+              <RightInner id="layout-main-wrapper">
+                {location.pathname.includes('social') ? (
+                  <Main />
+                ) : (
+                  <MainBox className="main-box">
+                    <Main />
+                  </MainBox>
+                )}
+              </RightInner>
+              <DappMenu />
+            </RightBox>
+          )}
+          <MobileGuide />
+        </>
       )}
-      <MobileGuide />
       <ToastContainer
         position="top-right"
         autoClose={3000}

@@ -112,13 +112,13 @@ export interface FarcasterContextData {
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
   claimStatus: {
-    claimed: boolean;
+    statusCode: number;
     amount: number;
     msg?: string;
   };
   setClaimStatus: React.Dispatch<
     React.SetStateAction<{
-      claimed: boolean;
+      statusCode: number;
       amount: number;
       msg?: string;
     }>

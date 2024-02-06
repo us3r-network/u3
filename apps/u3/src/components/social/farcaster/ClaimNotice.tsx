@@ -9,7 +9,7 @@ import useLogin from '@/hooks/shared/useLogin';
 export default function ClaimNotice() {
   const { isLogin } = useLogin();
   const { isConnected, currFid, claimStatus } = useFarcasterCtx();
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(true);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const claim = searchParams.get('claim');
@@ -20,7 +20,7 @@ export default function ClaimNotice() {
 
   if (!show) return null;
 
-  if (claimStatus.claimed) return null;
+  if (claimStatus.statusCode !== 101) return null;
 
   return (
     <div
