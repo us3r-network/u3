@@ -110,6 +110,7 @@ export interface FarcasterContextData {
   openPostModal: boolean;
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
+  setDefaultPostChannelId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -183,6 +184,7 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
+  const [defaultPostChannelId, setDefaultPostChannelId] = useState('home');
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels: trendChannels, loading: trendChannelsLoading } =
     useFarcasterTrendChannel(farcasterChannels);
@@ -355,6 +357,7 @@ export default function FarcasterProvider({
         openPostModal,
         setOpenPostModal,
         setOpenModalName,
+        setDefaultPostChannelId,
       }}
     >
       {children}
@@ -415,6 +418,7 @@ export default function FarcasterProvider({
 
       <AddPostModal
         open={openPostModal}
+        defaultChannelId={defaultPostChannelId}
         closeModal={() => {
           setOpenPostModal(false);
         }}

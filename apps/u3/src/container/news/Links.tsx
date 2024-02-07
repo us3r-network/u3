@@ -27,7 +27,7 @@ function Links() {
     const groupDomain = {
       includeDomains: linkGroup?.includeDomains,
     };
-    load(groupDomain, currentSearchParams, link);
+    load(groupDomain, [], currentSearchParams, link);
   }, [group, currentSearchParams]);
 
   const getMore = useCallback(() => {
@@ -37,7 +37,7 @@ function Links() {
     const groupDomain = {
       includeDomains: linkGroup?.includeDomains,
     };
-    loadMore(groupDomain, currentSearchParams, link);
+    loadMore(groupDomain, [], currentSearchParams, link);
   }, [hasMore, loadMore, moreLoading, currentSearchParams, group]);
 
   return isMobile ? (

@@ -45,6 +45,7 @@ const Wrapper = styled.div`
   background: #1b1e23;
   border: 1px solid #39424c;
   border-radius: 10px;
+  cursor: pointer;
 `;
 const Title = styled(EllipsisText)`
   font-weight: 500;
