@@ -1,8 +1,11 @@
+import { toast } from 'react-toastify';
 import { useCallback, useEffect, useState } from 'react';
 import { getClaimStatusApi } from '@/services/social/api/farcaster';
+import useLogin from '@/hooks/shared/useLogin';
 
 export default function useFarcasterClaim({ currFid }: { currFid: number }) {
   const [mounted, setMounted] = useState(false);
+  const { isLogin } = useLogin();
   const [claimStatus, setClaimStatus] = useState({
     statusCode: 100,
     amount: 100,
@@ -10,6 +13,10 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
   });
 
   const getClaimStatus = useCallback(async () => {
+    if (!isLogin) {
+      toast.error('Please login to check claim status');
+      return;
+    }
     try {
       const resp = await getClaimStatusApi();
       const { data } = resp;
@@ -22,7 +29,7 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
     } catch (e) {
       console.error('Error getting claim status', e);
     }
-  }, []);
+  }, [isLogin]);
 
   useEffect(() => {
     if (!mounted) return;
