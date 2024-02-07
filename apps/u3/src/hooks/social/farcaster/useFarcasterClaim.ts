@@ -8,7 +8,7 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
   const { isLogin } = useLogin();
   const [claimStatus, setClaimStatus] = useState({
     statusCode: 100,
-    amount: 100,
+    amount: 0,
     msg: '',
   });
 
@@ -21,7 +21,7 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
       const { data } = resp;
       setClaimStatus({
         statusCode: data.data.statusCode,
-        amount: data.data.amount || 100,
+        amount: data.data.amount || 0,
         msg: data.msg,
       });
       console.log('getClaimStatus', data);

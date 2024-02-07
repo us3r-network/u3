@@ -42,7 +42,10 @@ export default function ClaimNotice() {
           <Cross2Icon className="w-5 h-5" />
         </button>
       </div>
-      <div>💰💰💰You have 100 $DEGEN unclaimed</div>
+      <div>
+        💰💰💰You have <span className="font-bold">{claimStatus.amount}</span>{' '}
+        $DEGEN unclaimed
+      </div>
       <div>Click the button below 👇👇👇</div>
       <div>
         <button
