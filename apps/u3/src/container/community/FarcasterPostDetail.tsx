@@ -110,7 +110,7 @@ export default function FarcasterPostDetail() {
 
   useEffect(() => {
     if (!mounted) return;
-    const scrollWrapper = document.getElementById('social-scroll-wrapper');
+    const scrollWrapper = document.getElementById('posts-scroll-wrapper');
     if (scrollWrapper) scrollWrapper.scrollTop = 0;
     setLoading(true);
     loadCastInfo().finally(() => {

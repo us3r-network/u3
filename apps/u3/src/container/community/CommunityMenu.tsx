@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { CommunityInfo } from '@/services/community/types/community';
 import AddPost from '@/components/social/AddPost';
+import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 
 export default function CommunityMenu({
   className,
@@ -15,33 +16,41 @@ export default function CommunityMenu({
   channelId: string;
   joined: boolean;
 }) {
+  const { logo, name, description, memberInfo, nfts, tokens, points, apps } =
+    communityInfo || {};
   const { pathname } = useLocation();
   const mainNavs = [
-    { title: 'Posts', href: `/community/${communityInfo.id}/posts` },
-    { title: 'Members', href: `/community/${communityInfo.id}/members` },
+    { title: 'Posts', href: `/community/${channelId}/posts` },
+    // { title: 'Members', href: `/community/${channelId}/members` },
   ];
-  if (communityInfo?.nft?.contract) {
+  const nft = nfts?.length > 0 ? nfts[0] : null;
+  if (nft) {
     mainNavs.push({
       title: 'NFT',
-      href: `/community/${communityInfo.id}/nft/${communityInfo?.nft?.contract}`,
+      href: `/community/${channelId}/nft/${nft?.contract}`,
     });
   }
-  if (communityInfo?.token?.contract) {
+
+  const token = tokens?.length > 0 ? tokens[0] : null;
+  if (token) {
     mainNavs.push({
       title: 'Token',
-      href: `/community/${communityInfo.id}/token/${communityInfo?.token?.contract}`,
+      href: `/community/${channelId}/token/${token?.contract}`,
     });
   }
-  if (communityInfo?.point?.contract) {
+
+  const point = points?.length > 0 ? points[0] : null;
+  if (point) {
     mainNavs.push({
       title: 'Points',
-      href: `/community/${communityInfo.id}/point/${communityInfo?.point?.contract}`,
+      href: `/community/${channelId}/point`,
     });
   }
-  const dappNavs = communityInfo?.dapps?.map((dapp) => {
+
+  const dappNavs = apps?.map((dapp) => {
     return {
       title: dapp.name,
-      href: `/community/${communityInfo.id}/app/${dapp.id}`,
+      href: `/community/${channelId}/app/${dapp.name}`,
       icon: dapp.logo,
     };
   });
@@ -56,40 +65,40 @@ export default function CommunityMenu({
     >
       <div className="flex-1 w-full p-[20px] box-border overflow-auto">
         <div className="flex gap-[10px] items-center ">
-          <img
-            src={communityInfo?.image}
-            alt=""
-            className="w-[50px] h-[50px] rounded-[4px]"
-          />
+          <img src={logo} alt="" className="w-[50px] h-[50px] rounded-[4px]" />
           <div className="flex flex-col gap-[5px]">
             {communityInfo?.types?.length > 0 && (
-              <div className="text-[#718096] text-[12px] font-normal">
+              <div className="text-[#718096] text-[12px] font-normal line-clamp-1">
                 {communityInfo?.types.reduce((acc, cur) => {
                   return `${acc}, ${cur}`;
                 })}
               </div>
             )}
 
-            <div className="text-[#FFF] text-[16px] font-medium">
-              {communityInfo?.name}
-            </div>
+            <div className="text-[#FFF] text-[16px] font-medium">{name}</div>
           </div>
         </div>
         <div className="text-[#FFF] text-[14px] font-normal leading-[20px] mt-[20px]">
-          {communityInfo?.description}
+          {description}
         </div>
         <div className="flex gap-[10px] items-center  mt-[20px]">
-          {communityInfo?.postsCount && (
+          {memberInfo?.newPostNumber > 0 && (
             <div className="text-[#718096] text-[12px] font-normal leading-[15px]">
-              {communityInfo?.postsCount} new posts
+              {memberInfo?.newPostNumber} new posts
             </div>
           )}
-          {communityInfo?.membersCount && (
+          {memberInfo?.totalNumber > 0 && (
             <div className="text-[#718096] text-[12px] font-normal leading-[15px]">
-              {communityInfo?.membersCount} members
+              {memberInfo?.totalNumber} members
             </div>
           )}
         </div>
+        {memberInfo?.friendMemberNumber > 0 && (
+          <div className="text-[#718096] text-[12px] font-normal leading-[15px] mt-[20px]">
+            {memberInfo?.friendMemberNumber} of your friends are members
+          </div>
+        )}
+
         <AddPost
           className={cn(
             'h-[40px] mt-[20px] rounded-[12px] ',
@@ -132,7 +141,7 @@ export default function CommunityMenu({
         </div>
       </div>
       <div className="h-[76px] w-full p-[20px] box-border bg-[#14171A] text-[#FFF] text-[16px] font-normal">
-        Comming soon
+        <LoginButtonV2 />
       </div>
     </div>
   );

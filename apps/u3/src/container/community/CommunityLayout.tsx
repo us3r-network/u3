@@ -1,7 +1,8 @@
-import { ComponentPropsWithRef, useEffect, useState } from 'react';
+import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 
 import useFcTrendFeeds from 'src/hooks/social/useChannelFeeds';
+import { toast } from 'react-toastify';
 import { FeedsType } from '../../components/social/SocialPageNav';
 import { SocialPlatform } from '../../services/social/types';
 import { cn } from '@/lib/utils';
@@ -11,22 +12,38 @@ import Loading from '@/components/common/loading/Loading';
 import useLoadCommunityMembers from '@/hooks/community/useLoadCommunityMembers';
 import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMembers';
 import { CommunityInfo } from '@/services/community/types/community';
+import { fetchCommunity } from '@/services/community/api/community';
 
 export default function CommunityLayout() {
-  const [joined, setJoined] = useState(false);
+  const { channelId } = useParams();
+
+  const [communityLoading, setCommunityLoading] = useState(true);
   const [communityInfo, setCommunityInfo] = useState<CommunityInfo | null>();
-  const [postScroll, setPostScroll] = useState({
-    currentParent: '',
-    id: '',
-    top: 0,
-  });
+  useEffect(() => {
+    (async () => {
+      setCommunityInfo(null);
+      if (channelId) {
+        try {
+          setCommunityLoading(true);
+          const res = await fetchCommunity(channelId);
+          const data = res?.data?.data;
+          setCommunityInfo(data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setCommunityLoading(false);
+        }
+      }
+    })();
+  }, [channelId]);
+
   const {
     farcasterChannels,
-    farcasterChannelsLoading,
     setDefaultPostChannelId,
+    userChannels,
+    joinChannel,
   } = useFarcasterCtx();
-  const { channelId } = useParams();
-  const channel = farcasterChannels.find((c) => c.channel_id === channelId);
+
   useEffect(() => {
     setDefaultPostChannelId(channelId);
     return () => {
@@ -34,54 +51,22 @@ export default function CommunityLayout() {
     };
   }, [channelId, setDefaultPostChannelId]);
 
-  // mock community info
-  useEffect(
-    () =>
-      setCommunityInfo({
-        id: channel?.channel_id as unknown as number,
-        name: channel?.name,
-        image: channel?.image,
-        description: 'Not financial advice',
-        types: ['Token', 'NFT', 'App'],
-        postsCount: 100,
-        membersCount: 1000,
-        token: {
-          contract: '0xe55ae417f6e5ab84b94273ef64b6b9ee35ee0a58',
-          url: 'https://api-dev.u3.xyz/poster-frame/mint/1',
-        },
-        nft: {
-          contract: '0xe55ae417f6e5ab84b94273ef64b6b9ee35ee0a58',
-          url: 'https://api-dev.u3.xyz/poster-frame/mint/2',
-        },
-        point: {
-          contract: '0xe55ae417f6e5ab84b94273ef64b6b9ee35ee0a58',
-          url: 'https://api-dev.u3.xyz/poster-frame/mint/3',
-        },
-        dapps: [
-          {
-            id: 1,
-            name: 'Dapp1',
-            logo: 'https://via.placeholder.com/150',
-            url: 'https://chainlist.org/',
-          },
-          {
-            id: 2,
-            name: 'Dapp2',
-            logo: 'https://via.placeholder.com/150',
-            url: 'https://chainlist.org/',
-          },
-          {
-            id: 3,
-            name: 'Dapp3',
-            logo: 'https://via.placeholder.com/150',
-            url: 'https://chainlist.org/',
-          },
-        ],
-      }),
-    [channel]
-  );
+  const channel = farcasterChannels.find((c) => c?.channel_id === channelId);
+  const [joining, setJoining] = useState(false);
+  const parentUrl = channel?.parent_url;
+  const joined = useMemo(() => {
+    const joinItem = userChannels.find((c) => c.parent_url === parentUrl);
+    return !!joinItem;
+  }, [userChannels, parentUrl]);
 
   // posts state
+  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
+  const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
+  const [postScroll, setPostScroll] = useState({
+    currentParent: '',
+    id: '',
+    top: 0,
+  });
   const {
     feeds: fcTrendFeeds,
     firstLoading: fcTrendFirstLoading,
@@ -108,26 +93,28 @@ export default function CommunityLayout() {
     load: loadTopMembers,
   } = useLoadCommunityTopMembers(channelId);
 
-  // TODO links state
-
-  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
-  const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
-
-  if (farcasterChannelsLoading) {
+  if (communityLoading) {
     <CommunityLayoutWrapper className="flex justify-center items-center">
       <Loading />
     </CommunityLayoutWrapper>;
   }
 
-  if (!channel?.channel_id) {
+  if (!communityInfo?.id) {
     return null;
   }
   return (
     <CommunityLayoutWrapper>
       {!joined && (
         <GuestModeHeader
-          joinAction={() => {
-            setJoined(true);
+          joining={joining}
+          joinAction={async () => {
+            setJoining(true);
+            await joinChannel(parentUrl);
+            await new Promise((resolve) => {
+              setTimeout(resolve, 1000);
+            });
+            toast.success('Join success');
+            setJoining(false);
           }}
         />
       )}
@@ -209,9 +196,11 @@ function CommunityLayoutWrapper({
 function GuestModeHeader({
   className,
   joinAction,
+  joining,
   ...props
 }: ComponentPropsWithRef<'div'> & {
   joined?: boolean;
+  joining?: boolean;
   joinAction?: () => void;
   unjoinAction?: () => void;
 }) {
@@ -237,7 +226,7 @@ function GuestModeHeader({
           joinAction?.();
         }}
       >
-        Join the community
+        {joining ? 'Joining...' : 'Join the community'}
       </button>
       {/* <Button className="px-[12px] h-[22px] box-border rounded-[4px] border-[1px] border-solid border-[#FFF] text-[#FFF] text-[12px] font-normal">
         Mint NFT & Add to Shortcut

@@ -11,7 +11,7 @@ export function fetchCommunity(
   id: string | number
 ): RequestPromise<ApiResp<FetchCommunityResponse>> {
   return request({
-    url: `/community/${id}`,
+    url: `/topics/channel?id=${id}`,
     method: 'get',
   });
 }

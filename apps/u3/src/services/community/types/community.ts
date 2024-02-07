@@ -1,14 +1,41 @@
 export type CommunityEntity = {
   id: number;
   name: string;
-  image: string;
+  logo: string;
   description: string;
+  createdAt?: number;
+  lastModifiedAt?: number;
   types: string[];
+  apps?: Array<{
+    logo: string;
+    name: string;
+    website: string;
+  }>;
+  tokens?: Array<{
+    url: string;
+    contract: string;
+  }>;
+  nfts?: Array<{
+    url: string;
+    contract: string;
+  }>;
+  points?: Array<{
+    url: string;
+  }>;
+  channels?: Array<{
+    name: string;
+    image: string;
+    channel_id: string;
+    parent_url: string;
+  }>;
 };
 
 export type CommunityStatistics = {
-  postsCount: number;
-  membersCount: number;
+  memberInfo: {
+    totalNumber?: number;
+    newPostNumber?: number;
+    friendMemberNumber?: number;
+  };
 };
 
 export type MemberEntity = {
@@ -19,24 +46,4 @@ export type MemberEntity = {
   bio: string;
 };
 
-export type CommunityInfo = CommunityEntity &
-  CommunityStatistics & {
-    token?: {
-      contract: string;
-      url: string;
-    };
-    nft?: {
-      contract: string;
-      url: string;
-    };
-    point?: {
-      contract: string;
-      url: string;
-    };
-    dapps?: Array<{
-      id: number;
-      name: string;
-      logo: string;
-      url: string;
-    }>;
-  };
+export type CommunityInfo = CommunityEntity & CommunityStatistics;

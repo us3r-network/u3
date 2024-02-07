@@ -173,6 +173,12 @@ export const routes: CutomRouteObject[] = [
         title: 'Members',
       },
       {
+        path: 'point',
+        element: loadContainerElement('community/IframeLayout'),
+        key: RouteKey.iframeLayout,
+        title: 'App',
+      },
+      {
         path: ':configType/:configId',
         element: loadContainerElement('community/IframeLayout'),
         key: RouteKey.iframeLayout,

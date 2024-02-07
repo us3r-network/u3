@@ -1,24 +1,40 @@
 import { useState } from 'react';
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useLocation, useOutletContext, useParams } from 'react-router-dom';
 import Loading from '@/components/common/loading/Loading';
+import { CommunityEntity } from '@/services/community/types/community';
 
 export default function IframeLayout() {
   const [iframeLoaded, setIframeLoaded] = useState(false);
+  const { pathname } = useLocation();
   const { configType, configId } = useParams();
-  const { communityInfo } = useOutletContext<any>();
+  const { channelId, communityInfo } = useOutletContext<any>();
+  const { name, nfts, tokens, points, apps } = communityInfo as CommunityEntity;
   let href = '';
   let title = '';
+  console.log('configType', configType);
+  console.log('configId', configId);
+
   if (configType === 'app') {
-    href = communityInfo?.dapps?.find((dapp: any) => dapp.id === configId)?.url;
-    title = communityInfo?.dapps?.find(
-      (dapp: any) => dapp.id === configId
-    )?.name;
+    const dapp = apps?.find((app) => app.name === configId);
+    href = dapp?.website;
+    title = dapp?.name;
   }
-  const config = communityInfo[configType];
-  if (config && config.contract === configId) {
-    href = config.url;
+  if (configType === 'nft') {
+    const nft = nfts?.find((n) => n.contract === configId);
+    href = nft?.url;
     title = configId;
   }
+  if (configType === 'token') {
+    const token = tokens?.find((t) => t.contract === configId);
+    href = token?.url;
+    title = configId;
+  }
+  if (pathname.includes(`community/${channelId}/point`)) {
+    const point = points?.[0];
+    href = point?.url;
+    title = `${name} Points`;
+  }
+
   return (
     <div className="w-full h-full flex">
       {!iframeLoaded && (
