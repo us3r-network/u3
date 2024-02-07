@@ -29,6 +29,7 @@ export enum RouteKey {
   community = 'community',
   communityPostsLayout = 'communityPostsLayout',
   communityPostsFcTrending = 'communityPostsFcTrending',
+  communityPostFcDetail = 'communityPostFcDetail',
   communityMembers = 'communityMembers',
   iframeLayout = 'iframeLayout',
   // news
@@ -156,6 +157,11 @@ export const routes: CutomRouteObject[] = [
                 element: loadContainerElement('community/PostsFcTrending'),
                 key: RouteKey.communityPostsFcTrending,
               },
+              {
+                path: ':castId', // default trending
+                element: loadContainerElement('community/FarcasterPostDetail'),
+                key: RouteKey.communityPostFcDetail,
+              } as CutomRouteObject,
             ],
           },
         ],

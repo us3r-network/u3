@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -10,11 +10,15 @@ import {
   LoadingWrapper,
 } from '@/components/profile/FollowListWidgets';
 import { PostList } from '../social/CommonStyles';
+import useListScroll from '@/hooks/social/useListScroll';
 
 export default function PostsFcTrending() {
   const [parentId] = useState('posts-fc-trending');
+  const { mounted } = useListScroll(parentId);
   const { openFarcasterQR } = useFarcasterCtx();
   const {
+    channelId,
+
     fcTrendFeeds,
     fcTrendPageInfo,
     fcTrendFirstLoading,
@@ -24,6 +28,7 @@ export default function PostsFcTrending() {
 
     setPostScroll,
   } = useOutletContext<any>();
+  const navigate = useNavigate();
 
   return (
     <div className="w-full">
@@ -60,12 +65,15 @@ export default function PostsFcTrending() {
                     farcasterUserData={{}}
                     farcasterUserDataObj={fcUserDataObj}
                     showMenuBtn
-                    cardClickAction={(e) => {
+                    onClick={(e) => {
+                      const id = Buffer.from(data.hash).toString('hex');
+
                       setPostScroll({
                         currentParent: parentId,
                         id: key,
                         top: (e.target as HTMLDivElement).offsetTop,
                       });
+                      navigate(`/community/${channelId}/posts/fc/${id}`);
                     }}
                   />
                 );

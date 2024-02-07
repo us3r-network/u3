@@ -1,6 +1,13 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ComponentPropsWithRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CastId } from '@farcaster/hub-web';
 import { ArrowUpIcon } from '@radix-ui/react-icons';
@@ -51,7 +58,8 @@ export default function FCast({
   cardClickAction,
   disableRenderUrl,
   simpleLayout,
-}: {
+  ...wrapperProps
+}: ComponentPropsWithRef<'div'> & {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
@@ -159,6 +167,7 @@ export default function FCast({
         cardClickAction?.(e);
         navigate(`/social/post-detail/fcast/${id}`);
       }}
+      {...wrapperProps}
     >
       <div className="flex items-center gap-5">
         <PostCardUserInfo

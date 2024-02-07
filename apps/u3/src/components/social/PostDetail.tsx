@@ -6,7 +6,7 @@ export const PostDetailWrapper = styled.div<{ isMobile?: boolean }>`
   background: #212228;
   border: 1px solid #39424c;
   overflow: hidden;
-  width: ${(props) => (props.isMobile ? '100%' : '600px')};
+  width: 100%;
 `;
 export const PostDetailCommentsWrapper = styled.div`
   & > * {
