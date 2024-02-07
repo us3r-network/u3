@@ -47,6 +47,8 @@ import AddPostModal from '@/components/social/AddPostModal';
 import QuickSearchModal, {
   QuickSearchModalName,
 } from '@/components/social/QuickSearchModal';
+import ClaimNotice from '@/components/social/farcaster/ClaimNotice';
+import useFarcasterClaim from '@/hooks/social/farcaster/useFarcasterClaim';
 
 export type Token = {
   token: string;
@@ -111,6 +113,18 @@ export interface FarcasterContextData {
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
   setDefaultPostChannelId: React.Dispatch<React.SetStateAction<string>>;
+  claimStatus: {
+    statusCode: number;
+    amount: number;
+    msg?: string;
+  };
+  setClaimStatus: React.Dispatch<
+    React.SetStateAction<{
+      statusCode: number;
+      amount: number;
+      msg?: string;
+    }>
+  >;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -148,6 +162,7 @@ export default function FarcasterProvider({
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
   });
+  const { claimStatus, setClaimStatus } = useFarcasterClaim({ currFid });
   useEffect(() => {
     setFollowing(farcasterFollowData?.followingData || []);
   }, [farcasterFollowData]);
@@ -358,6 +373,8 @@ export default function FarcasterProvider({
         setOpenPostModal,
         setOpenModalName,
         setDefaultPostChannelId,
+        claimStatus,
+        setClaimStatus,
       }}
     >
       {children}
@@ -431,6 +448,7 @@ export default function FarcasterProvider({
           }}
         />
       )}
+      <ClaimNotice />
     </FarcasterContext.Provider>
   );
 }

@@ -558,3 +558,22 @@ export function getCastTipsDetail(castHash: string) {
     method: 'get',
   });
 }
+
+export function getClaimStatusApi() {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/activity1/status`,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function claimRewardApi() {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/activity1/claim`,
+    method: 'post',
+    headers: {
+      needToken: true,
+    },
+  });
+}
