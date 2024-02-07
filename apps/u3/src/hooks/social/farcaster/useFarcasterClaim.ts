@@ -14,7 +14,6 @@ export default function useFarcasterClaim({ currFid }: { currFid: number }) {
 
   const getClaimStatus = useCallback(async () => {
     if (!isLogin) {
-      toast.error('Please login to check claim status');
       return;
     }
     try {
