@@ -1,10 +1,10 @@
 import { useEffect, useCallback, useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import LinksPageMobile from '@/components/news/links/mobile/LinksPageMobile';
 import useFeedLinks from '@/hooks/news/useFeedLinks';
 import useLinksSearchParams from '@/hooks/news/useLinksSearchParams';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import LinkModal from '@/components/news/links/LinkModal';
+import CommunityLinks from '@/components/news/links/community/CommunityLinks';
 
 export default function PostsFcMentionedLinks() {
   const communityContext = useOutletContext<any>();
@@ -48,7 +48,7 @@ export default function PostsFcMentionedLinks() {
       <div className="text-[#fff] text-[16px] mt-[20px] text-center">
         <h3>Mentioned Links</h3>
         {links && links.length > 0 && (
-          <LinksPageMobile
+          <CommunityLinks
             loading={loading}
             hasMore={hasMore}
             links={links}
