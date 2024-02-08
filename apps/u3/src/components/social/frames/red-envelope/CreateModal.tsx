@@ -1,4 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  prepareWriteContract,
+  switchNetwork,
+  waitForTransaction,
+  writeContract,
+} from '@wagmi/core';
+import { toast } from 'react-toastify';
+import { parseEther } from 'viem';
+import { base } from 'viem/chains';
+import { useAccount, useNetwork } from 'wagmi';
+
 import ModalContainer from '@/components/common/modal/ModalContainer';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 import CreateFrameForm, {
@@ -8,6 +19,9 @@ import CreateFrameForm, {
 import PostFrameForm from './PostFrameForm';
 import useLogin from '@/hooks/shared/useLogin';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { DegenABI, DegenAddress } from '@/services/social/abi/degen/contract';
+
+const U3Address = '0xCFd3527F4334Ebb2E3b53b01f70B7BD5C3170cD5';
 
 enum Steps {
   CREATE_FRAME = 'CREATE_FRAME',
@@ -53,6 +67,8 @@ export default function CreateModal({
   closeModal: () => void;
 }) {
   const { isLogin, login } = useLogin();
+  const network = useNetwork();
+  const { address: accountAddr } = useAccount();
   const { openFarcasterQR, isConnected: isLoginFarcaster } = useFarcasterCtx();
 
   const [step, setStep] = useState(Steps.CREATE_FRAME);
@@ -69,25 +85,68 @@ export default function CreateModal({
     }
   }, []);
 
-  const submitFrame = (values: FrameFormValues) => {
-    if (!isLogin) {
-      login();
-      return;
-    }
-    if (!isLoginFarcaster) {
-      openFarcasterQR();
-      return;
-    }
+  const pledgeDegenToU3 = useCallback(
+    async (amount: string | number) => {
+      try {
+        if (network.chain?.id !== base.id) {
+          await switchNetwork({ chainId: base.id });
+        }
+        const { request: transferDegenRequest } = await prepareWriteContract({
+          address: DegenAddress,
+          abi: DegenABI,
+          chainId: base.id,
+          functionName: 'transfer',
+          args: [U3Address, parseEther(amount.toString())],
+        });
+        const degenTxHash = await writeContract(transferDegenRequest);
+        const degenTxReceipt = await waitForTransaction({
+          hash: degenTxHash.hash,
+          chainId: base.id,
+        });
+        console.log('degenTxReceipt', degenTxReceipt);
+        if (degenTxReceipt.status === 'success') {
+          toast.success('pledge degen success');
+          return degenTxHash.hash;
+        }
+        console.error('transaction failed', degenTxHash.hash, degenTxReceipt);
+        toast.error(`pledge action failed: ${degenTxReceipt.status}`);
+        return '';
+      } catch (e) {
+        toast.error(e.message.split('\n')[0]);
+        return '';
+      }
+    },
+    [network]
+  );
 
-    // TODO @ttang pledge degen
-    const { totalReward } = values;
+  const submitFrame = useCallback(
+    async (values: FrameFormValues) => {
+      if (!isLogin || !accountAddr) {
+        login();
+        return;
+      }
+      if (!isLoginFarcaster) {
+        openFarcasterQR();
+        return;
+      }
 
-    // TODO create frame
+      // pledge degen
+      const { totalReward } = values;
+      const txHash = await pledgeDegenToU3(totalReward);
+      if (!txHash) {
+        toast.error('pledge degen failed');
+        return;
+      }
+      console.log(txHash, totalReward);
 
-    // store frame
-    storeUnpublishedFrame(values, frameUrl);
-    setStep(Steps.POST_FRAME);
-  };
+      // TODO create frame
+
+      // store frame
+      storeUnpublishedFrame(values, frameUrl);
+      setStep(Steps.POST_FRAME);
+    },
+    [isLogin, isLoginFarcaster, openFarcasterQR, frameUrl, accountAddr]
+  );
 
   return (
     <ModalContainer
