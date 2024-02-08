@@ -53,7 +53,7 @@ export default function PostsFcTrending() {
           }
           scrollableTarget="posts-scroll-wrapper"
         >
-          <PostList className="w-full rounded-none">
+          <PostList className="w-full rounded-none" style={{ borderRadius: 0 }}>
             {fcTrendFeeds.map(({ platform, data }) => {
               if (platform === 'farcaster') {
                 const key = Buffer.from(data.hash.data).toString('hex');

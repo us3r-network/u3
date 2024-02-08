@@ -9,7 +9,7 @@ export default function LoginButtonV2() {
   return (
     <button
       type="button"
-      className="flex items-center flex-[1_0_0] p-[12px] gap-[8px] rounded-[12px] text-white text-[16px] font-bold"
+      className="flex items-center flex-[1_0_0] gap-[8px] rounded-[12px] text-white text-[16px] font-bold"
       onClick={() => {
         if (isLogin) {
           navigate('/u');
@@ -20,7 +20,10 @@ export default function LoginButtonV2() {
     >
       {isLogin ? (
         <>
-          <UserAvatar className="w-[40px] h-[40px] flex-shrink-0" />
+          <UserAvatar
+            className="w-[40px] h-[40px] flex-shrink-0"
+            style={{ width: '40px', height: '40px' }}
+          />
           <UserName className="text-[#FFF] text-[16px] font-normal" />
         </>
       ) : (

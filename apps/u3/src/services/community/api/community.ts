@@ -13,6 +13,9 @@ export function fetchCommunity(
   return request({
     url: `/topics/channel?id=${id}`,
     method: 'get',
+    headers: {
+      needToken: true,
+    },
   });
 }
 
