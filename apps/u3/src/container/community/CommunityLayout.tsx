@@ -13,8 +13,10 @@ import useLoadCommunityMembers from '@/hooks/community/useLoadCommunityMembers';
 import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMembers';
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
+import useLogin from '@/hooks/shared/useLogin';
 
 export default function CommunityLayout() {
+  const { isLogin, login } = useLogin();
   const { channelId } = useParams();
 
   const [communityLoading, setCommunityLoading] = useState(true);
@@ -42,6 +44,9 @@ export default function CommunityLayout() {
     setDefaultPostChannelId,
     userChannels,
     joinChannel,
+    currFid,
+    openFarcasterQR,
+    isConnected: isLoginFarcaster,
   } = useFarcasterCtx();
 
   useEffect(() => {
@@ -108,6 +113,14 @@ export default function CommunityLayout() {
         <GuestModeHeader
           joining={joining}
           joinAction={async () => {
+            if (!isLogin) {
+              login();
+              return;
+            }
+            if (!isLoginFarcaster) {
+              openFarcasterQR();
+              return;
+            }
             setJoining(true);
             await joinChannel(parentUrl);
             await new Promise((resolve) => {
