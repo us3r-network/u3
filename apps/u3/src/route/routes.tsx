@@ -25,6 +25,13 @@ export enum RouteKey {
   farcasterData = 'farcasterData',
   farcasterSignup = 'farcasterSignup',
   farcasterProfile = 'farcasterProfile',
+  // community
+  community = 'community',
+  communityPostsLayout = 'communityPostsLayout',
+  communityPostsFcTrending = 'communityPostsFcTrending',
+  communityPostFcDetail = 'communityPostFcDetail',
+  communityMembers = 'communityMembers',
+  iframeLayout = 'iframeLayout',
   // news
   newsLayout = 'newsLayout',
   links = 'links',
@@ -118,6 +125,66 @@ export const routes: CutomRouteObject[] = [
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
     title: 'Profile',
+  },
+  // community
+  {
+    path: '/community/:channelId',
+    element: loadContainerElement('community/CommunityLayout'),
+    key: RouteKey.community,
+    title: 'Community',
+    children: [
+      {
+        path: '',
+        element: <Navigate to="posts" />,
+        key: RouteKey.community,
+      } as CutomRouteObject,
+      {
+        path: 'posts',
+        element: loadContainerElement('community/PostsLayout'),
+        key: RouteKey.community,
+        children: [
+          {
+            path: '', // default trending
+            element: <Navigate to="fc" />,
+            key: RouteKey.communityPostsFcTrending,
+          } as CutomRouteObject,
+          {
+            path: 'fc', // default trending
+            key: RouteKey.communityPostsFcTrending,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('community/PostsFcTrending'),
+                key: RouteKey.communityPostsFcTrending,
+              },
+              {
+                path: ':castId', // default trending
+                element: loadContainerElement('community/FarcasterPostDetail'),
+                key: RouteKey.communityPostFcDetail,
+              } as CutomRouteObject,
+            ],
+          },
+        ],
+      },
+      {
+        path: 'members',
+        element: loadContainerElement('community/MembersLayout'),
+        key: RouteKey.communityMembers,
+        title: 'Members',
+      },
+      {
+        path: 'point',
+        element: loadContainerElement('community/IframeLayout'),
+        key: RouteKey.iframeLayout,
+        title: 'App',
+      },
+      {
+        path: ':configType/:configId',
+        element: loadContainerElement('community/IframeLayout'),
+        key: RouteKey.iframeLayout,
+        title: 'App',
+      },
+    ],
   },
   {
     path: '/u/:user',

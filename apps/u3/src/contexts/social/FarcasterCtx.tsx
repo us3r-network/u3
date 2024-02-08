@@ -106,11 +106,13 @@ export interface FarcasterContextData {
   trendChannels: FarcasterChannel[];
   trendChannelsLoading: boolean;
   farcasterChannels: FarcasterChannel[];
+  farcasterChannelsLoading: boolean;
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
   openPostModal: boolean;
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
+  setDefaultPostChannelId: React.Dispatch<React.SetStateAction<string>>;
   claimStatus: {
     statusCode: number;
     amount: number;
@@ -170,6 +172,7 @@ export default function FarcasterProvider({
     joinChannel,
     unPinChannel,
     farcasterChannels,
+    farcasterChannelsLoading,
     getChannelFromId,
     getChannelFromUrl,
   } = useFarcasterChannel({
@@ -196,6 +199,7 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
+  const [defaultPostChannelId, setDefaultPostChannelId] = useState('home');
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels: trendChannels, loading: trendChannelsLoading } =
     useFarcasterTrendChannel(farcasterChannels);
@@ -362,11 +366,13 @@ export default function FarcasterProvider({
         trendChannels,
         trendChannelsLoading,
         farcasterChannels,
+        farcasterChannelsLoading,
         getChannelFromId,
         getChannelFromUrl,
         openPostModal,
         setOpenPostModal,
         setOpenModalName,
+        setDefaultPostChannelId,
         claimStatus,
         setClaimStatus,
       }}
@@ -429,6 +435,7 @@ export default function FarcasterProvider({
 
       <AddPostModal
         open={openPostModal}
+        defaultChannelId={defaultPostChannelId}
         closeModal={() => {
           setOpenPostModal(false);
         }}

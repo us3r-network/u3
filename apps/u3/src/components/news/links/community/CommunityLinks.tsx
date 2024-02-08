@@ -12,10 +12,10 @@ import Loading from '../../../common/loading/Loading';
 import ListScrollBox from '../../../common/box/ListScrollBox';
 import { MainWrapper } from '../../../layout/Index';
 import NoResult from '../../../layout/NoResult';
-import LinkListMobile from './LinkListMobile';
 import { LinksPageProps } from '../LinksPage';
+import LinksList from './LinksList';
 
-export default function LinksPageMobile({
+export default function CommunityLinks({
   loading,
   hasMore,
   links,
@@ -64,7 +64,7 @@ export default function LinksPageMobile({
               }
               scrollableTarget="links-scroll-wrapper"
             >
-              <LinkListMobile
+              <LinksList
                 data={links}
                 onItemClick={(item) => {
                   // navigate(item?.url);

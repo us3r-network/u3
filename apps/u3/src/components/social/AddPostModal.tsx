@@ -6,20 +6,28 @@
  * @FilePath: /u3/apps/u3/src/components/social/AddPostModal.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import styled from 'styled-components';
+import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
-
+import styled from 'styled-components';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import AddPostForm from './AddPostForm';
 
 export default function AddPostModal({
   open,
+  defaultChannelId,
   closeModal,
 }: {
   open: boolean;
+  defaultChannelId?: string;
   closeModal: () => void;
 }) {
+  const { getChannelFromId } = useFarcasterCtx();
+  const defaultChannel = useMemo(
+    () => getChannelFromId(defaultChannelId),
+    [defaultChannelId, getChannelFromId]
+  );
   return (
     <ModalContainer
       open={open}
@@ -29,7 +37,7 @@ export default function AddPostModal({
     >
       <ModalBody isMobile={isMobile}>
         <CloseBtn onClick={closeModal} />
-        <AddPostForm onSuccess={closeModal} />
+        <AddPostForm onSuccess={closeModal} channel={defaultChannel} />
       </ModalBody>
     </ModalContainer>
   );

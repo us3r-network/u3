@@ -6,7 +6,7 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import LoginButton from './LoginButton';
 import Nav, { NavWrapper, PcNavItem, NavItemIconBox } from './Nav';
@@ -21,7 +21,8 @@ import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const { pathname } = useLocation();
+  const isCommunityRoute = pathname.includes('/community/');
   return (
     <MenuWrapper
       onMouseEnter={() => setIsOpen(true)}
@@ -63,9 +64,11 @@ export default function Menu() {
           <MessageButton />
           <ContactUsButton />
         </NavWrapper>
-        <LoginButtonBox>
-          <LoginButton onlyIcon={!isOpen} />
-        </LoginButtonBox>
+        {!isCommunityRoute && (
+          <LoginButtonBox>
+            <LoginButton onlyIcon={!isOpen} />
+          </LoginButtonBox>
+        )}
       </FooterBox>
     </MenuWrapper>
   );
@@ -93,11 +96,16 @@ function ChannelItem({ parent_url }: { parent_url: string }) {
     return getChannelFromUrl(parent_url);
   }, [parent_url, getChannelFromUrl]);
 
+  const toCommunityChannelIds = ['degen'];
   if (!item) return null;
 
   return (
     <div
       onClick={() => {
+        if (toCommunityChannelIds.includes(item.channel_id)) {
+          navigate(`community/${item.channel_id}`);
+          return;
+        }
         navigate(`/social/channel/${item.channel_id}`);
       }}
       className="cursor-pointer relative"
