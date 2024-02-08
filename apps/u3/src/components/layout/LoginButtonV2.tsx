@@ -9,7 +9,7 @@ export default function LoginButtonV2() {
   return (
     <button
       type="button"
-      className="flex items-center flex-[1_0_0] gap-[8px] rounded-[12px] text-white text-[16px] font-bold"
+      className="flex items-center gap-[8px] rounded-[12px] text-white text-[16px] font-bold"
       onClick={() => {
         if (isLogin) {
           navigate('/u');

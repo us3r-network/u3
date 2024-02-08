@@ -140,7 +140,7 @@ export default function CommunityMenu({
           })}
         </div>
       </div>
-      <div className="h-[76px] w-full p-[20px] box-border bg-[#14171A] text-[#FFF] text-[16px] font-normal">
+      <div className="flex justify-center items-center h-[76px] w-full p-[20px] box-border bg-[#14171A] text-[#FFF] text-[16px] font-normal">
         <LoginButtonV2 />
       </div>
     </div>
