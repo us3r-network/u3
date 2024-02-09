@@ -577,3 +577,22 @@ export function claimRewardApi() {
     },
   });
 }
+
+export function redEnvelopeClaimCheck() {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/red-envelopes/unclaimed`,
+    headers: {
+      needToken: true,
+    },
+  });
+}
+
+export function claimRedEnvelope() {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/onboarding/red-envelopes/claim`,
+    method: 'post',
+    headers: {
+      needToken: true,
+    },
+  });
+}
