@@ -33,35 +33,34 @@ function Layout() {
 
   return (
     <LayoutWrapper id="layout-wrapper">
-      {(claim === 'true' && <ClaimOnboard />) || (
-        <>
-          {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
-          {ready && isMobile ? <MobileNav /> : null}
-          {isMobile ? (
-            <MobileContentBox>
-              <Main />
-              <div className="fixed right-[20px] bottom-[80px]">
-                <AddPostMobile />
-              </div>
-            </MobileContentBox>
-          ) : (
-            <RightBox>
-              <RightInner id="layout-main-wrapper">
-                {location.pathname.includes('social') ? (
+      <>
+        {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
+        {ready && isMobile ? <MobileNav /> : null}
+        {isMobile ? (
+          <MobileContentBox>
+            <Main />
+            <div className="fixed right-[20px] bottom-[80px]">
+              <AddPostMobile />
+            </div>
+          </MobileContentBox>
+        ) : (
+          <RightBox>
+            <RightInner id="layout-main-wrapper">
+              {location.pathname.includes('social') ? (
+                <Main />
+              ) : (
+                <MainBox className="main-box">
                   <Main />
-                ) : (
-                  <MainBox className="main-box">
-                    <Main />
-                  </MainBox>
-                )}
-              </RightInner>
-              <DappMenu />
-              <RedEnvelopeFloatingWindow />
-            </RightBox>
-          )}
-          <MobileGuide />
-        </>
-      )}
+                </MainBox>
+              )}
+            </RightInner>
+            <DappMenu />
+            <RedEnvelopeFloatingWindow />
+          </RightBox>
+        )}
+        <MobileGuide />
+        {claim === 'true' && <ClaimOnboard />}
+      </>
       <ToastContainer
         position="top-right"
         autoClose={3000}

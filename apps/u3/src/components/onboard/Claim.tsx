@@ -23,8 +23,14 @@ export default function ClaimOnboard() {
   } = useFarcasterCtx();
   const { address } = useAccount();
 
+  const type = searchParams.get('type');
+
   const claimAction = useCallback(async () => {
     console.log('claimAction', claimStatus);
+    if (type !== 'spin') {
+      navigate('/');
+      return;
+    }
     if (claimStatus.statusCode === 102) {
       navigate('/');
       return;
@@ -42,10 +48,10 @@ export default function ClaimOnboard() {
     } catch (e) {
       console.error(e);
     }
-  }, [currFid, claimStatus, navigate]);
+  }, [currFid, claimStatus, navigate, type]);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
+    <div className="absolute z-20 top-0 left-0 bg-[#14171A] w-screen h-screen flex justify-center items-center">
       <div className="w-full md:w-[840px] text-white">
         <div className="flex items-center justify-center mb-7 md:mb-0">
           <span className="hidden md:inline-block text-[80px]">🎉</span>
@@ -66,7 +72,7 @@ export default function ClaimOnboard() {
         </div>
         <div
           className={cn(
-            ' border rounded-2xl border-[#39424C]',
+            ' border rounded-2xl border-[#39424C] bg-[#1B1E23]',
             'p-5 flex flex-col gap-8 text-white',
             'm-2 md:w-full'
           )}
