@@ -21,6 +21,7 @@ import MobileNav from './mobile/MobileNav';
 import { MobileGuide } from './mobile/MobileGuide';
 import AddPostMobile from '../social/AddPostMobile';
 import ClaimOnboard from '../onboard/Claim';
+import RedEnvelopeFloatingWindow from '../social/frames/red-envelope/RedEnvelopeFloatingWindow';
 
 function Layout() {
   const { ready } = useAuthentication();
@@ -54,6 +55,7 @@ function Layout() {
               )}
             </RightInner>
             <DappMenu />
+            <RedEnvelopeFloatingWindow />
           </RightBox>
         )}
         <MobileGuide />

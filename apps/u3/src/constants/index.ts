@@ -58,3 +58,7 @@ export const CONTACT_US_LINKS = {
   twitter: 'https://twitter.com/getus3r',
   discord: 'https://discord.gg/yDgkH4Es',
 };
+
+export const RED_ENVELOPE_PLEDGE_ADDRESS =
+  process.env.REACT_APP_RED_ENVELOPE_PLEDGE_ADDRESS ||
+  '0xCFd3527F4334Ebb2E3b53b01f70B7BD5C3170cD5';
