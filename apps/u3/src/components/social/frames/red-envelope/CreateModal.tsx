@@ -57,7 +57,7 @@ const removeStoredUnpublishedFrameData = () => {
   localStorage.removeItem(unpublishedRedEnvelopeFrameDataKey);
 };
 const getFrameUrl = (data: RedEnvelopeEntity) => {
-  return `${RED_ENVELOPE_FRAME_HOST}/frames/red-envelope/${data.id}`;
+  return `${RED_ENVELOPE_FRAME_HOST}/red-envelope/frame/${data.id}`;
 };
 
 export default function CreateModal({
