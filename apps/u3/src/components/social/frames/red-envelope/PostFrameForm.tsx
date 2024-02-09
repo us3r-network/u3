@@ -8,8 +8,8 @@ import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
 import FarcasterInput from '../../farcaster/FarcasterInput';
 import { FCastChannelPicker } from '../../farcaster/FCastChannelPicker';
-import { FrameFormValues } from './CreateFrameForm';
 import EmbedFramePreview from './EmbedFramePreview';
+import { RedEnvelopeEntity } from '@/services/frames/types/red-envelope';
 
 export type EmbedWebsiteLink = {
   link: string;
@@ -27,7 +27,7 @@ export default function PostFrameForm({
   onBack,
 }: {
   frameUrl: string;
-  frameData: FrameFormValues;
+  frameData: RedEnvelopeEntity;
   channel?: Channelv1;
   defaultText?: string;
   onSuccess?: () => void;
@@ -121,10 +121,10 @@ export default function PostFrameForm({
 
         // cleanImage();
         if (onSuccess) onSuccess();
-        toast.success('successfully posted to farcaster');
+        toast.success('Red envelope released');
       } catch (error: unknown) {
         console.error(error);
-        toast.error('failed to post to farcaster');
+        toast.error('Failed to release red envelope');
       } finally {
         setIsPending(false);
       }
@@ -158,7 +158,7 @@ export default function PostFrameForm({
         farcasterSubmit={handleSubmitToFarcaster}
         textCb={setFarcasterInputText}
       />
-      <EmbedFramePreview frame={frameData} />
+      <EmbedFramePreview frameData={frameData} />
       <div className="w-full flex justify-between items-center">
         <button
           type="button"

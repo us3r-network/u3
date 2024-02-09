@@ -1,7 +1,8 @@
 import { ComponentPropsWithRef } from 'react';
 import { toast } from 'react-toastify';
-import { Checkbox } from '@/components/ui/checkbox';
+// import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { CreateRedEnvelopeParams } from '@/services/frames/api/red-envelope';
 
 export const constraintsOptions = [
   {
@@ -18,62 +19,58 @@ export const constraintsOptions = [
   },
 ];
 
-export type FrameFormValues = {
-  constraints: string[];
-  singleMinReward: number;
-  singleMaxReward: number;
-  totalReward: number;
-};
-
-export const defaultFrameFormValues: FrameFormValues = {
-  constraints: [],
-  singleMinReward: 0,
-  singleMaxReward: 0,
-  totalReward: 0,
+export const defaultFrameFormValues: CreateRedEnvelopeParams = {
+  description: 'Red envelope',
+  randomFrom: 1,
+  randomTo: 1,
+  totalAmount: 1,
+  txHash: '',
 };
 
 export type CreateFrameFormProps = ComponentPropsWithRef<'form'> & {
-  values: FrameFormValues;
+  values: CreateRedEnvelopeParams;
+  submitting?: boolean;
   disabled?: boolean;
-  onValuesChange: (values: FrameFormValues) => void;
-  onSubmit: (values: FrameFormValues) => void;
+  onValuesChange: (values: CreateRedEnvelopeParams) => void;
+  onSubmit: (values: CreateRedEnvelopeParams) => void;
 };
 
 export default function CreateFrameForm({
   values,
+  submitting,
   disabled,
   onValuesChange,
   onSubmit,
   className,
   ...props
 }: CreateFrameFormProps) {
-  const { constraints, singleMinReward, singleMaxReward, totalReward } = values;
-  const constraintsOptionsEl = constraintsOptions.map(({ value, label }) => (
-    <div key={value} className="flex items-center gap-[10px] cursor-pointer">
-      <Checkbox
-        id={`constraints-${value}`}
-        className="border border-white"
-        checked={constraints.includes(value)}
-        disabled={disabled}
-        onCheckedChange={(v) => {
-          if (v) {
-            onValuesChange({ ...values, constraints: [...constraints, value] });
-          } else {
-            onValuesChange({
-              ...values,
-              constraints: constraints.filter((c) => c !== value),
-            });
-          }
-        }}
-      />
-      <label
-        htmlFor={`constraints-${value}`}
-        className="text-[#FFF] text-[16px] font-normal cursor-pointer"
-      >
-        {label}
-      </label>
-    </div>
-  ));
+  const { randomFrom, randomTo, totalAmount } = values;
+  // const constraintsOptionsEl = constraintsOptions.map(({ value, label }) => (
+  //   <div key={value} className="flex items-center gap-[10px] cursor-pointer">
+  //     <Checkbox
+  //       id={`constraints-${value}`}
+  //       className="border border-white"
+  //       checked={constraints.includes(value)}
+  //       disabled={disabled}
+  //       onCheckedChange={(v) => {
+  //         if (v) {
+  //           onValuesChange({ ...values, constraints: [...constraints, value] });
+  //         } else {
+  //           onValuesChange({
+  //             ...values,
+  //             constraints: constraints.filter((c) => c !== value),
+  //           });
+  //         }
+  //       }}
+  //     />
+  //     <label
+  //       htmlFor={`constraints-${value}`}
+  //       className="text-[#FFF] text-[16px] font-normal cursor-pointer"
+  //     >
+  //       {label}
+  //     </label>
+  //   </div>
+  // ));
   return (
     <form
       className={cn('w-full flex flex-col gap-[30px]', className)}
@@ -84,7 +81,10 @@ export default function CreateFrameForm({
           Constraints
         </span>
         <div className="flex items-center gap-[20px]">
-          {constraintsOptionsEl}
+          {/* {constraintsOptionsEl} */}
+          <span className="text-[#FFF] text-[16px] font-normal">
+            Follow & Like & Repost
+          </span>
         </div>
       </div>
       <div className="flex items-center gap-[20px]">
@@ -96,10 +96,10 @@ export default function CreateFrameForm({
             <input
               type="number"
               className="w-full p-1 px-2 text-white bg-[#1B1E23] outline-none"
-              value={singleMinReward}
+              value={randomFrom}
               disabled={disabled}
               onChange={(e) => {
-                onValuesChange({ ...values, singleMinReward: +e.target.value });
+                onValuesChange({ ...values, randomFrom: +e.target.value });
               }}
             />
             <span className="text-[#FFF] text-[16px] font-medium">$DEGEN</span>
@@ -109,10 +109,10 @@ export default function CreateFrameForm({
             <input
               type="number"
               className="w-full p-1 px-2 text-white bg-[#1B1E23] outline-none"
-              value={singleMaxReward}
+              value={randomTo}
               disabled={disabled}
               onChange={(e) => {
-                onValuesChange({ ...values, singleMaxReward: +e.target.value });
+                onValuesChange({ ...values, randomTo: +e.target.value });
               }}
             />
             <span className="text-[#FFF] text-[16px] font-medium">$DEGEN</span>
@@ -126,10 +126,10 @@ export default function CreateFrameForm({
             <input
               type="number"
               className="w-full h-[40px] p-1 px-2 text-white bg-[#1B1E23] outline-none"
-              value={totalReward}
+              value={totalAmount}
               disabled={disabled}
               onChange={(e) => {
-                onValuesChange({ ...values, totalReward: +e.target.value });
+                onValuesChange({ ...values, totalAmount: +e.target.value });
               }}
             />
             <span className="text-[#FFF] text-[16px] font-medium">$DEGEN</span>
@@ -142,23 +142,23 @@ export default function CreateFrameForm({
             "
             disabled={disabled}
             onClick={() => {
-              if (constraints.length === 0) {
-                toast.error('Please select at least one constraint');
-                return;
-              }
-              if (singleMinReward === 0 || singleMaxReward === 0) {
+              // if (constraints.length === 0) {
+              //   toast.error('Please select at least one constraint');
+              //   return;
+              // }
+              if (randomFrom === 0 || randomTo === 0) {
                 toast.error('Reward must be greater than 0');
                 return;
               }
-              if (singleMinReward > singleMaxReward) {
+              if (randomFrom > randomTo) {
                 toast.error('Min reward must be less than max reward');
                 return;
               }
-              if (totalReward === 0) {
+              if (totalAmount === 0) {
                 toast.error('Total reward must be greater than 0');
                 return;
               }
-              if (totalReward < singleMaxReward) {
+              if (totalAmount < randomTo) {
                 toast.error('Total reward must be greater than max reward');
                 return;
               }
@@ -166,7 +166,7 @@ export default function CreateFrameForm({
               onSubmit(values);
             }}
           >
-            Pledge
+            {submitting ? 'Submitting...' : 'Pledge'}
           </button>
         </div>
       </div>
