@@ -33,6 +33,7 @@ export default function ClaimOnboard() {
     }
     if (claimStatus.statusCode === 102) {
       navigate('/');
+      toast.success('Claim transaction queued.');
       return;
     }
     try {
@@ -44,6 +45,7 @@ export default function ClaimOnboard() {
         return;
       }
       setClaimStatus({ statusCode: 102, amount: 0 });
+      toast.success('Claim transaction queued.');
       navigate('/');
     } catch (e) {
       console.error(e);
