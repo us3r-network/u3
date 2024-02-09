@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, useEffect, useState } from 'react';
+import { ComponentPropsWithRef, useCallback, useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 import CreateModal from './CreateModal';
 import useLogin from '@/hooks/shared/useLogin';
@@ -34,7 +34,10 @@ export default function RedEnvelopeFloatingWindow() {
     }[]
   >([]);
 
-  const checkCouldClaim = async () => {
+  const checkCouldClaim = useCallback(async () => {
+    if (!isLogin) {
+      return;
+    }
     // check if user could claim red envelope
     try {
       const resp = await redEnvelopeClaimCheck();
@@ -49,9 +52,9 @@ export default function RedEnvelopeFloatingWindow() {
     } catch (error) {
       console.log('error', error);
     }
-  };
+  }, [isLogin]);
 
-  const claimRedEnvelopeAction = async () => {
+  const claimRedEnvelopeAction = useCallback(async () => {
     // claim red envelope
     try {
       const resp = await claimRedEnvelope();
@@ -65,13 +68,13 @@ export default function RedEnvelopeFloatingWindow() {
     } catch (error) {
       console.log('error', error);
     }
-  };
+  }, [checkCouldClaim, isLogin]);
 
   useEffect(() => {
     if (mounted) {
       checkCouldClaim();
     }
-  }, [mounted]);
+  }, [mounted, isLogin, checkCouldClaim]);
 
   useEffect(() => {
     setMounted(true);
@@ -125,7 +128,7 @@ export default function RedEnvelopeFloatingWindow() {
         <div className="text-[#FFF] text-[14px] font-medium">
           🧧 Red Envelope
         </div>
-        <div>
+        <div className="text-[#FFF] text-[14px] font-medium">
           {unclaimedList.map((item) => {
             return (
               <div key={item.id} className="flex">
