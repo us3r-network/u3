@@ -20,6 +20,8 @@ export default function useFarcasterChannel({
 }: {
   currFid: string | number;
 }) {
+  const [farcasterChannelsLoading, setFarcasterChannelsLoading] =
+    useState(false);
   const [farcasterChannels, setFarcasterChannels] = useState<
     FarcasterChannel[]
   >([]);
@@ -30,6 +32,7 @@ export default function useFarcasterChannel({
 
   const getAllChannels = useCallback(async () => {
     try {
+      setFarcasterChannelsLoading(true);
       const resp = await getFarcasterChannels();
       if (resp.data.code === 0) {
         const { channels } = resp.data.data;
@@ -38,6 +41,8 @@ export default function useFarcasterChannel({
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setFarcasterChannelsLoading(false);
     }
   }, []);
 
@@ -114,6 +119,7 @@ export default function useFarcasterChannel({
 
   return {
     farcasterChannels,
+    farcasterChannelsLoading,
     userChannels,
     getChannelFromUrl,
     getChannelFromId,

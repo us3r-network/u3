@@ -47,6 +47,8 @@ import AddPostModal from '@/components/social/AddPostModal';
 import QuickSearchModal, {
   QuickSearchModalName,
 } from '@/components/social/QuickSearchModal';
+import ClaimNotice from '@/components/social/farcaster/ClaimNotice';
+import useFarcasterClaim from '@/hooks/social/farcaster/useFarcasterClaim';
 
 export type Token = {
   token: string;
@@ -104,11 +106,25 @@ export interface FarcasterContextData {
   trendChannels: FarcasterChannel[];
   trendChannelsLoading: boolean;
   farcasterChannels: FarcasterChannel[];
+  farcasterChannelsLoading: boolean;
   getChannelFromId: (id: string) => FarcasterChannel | null;
   getChannelFromUrl: (url: string) => FarcasterChannel | null;
   openPostModal: boolean;
   setOpenPostModal: React.Dispatch<React.SetStateAction<boolean>>;
   setOpenModalName: React.Dispatch<React.SetStateAction<string>>;
+  setDefaultPostChannelId: React.Dispatch<React.SetStateAction<string>>;
+  claimStatus: {
+    statusCode: number;
+    amount: number;
+    msg?: string;
+  };
+  setClaimStatus: React.Dispatch<
+    React.SetStateAction<{
+      statusCode: number;
+      amount: number;
+      msg?: string;
+    }>
+  >;
 }
 
 const FarcasterContext = createContext<FarcasterContextData | null>(null);
@@ -146,6 +162,7 @@ export default function FarcasterProvider({
   const { farcasterFollowData } = useFarcasterFollowData({
     fid: currFid,
   });
+  const { claimStatus, setClaimStatus } = useFarcasterClaim({ currFid });
   useEffect(() => {
     setFollowing(farcasterFollowData?.followingData || []);
   }, [farcasterFollowData]);
@@ -155,6 +172,7 @@ export default function FarcasterProvider({
     joinChannel,
     unPinChannel,
     farcasterChannels,
+    farcasterChannelsLoading,
     getChannelFromId,
     getChannelFromUrl,
   } = useFarcasterChannel({
@@ -181,6 +199,7 @@ export default function FarcasterProvider({
   } = useFarcasterQR();
   const [openModalName, setOpenModalName] = useState('');
   const [openPostModal, setOpenPostModal] = useState(false);
+  const [defaultPostChannelId, setDefaultPostChannelId] = useState('home');
   const { pinupHashes, updatePinupHashes } = usePinupHashes();
   const { channels: trendChannels, loading: trendChannelsLoading } =
     useFarcasterTrendChannel(farcasterChannels);
@@ -347,11 +366,15 @@ export default function FarcasterProvider({
         trendChannels,
         trendChannelsLoading,
         farcasterChannels,
+        farcasterChannelsLoading,
         getChannelFromId,
         getChannelFromUrl,
         openPostModal,
         setOpenPostModal,
         setOpenModalName,
+        setDefaultPostChannelId,
+        claimStatus,
+        setClaimStatus,
       }}
     >
       {children}
@@ -412,6 +435,7 @@ export default function FarcasterProvider({
 
       <AddPostModal
         open={openPostModal}
+        defaultChannelId={defaultPostChannelId}
         closeModal={() => {
           setOpenPostModal(false);
         }}
@@ -424,6 +448,7 @@ export default function FarcasterProvider({
           }}
         />
       )}
+      <ClaimNotice />
     </FarcasterContext.Provider>
   );
 }

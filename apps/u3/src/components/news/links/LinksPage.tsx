@@ -35,6 +35,7 @@ export type LinksPageProps = {
   hasMore?: boolean;
   links?: Array<LinkListItem>;
   getMore?: () => void;
+  quickView?: (link: LinkListItem) => void;
   currentSearchParams?: {
     keywords?: string;
     orderBy?: any;
@@ -49,6 +50,7 @@ export default function LinksPage({
   currentSearchParams,
   searchParamsChange,
   getMore,
+  quickView,
 }: LinksPageProps) {
   const navigate = useNavigate();
   const { group, link } = useParams();
@@ -162,6 +164,10 @@ export default function LinksPage({
                       data={links}
                       activeLink={selectLink}
                       onItemClick={(item) => {
+                        if (quickView) {
+                          quickView(item);
+                          return;
+                        }
                         navigate(
                           `${ROUTE_PREFIX}/${group}/${encodeLinkURL(
                             item?.url

@@ -37,6 +37,7 @@ export function fetchLinks(
     keywords?: string[];
     includeDomains?: string[];
     excludeDomains?: string[];
+    rootParentUrls?: string[];
     orderBy?: string;
     urls?: string[];
     pageSize?: number;
@@ -53,6 +54,7 @@ export function fetchLinks(
       keywords: query.keywords ?? '',
       includeDomains: query.includeDomains ?? [],
       excludeDomains: query.excludeDomains ?? [],
+      rootParentUrls: query.rootParentUrls ?? [],
       orderBy: query.orderBy ?? '',
       urls: query.urls ?? [],
     },
