@@ -52,7 +52,7 @@ export default function ClaimNotice() {
           type="button"
           className="w-full bg-white text-black text-base font-bold p-3 px-6 rounded-[10px]"
           onClick={() => {
-            setSearchParams({ claim: 'true' });
+            setSearchParams({ claim: 'true', type: 'spin' });
           }}
         >
           Claim
