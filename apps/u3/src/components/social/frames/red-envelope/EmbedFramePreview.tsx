@@ -138,10 +138,12 @@ function FrameImgView({
   const randomFrom = data.randomFrom.toLocaleString();
   const randomTo = data.randomTo.toLocaleString();
   const totalAmountNumber = data.totalAmount;
-  const totalAmount =
-    totalAmountNumber > 1000
-      ? `${(totalAmountNumber / 1000).toFixed(1)}K`
-      : totalAmountNumber.toString();
+  let totalAmount = totalAmountNumber.toString();
+  if (totalAmountNumber >= 10000) {
+    totalAmount = `${(totalAmountNumber / 1000).toFixed(0)}K`;
+  } else if (totalAmountNumber >= 1000) {
+    totalAmount = `${(totalAmountNumber / 1000).toFixed(1)}K`;
+  }
   const RedEnvelopeImg = '/red-envelope/imgs/red-envelope.png';
   const BgPolygon = '/red-envelope/imgs/bg-polygon.png';
   return (
