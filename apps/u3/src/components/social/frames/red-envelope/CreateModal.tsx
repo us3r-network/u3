@@ -169,7 +169,15 @@ export default function CreateModal({
 
   const [openNotice, setOpenNotice] = useState(false);
   return (
-    <ModalBase isOpen={open} onRequestClose={closeModal}>
+    <ModalBase
+      isOpen={open}
+      onRequestClose={closeModal}
+      style={{
+        overlay: {
+          zIndex: 40,
+        },
+      }}
+    >
       <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
         <div className="w-[800px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
           <div className="flex justify-between items-center self-stretch">
@@ -243,7 +251,15 @@ function PostNotice({
   closeModal: () => void;
 }) {
   return (
-    <ModalBase isOpen={open} onRequestClose={closeModal}>
+    <ModalBase
+      isOpen={open}
+      onRequestClose={closeModal}
+      style={{
+        overlay: {
+          zIndex: 40,
+        },
+      }}
+    >
       <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
         <div className="w-[320px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
           <div className="flex justify-between items-center self-stretch">
