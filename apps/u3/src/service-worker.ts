@@ -92,14 +92,21 @@ self.addEventListener('push', (event) => {
   });
 });
 
-// const CALL_BACK_INTERVAL = 1000 * 60 * 60;
-// self.addEventListener('activate', () => {
-//   console.log('activate interval subscribe......');
-//   setInterval(() => {
-//     console.log('fire notification!');
-//     self.registration.showNotification('U3', {
-//       body: 'Checkout new content on Farcaster',
-//       icon: `${process.env.PUBLIC_URL}/logo192.png`,
-//     });
-//   }, CALL_BACK_INTERVAL);
-// });
+self.addEventListener('activate', function (event) {
+  // 清除旧缓存
+  event.waitUntil(
+    caches.keys().then(function (cacheNames) {
+      return Promise.all(
+        cacheNames
+          .filter(function (cacheName) {
+            // 过滤出旧的缓存
+            return cacheName !== 'my-cache';
+          })
+          .map(function (cacheName) {
+            // 删除旧的缓存
+            return caches.delete(cacheName);
+          })
+      );
+    })
+  );
+});
