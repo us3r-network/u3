@@ -100,7 +100,8 @@ self.addEventListener('activate', function (event) {
         cacheNames
           .filter(function (cacheName) {
             // 过滤出旧的缓存
-            return cacheName !== 'my-cache';
+            return cacheName.startsWith('main.');
+            // return cacheName !== 'my-cache';
           })
           .map(function (cacheName) {
             // 删除旧的缓存
