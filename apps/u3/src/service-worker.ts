@@ -9,10 +9,10 @@
 // service worker, and the Workbox build step will be skipped.
 
 import { clientsClaim } from 'workbox-core';
-import { ExpirationPlugin } from 'workbox-expiration';
+// import { ExpirationPlugin } from 'workbox-expiration';
 import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+// import { registerRoute } from 'workbox-routing';
+// import { StaleWhileRevalidate } from 'workbox-strategies';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -24,6 +24,9 @@ declare const self: ServiceWorkerGlobalScope;
 // even if you decide not to use precaching. See https://cra.link/PWA
 // eslint-disable-next-line no-underscore-dangle
 // precacheAndRoute(self.__WB_MANIFEST);
+
+// eslint-disable-next-line no-underscore-dangle
+const ignored = self.__WB_MANIFEST;
 
 // Set up App Shell-style routing, so that all navigation requests
 // are fulfilled with your index.html shell. Learn more at
