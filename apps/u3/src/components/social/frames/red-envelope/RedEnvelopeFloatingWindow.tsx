@@ -6,8 +6,10 @@ import {
   claimRedEnvelope,
   redEnvelopeClaimCheck,
 } from '@/services/social/api/farcaster';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function RedEnvelopeFloatingWindow() {
+  const { claimStatus } = useFarcasterCtx();
   const { isLogin } = useLogin();
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -81,6 +83,10 @@ export default function RedEnvelopeFloatingWindow() {
   }, []);
 
   if (!isLogin) {
+    return null;
+  }
+
+  if (claimStatus.statusCode === 101) {
     return null;
   }
 
