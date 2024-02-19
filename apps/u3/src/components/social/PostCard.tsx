@@ -7,7 +7,7 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import dayjs from 'dayjs';
-import { useEffect, useMemo, useState } from 'react';
+import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
 
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { getOfficialPublicationUrl } from 'src/utils/social/lens/getLensExternalLink';
@@ -192,18 +192,38 @@ export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
   }
 `;
 
-export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
-  background: #212228;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
-  &:hover {
-    background: ${(props) => (props.isDetail ? '#212228' : '#000000')};
-  }
-`;
+// export const PostCardWrapper = styled.div<{ isDetail?: boolean }>`
+//   background: #212228;
+//   padding: 20px;
+//   box-sizing: border-box;
+//   display: flex;
+//   flex-direction: column;
+//   gap: 10px;
+//   cursor: ${(props) => (props.isDetail ? 'initial' : 'pointer')};
+//   &:hover {
+//     background: ${(props) => (props.isDetail ? '#212228' : '#352525')};
+//   }
+// `;
+
+export function PostCardWrapper({
+  isDetail,
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'> & {
+  isDetail?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        'bg-[#212228] hover:bg-[#000000] p-[20px] box-border flex flex-col gap-[10px] cursor-pointer',
+        isDetail && 'hover:bg-[#212228] cursor-default',
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
 export const PostCardHeaderWrapper = styled.div`
   display: flex;
   justify-content: space-between;

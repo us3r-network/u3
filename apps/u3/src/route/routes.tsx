@@ -29,6 +29,7 @@ export enum RouteKey {
   community = 'community',
   communityPostsLayout = 'communityPostsLayout',
   communityPostsFcTrending = 'communityPostsFcTrending',
+  communityPostsFcNewest = 'communityPostsFcNewest',
   communityPostFcDetail = 'communityPostFcDetail',
   communityMembers = 'communityMembers',
   iframeLayout = 'iframeLayout',
@@ -144,7 +145,7 @@ export const routes: CutomRouteObject[] = [
         key: RouteKey.community,
         children: [
           {
-            path: '', // default trending
+            path: '', // default fc
             element: <Navigate to="fc" />,
             key: RouteKey.communityPostsFcTrending,
           } as CutomRouteObject,
@@ -154,11 +155,21 @@ export const routes: CutomRouteObject[] = [
             children: [
               {
                 path: '', // default trending
+                element: <Navigate to="trending" />,
+                key: RouteKey.communityPostsFcTrending,
+              } as CutomRouteObject,
+              {
+                path: 'trending', // default trending
                 element: loadContainerElement('community/PostsFcTrending'),
                 key: RouteKey.communityPostsFcTrending,
               },
               {
-                path: ':castId', // default trending
+                path: 'newest',
+                element: loadContainerElement('community/PostsFcNewest'),
+                key: RouteKey.communityPostsFcNewest,
+              },
+              {
+                path: ':castId',
                 element: loadContainerElement('community/FarcasterPostDetail'),
                 key: RouteKey.communityPostFcDetail,
               } as CutomRouteObject,
