@@ -150,16 +150,24 @@ export default function Embed({
             />
           );
         })}
-        {[...metadata].map((item: FarCastEmbedMeta) => {
+        {[...metadata].map((item: FarCastEmbedMeta, idx) => {
           if (item.collection) {
-            return <EmbedNFT item={item} key={(item as any).url} />;
+            return (
+              <EmbedNFT item={item} key={String(idx) + (item as any).url} />
+            );
           }
           if (checkFarcastFrameValid(item)) {
             return (
-              <EmbedCastFrame data={item} key={(item as any).url} cast={cast} />
+              <EmbedCastFrame
+                data={item}
+                key={String(idx) + (item as any).url}
+                cast={cast}
+              />
             );
           }
-          return <EmbedWebsite item={item} key={(item as any).url} />;
+          return (
+            <EmbedWebsite item={item} key={String(idx) + (item as any).url} />
+          );
         })}
       </div>
     </div>
