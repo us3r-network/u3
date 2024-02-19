@@ -58,6 +58,7 @@ export default function FCast({
   cardClickAction,
   disableRenderUrl,
   simpleLayout,
+  isCommunityLayout,
   ...wrapperProps
 }: ComponentPropsWithRef<'div'> & {
   cast: FarCast;
@@ -69,6 +70,7 @@ export default function FCast({
   disableRenderUrl?: boolean;
   simpleLayout?: boolean;
   cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
+  isCommunityLayout?: boolean;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -167,6 +169,14 @@ export default function FCast({
         cardClickAction?.(e);
         navigate(`/social/post-detail/fcast/${id}`);
       }}
+      className={cn(
+        '',
+        isCommunityLayout
+          ? `bg-[#20262F] hover:bg-[#000000] ${
+              isDetail ? 'border border-[#20262F]' : ''
+            }`
+          : ''
+      )}
       {...wrapperProps}
     >
       <div className="flex items-center gap-5">

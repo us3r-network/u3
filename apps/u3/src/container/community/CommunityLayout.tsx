@@ -1,10 +1,7 @@
 import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 
-import useFcTrendFeeds from 'src/hooks/social/useChannelFeeds';
 import { toast } from 'react-toastify';
-import { FeedsType } from '../../components/social/SocialPageNav';
-import { SocialPlatform } from '../../services/social/types';
 import { cn } from '@/lib/utils';
 import CommunityMenu from './CommunityMenu';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
@@ -44,7 +41,6 @@ export default function CommunityLayout() {
     setDefaultPostChannelId,
     userChannels,
     joinChannel,
-    currFid,
     openFarcasterQR,
     isConnected: isLoginFarcaster,
   } = useFarcasterCtx();
@@ -63,24 +59,6 @@ export default function CommunityLayout() {
     const joinItem = userChannels.find((c) => c.parent_url === parentUrl);
     return !!joinItem;
   }, [userChannels, parentUrl]);
-
-  // posts state
-  const [feedsType, setFeedsType] = useState(FeedsType.TRENDING);
-  const [socialPlatform, setSocialPlatform] = useState<SocialPlatform | ''>('');
-  const [postScroll, setPostScroll] = useState({
-    currentParent: '',
-    id: '',
-    top: 0,
-  });
-  const {
-    feeds: fcTrendFeeds,
-    firstLoading: fcTrendFirstLoading,
-    moreLoading: fcTrendMoreLoading,
-    loadFirstFeeds: loadFcTrendFirstFeeds,
-    loadMoreFeeds: loadFcTrendMoreFeeds,
-    pageInfo: fcTrendPageInfo,
-    farcasterUserDataObj: fcUserDataObj,
-  } = useFcTrendFeeds();
 
   // members state
   const {
@@ -145,23 +123,6 @@ export default function CommunityLayout() {
             context={{
               channelId,
               communityInfo,
-
-              // posts state
-              feedsType,
-              setFeedsType,
-              socialPlatform,
-              setSocialPlatform,
-
-              fcTrendFeeds,
-              fcTrendPageInfo,
-              fcTrendFirstLoading,
-              fcTrendMoreLoading,
-              loadFcTrendFirstFeeds,
-              loadFcTrendMoreFeeds,
-              fcUserDataObj,
-
-              postScroll,
-              setPostScroll,
 
               // TODO mentioned links
 
