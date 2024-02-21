@@ -152,7 +152,7 @@ function CommunityLayoutWrapper({
   return (
     <div
       className={cn(
-        `w-full h-screen  bg-[#1B1E23] flex flex-col overflow-hidden`,
+        `w-full h-screen  bg-[#20262F] flex flex-col overflow-hidden`,
         className
       )}
       // 特殊处理，宽度 = 屏幕宽度 - 左侧浮动栏宽度 - 右侧浮动栏宽度

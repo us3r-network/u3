@@ -92,7 +92,7 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
     return sort === feedsSort;
   };
   return (
-    <div className="w-full flex p-[20px] justify-between items-start self-stretch sticky top-0 bg-[#20262F]">
+    <div className="w-full flex p-[20px] justify-between items-start self-stretch sticky top-0 bg-[#20262F] border-b border-[#39424c]">
       <div className="w-full flex items-center gap-[20px]">
         <NavLinkItem
           href={getNavUrlWithSort(FeedsSort.TRENDING)}
@@ -185,7 +185,7 @@ function NavLinkItem({
 function PostDetailHeader() {
   const navigate = useNavigate();
   return (
-    <div className="w-full h-[40px] flex my-[20px] justify-between items-start self-stretch">
+    <div className="w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]">
       <div>
         <button
           type="button"

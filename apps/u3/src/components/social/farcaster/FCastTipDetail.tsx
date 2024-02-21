@@ -18,7 +18,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-export default function FCastTipDetail({ cast }: { cast: FarCast }) {
+export default function FCastTipDetail({
+  cast,
+  isV2Layout,
+}: {
+  cast: FarCast;
+  isV2Layout?: boolean;
+}) {
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tipDetails, setTipDetails] = useState<
@@ -64,7 +70,11 @@ export default function FCastTipDetail({ cast }: { cast: FarCast }) {
         }}
       >
         {/* <span className="text-[#718096] text-sm"> received</span> */}
-        <span className="text-[#FFBB02]"> {cast.tipsTotalAmount} $DEGEN</span>
+        {isV2Layout ? (
+          <span className="text-[#FFBB02]"> ${cast.tipsTotalAmount}</span>
+        ) : (
+          <span className="text-[#FFBB02]"> {cast.tipsTotalAmount} $DEGEN</span>
+        )}
       </div>
       {openModal && (
         <TipDetailsModal
