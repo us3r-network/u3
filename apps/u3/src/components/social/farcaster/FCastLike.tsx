@@ -1,18 +1,7 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import {
-  CastId,
-  ReactionType,
-  makeReactionAdd,
-  makeReactionRemove,
-} from '@farcaster/hub-web';
-import { useCallback, useState } from 'react';
-import { toast } from 'react-toastify';
+import { CastId } from '@farcaster/hub-web';
 import { UserData } from 'src/utils/social/farcaster/user-data';
 
-import {
-  FARCASTER_NETWORK,
-  FARCASTER_WEB_CLIENT,
-} from '../../../constants/farcaster';
 import useFarcasterUserData from '../../../hooks/social/farcaster/useFarcasterUserData';
 import useFarcasterCastId from '../../../hooks/social/farcaster/useFarcasterCastId';
 // import { getCurrFid } from '../../../utils/farsign-utils';
@@ -25,111 +14,28 @@ import PostLike, {
 import { FarCast } from '../../../services/social/types';
 import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import useLogin from '../../../hooks/shared/useLogin';
+import useFarcasterLikeAction from '@/hooks/social/farcaster/useFarcasterLikeAction';
 
 export default function FCastLike({
   cast,
   farcasterUserData,
   farcasterUserDataObj,
   openFarcasterQR,
+  onLikeSuccess,
+  onRemoveLikeSuccess,
 }: {
   cast: FarCast;
   farcasterUserData: { [key: string]: { type: number; value: string }[] };
   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
+  onLikeSuccess?: () => void;
+  onRemoveLikeSuccess?: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
-  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
-  const [likes, setLikes] = useState<string[]>(Array.from(new Set(cast.likes)));
-  const [likeCount, setLikeCount] = useState<number>(
-    Number(cast.like_count || cast.likesCount || 0)
-  );
+  const { isConnected } = useFarcasterCtx();
 
-  const likeCast = useCallback(
-    async (castId: CastId) => {
-      if (!isConnected) {
-        openFarcasterQR();
-        return;
-      }
-      if (!encryptedSigner) {
-        console.error('no encryptedSigner');
-        return;
-      }
-      try {
-        const cast = await makeReactionAdd(
-          {
-            type: ReactionType.LIKE,
-            targetCastId: castId,
-          },
-          {
-            fid: currFid,
-            network: FARCASTER_NETWORK,
-          },
-          encryptedSigner
-        );
-        if (cast.isErr()) {
-          throw new Error(cast.error.message);
-        }
-
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast.value);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
-        }
-
-        const tmpSet = new Set(likes);
-        tmpSet.add(`${currFid}`);
-        setLikes(Array.from(tmpSet));
-        setLikeCount(likeCount + 1);
-
-        toast.success('like post created');
-      } catch (error) {
-        console.error(error);
-        toast.error('error like');
-      }
-    },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR, currFid]
-  );
-
-  const removeLikeCast = useCallback(
-    async (castId: CastId) => {
-      if (!isConnected) {
-        openFarcasterQR();
-        return;
-      }
-      if (!encryptedSigner) return;
-      // const currFid = getCurrFid();
-      try {
-        const cast = await makeReactionRemove(
-          {
-            type: ReactionType.LIKE,
-            targetCastId: castId,
-          },
-          {
-            fid: currFid,
-            network: FARCASTER_NETWORK,
-          },
-          encryptedSigner
-        );
-        if (cast.isErr()) {
-          throw new Error(cast.error.message);
-        }
-
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast.value);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
-        }
-
-        const tmpSet = new Set(likes);
-        tmpSet.delete(`${currFid}`);
-        setLikes(Array.from(tmpSet));
-        setLikeCount(likeCount - 1);
-
-        toast.success('like post removed');
-      } catch (error) {
-        toast.error('error like');
-      }
-    },
-    [encryptedSigner, isConnected, likeCount, likes, openFarcasterQR, currFid]
-  );
+  const { likes, likeCount, likeCast, removeLikeCast, liked } =
+    useFarcasterLikeAction({ cast, onLikeSuccess, onRemoveLikeSuccess });
 
   const castId: CastId = useFarcasterCastId({ cast });
 
@@ -154,13 +60,17 @@ export default function FCastLike({
       )}
       <PostLike
         totalLikes={likeCount}
-        liked={likes.includes(`${currFid}`)}
+        liked={liked}
         likeAction={() => {
           if (!isLoginU3) {
             loginU3();
             return;
           }
-          if (likes.includes(`${currFid}`)) {
+          if (!isConnected) {
+            openFarcasterQR();
+            return;
+          }
+          if (liked) {
             removeLikeCast(castId);
           } else {
             likeCast(castId);
