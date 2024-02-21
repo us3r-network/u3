@@ -38,6 +38,7 @@
     "@us3r-network/data-model": "^0.7.2-alpha.1",
     "@us3r-network/link": "0.7.2-alpha.1",
     "@us3r-network/profile": "0.7.2-alpha.1",
+    "@wagmi/core": "^2.6.5",
     "@xmtp/content-type-remote-attachment": "^1.1.2",
     "@xmtp/xmtp-js": "^11.1.1",
     "@zoralabs/zdk": "^2.4.0",
