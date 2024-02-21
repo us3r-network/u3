@@ -9,8 +9,8 @@ import {
   LoadingMoreWrapper,
   LoadingWrapper,
 } from '@/components/profile/FollowListWidgets';
-import { PostList } from '../social/CommonStyles';
 import useListScroll from '@/hooks/social/useListScroll';
+import { PostList } from './CommonStyles';
 
 export default function PostsFcNewest() {
   const [parentId] = useState('posts-fc-newest');
@@ -53,7 +53,7 @@ export default function PostsFcNewest() {
           }
           scrollableTarget="posts-scroll-wrapper"
         >
-          <PostList className="w-full rounded-none" style={{ borderRadius: 0 }}>
+          <PostList>
             {fcNewestFeeds.map(({ platform, data }) => {
               if (platform === 'farcaster') {
                 const key = Buffer.from(data.hash.data).toString('hex');

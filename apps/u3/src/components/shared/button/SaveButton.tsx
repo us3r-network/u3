@@ -8,17 +8,25 @@
  */
 import { FavorButton, FavorButtonProps } from '@us3r-network/link';
 import { StarIcon, StarFilledIcon } from '@radix-ui/react-icons';
+import { Link } from '@us3r-network/data-model';
 
-export function SaveButton({ ...props }: FavorButtonProps) {
-  if (props.link?.url) {
-    props.link.url = props.link.url.replace('?', '%3F');
-    // todo: 临时解决方案，后续需要在link model里面去掉这个长度限制
-    if (props.link.url.length > 100) {
-      props.link.url = props.link.url.slice(0, 100);
+export const formatLink = (link: Link): Link => {
+  let url = link?.url || '';
+  if (url) {
+    url = url.replace('?', '%3F');
+    // todo: 临时解决方案，后续需要在link model里面去
+    if (url.length > 100) {
+      url = url.slice(0, 100);
     }
   }
+  return { ...link, url };
+};
+export function SaveButton({ ...props }: FavorButtonProps) {
+  if (props.link?.url) {
+    props.link = formatLink(props.link);
+  }
   return (
-    <FavorButton className="text-[white] border-none" {...props}>
+    <FavorButton className="text-[#718096] border-none" {...props}>
       {({ isFavoring, isFavored, favorsCount }) => {
         return (
           <div title={`This is saved ${favorsCount} times`}>

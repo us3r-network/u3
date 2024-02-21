@@ -6,8 +6,10 @@
  * @FilePath: /u3/apps/u3/src/container/social/CommonStyles.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
+import { ComponentPropsWithRef } from 'react';
 import NoLogin from 'src/components/layout/NoLogin';
 import styled from 'styled-components';
+import { cn } from '@/lib/utils';
 
 export const MainCenter = styled.div`
   width: 100%;
@@ -43,6 +45,21 @@ export const PostList = styled.div`
     border-top: 1px solid #39424c;
   }
 `;
+
+export function PostListV2({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
+  return (
+    <div
+      className={cn(
+        `flex flex-col gap-[1px] rounded-[20px] bg-[#212228] overflow-hidden`,
+        className
+      )}
+      {...props}
+    />
+  );
+}
 
 export const LoadingWrapper = styled.div`
   width: 100%;

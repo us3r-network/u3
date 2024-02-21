@@ -1,13 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/no-shadow */
-import {
-  CastAddBody,
-  CastId,
-  ReactionType,
-  makeCastAdd,
-  makeReactionAdd,
-  makeReactionRemove,
-} from '@farcaster/hub-web';
+import { CastAddBody, CastId, makeCastAdd } from '@farcaster/hub-web';
 import { Channelv1 } from '@mod-protocol/farcaster';
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
@@ -41,122 +34,25 @@ import FarcasterInput from './FarcasterInput';
 import { FCastChannelPicker } from './FCastChannelPicker';
 import { Button } from '@/components/ui/button';
 import ModalContainer from '@/components/common/modal/ModalContainer';
+import useFarcasterRecastAction from '@/hooks/social/farcaster/useFarcasterRecastAction';
 
 export default function FCastRecast({
   cast,
   openFarcasterQR,
   farcasterUserDataObj,
+  onRecastSuccess,
+  onRemoveRecastSuccess,
 }: {
   cast: FarCast;
   farcasterUserDataObj: { [key: string]: UserData } | undefined;
   openFarcasterQR: () => void;
+  onRecastSuccess?: () => void;
+  onRemoveRecastSuccess?: () => void;
 }) {
   const { isLogin: isLoginU3, login: loginU3 } = useLogin();
-  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
-  const [recasts, setRecasts] = useState<string[]>(
-    Array.from(new Set(cast.recasts))
-  );
-  const [recastCount, setRecastCount] = useState<number>(
-    Number(cast.recast_count || cast.recastsCount || 0)
-  );
-
-  const recast = useCallback(
-    async (castId: CastId) => {
-      if (!isConnected) {
-        openFarcasterQR();
-        return;
-      }
-      if (!encryptedSigner) return;
-      try {
-        const cast = await makeReactionAdd(
-          {
-            type: ReactionType.RECAST,
-            targetCastId: castId,
-          },
-          {
-            fid: currFid,
-            network: FARCASTER_NETWORK,
-          },
-          encryptedSigner
-        );
-        if (cast.isErr()) {
-          throw new Error(cast.error.message);
-        }
-
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast.value);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
-        }
-
-        const tmpSet = new Set(recasts);
-        tmpSet.add(`${currFid}`);
-        setRecasts(Array.from(tmpSet));
-        setRecastCount(recastCount + 1);
-
-        toast.success('recast created');
-      } catch (error) {
-        toast.error('error recast');
-      }
-    },
-    [
-      encryptedSigner,
-      isConnected,
-      openFarcasterQR,
-      recastCount,
-      recasts,
-      currFid,
-    ]
-  );
-
-  const removeRecast = useCallback(
-    async (castId: CastId) => {
-      if (!currFid) return;
-      if (!isConnected) {
-        openFarcasterQR();
-        return;
-      }
-      if (!encryptedSigner) return;
-      // const currFid = getCurrFid();
-      try {
-        const cast = await makeReactionRemove(
-          {
-            type: ReactionType.RECAST,
-            targetCastId: castId,
-          },
-          {
-            fid: currFid,
-            network: FARCASTER_NETWORK,
-          },
-          encryptedSigner
-        );
-        if (cast.isErr()) {
-          throw new Error(cast.error.message);
-        }
-
-        const result = await FARCASTER_WEB_CLIENT.submitMessage(cast.value);
-        if (result.isErr()) {
-          throw new Error(result.error.message);
-        }
-
-        const tmpSet = new Set(recasts);
-        tmpSet.delete(`${currFid}`);
-        setRecasts(Array.from(tmpSet));
-        setRecastCount(recastCount - 1);
-
-        toast.success('removed recast');
-      } catch (error) {
-        toast.error('error recast');
-      }
-    },
-    [
-      encryptedSigner,
-      isConnected,
-      openFarcasterQR,
-      recastCount,
-      recasts,
-      currFid,
-    ]
-  );
+  const { isConnected } = useFarcasterCtx();
+  const { recast, removeRecast, recastCount, recasted } =
+    useFarcasterRecastAction({ cast, onRecastSuccess, onRemoveRecastSuccess });
 
   // const currFid: string = useFarcasterCurrFid();
   const castId: CastId = useFarcasterCastId({ cast });
@@ -165,14 +61,18 @@ export default function FCastRecast({
     <Repost
       cast={cast}
       farcasterUserDataObj={farcasterUserDataObj}
-      reposted={recasts.includes(`${currFid}`)}
+      reposted={recasted}
       repostCount={recastCount}
       repostAction={() => {
         if (!isLoginU3) {
           loginU3();
           return;
         }
-        if (recasts.includes(`${currFid}`)) {
+        if (!isConnected) {
+          openFarcasterQR();
+          return;
+        }
+        if (recasted) {
           removeRecast(castId);
         } else {
           recast(castId);

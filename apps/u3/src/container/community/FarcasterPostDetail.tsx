@@ -139,6 +139,7 @@ export default function FarcasterPostDetail() {
           farcasterUserData={{}}
           farcasterUserDataObj={farcasterUserDataObj}
           isDetail
+          isCommunityLayout
           showMenuBtn
         />
         <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">

@@ -6,9 +6,9 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import { LoadingMoreWrapper } from '@/components/profile/FollowListWidgets';
-import { EndMsgContainer, PostList } from '../social/CommonStyles';
 import useListScroll from '@/hooks/social/useListScroll';
 import useFarcasterTrending from '@/hooks/social/farcaster/useFarcasterTrending';
+import { EndMsgContainer, PostList } from './CommonStyles';
 
 export default function PostsFcTrending() {
   const [parentId] = useState('posts-fc-trending');
@@ -50,7 +50,7 @@ export default function PostsFcTrending() {
         scrollThreshold={FEEDS_SCROLL_THRESHOLD}
         scrollableTarget="posts-scroll-wrapper"
       >
-        <PostList className="w-full rounded-none" style={{ borderRadius: 0 }}>
+        <PostList>
           {farcasterTrending.map(({ platform, data }) => {
             if (platform === 'farcaster') {
               const key = Buffer.from(data.hash.data).toString('hex');
