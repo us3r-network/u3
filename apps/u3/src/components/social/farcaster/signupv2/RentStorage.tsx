@@ -2,12 +2,12 @@ import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
-  prepareWriteContract,
-  switchNetwork,
-  waitForTransaction,
+  simulateContract,
+  switchChain,
+  waitForTransactionReceipt,
   writeContract,
 } from '@wagmi/core';
-import { useAccount, useNetwork, usePublicClient } from 'wagmi';
+import { useAccount, useConfig, usePublicClient } from 'wagmi';
 import { optimism } from 'viem/chains';
 
 import useLogin from '@/hooks/shared/useLogin';
@@ -25,16 +25,16 @@ export default function RentStorage({
   setHasStorage: (h: boolean) => void;
 }) {
   const { openConnectModal } = useConnectModal();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+  const config = useConfig();
   const { isLogin, login } = useLogin();
-  const network = useNetwork();
   const publicClient = usePublicClient({
     chainId: optimism.id,
   });
 
   const rentStorage = useCallback(async () => {
-    if (network.chain?.id !== optimism.id) {
-      await switchNetwork({ chainId: optimism.id });
+    if (chain?.id !== optimism.id) {
+      await switchChain(config, { chainId: optimism.id });
     }
     const balance = await publicClient.getBalance({ address });
     console.log('balance', balance);
@@ -49,16 +49,16 @@ export default function RentStorage({
       return;
     }
     try {
-      const { request: RentRequest } = await prepareWriteContract({
+      const { request: RentRequest } = await simulateContract(config, {
         ...RentContract,
         functionName: 'rent',
         args: [fid, 1], // keyType, publicKey, metadataType, metadata
         value: price,
         enabled: Boolean(price),
       });
-      const rentTxHash = await writeContract(RentRequest);
-      const rentTxReceipt = await waitForTransaction({
-        hash: rentTxHash.hash,
+      const rentTxHash = await writeContract(config, RentRequest);
+      const rentTxReceipt = await waitForTransactionReceipt(config, {
+        hash: rentTxHash,
         chainId: optimism.id,
       });
       console.log('registerTxReceipt', rentTxReceipt);
@@ -68,7 +68,7 @@ export default function RentStorage({
       console.error(e);
       toast.error(e.message.split('\n')[0]);
     }
-  }, [network, address]);
+  }, [chain, address]);
 
   return (
     <div

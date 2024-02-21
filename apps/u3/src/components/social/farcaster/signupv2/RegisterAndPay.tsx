@@ -2,8 +2,12 @@ import { useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { idRegistryABI } from '@farcaster/hub-web';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { switchNetwork, waitForTransaction, writeContract } from '@wagmi/core';
-import { useAccount, useNetwork, usePublicClient } from 'wagmi';
+import {
+  switchChain,
+  waitForTransactionReceipt,
+  writeContract,
+} from '@wagmi/core';
+import { useAccount, useConfig, usePublicClient } from 'wagmi';
 import { optimism } from 'viem/chains';
 import { decodeEventLog } from 'viem';
 
@@ -21,16 +25,15 @@ export default function RegisterAndPay({
   setFid: (fid: number) => void;
 }) {
   const { openConnectModal } = useConnectModal();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+  const config = useConfig();
   const { isLogin, login } = useLogin();
-  const network = useNetwork();
   const publicClient = usePublicClient({
     chainId: optimism.id,
   });
-
   const registerAndPay = useCallback(async () => {
-    if (network.chain?.id !== optimism.id) {
-      await switchNetwork({ chainId: optimism.id });
+    if (chain?.id !== optimism.id) {
+      switchChain(config, { chainId: optimism.id });
     }
     const balance = await publicClient.getBalance({ address });
     console.log('balance', balance);
@@ -60,20 +63,20 @@ export default function RegisterAndPay({
         args: [RECOVERY_ADDRESS],
         value: price,
       });
-      const registerTxHash = await writeContract(registerRequest);
-      const registerTxReceipt = await waitForTransaction({
-        hash: registerTxHash.hash,
+      const registerTxHash = await writeContract(config, registerRequest);
+      const registerTxReceipt = await waitForTransactionReceipt(config, {
+        hash: registerTxHash,
         chainId: optimism.id,
       });
       console.log('registerTxReceipt', registerTxReceipt);
       // Now extract the FID from the logs
-      const registerLog = decodeEventLog({
+      const registerLog: any = decodeEventLog({
         abi: idRegistryABI,
         data: registerTxReceipt.logs[0].data,
         topics: registerTxReceipt.logs[0].topics,
       });
       console.log('registerLog', registerLog);
-      const fidRegister = parseInt((registerLog.args as any).id, 10);
+      const fidRegister = parseInt(registerLog.args.id, 10);
       console.log('fidRegister', fidRegister);
       setFid(fidRegister);
     } catch (e) {
@@ -81,7 +84,7 @@ export default function RegisterAndPay({
       toast.error(e.message);
     }
     // const idGateway = readContract(IdGateway);
-  }, [network, address]);
+  }, [chain, address, config]);
 
   return (
     <div

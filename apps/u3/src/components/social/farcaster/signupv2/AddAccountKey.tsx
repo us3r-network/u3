@@ -5,17 +5,12 @@ import { optimism } from 'viem/chains';
 import { toast } from 'react-toastify';
 import { NobleEd25519Signer, ViemWalletEip712Signer } from '@farcaster/hub-web';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
+import { useAccount, useConfig, usePublicClient, useWalletClient } from 'wagmi';
 import {
-  useAccount,
-  useNetwork,
-  usePublicClient,
-  useWalletClient,
-} from 'wagmi';
-import {
-  waitForTransaction,
+  waitForTransactionReceipt,
   writeContract,
-  prepareWriteContract,
-  switchNetwork,
+  simulateContract,
+  switchChain,
 } from '@wagmi/core';
 import * as ed25519 from '@noble/ed25519';
 
@@ -40,10 +35,10 @@ export default function AddAccountKey({
 }) {
   const { openConnectModal } = useConnectModal();
   const { isLogin, login } = useLogin();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+  const config = useConfig();
   const account = useAccount();
   const wallet = useWalletClient();
-  const network = useNetwork();
 
   const publicClient = usePublicClient({
     chainId: optimism.id,
@@ -66,8 +61,8 @@ export default function AddAccountKey({
       setSigner(ed25519Signer);
       return;
     }
-    if (network.chain?.id !== optimism.id) {
-      await switchNetwork({ chainId: optimism.id });
+    if (chain?.id !== optimism.id) {
+      await switchChain(config, { chainId: optimism.id });
     }
     // const privateKey = ed25519.utils.randomPrivateKey();
     // const publicKey = toHex(ed25519.getPublicKey(privateKey));
@@ -84,7 +79,7 @@ export default function AddAccountKey({
       transport: custom((window as any).ethereum),
     });
     // console.log('client', client.account.address);
-    const eip712signer = new ViemWalletEip712Signer(client);
+    const eip712signer = new ViemWalletEip712Signer(client as any);
     const metadata = await eip712signer.getSignedKeyRequestMetadata({
       requestFid: BigInt(fid),
       key: fromHex(publicKey, 'bytes'),
@@ -99,16 +94,16 @@ export default function AddAccountKey({
     const metadataHex = toHex(metadata.unwrapOr(new Uint8Array()));
 
     try {
-      const { request: signerAddRequest } = await prepareWriteContract({
+      const { request: signerAddRequest } = await simulateContract(config, {
         ...KeyContract,
         functionName: 'add',
         args: [1, publicKey, 1, metadataHex], // keyType, publicKey, metadataType, metadata
         enabled: Boolean(metadata),
       });
 
-      const signerAddTxHash = await writeContract(signerAddRequest);
-      const signerAddTxReceipt = await waitForTransaction({
-        hash: signerAddTxHash.hash,
+      const signerAddTxHash = await writeContract(config, signerAddRequest);
+      const signerAddTxReceipt = await waitForTransactionReceipt(config, {
+        hash: signerAddTxHash,
         chainId: optimism.id,
       });
       console.log('signerAddTxReceipt', signerAddTxReceipt);
@@ -128,7 +123,7 @@ export default function AddAccountKey({
       console.error(error);
       toast.error(error.message);
     }
-  }, [fid, account, publicClient, network]);
+  }, [fid, account, publicClient, chain]);
 
   return (
     <div

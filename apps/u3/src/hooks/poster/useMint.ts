@@ -1,8 +1,8 @@
 import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-  useContractRead,
+  useSimulateContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContract,
 } from 'wagmi';
 import { utils } from 'ethers';
 import {
@@ -21,7 +21,7 @@ export function useMint({
   tokenId: number;
   owner: string;
 }) {
-  const { data: mintFee } = useContractRead({
+  const { data: mintFee } = useReadContract({
     address: casterZora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'mintFee',
@@ -43,14 +43,14 @@ export function useMint({
     value: fee,
     enabled: !!tokenId && !!mintFee,
   };
-  const { config: prepareConfig } = usePrepareContractWrite(prepareOpts);
+  const { data: simulateData } = useSimulateContract(prepareOpts);
 
   const {
-    write,
+    writeContract,
     data: writeData,
-    isLoading: writing,
+    isPending: writing,
     isError: writeError,
-  } = useContractWrite(prepareConfig);
+  } = useWriteContract();
 
   const {
     data,
@@ -58,12 +58,12 @@ export function useMint({
     isLoading: waiting,
     isSuccess,
     status,
-  } = useWaitForTransaction({
-    hash: writeData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeData,
   });
 
   return {
-    write,
+    write: () => writeContract(simulateData.request),
     data,
     isError: writeError || transationError,
     isLoading: writing || waiting,

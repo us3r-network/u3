@@ -1,11 +1,11 @@
-import { useAccount, useNetwork, useWalletClient } from 'wagmi';
+import { useAccount, useConfig, useWalletClient } from 'wagmi';
 import { toHex } from 'viem';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useCallback, useState } from 'react';
 import { NobleEd25519Signer, ViemWalletEip712Signer } from '@farcaster/hub-web';
-import { switchNetwork } from '@wagmi/core';
+import { switchChain } from '@wagmi/core';
 import { mainnet } from 'viem/chains';
 
 import { cn } from '@/lib/utils';
@@ -29,9 +29,9 @@ export default function AddAccountKey({
 }) {
   const { openConnectModal } = useConnectModal();
   const { isLogin, login } = useLogin();
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+  const config = useConfig();
   const wallet = useWalletClient();
-  const network = useNetwork();
   const [name, setName] = useState(fname || '');
 
   const registerFname = useCallback(async () => {
@@ -52,12 +52,12 @@ export default function AddAccountKey({
       // console.log(e);
     }
 
-    if (network.chain?.id !== mainnet.id) {
-      await switchNetwork({ chainId: mainnet.id });
+    if (chain?.id !== mainnet.id) {
+      await switchChain(config, { chainId: mainnet.id });
     }
 
     console.log('signUserNameProofClaim', name, address, fid);
-    const eip712signer = new ViemWalletEip712Signer(wallet.data);
+    const eip712signer = new ViemWalletEip712Signer(wallet.data as any);
     const timestamp = Math.floor(Date.now() / 1000);
     const userNameProofSignature = await eip712signer.signUserNameProofClaim({
       name,
