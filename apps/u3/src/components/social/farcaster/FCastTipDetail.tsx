@@ -23,6 +23,7 @@ export default function FCastTipDetail({ cast }: { cast: FarCast }) {
   const [loading, setLoading] = useState(false);
   const [tipDetails, setTipDetails] = useState<
     {
+      fromFid: number;
       amount: number;
       createdAt: number;
       txHash: string;
@@ -88,6 +89,7 @@ function TipDetailsModal({
   open: boolean;
   setOpen: (open: boolean) => void;
   details: {
+    fromFid: number;
     amount: number;
     txHash: string;
     createdAt: number;
@@ -103,8 +105,8 @@ function TipDetailsModal({
       closeModal={() => {
         setOpen(false);
       }}
-      contentTop="40%"
-      className="w-full md:w-[600px]"
+      contentTop="50%"
+      className="w-full md:w-[600px] max-h-full overflow-y-auto"
     >
       {(loading && (
         <div className="flex justify-center items-center min-h-36">
@@ -146,21 +148,30 @@ function TipDetailsModal({
             </TableHeader>
             <TableBody className="border-none mb-5">
               {details.map((detail, index) => {
-                const avatar = detail.userDatas.find((item) => item.type === 1);
-                const name = detail.userDatas.find((item) => item.type === 2);
-                const handle = detail.userDatas.find((item) => item.type === 6);
+                const avatar = (detail.userDatas &&
+                  detail.userDatas.find((item) => item.type === 1)) || {
+                  value: '',
+                };
+                const name = (detail.userDatas &&
+                  detail.userDatas.find((item) => item.type === 2)) || {
+                  value: detail.fromFid,
+                };
+                const handle = (detail.userDatas &&
+                  detail.userDatas.find((item) => item.type === 6)) || {
+                  value: detail.fromFid,
+                };
                 return (
                   <TableRow key={detail.createdAt} className="border-none">
                     <TableCell className="font-medium flex gap-3">
                       <img
-                        src={avatar.value}
+                        src={avatar?.value}
                         alt=""
                         className="w-12 h-12 object-cover rounded-full"
                       />
                       <div>
-                        <div className="text-lg">{name.value}</div>
+                        <div className="text-lg">{name?.value}</div>
                         <div className="text-sm text-[#718096]">
-                          @{handle.value}
+                          @{handle?.value}
                         </div>
                       </div>
                     </TableCell>

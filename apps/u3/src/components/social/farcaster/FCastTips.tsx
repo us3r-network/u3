@@ -101,13 +101,7 @@ export default function FCastTips({
       // notify
       cast.tipsTotalAmount =
         (cast.tipsTotalAmount || 0) + Number(allowanceValue);
-      await notifyTipApi({
-        fromFid: currFid,
-        amount: Number(allowanceValue),
-        txHash: '',
-        type: 'Allowance',
-        castHash: Buffer.from(cast.hash.data).toString('hex'),
-      });
+
       setReplyTipAmount(allowanceValue);
       setReplyTipTimes(Number(getReplyTipTimes()) - 1);
       setReplyTipAmountTotal(
