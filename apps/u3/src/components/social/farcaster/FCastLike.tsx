@@ -41,7 +41,7 @@ export default function FCastLike({
 
   return (
     <PostLikeWrapper>
-      {likes.length > 0 && (
+      {/* {likes.length > 0 && (
         <PostLikeAvatarsWrapper>
           {likes.slice(0, 3).map((item) => {
             return (
@@ -57,7 +57,7 @@ export default function FCastLike({
             <PostLikeAvatarWrapper>+{likes.length - 3}</PostLikeAvatarWrapper>
           )}
         </PostLikeAvatarsWrapper>
-      )}
+      )} */}
       <PostLike
         totalLikes={likeCount}
         liked={liked}
@@ -81,29 +81,29 @@ export default function FCastLike({
   );
 }
 
-function LikeAvatar({
-  farcasterUserData,
-  farcasterUserDataObj,
-  fid,
-}: {
-  fid: string;
-  farcasterUserData: { [key: string]: { type: number; value: string }[] };
-  farcasterUserDataObj?: { [key: string]: UserData } | undefined;
-}) {
-  const userData = useFarcasterUserData({
-    fid,
-    farcasterUserData,
-    farcasterUserDataObj,
-  });
-  if (userData.pfp) {
-    return (
-      <PostLikeAvatarWrapper>
-        <PostLikeAvatar src={userData.pfp} alt="" />
-      </PostLikeAvatarWrapper>
-    );
-  }
-  if (userData.display) {
-    return <PostLikeAvatarWrapper>{userData.display}</PostLikeAvatarWrapper>;
-  }
-  return <PostLikeAvatarWrapper>{userData.fid}</PostLikeAvatarWrapper>;
-}
+// function LikeAvatar({
+//   farcasterUserData,
+//   farcasterUserDataObj,
+//   fid,
+// }: {
+//   fid: string;
+//   farcasterUserData: { [key: string]: { type: number; value: string }[] };
+//   farcasterUserDataObj?: { [key: string]: UserData } | undefined;
+// }) {
+//   const userData = useFarcasterUserData({
+//     fid,
+//     farcasterUserData,
+//     farcasterUserDataObj,
+//   });
+//   if (userData.pfp) {
+//     return (
+//       <PostLikeAvatarWrapper>
+//         <PostLikeAvatar src={userData.pfp} alt="" />
+//       </PostLikeAvatarWrapper>
+//     );
+//   }
+//   if (userData.display) {
+//     return <PostLikeAvatarWrapper>{userData.display}</PostLikeAvatarWrapper>;
+//   }
+//   return <PostLikeAvatarWrapper>{userData.fid}</PostLikeAvatarWrapper>;
+// }

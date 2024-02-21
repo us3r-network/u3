@@ -215,7 +215,7 @@ export function PostCardWrapperV2({
   return (
     <div
       className={cn(
-        'bg-[#20262F] hover:bg-[#000000] p-[20px] box-border flex cursor-pointer',
+        'bg-[#20262F] hover:bg-[#000000] px-[20px] box-border flex cursor-pointer border-b border-[#39424c]',
         isDetail && 'hover:bg-[#20262F] cursor-default',
         className
       )}
@@ -491,7 +491,7 @@ const Handle = styled.div`
 `;
 
 export const PostCardShowMoreWrapper = styled.div`
-  > button {
+  button {
     border: none;
     background: #454c99;
     -webkit-background-clip: text;

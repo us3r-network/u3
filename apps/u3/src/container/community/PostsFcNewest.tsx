@@ -59,22 +59,19 @@ export default function PostsFcNewest() {
                 const key = Buffer.from(data.hash.data).toString('hex');
                 return (
                   <FCast
-                    isCommunityLayout
+                    isV2Layout
                     key={key}
                     cast={data}
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={{}}
                     farcasterUserDataObj={fcUserDataObj}
-                    showMenuBtn
-                    onClick={(e) => {
-                      const id = Buffer.from(data.hash).toString('hex');
-
+                    castClickAction={(e, castHex) => {
                       setPostScroll({
                         currentParent: parentId,
                         id: key,
                         top: (e.target as HTMLDivElement).offsetTop,
                       });
-                      navigate(`/community/${channelId}/posts/fc/${id}`);
+                      navigate(`/community/${channelId}/posts/fc/${castHex}`);
                     }}
                   />
                 );

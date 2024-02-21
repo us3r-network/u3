@@ -40,7 +40,6 @@ import {
 } from '../PostCard';
 import Embed from '../Embed';
 import FarcasterChannel from './FarcasterChannel';
-import { PostCardMenuBtn } from '../PostCardMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../../constants';
 import { getEmbeds } from '../../../utils/social/farcaster/getEmbeds';
 import FCastText from './FCastText';
@@ -62,9 +61,10 @@ export default function FCast({
   isDetail,
   showMenuBtn,
   cardClickAction,
+  castClickAction,
   disableRenderUrl,
   simpleLayout,
-  isCommunityLayout,
+  isV2Layout,
   ...wrapperProps
 }: ComponentPropsWithRef<'div'> & {
   cast: FarCast;
@@ -76,7 +76,11 @@ export default function FCast({
   disableRenderUrl?: boolean;
   simpleLayout?: boolean;
   cardClickAction?: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
-  isCommunityLayout?: boolean;
+  castClickAction?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    castHex: string
+  ) => void;
+  isV2Layout?: boolean;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -207,17 +211,15 @@ export default function FCast({
    * 注：这里是区分v2版本布局，在这里兼容v2是为了保证功能一致改动时方便
    * //TODO 等正式使用v2版本后，删除这个判断，然后删除下面旧的布局
    */
-  if (isCommunityLayout) {
+  if (isV2Layout) {
+    const castHex = Buffer.from(castId.hash).toString('hex');
     return (
       <PostCardWrapperV2
-        id={Buffer.from(cast.hash.data).toString('hex')}
+        id={castHex}
         isDetail={isDetail}
         onClick={(e) => {
           if (isDetail) return;
-          const id = Buffer.from(castId.hash).toString('hex');
-
-          cardClickAction?.(e);
-          navigate(`/social/post-detail/fcast/${id}`);
+          castClickAction?.(e, castHex);
         }}
         {...wrapperProps}
       >
@@ -237,10 +239,10 @@ export default function FCast({
               changeCastRecastsWithCurrFid(true);
             }}
           />
-          <div className="text-[#FFBB02] text-[14px] font-medium">$5.00</div>
+          <FCastTipDetail cast={cast} isV2Layout />
         </div>
         <PostCardMainWrapper>
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-[5px]">
             <PostCardUserInfoV2
               data={{
                 platform: SocialPlatform.Farcaster,
@@ -253,10 +255,9 @@ export default function FCast({
             {(cast.parent_url || cast.rootParentUrl) && (
               <FarcasterChannel
                 url={cast.parent_url || cast.rootParentUrl}
-                isCommunityLayout
+                isV2Layout
               />
             )}
-            <FCastTipDetail cast={cast} />
             <div className="flex-grow" />
             <div
               className="flex items-center gap-2"
@@ -298,16 +299,14 @@ export default function FCast({
           </PostCardContentWrapper>
           {showMore && (
             <PostCardShowMoreWrapper>
-              <button
-                type="button"
-                onClick={(e) => {
+              <div
+                onClick={(e: any) => {
                   e.stopPropagation();
-                  const id = Buffer.from(castId.hash).toString('hex');
-                  navigate(`/social/post-detail/fcast/${id}`);
+                  castClickAction?.(e, castHex);
                 }}
               >
-                Show more
-              </button>
+                <button type="button">Show more</button>
+              </div>
             </PostCardShowMoreWrapper>
           )}
           {!simpleLayout && (
@@ -316,6 +315,9 @@ export default function FCast({
               embedWebpages={!disableRenderUrl ? embeds.webpages : []}
               embedCasts={[...embeds.casts]}
               cast={cast}
+              embedCastClick={(e, embedCastHex) => {
+                castClickAction?.(e, embedCastHex);
+              }}
             />
           )}
           <PostCardFooterWrapper>
@@ -470,6 +472,9 @@ export default function FCast({
           embedWebpages={!disableRenderUrl ? embeds.webpages : []}
           embedCasts={[...embeds.casts]}
           cast={cast}
+          embedCastClick={(e, embedCastHex) => {
+            navigate(`/social/post-detail/fcast/${embedCastHex}`);
+          }}
         />
       )}
       {(cast.parent_url || cast.rootParentUrl) && (

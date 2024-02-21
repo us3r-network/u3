@@ -84,7 +84,7 @@ const ModalBody = styled.div`
     align-items: flex-end;
     gap: 20px;
     border-radius: 20px;
-    max-height: 80%;
+    max-height: 90%;
     background: var(--1-b-1-e-23, #1b1e23);
   }
   > .top {

@@ -132,15 +132,17 @@ export default function FarcasterPostDetail() {
   if (cast) {
     scrollToAnchor(window.location.hash.split('#')[1]);
     return (
-      <PostDetailWrapper isMobile={isMobile}>
+      <div className="w-full">
         <FCast
           cast={cast}
           openFarcasterQR={openFarcasterQR}
           farcasterUserData={{}}
           farcasterUserDataObj={farcasterUserDataObj}
           isDetail
-          isCommunityLayout
-          showMenuBtn
+          isV2Layout
+          castClickAction={(e, castHex) => {
+            navigate(`/community/${channelId}/posts/fc/${castHex}`);
+          }}
         />
         <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">
           <ReplyCast
@@ -159,15 +161,15 @@ export default function FarcasterPostDetail() {
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={farcasterUserDataObj}
-                onClick={(e) => {
-                  const id = Buffer.from(item.data.hash.data).toString('hex');
-                  navigate(`/community/${channelId}/posts/fc/${id}`);
+                isV2Layout
+                castClickAction={(e, castHex) => {
+                  navigate(`/community/${channelId}/posts/fc/${castHex}`);
                 }}
               />
             );
           })}
         </PostDetailCommentsWrapper>
-      </PostDetailWrapper>
+      </div>
     );
   }
   return <LoadingWrapper />;

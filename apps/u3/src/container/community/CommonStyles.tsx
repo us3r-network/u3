@@ -8,7 +8,7 @@ export function PostList({
   return (
     <div
       className={cn(
-        `w-full flex flex-col gap-[1px] bg-[#212228] overflow-hidden`,
+        `w-full flex flex-col gap-[1px] overflow-hidden`,
         className
       )}
       {...props}

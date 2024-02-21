@@ -6,10 +6,10 @@ import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function FarcasterChannel({
   url,
-  isCommunityLayout,
+  isV2Layout,
 }: {
   url: string;
-  isCommunityLayout?: boolean;
+  isV2Layout?: boolean;
 }) {
   const { farcasterChannels } = useFarcasterCtx();
 
@@ -18,7 +18,7 @@ export default function FarcasterChannel({
   }, [farcasterChannels, url]);
 
   if (channel) {
-    if (isCommunityLayout) {
+    if (isV2Layout) {
       return (
         <Link
           to={`/community/${channel.channel_id}`}
