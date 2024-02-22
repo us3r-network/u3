@@ -7,13 +7,21 @@ import { toast } from 'react-toastify';
 import {
   generateKeyPair,
   getSignedKeyRequest,
+  getTempFarsignPrivateKey,
+  getTempFarsignPubkey,
   removeFarsignPrivateKey,
   removeFarsignSigner,
+  removeTempFarsignPrivateKey,
+  removeTempFarsignPubkey,
+  saveTempFarsignPrivateKey,
+  saveTempFarsignPubkey,
   setPrivateKey,
   setSignedKeyRequest,
 } from 'src/utils/social/farcaster/farsign-utils';
 import { WARPCAST_API } from 'src/constants/farcaster';
 import {
+  fetchFidSigners,
+  fetchFidWithVerificationAddress,
   getFarcasterSignature,
   getFarcasterUserInfo,
 } from 'src/services/social/api/farcaster';
@@ -31,6 +39,7 @@ import {
   getDefaultFarcaster,
   setDefaultFarcaster,
 } from '@/utils/social/farcaster/farcaster-default';
+import useLogin from '@/hooks/shared/useLogin';
 
 const stopSign = {
   stop: false,
@@ -63,6 +72,7 @@ export type FarcasterBioLinkData = {
 
 export default function useFarcasterQR() {
   const { didSessionStr } = useU3Login();
+  const { walletAddress } = useLogin();
   const [qrFid, setQrFid] = useState<number>();
   const [openQR, setOpenQR] = useState(false);
   const [showQR, setShowQR] = useState(false);
@@ -95,14 +105,14 @@ export default function useFarcasterQR() {
     let signerSuccess = false;
     let stopped = false;
 
-    while (tries < 40) {
+    while (tries < 60) {
       if (stopSign.stop) {
         stopped = true;
         break;
       }
       tries += 1;
       // eslint-disable-next-line no-promise-executor-return
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const result = await axios
         .get(`${WARPCAST_API}/v2/signed-key-request`, {
@@ -116,6 +126,11 @@ export default function useFarcasterQR() {
 
       if (signedKeyRequest.state === 'completed') {
         setSignedKeyRequest(signedKeyRequest);
+        setPrivateKey(keyPair.privateKey);
+
+        removeTempFarsignPrivateKey();
+        removeTempFarsignPubkey();
+
         if (!getDefaultFarcaster()) {
           setDefaultFarcaster(`${signedKeyRequest.userFid}`);
         }
@@ -168,6 +183,7 @@ export default function useFarcasterQR() {
       setWarpcastErr('Internal server error');
       return;
     }
+
     const { signature, appFid, deadline } = resp.data.data;
 
     const { token, deeplinkUrl } = await axios
@@ -179,18 +195,87 @@ export default function useFarcasterQR() {
       })
       .then((response) => response.data.result.signedKeyRequest);
 
+    // save-temp
+    saveTempFarsignPrivateKey(keyPair.privateKey);
+    saveTempFarsignPubkey(keyPair.publicKey);
+
     removeFarsignPrivateKey();
     removeFarsignSigner();
 
-    setPrivateKey(keyPair.privateKey);
-    pollForSigner(token, keyPair);
     setToken({ token, deepLink: deeplinkUrl });
-
     setDeepLinkUrl(deeplinkUrl);
     setShowQR(true);
+
+    pollForSigner(token, keyPair);
   }, [pollForSigner]);
 
+  const checkTempSignerValid = useCallback(async () => {
+    if (!walletAddress) {
+      return;
+    }
+
+    const tempPrivateKey = getTempFarsignPrivateKey();
+    const tempPubkey = getTempFarsignPubkey();
+    if (!tempPrivateKey || !tempPubkey) {
+      return;
+    }
+
+    try {
+      let addrFid = '';
+      const resp = await fetchFidWithVerificationAddress(walletAddress);
+      addrFid = resp.data.data.fid;
+      if (!addrFid) {
+        return;
+      }
+      const fidSigners = await fetchFidSigners(addrFid);
+      if (!fidSigners.data.data?.signers) {
+        return;
+      }
+      if (fidSigners.data.data.signers.length === 0) {
+        return;
+      }
+      const validSigners = fidSigners.data.data.signers.map((item) => {
+        return Buffer.from(item.key.data).toString('hex');
+      });
+      // console.log('validSigners', validSigners);
+      if (!validSigners.includes(tempPubkey)) {
+        return;
+      }
+      // temp signer is valid
+      setPrivateKey(tempPrivateKey);
+      const tempSignerKeyRequest = {
+        key: `0x${tempPubkey}`,
+        userFid: Number(addrFid),
+      };
+      setSignedKeyRequest(tempSignerKeyRequest);
+
+      // wirte to u3 db
+      postProfileBiolink(
+        {
+          platform: BIOLINK_PLATFORMS.farcaster,
+          network: String(BIOLINK_FARCASTER_NETWORK),
+          handle: addrFid,
+          data: {
+            farcasterSignerType: FarcasterSignerType.QR,
+            privateKey: tempPrivateKey,
+            publicKey: tempPubkey,
+            signedKeyRequest: tempSignerKeyRequest,
+          },
+        },
+        didSessionStr
+      );
+
+      removeTempFarsignPrivateKey();
+      removeTempFarsignPubkey();
+    } catch (e) {
+      console.error(e);
+    }
+  }, [walletAddress]);
+
   const restoreFromQRcode = useCallback(async () => {
+    // check Temp signer valid
+    await checkTempSignerValid();
+
     const signer = getSignedKeyRequest();
     // if NO signer in local storage, try to get from db
     let signedKeyRequest;
@@ -229,10 +314,6 @@ export default function useFarcasterQR() {
     }
 
     if (signedKeyRequest) {
-      setToken({
-        token: 'already connected',
-        deepLink: 'already connected',
-      });
       setQrSigner({
         SignedKeyRequest: signedKeyRequest,
         isConnected: true,
@@ -242,7 +323,7 @@ export default function useFarcasterQR() {
     } else {
       setQrCheckStatus('done');
     }
-  }, [didSessionStr]);
+  }, [didSessionStr, checkTempSignerValid]);
 
   const openFarcasterQR = useCallback(() => {
     stopSign.stop = false;

@@ -34,6 +34,35 @@ function removeFarsignSigner() {
   localStorage.removeItem(`farsign-signer-${FARCASTER_CLIENT_NAME}`);
 }
 
+function removeTempFarsignPrivateKey() {
+  localStorage.removeItem(`farsign-temp-privateKey-${FARCASTER_CLIENT_NAME}`);
+}
+function removeTempFarsignPubkey() {
+  localStorage.removeItem(`farsign-temp-signer-${FARCASTER_CLIENT_NAME}`);
+}
+function saveTempFarsignPrivateKey(privateKey: string) {
+  localStorage.setItem(
+    `farsign-temp-privateKey-${FARCASTER_CLIENT_NAME}`,
+    privateKey
+  );
+}
+function getTempFarsignPrivateKey() {
+  const privateKey = localStorage.getItem(
+    `farsign-temp-privateKey-${FARCASTER_CLIENT_NAME}`
+  );
+  return privateKey;
+}
+
+function saveTempFarsignPubkey(pubKey: string) {
+  localStorage.setItem(`farsign-temp-signer-${FARCASTER_CLIENT_NAME}`, pubKey);
+}
+function getTempFarsignPubkey() {
+  const pubKey = localStorage.getItem(
+    `farsign-temp-signer-${FARCASTER_CLIENT_NAME}`
+  );
+  return pubKey;
+}
+
 function setPrivateKey(privateKey: string) {
   localStorage.setItem(
     `farsign-privateKey-${FARCASTER_CLIENT_NAME}`,
@@ -70,4 +99,11 @@ export {
   getPrivateKey,
   removeFarsignPrivateKey,
   removeFarsignSigner,
+  // temp
+  removeTempFarsignPrivateKey,
+  removeTempFarsignPubkey,
+  saveTempFarsignPrivateKey,
+  getTempFarsignPrivateKey,
+  saveTempFarsignPubkey,
+  getTempFarsignPubkey,
 };
