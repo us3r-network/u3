@@ -24,7 +24,7 @@ import {
   ProfileId,
 } from '@lens-protocol/react-web';
 import { bindings as wagmiBindings } from '@lens-protocol/wagmi';
-import { Connector, useAccount } from 'wagmi';
+import { Connector, useAccount, useAccountEffect, useConfig } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { useSession as useU3Session } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
@@ -34,7 +34,6 @@ import {
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
 import { LENS_ENV, LENS_ENV_POLYGON_CHAIN_ID } from '../../constants/lens';
-
 import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
 
 interface LensAuthContextValue {
@@ -64,12 +63,6 @@ export const LensAuthContext = createContext<LensAuthContextValue>({
   commentModalData: null,
   setCommentModalData: () => {},
 });
-
-const lensConfig: LensConfig = {
-  bindings: wagmiBindings(),
-  environment: LENS_ENV === 'production' ? production : development,
-};
-
 // TODO : 兼容v2登录，为了在登录前获取钱包对应的profileID
 
 let walletProfileId = '';
@@ -87,6 +80,11 @@ const getWalletProfileId = (): Promise<ProfileId> => {
 };
 
 export function AppLensProvider({ children }: PropsWithChildren) {
+  const config = useConfig();
+  const lensConfig: LensConfig = {
+    bindings: wagmiBindings(config),
+    environment: LENS_ENV === 'production' ? production : development,
+  };
   return (
     <LensProvider config={lensConfig}>
       <LensAuthProvider>{children}</LensAuthProvider>
@@ -148,15 +146,16 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
   // const { execute: fetchProfile } = useLazyProfile();
   const lensLoginStartRef = useRef(false);
-  const lensLoginAdpater = async (connector: Connector) => {
+  const lensLoginAdpater = async (
+    connector: Connector,
+    address: `0x${string}`
+  ) => {
     const chainId = await connector.getChainId();
     if (chainId !== LENS_ENV_POLYGON_CHAIN_ID) {
       if (connector?.switchChain) {
-        await connector?.switchChain(LENS_ENV_POLYGON_CHAIN_ID);
+        await connector?.switchChain({ chainId: LENS_ENV_POLYGON_CHAIN_ID });
       }
     }
-    const walletClient = await connector.getWalletClient();
-    const { address } = walletClient.account;
     walletProfileId = '';
     setWalletAddress(address);
     const profileId = await getWalletProfileId();
@@ -168,10 +167,12 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
     await login({ address, profileId });
   };
 
-  const { connector: activeConnector, isConnected } = useAccount({
-    async onConnect({ connector }) {
+  const { connector: activeConnector, isConnected, address } = useAccount();
+
+  useAccountEffect({
+    async onConnect(data) {
       if (lensLoginStartRef.current) {
-        await lensLoginAdpater(connector);
+        await lensLoginAdpater(data.connector, address);
         lensLoginStartRef.current = false;
       }
     },
@@ -179,7 +180,7 @@ export function LensAuthProvider({ children }: PropsWithChildren) {
 
   const lensLogin = useCallback(async () => {
     if (isConnected) {
-      await lensLoginAdpater(activeConnector);
+      await lensLoginAdpater(activeConnector, address);
     } else if (openConnectModal) {
       lensLoginStartRef.current = true;
       openConnectModal();

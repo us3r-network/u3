@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  prepareWriteContract,
-  switchNetwork,
-  waitForTransaction,
+  simulateContract,
+  switchChain,
+  waitForTransactionReceipt,
   writeContract,
 } from '@wagmi/core';
 import { toast } from 'react-toastify';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 
 import ModalContainer from '@/components/common/modal/ModalContainer';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
@@ -68,8 +68,8 @@ export default function CreateModal({
   closeModal: () => void;
 }) {
   const { isLogin, login } = useLogin();
-  const network = useNetwork();
-  const { address: accountAddr } = useAccount();
+  const { address: accountAddr, chain } = useAccount();
+  const config = useConfig();
   const { openFarcasterQR, isConnected: isLoginFarcaster } = useFarcasterCtx();
 
   const [step, setStep] = useState(Steps.CREATE_FRAME);
@@ -97,27 +97,30 @@ export default function CreateModal({
         if (!RED_ENVELOPE_PLEDGE_ADDRESS) {
           throw new Error('RED_ENVELOPE_PLEDGE_ADDRESS is not defined');
         }
-        if (network.chain?.id !== base.id) {
-          await switchNetwork({ chainId: base.id });
+        if (chain?.id !== base.id) {
+          await switchChain(config, { chainId: base.id });
         }
-        const { request: transferDegenRequest } = await prepareWriteContract({
-          address: DegenAddress,
-          abi: DegenABI,
-          chainId: base.id,
-          functionName: 'transfer',
-          args: [RED_ENVELOPE_PLEDGE_ADDRESS, parseEther(amount.toString())],
-        });
-        const degenTxHash = await writeContract(transferDegenRequest);
-        const degenTxReceipt = await waitForTransaction({
-          hash: degenTxHash.hash,
+        const { request: transferDegenRequest } = await simulateContract(
+          config,
+          {
+            address: DegenAddress,
+            abi: DegenABI,
+            chainId: base.id,
+            functionName: 'transfer',
+            args: [RED_ENVELOPE_PLEDGE_ADDRESS, parseEther(amount.toString())],
+          }
+        );
+        const degenTxHash = await writeContract(config, transferDegenRequest);
+        const degenTxReceipt = await waitForTransactionReceipt(config, {
+          hash: degenTxHash,
           chainId: base.id,
         });
         console.log('degenTxReceipt', degenTxReceipt);
         if (degenTxReceipt.status === 'success') {
           toast.success('pledge degen success');
-          return degenTxHash.hash;
+          return degenTxHash;
         }
-        console.error('transaction failed', degenTxHash.hash, degenTxReceipt);
+        console.error('transaction failed', degenTxHash, degenTxReceipt);
         toast.error(`pledge action failed: ${degenTxReceipt.status}`);
         return '';
       } catch (e) {
@@ -125,7 +128,7 @@ export default function CreateModal({
         return '';
       }
     },
-    [network]
+    [chain]
   );
   const submitFrame = useCallback(
     async (values: CreateRedEnvelopeParams) => {

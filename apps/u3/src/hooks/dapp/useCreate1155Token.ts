@@ -1,9 +1,8 @@
 import {
-  useContractRead,
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-  // useNetwork,
+  useReadContract,
+  useSimulateContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
 } from 'wagmi';
 import { encodeFunctionData } from 'viem';
 import {
@@ -134,14 +133,7 @@ export function useCreate1155Token(newTokenURI) {
 
     return contractCalls;
   }
-  // const { chain, chains } = useNetwork();
-  // console.log(
-  //   'useContractRead',
-  //   zora1155ToMintAddress,
-  //   chain,
-  //   chains
-  // );
-  const { data: nextTokenId } = useContractRead({
+  const { data: nextTokenId } = useReadContract({
     address: zora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'nextTokenId',
@@ -157,7 +149,8 @@ export function useCreate1155Token(newTokenURI) {
         })
       : null;
   // console.log('create1155Calls', create1155Calls);
-  const { config: prepareConfig } = usePrepareContractWrite({
+
+  const { data: simulateData } = useSimulateContract({
     address: zora1155ToMintAddress, // address of collection to mint new token to
     abi: ZoraCreator1155ImplAbi,
     functionName: 'multicall',
@@ -166,23 +159,23 @@ export function useCreate1155Token(newTokenURI) {
   });
   // console.log('prepareConfig', prepareConfig);
   const {
-    write,
+    writeContract,
     data: writeData,
-    isLoading: writing,
+    isPending: writing,
     isError: writeError,
-  } = useContractWrite(prepareConfig);
+  } = useWriteContract();
   const {
     data,
     isError: transationError,
     isLoading: waiting,
     isSuccess,
     status,
-  } = useWaitForTransaction({
-    hash: writeData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeData,
   });
 
   return {
-    write,
+    write: () => writeContract(simulateData.request),
     nextTokenId,
     data,
     isError: writeError || transationError,

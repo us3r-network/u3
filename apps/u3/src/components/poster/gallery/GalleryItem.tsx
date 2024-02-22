@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 import { ComponentPropsWithoutRef, useEffect, useState } from 'react';
 import dayjs from 'dayjs';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import ColorButton from '@/components/common/button/ColorButton';
 import { cn } from '@/lib/utils';
 import useCasterTokenInfoWithTokenId, {
@@ -35,8 +35,7 @@ export default function GalleryItem({
   const previewImg = imageOriginUrl;
 
   const { isLogin, login } = useLogin();
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { chain, address } = useAccount();
   const {
     totalMinted,
     saleStatus: saleStatusWithToken,

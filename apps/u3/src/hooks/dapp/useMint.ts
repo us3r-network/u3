@@ -7,10 +7,10 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
-  useContractRead,
+  useSimulateContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContract,
 } from 'wagmi';
 import { utils } from 'ethers';
 import {
@@ -27,19 +27,19 @@ export type TokenInfo = {
 };
 
 export function useMint(tokenId) {
-  const { data: mintFee } = useContractRead({
+  const { data: mintFee } = useReadContract({
     address: zora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'mintFee',
   });
-  const { data: tokenInfo } = useContractRead({
+  const { data: tokenInfo } = useReadContract({
     address: zora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'getTokenInfo',
     args: [tokenId],
   });
 
-  const { config: prepareConfig } = usePrepareContractWrite({
+  const { data: simulateData } = useSimulateContract({
     address: zora1155ToMintAddress, // address of collection to mint from
     abi: ZoraCreator1155ImplAbi,
     functionName: 'mintWithRewards',
@@ -58,11 +58,11 @@ export function useMint(tokenId) {
   });
   // console.log('prepareConfig', prepareConfig, mintFee, tokenInfo);
   const {
-    write,
+    writeContract,
     data: writeData,
-    isLoading: writing,
+    isPending: writing,
     isError: writeError,
-  } = useContractWrite(prepareConfig);
+  } = useWriteContract();
 
   const {
     data,
@@ -70,13 +70,13 @@ export function useMint(tokenId) {
     isLoading: waiting,
     isSuccess,
     status,
-  } = useWaitForTransaction({
-    hash: writeData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeData,
   });
 
   return {
     tokenInfo,
-    write,
+    write: () => writeContract(simulateData.request),
     data,
     isError: writeError || transationError,
     isLoading: writing || waiting,

@@ -6,12 +6,12 @@ import {
   useState,
 } from 'react';
 import { UrlMetadata } from '@mod-protocol/core';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
   sendTransaction,
-  switchNetwork,
-  waitForTransaction,
+  switchChain,
+  waitForTransactionReceipt,
 } from '@wagmi/core';
 import { toast } from 'react-toastify';
 
@@ -47,11 +47,11 @@ export default function U3ZoraMinter({
   const [transactionHash, setTransactionHash] = useState(''); // [data, setData
   const [transactionData, setTransactionData] = useState<ModTransactionData>(); // [data, setData
   const [modMetadataCheckDone, setModMetadataCheckDone] = useState(false);
-  const { address } = useAccount();
+  const { address, chain } = useAccount();
+  const config = useConfig();
   const { openConnectModal } = useConnectModal();
   const [resultUrl, setResultUrl] = useState(url);
   const { walletAddress, isLogin, login } = useLogin();
-  const network = useNetwork();
   //   const { currFid } = useFarcasterCtx();
 
   const [modMetadata, setModMetadata] = useState<{
@@ -91,12 +91,12 @@ export default function U3ZoraMinter({
       const parsedChainId = parseInt(chainId, 10);
 
       // Switch chains if the user is not on the right one
-      if (network.chain?.id !== parsedChainId)
-        await switchNetwork({ chainId: parsedChainId });
+      if (chain?.id !== parsedChainId)
+        await switchChain(config, { chainId: parsedChainId });
 
       // Send the transaction
       // console.log('data', data, { chainId });
-      const { hash } = await sendTransaction({
+      const hash = await sendTransaction(config, {
         ...data,
         value: data.value ? BigInt(data.value) : 0n,
         //   data: (data.data as `0x${string}`) || '0x',
@@ -105,7 +105,7 @@ export default function U3ZoraMinter({
       // console.log('hash', hash);
       // onSubmitted(hash);
 
-      const { status } = await waitForTransaction({
+      const { status } = await waitForTransactionReceipt(config, {
         hash,
         chainId: parsedChainId,
       });

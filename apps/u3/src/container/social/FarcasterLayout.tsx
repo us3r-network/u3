@@ -2,7 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
 import { NobleEd25519Signer } from '@farcaster/hub-web';
 import { IdRegistryABI } from 'src/services/social/abi/farcaster/IdRegistryABI';
-import { useAccount, useContractRead, useNetwork } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import axios from 'axios';
 
 import styled from 'styled-components';
@@ -12,7 +12,7 @@ import useLogin from 'src/hooks/shared/useLogin';
 import { IdRegistryContract, OP_CHAIN_ID } from 'src/constants/farcaster';
 
 export default function FarcasterLayout() {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { login } = useLogin();
 
   const [fid, setFid] = useState<number>(0);
@@ -20,14 +20,12 @@ export default function FarcasterLayout() {
   const [signer, setSigner] = useState<NobleEd25519Signer | null>(null);
   const [hasStorage, setHasStorage] = useState<boolean>(false);
 
-  const { chain } = useNetwork();
-
-  const { data: idOf } = useContractRead({
+  const { data: idOf } = useReadContract({
     address: IdRegistryContract,
     abi: IdRegistryABI,
     functionName: 'idOf',
     args: [address],
-    enabled: Boolean(address),
+    // enabled: Boolean(address),
     chainId: OP_CHAIN_ID,
   });
 

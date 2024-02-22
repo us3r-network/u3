@@ -1,17 +1,17 @@
 /* eslint-disable no-underscore-dangle */
 import { useCallback, useEffect, useState } from 'react';
 import { Cross2Icon } from '@radix-ui/react-icons';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useConfig } from 'wagmi';
 import { makeCastAdd } from '@farcaster/hub-web';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
-  prepareWriteContract,
-  switchNetwork,
-  waitForTransaction,
+  simulateContract,
+  switchChain,
+  waitForTransactionReceipt,
   writeContract,
 } from '@wagmi/core';
 import { toast } from 'react-toastify';
-import { parseEther } from 'viem';
+import { formatUnits, parseEther } from 'viem';
 import { base } from 'viem/chains';
 
 import { UserData } from '@/utils/social/farcaster/user-data';
@@ -257,14 +257,13 @@ function TipTransaction({
 }) {
   const { currFid, encryptedSigner } = useFarcasterCtx();
   const tipsCount = [69, 420, 42069];
-  const { address: accountAddr } = useAccount();
+  const { address: accountAddr, chain } = useAccount();
+  const config = useConfig();
   const result = useBalance({
     address: accountAddr,
-    formatUnits: 'ether',
     token: DegenAddress,
     chainId: base.id,
   });
-  const network = useNetwork();
   const [tipAmount, setTipAmount] = useState<number>(tipsCount[1]);
   const [allowanceValue, setAllowanceValue] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
@@ -272,36 +271,37 @@ function TipTransaction({
   const [count, setCount] = useState(0);
 
   const tipAction = useCallback(async () => {
-    const left = result?.data?.formatted?.toString() || '0';
+    const left =
+      formatUnits(result.data.value, result.data.decimals)?.toString() || '0';
     if (Number(left) < tipAmount) {
       toast.error(`not enough $DEGEN, left: ${left}`);
       return;
     }
     try {
-      if (network.chain?.id !== base.id) {
-        await switchNetwork({ chainId: base.id });
+      if (chain?.id !== base.id) {
+        await switchChain(config, { chainId: base.id });
       }
-      const { request: transferDegenRequest } = await prepareWriteContract({
+      const { request: transferDegenRequest } = await simulateContract(config, {
         address: DegenAddress,
         abi: DegenABI,
         chainId: base.id,
         functionName: 'transfer',
         args: [`0x${address}`, parseEther(tipAmount.toString())],
       });
-      const degenTxHash = await writeContract(transferDegenRequest);
-      const degenTxReceipt = await waitForTransaction({
-        hash: degenTxHash.hash,
+      const degenTxHash = await writeContract(config, transferDegenRequest);
+      const degenTxReceipt = await waitForTransactionReceipt(config, {
+        hash: degenTxHash,
         chainId: base.id,
       });
       const castHash = Buffer.from(cast.hash.data).toString('hex');
       console.log('degenTxReceipt', degenTxReceipt);
       if (degenTxReceipt.status === 'success') {
-        setTransactionHash(degenTxHash.hash);
+        setTransactionHash(degenTxHash);
         // notify
         await notifyTipApi({
           fromFid: currFid,
           amount: tipAmount,
-          txHash: degenTxHash.hash,
+          txHash: degenTxHash,
           type: 'Token',
           castHash,
         });
@@ -309,7 +309,7 @@ function TipTransaction({
         toast.success('tip success');
         successCallback?.();
       } else {
-        console.error('transaction failed', degenTxHash.hash, degenTxReceipt);
+        console.error('transaction failed', degenTxHash, degenTxReceipt);
         toast.error(`mint action failed: ${degenTxReceipt.status}`);
       }
     } catch (e) {
