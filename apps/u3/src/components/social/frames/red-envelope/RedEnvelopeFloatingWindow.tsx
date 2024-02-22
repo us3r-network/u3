@@ -1,4 +1,5 @@
 import { ComponentPropsWithRef, useCallback, useEffect, useState } from 'react';
+import { DoubleArrowDownIcon } from '@radix-ui/react-icons';
 import { cn } from '@/lib/utils';
 import CreateModal from './CreateModal';
 import useLogin from '@/hooks/shared/useLogin';
@@ -92,14 +93,7 @@ export default function RedEnvelopeFloatingWindow() {
 
   if (claimed) {
     return (
-      <div
-        className="
-      w-[280px] h-auto
-      flex flex-col items-start gap-[20px]
-      rounded-[20px] bg-[#F41F4C] p-[20px] box-border
-      fixed bottom-[20px] right-[54px] z-[100]
-      "
-      >
+      <FloatingWindowWrapper>
         <div className="text-[#FFF] text-[14px] font-medium">
           🧧 Red Envelope
         </div>
@@ -115,22 +109,22 @@ export default function RedEnvelopeFloatingWindow() {
           })}
         </div>
 
-        <CommonButton className="w-full">👏👏👏</CommonButton>
+        <CommonButton
+          className="w-full"
+          onClick={() => {
+            setClaimed(false);
+          }}
+        >
+          👏👏👏
+        </CommonButton>
         <CreateModal open={open} closeModal={() => setOpen(false)} />
-      </div>
+      </FloatingWindowWrapper>
     );
   }
 
   if (couldClaim) {
     return (
-      <div
-        className="
-    w-[280px] h-auto
-    flex flex-col items-start gap-[20px]
-    rounded-[20px] bg-[#F41F4C] p-[20px] box-border
-    fixed bottom-[20px] right-[54px] z-[100]
-    "
-      >
+      <FloatingWindowWrapper>
         <div className="text-[#FFF] text-[14px] font-medium">
           🧧 Red Envelope
         </div>
@@ -168,19 +162,12 @@ export default function RedEnvelopeFloatingWindow() {
         </div>
 
         <CreateModal open={open} closeModal={() => setOpen(false)} />
-      </div>
+      </FloatingWindowWrapper>
     );
   }
 
   return (
-    <div
-      className="
-      w-[280px] h-auto
-      flex flex-col items-start gap-[20px]
-      rounded-[20px] bg-[#F41F4C] p-[20px] box-border
-      fixed bottom-[20px] right-[54px] z-[100]
-      "
-    >
+    <FloatingWindowWrapper>
       <div className="text-[#FFF] text-[14px] font-medium">🧧 Red Envelope</div>
       <CommonButton
         className="w-full"
@@ -191,6 +178,51 @@ export default function RedEnvelopeFloatingWindow() {
         Create My Red Envelope 🧧
       </CommonButton>
       <CreateModal open={open} closeModal={() => setOpen(false)} />
+    </FloatingWindowWrapper>
+  );
+}
+
+function FloatingWindowWrapper({
+  children,
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
+  const [isExpanded, setIsExpanded] = useState(true);
+
+  const toggleExpand = () => {
+    setIsExpanded((prevState) => !prevState);
+  };
+  return isExpanded ? (
+    <div
+      className={cn(
+        'fixed bottom-[20px] right-[54px] z-[100]',
+        'w-[280px] h-auto flex flex-col items-start gap-[20px] rounded-[20px] bg-[#F41F4C] p-[20px] box-border',
+        `transition-[height] duration-500`,
+        className
+      )}
+      {...props}
+    >
+      <div
+        className={cn(
+          `
+          w-[48px] h-[48px] absolute left-1/2 -translate-x-1/2 -top-[24px] overflow-hidden cursor-pointer bg-[#F41F4C] rounded-full
+          text-[#FFF] font-medium flex justify-center items-center`
+        )}
+        onClick={toggleExpand}
+      >
+        <DoubleArrowDownIcon />
+      </div>
+      {children}
+    </div>
+  ) : (
+    <div
+      className={cn(
+        `fixed bottom-[20px] right-[280px] z-[100] text-[50px] cursor-pointer flex flex-col`
+      )}
+      onClick={toggleExpand}
+    >
+      🧧
+      {/* <span className="text-[#FFF] font-medium  text-[12px]">Red Envelope</span> */}
     </div>
   );
 }
