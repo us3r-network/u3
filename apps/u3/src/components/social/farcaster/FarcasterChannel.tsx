@@ -4,7 +4,13 @@ import { Link } from 'react-router-dom';
 
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
-export default function FarcasterChannel({ url }: { url: string }) {
+export default function FarcasterChannel({
+  url,
+  isV2Layout,
+}: {
+  url: string;
+  isV2Layout?: boolean;
+}) {
   const { farcasterChannels } = useFarcasterCtx();
 
   const channel = useMemo(() => {
@@ -12,6 +18,23 @@ export default function FarcasterChannel({ url }: { url: string }) {
   }, [farcasterChannels, url]);
 
   if (channel) {
+    if (isV2Layout) {
+      return (
+        <Link
+          to={`/community/${channel.channel_id}`}
+          className="hover:underline"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
+          <img
+            className="w-[16px] h-[16px] rounded-[30px]"
+            src={channel.image}
+            alt=""
+          />
+        </Link>
+      );
+    }
     return (
       <ChannelBox
         onClick={(e) => {

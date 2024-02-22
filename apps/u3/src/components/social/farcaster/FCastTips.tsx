@@ -52,6 +52,7 @@ export default function FCastTips({
   });
   const { currFid, encryptedSigner } = useFarcasterCtx();
   const [allowance, setAllowance] = useState<string>('0');
+  const [remainingAllowance, setRemainingAllowance] = useState<string>('0');
   const [loading, setLoading] = useState(false);
 
   const loadUserinfo = useCallback(async () => {
@@ -62,6 +63,9 @@ export default function FCastTips({
       setUserInfo(data.data);
       setAllowance(allowanceData.data?.[0]?.tip_allowance || '0');
       setReplyTipAllowance(allowanceData.data?.[0]?.tip_allowance || '0');
+      setRemainingAllowance(
+        allowanceData.data?.[0]?.remaining_allowance || '0'
+      );
       setReplyTipAmountTotal('0');
     } catch (e) {
       console.error(e);
@@ -97,13 +101,7 @@ export default function FCastTips({
       // notify
       cast.tipsTotalAmount =
         (cast.tipsTotalAmount || 0) + Number(allowanceValue);
-      await notifyTipApi({
-        fromFid: currFid,
-        amount: Number(allowanceValue),
-        txHash: '',
-        type: 'Allowance',
-        castHash: Buffer.from(cast.hash.data).toString('hex'),
-      });
+
       setReplyTipAmount(allowanceValue);
       setReplyTipTimes(Number(getReplyTipTimes()) - 1);
       setReplyTipAmountTotal(
@@ -147,8 +145,8 @@ export default function FCastTips({
           setOpenModal(true);
         }}
       >
-        <DegenTip className={'w-5 h-5'} />
-        <span className="text-[#A36EFD]">Tips</span>
+        {/* <DegenTip className={'w-5 h-5'} /> */}
+        <span className="text-[#FFBB02]">🎁 Tips</span>
       </div>
       {openModal && (
         <TipsModal
@@ -158,6 +156,7 @@ export default function FCastTips({
           userinfo={userinfo}
           userData={userData}
           allowance={allowance}
+          remainingAllowance={remainingAllowance}
           cast={cast}
           updateCb={updateCb}
         />
@@ -174,6 +173,7 @@ function TipsModal({
   userData,
   cast,
   allowance,
+  remainingAllowance,
   updateCb,
 }: {
   open: boolean;
@@ -183,6 +183,7 @@ function TipsModal({
   userinfo: { address: string; fname: string };
   cast: FarCast;
   allowance: string;
+  remainingAllowance: string;
   updateCb: () => void;
 }) {
   return (
@@ -227,6 +228,7 @@ function TipsModal({
               fname={userData.userName}
               cast={cast}
               allowance={allowance}
+              remainingAllowance={remainingAllowance}
               successCallback={() => {
                 setOpen(false);
                 updateCb();
@@ -243,12 +245,14 @@ function TipTransaction({
   address,
   cast,
   allowance,
+  remainingAllowance,
   successCallback,
 }: {
   fname: string;
   address: string;
   cast: FarCast;
   allowance: string;
+  remainingAllowance: string;
   successCallback?: () => void;
 }) {
   const { currFid, encryptedSigner } = useFarcasterCtx();
@@ -361,19 +365,21 @@ function TipTransaction({
       successCallback?.();
     } catch (error) {
       console.error(error);
-      toast.success('allowance tip failed');
+      toast.error('allowance tip failed');
     }
   }, [allowanceValue, currFid, encryptedSigner, allowance]);
 
   useEffect(() => {
-    if (Number(allowance) > 0) {
+    if (Number(remainingAllowance) > 0) {
       setTab('TabReply');
     }
-  }, [allowance]);
+  }, [remainingAllowance]);
 
   const useAllowance = getUseReplyTipDefault();
 
-  const allowanceNum = Number.isNaN(Number(allowance)) ? 0 : Number(allowance);
+  const remainingAllowanceNum = Number.isNaN(Number(remainingAllowance))
+    ? 0
+    : Number(remainingAllowance);
 
   return (
     <Tabs
@@ -408,7 +414,7 @@ function TipTransaction({
         <div className="flex flex-col gap-5">
           <div className="flex gap-1 items-center justify-between">
             {tipsCount.map((item) => {
-              const isAllowance = allowanceNum >= item;
+              const isAllowance = remainingAllowanceNum >= item;
               return (
                 <div
                   key={item}
@@ -433,7 +439,7 @@ function TipTransaction({
               <input
                 type="number"
                 className="w-full p-1 px-2 text-white bg-[#1B1E23] outline-none"
-                placeholder={`Max ${allowanceNum}`}
+                placeholder={`Remaining ${remainingAllowanceNum}, Total ${allowance}`}
                 value={allowanceValue}
                 onChange={(e) => {
                   setAllowanceValue(e.target.value);
@@ -459,12 +465,20 @@ function TipTransaction({
               className="border border-white"
               checked={useAllowance}
               onCheckedChange={(v) => {
+                if (allowanceValue === '') {
+                  toast.error('Please select an amount');
+                  return;
+                }
+                if (remainingAllowanceNum < Number(allowanceValue) * 5) {
+                  toast.error('You have used up the default allowance');
+                  return;
+                }
                 if (v) {
                   setUseReplyTipDefault();
                 } else {
                   setUseReplyTipDefault('false');
                 }
-                setCount(count + 1);
+                setCount(Number(count) + 1);
               }}
             />
             <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

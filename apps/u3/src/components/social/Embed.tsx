@@ -1,6 +1,13 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  ComponentPropsWithRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CastId,
@@ -47,11 +54,16 @@ export default function Embed({
   embedWebpages,
   embedCasts,
   cast,
+  embedCastClick,
 }: {
   embedImgs: { url: string }[];
   embedWebpages: { url: string }[];
   embedCasts: { castId: { fid: number; hash: string } }[];
   cast: FarCast;
+  embedCastClick?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    castHex: string
+  ) => void;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
   const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
@@ -121,7 +133,7 @@ export default function Embed({
             {embedImgs.map((img, idx) => (
               // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
               <img
-                className="max-h-[200px] object-cover"
+                className="max-w-[200px] object-cover"
                 src={img.url}
                 alt=""
                 loading="lazy"
@@ -140,26 +152,39 @@ export default function Embed({
           />
         </>
       )}
-      <div className="w-full">
+      <div className="w-full max-w-[630px]">
         {[...metadataCasts].map((item) => {
           if (item.cast === undefined) return null;
+          const castHex = Buffer.from(item.cast.hash.data).toString('hex');
           return (
             <EmbedCast
               data={item}
-              key={Buffer.from(item.cast.hash.data).toString('hex')}
+              key={castHex}
+              onClick={(e) => {
+                e.stopPropagation();
+                embedCastClick?.(e, castHex);
+              }}
             />
           );
         })}
-        {[...metadata].map((item: FarCastEmbedMeta) => {
+        {[...metadata].map((item: FarCastEmbedMeta, idx) => {
           if (item.collection) {
-            return <EmbedNFT item={item} key={(item as any).url} />;
+            return (
+              <EmbedNFT item={item} key={String(idx) + (item as any).url} />
+            );
           }
           if (checkFarcastFrameValid(item)) {
             return (
-              <EmbedCastFrame data={item} key={(item as any).url} cast={cast} />
+              <EmbedCastFrame
+                data={item}
+                key={String(idx) + (item as any).url}
+                cast={cast}
+              />
             );
           }
-          return <EmbedWebsite item={item} key={(item as any).url} />;
+          return (
+            <EmbedWebsite item={item} key={String(idx) + (item as any).url} />
+          );
         })}
       </div>
     </div>
@@ -255,8 +280,12 @@ function EmbedCastFrame({
   return (
     <>
       <div className="border rounded-xl overflow-hidden border-[#39424c]">
-        <div className="h-80 overflow-hidden flex items-center">
-          <img src={frameData.fcFrameImage} alt="" />
+        <div className="w-full h-80 overflow-hidden flex items-center">
+          <img
+            src={frameData.fcFrameImage}
+            alt=""
+            className="w-full h-full object-cover"
+          />
         </div>
         {frameData.fcFrameInputText && (
           <div className="p-3">
@@ -369,9 +398,10 @@ function EmbedCastFrameRedirect({
   );
 }
 
-function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
-  const navigate = useNavigate();
-
+function EmbedCast({
+  data,
+  ...props
+}: ComponentPropsWithRef<'div'> & { data: FarCastEmbedMetaCast }) {
   const userData = useMemo(() => {
     const img = data.user.find((u) => u.type === UserDataType.PFP)?.value;
     const username = data.user.find(
@@ -396,14 +426,7 @@ function EmbedCast({ data }: { data: FarCastEmbedMetaCast }) {
   return (
     <div
       className="w-full rounded-[10px] text-[#fff] p-[20px] cursor-pointer flex gap-[10px] justify-between bg-[#14171a]"
-      onClick={(e) => {
-        e.stopPropagation();
-        navigate(
-          `/social/post-detail/fcast/${Buffer.from(
-            data.cast.hash.data
-          ).toString('hex')}`
-        );
-      }}
+      {...props}
     >
       <div className="w-0 flex-1">
         <div className="flex items-center gap-[10px]">
@@ -501,18 +524,14 @@ export function EmbedWebsite({
     >
       {(isImg(img || '') && (
         <div
-          className="img w-full max-h-[200px] object-cover"
+          className="img w-full object-cover"
           style={{
             backgroundImage: `url(${img})`,
           }}
         />
       )) || (
         <div className="img">
-          <img
-            className="img w-full max-h-[200px] object-cover"
-            src={img}
-            alt=""
-          />
+          <img className="img w-full object-cover" src={img} alt="" />
         </div>
       )}
       <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">

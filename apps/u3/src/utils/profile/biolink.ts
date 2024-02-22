@@ -1,5 +1,6 @@
 import { FARCASTER_NETWORK } from '../../constants/farcaster';
 import { LENS_ENV } from '../../constants/lens';
+import { getAddressWithDidPkh, isDidPkh } from '../shared/did';
 
 export const BIOLINK_PLATFORMS = {
   lens: 'lens',
@@ -20,6 +21,9 @@ export const isLensHandle = (handle: string) => {
 export const isFarcasterHandle = (handle: string) => {
   return FARCASTER_SUFFIXS.some((suffix) => handle.endsWith(`.${suffix}`));
 };
+export const isDIDHandle = (handle: string) => {
+  return isDidPkh(handle);
+};
 export const lensHandleToBioLinkHandle = (handle: string) => {
   return handle
     ? `${handle
@@ -31,4 +35,7 @@ export const farcasterHandleToBioLinkHandle = (handle: string) => {
   return handle
     ? `${handle.replace(/\.[^.]+$/, '')}.${BIOLINK_FARCASTER_SUFFIX}`
     : '';
+};
+export const DIDHandleToBioLinkHandle = (handle: string) => {
+  return handle ? getAddressWithDidPkh(handle) : '';
 };

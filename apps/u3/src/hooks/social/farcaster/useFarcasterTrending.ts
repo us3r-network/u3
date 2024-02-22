@@ -15,7 +15,11 @@ const farcasterTrendingData = {
 };
 const trendingIdSet: Set<string> = new Set();
 
-export default function useFarcasterTrending() {
+type FarcasterTrendingParams = {
+  channelId?: string;
+};
+export default function useFarcasterTrending(params?: FarcasterTrendingParams) {
+  const { channelId } = params || {};
   const [farcasterTrending, setFarcasterTrending] = useState<any[]>(
     farcasterTrendingData.data
   ); // TODO any
@@ -32,6 +36,7 @@ export default function useFarcasterTrending() {
     setLoading(true);
     try {
       const resp = await getFarcasterTrending({
+        channelId,
         start: farcasterTrendingData.index,
         end: farcasterTrendingData.index + PAGE_SIZE,
       });
@@ -76,7 +81,7 @@ export default function useFarcasterTrending() {
     } finally {
       setLoading(false);
     }
-  }, [pageInfo]);
+  }, [pageInfo, channelId]);
 
   return {
     loading,

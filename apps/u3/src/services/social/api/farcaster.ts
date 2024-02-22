@@ -360,10 +360,12 @@ export function getFarcasterTrending({
   start,
   end,
   least,
+  channelId,
 }: {
   start: number;
   end: number;
   least?: number;
+  channelId?: string;
 }) {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/trending`,
@@ -372,6 +374,7 @@ export function getFarcasterTrending({
       startIndex: start,
       endIndex: end,
       ...(least ? { least } : {}),
+      channelId: channelId ?? '',
     },
   });
 }
