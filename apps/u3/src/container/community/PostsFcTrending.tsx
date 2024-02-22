@@ -9,6 +9,7 @@ import { LoadingMoreWrapper } from '@/components/profile/FollowListWidgets';
 import useListScroll from '@/hooks/social/useListScroll';
 import useFarcasterTrending from '@/hooks/social/farcaster/useFarcasterTrending';
 import { EndMsgContainer, PostList } from './CommonStyles';
+import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 
 export default function PostsFcTrending() {
   const [parentId] = useState('posts-fc-trending');
@@ -62,6 +63,10 @@ export default function PostsFcTrending() {
                   openFarcasterQR={openFarcasterQR}
                   farcasterUserData={{}}
                   farcasterUserDataObj={farcasterTrendingUserDataObj}
+                  shareLink={getCommunityPostDetailShareUrlWithFarcaster(
+                    channelId,
+                    key
+                  )}
                   castClickAction={(e, castHex) => {
                     setPostScroll({
                       currentParent: parentId,
