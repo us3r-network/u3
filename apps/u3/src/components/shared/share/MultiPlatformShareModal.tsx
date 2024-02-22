@@ -35,7 +35,7 @@ export default function MultiPlatformShareModal({
       <ModalBody isMobile={isMobile}>
         <CloseBtn onClick={closeModal} />
         <AddPostForm
-          onSubmitEnd={() => {
+          onSuccess={() => {
             closeModal();
             onSubmitEnd?.();
           }}
