@@ -172,77 +172,80 @@ export default function CreateModal({
 
   const [openNotice, setOpenNotice] = useState(false);
   return (
-    <ModalBase
-      isOpen={open}
-      onRequestClose={closeModal}
-      style={{
-        overlay: {
-          zIndex: 40,
-        },
-      }}
-    >
-      <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
-        <div className="w-[800px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
-          <div className="flex justify-between items-center self-stretch">
-            <span className="text-[#718096] text-[14px] font-medium">
-              Red Envelope
-            </span>
-            <ModalCloseBtn onClick={closeModal} />
-          </div>
-          {step === Steps.POST_FRAME ? (
-            <PostFrameForm
-              frameUrl={frameUrl}
-              frameData={createdFrameData}
-              onSuccess={() => {
-                setStep(Steps.CREATE_FRAME);
-                removeStoredUnpublishedFrameData();
-                setFrameFormValues(defaultFrameFormValues);
-                setCreatedFrameData(null);
-                setFrameUrl('');
-                setOpenNotice(true);
-              }}
-              onBack={() => {
-                setStep(Steps.CREATE_FRAME);
-              }}
-            />
-          ) : (
-            <>
-              <CreateFrameForm
-                submitting={submitting}
-                disabled={submitting || !!frameUrl}
-                values={frameFormValues}
-                onValuesChange={(values) => {
-                  setFrameFormValues(values);
+    <>
+      <ModalBase
+        isOpen={open}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            zIndex: 40,
+          },
+        }}
+      >
+        <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
+          <div className="w-[800px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
+            <div className="flex justify-between items-center self-stretch">
+              <span className="text-[#718096] text-[14px] font-medium">
+                Red Envelope
+              </span>
+              <ModalCloseBtn onClick={closeModal} />
+            </div>
+            {step === Steps.POST_FRAME ? (
+              <PostFrameForm
+                frameUrl={frameUrl}
+                frameData={createdFrameData}
+                onSuccess={() => {
+                  setStep(Steps.CREATE_FRAME);
+                  removeStoredUnpublishedFrameData();
+                  setFrameFormValues(defaultFrameFormValues);
+                  setCreatedFrameData(null);
+                  setFrameUrl('');
+                  closeModal();
+                  setOpenNotice(true);
                 }}
-                onSubmit={(values) => {
-                  submitFrame(values);
+                onBack={() => {
+                  setStep(Steps.CREATE_FRAME);
                 }}
               />
-              {!!frameUrl && !!frameFormValues && (
-                <button
-                  type="button"
-                  className="
+            ) : (
+              <>
+                <CreateFrameForm
+                  submitting={submitting}
+                  disabled={submitting || !!frameUrl}
+                  values={frameFormValues}
+                  onValuesChange={(values) => {
+                    setFrameFormValues(values);
+                  }}
+                  onSubmit={(values) => {
+                    submitFrame(values);
+                  }}
+                />
+                {!!frameUrl && !!frameFormValues && (
+                  <button
+                    type="button"
+                    className="
                   w-full flex px-[12px] py-[6px] h-[40px] justify-center items-center rounded-[10px] bg-[#FFF]
                 text-[#000] text-center text-[12px] font-normal leading-[20px]
                 "
-                  onClick={() => {
-                    setStep(Steps.POST_FRAME);
-                  }}
-                >
-                  The red envelope is ready, go publish it.
-                </button>
-              )}
-            </>
-          )}
+                    onClick={() => {
+                      setStep(Steps.POST_FRAME);
+                    }}
+                  >
+                    The red envelope is ready, go publish it.
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </ModalBase>
       <PostNotice
         open={openNotice}
         closeModal={() => {
           setOpenNotice(false);
         }}
       />
-    </ModalBase>
+    </>
   );
 }
 
