@@ -52,7 +52,9 @@ import FCastTips from './FCastTips';
 import FCastTipDetail from './FCastTipDetail';
 import FCastSuperLike from './FCastSuperLike';
 import { useLinkId } from '@/hooks/shared/useLinkId';
+import FCastTrade from './FCastTrade';
 
+const DEGEN_FID = 5557;
 export default function FCast({
   cast,
   farcasterUserData,
@@ -325,6 +327,7 @@ export default function FCast({
               }}
             />
           )}
+          {cast?.mentions?.includes(DEGEN_FID) && <FCastTrade />}
           <PostCardFooterWrapper>
             <PostCardPlatformInfo platform={SocialPlatform.Farcaster} />
             <PostCardActionsWrapper
