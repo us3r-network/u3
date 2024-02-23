@@ -20,8 +20,7 @@ import {
 } from 'src/utils/social/farcaster/farsign-utils';
 import { WARPCAST_API } from 'src/constants/farcaster';
 import {
-  fetchFidSigners,
-  fetchFidWithVerificationAddress,
+  fetchSignerWithPubkey,
   getFarcasterSignature,
   getFarcasterUserInfo,
 } from 'src/services/social/api/farcaster';
@@ -210,10 +209,6 @@ export default function useFarcasterQR() {
   }, [pollForSigner]);
 
   const checkTempSignerValid = useCallback(async () => {
-    if (!walletAddress) {
-      return;
-    }
-
     const tempPrivateKey = getTempFarsignPrivateKey();
     const tempPubkey = getTempFarsignPubkey();
     if (!tempPrivateKey || !tempPubkey) {
@@ -221,31 +216,17 @@ export default function useFarcasterQR() {
     }
 
     try {
-      let addrFid = '';
-      const resp = await fetchFidWithVerificationAddress(walletAddress);
-      addrFid = resp.data.data.fid;
-      if (!addrFid) {
+      const resp = await fetchSignerWithPubkey(tempPubkey);
+      const pubKeySigner = resp.data.data.signer;
+      // console.log('pubKeySigner', pubKeySigner);
+      if (!pubKeySigner) {
         return;
       }
-      const fidSigners = await fetchFidSigners(addrFid);
-      if (!fidSigners.data.data?.signers) {
-        return;
-      }
-      if (fidSigners.data.data.signers.length === 0) {
-        return;
-      }
-      const validSigners = fidSigners.data.data.signers.map((item) => {
-        return Buffer.from(item.key.data).toString('hex');
-      });
-      // console.log('validSigners', validSigners);
-      if (!validSigners.includes(tempPubkey)) {
-        return;
-      }
-      // temp signer is valid
+
       setPrivateKey(tempPrivateKey);
       const tempSignerKeyRequest = {
         key: `0x${tempPubkey}`,
-        userFid: Number(addrFid),
+        userFid: Number(pubKeySigner.fid),
       };
       setSignedKeyRequest(tempSignerKeyRequest);
 
@@ -254,7 +235,7 @@ export default function useFarcasterQR() {
         {
           platform: BIOLINK_PLATFORMS.farcaster,
           network: String(BIOLINK_FARCASTER_NETWORK),
-          handle: addrFid,
+          handle: pubKeySigner.fid,
           data: {
             farcasterSignerType: FarcasterSignerType.QR,
             privateKey: tempPrivateKey,
@@ -263,14 +244,16 @@ export default function useFarcasterQR() {
           },
         },
         didSessionStr
-      );
+      ).catch((err) => {
+        console.error('postProfileBiolink', err);
+      });
 
       removeTempFarsignPrivateKey();
       removeTempFarsignPubkey();
     } catch (e) {
       console.error(e);
     }
-  }, [walletAddress]);
+  }, []);
 
   const restoreFromQRcode = useCallback(async () => {
     // check Temp signer valid
