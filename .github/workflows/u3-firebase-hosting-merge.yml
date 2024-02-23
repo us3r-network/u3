@@ -27,7 +27,7 @@ jobs:
         env:
           CI: false
           REACT_APP_NAME: "U3"
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=8192"
           REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
           REACT_APP_S3_API_BASE_URL: "${{ vars.REACT_APP_S3_API_BASE_URL }}"
           REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: "${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}"
@@ -75,7 +75,7 @@ jobs:
         env:
           CI: false
           REACT_APP_NAME: "U3 DEV"
-          NODE_OPTIONS: "--max_old_space_size=4096"
+          NODE_OPTIONS: "--max_old_space_size=8192"
           REACT_APP_API_BASE_URL: "${{ vars.REACT_APP_API_BASE_URL }}"
           REACT_APP_S3_API_BASE_URL: "${{ vars.REACT_APP_S3_API_BASE_URL }}"
           REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT: "${{ vars.REACT_APP_US3R_UPLOAD_IMAGE_ENDPOINT }}"

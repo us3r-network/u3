@@ -613,3 +613,10 @@ export function fetchFidSigners(fid: string) {
     method: 'get',
   });
 }
+
+export function fetchSignerWithPubkey(pubkey: string) {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/signers/${pubkey}`,
+    method: 'get',
+  });
+}

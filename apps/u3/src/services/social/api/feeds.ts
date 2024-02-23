@@ -77,7 +77,7 @@ export function getProfileFeeds({
   }>
 > {
   return axiosInstance({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r/profileFeeds`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-all/profileFeeds`,
     method: 'get',
     params: {
       pageSize: pageSize || FEEDS_PAGE_SIZE,
