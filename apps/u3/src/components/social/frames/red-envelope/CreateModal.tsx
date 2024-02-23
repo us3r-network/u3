@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
 import {
-  prepareWriteContract,
-  switchNetwork,
-  waitForTransaction,
+  simulateContract,
+  switchChain,
+  waitForTransactionReceipt,
   writeContract,
 } from '@wagmi/core';
 import { toast } from 'react-toastify';
 import { parseEther } from 'viem';
 import { base } from 'viem/chains';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useConfig } from 'wagmi';
 
 import ModalContainer from '@/components/common/modal/ModalContainer';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
@@ -68,8 +68,8 @@ export default function CreateModal({
   closeModal: () => void;
 }) {
   const { isLogin, login } = useLogin();
-  const network = useNetwork();
-  const { address: accountAddr } = useAccount();
+  const { address: accountAddr, chain } = useAccount();
+  const config = useConfig();
   const { openFarcasterQR, isConnected: isLoginFarcaster } = useFarcasterCtx();
 
   const [step, setStep] = useState(Steps.CREATE_FRAME);
@@ -97,27 +97,30 @@ export default function CreateModal({
         if (!RED_ENVELOPE_PLEDGE_ADDRESS) {
           throw new Error('RED_ENVELOPE_PLEDGE_ADDRESS is not defined');
         }
-        if (network.chain?.id !== base.id) {
-          await switchNetwork({ chainId: base.id });
+        if (chain?.id !== base.id) {
+          await switchChain(config, { chainId: base.id });
         }
-        const { request: transferDegenRequest } = await prepareWriteContract({
-          address: DegenAddress,
-          abi: DegenABI,
-          chainId: base.id,
-          functionName: 'transfer',
-          args: [RED_ENVELOPE_PLEDGE_ADDRESS, parseEther(amount.toString())],
-        });
-        const degenTxHash = await writeContract(transferDegenRequest);
-        const degenTxReceipt = await waitForTransaction({
-          hash: degenTxHash.hash,
+        const { request: transferDegenRequest } = await simulateContract(
+          config,
+          {
+            address: DegenAddress,
+            abi: DegenABI,
+            chainId: base.id,
+            functionName: 'transfer',
+            args: [RED_ENVELOPE_PLEDGE_ADDRESS, parseEther(amount.toString())],
+          }
+        );
+        const degenTxHash = await writeContract(config, transferDegenRequest);
+        const degenTxReceipt = await waitForTransactionReceipt(config, {
+          hash: degenTxHash,
           chainId: base.id,
         });
         console.log('degenTxReceipt', degenTxReceipt);
         if (degenTxReceipt.status === 'success') {
           toast.success('pledge degen success');
-          return degenTxHash.hash;
+          return degenTxHash;
         }
-        console.error('transaction failed', degenTxHash.hash, degenTxReceipt);
+        console.error('transaction failed', degenTxHash, degenTxReceipt);
         toast.error(`pledge action failed: ${degenTxReceipt.status}`);
         return '';
       } catch (e) {
@@ -125,7 +128,7 @@ export default function CreateModal({
         return '';
       }
     },
-    [network]
+    [chain]
   );
   const submitFrame = useCallback(
     async (values: CreateRedEnvelopeParams) => {
@@ -169,77 +172,80 @@ export default function CreateModal({
 
   const [openNotice, setOpenNotice] = useState(false);
   return (
-    <ModalBase
-      isOpen={open}
-      onRequestClose={closeModal}
-      style={{
-        overlay: {
-          zIndex: 40,
-        },
-      }}
-    >
-      <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
-        <div className="w-[800px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
-          <div className="flex justify-between items-center self-stretch">
-            <span className="text-[#718096] text-[14px] font-medium">
-              Red Envelope
-            </span>
-            <ModalCloseBtn onClick={closeModal} />
-          </div>
-          {step === Steps.POST_FRAME ? (
-            <PostFrameForm
-              frameUrl={frameUrl}
-              frameData={createdFrameData}
-              onSuccess={() => {
-                setStep(Steps.CREATE_FRAME);
-                removeStoredUnpublishedFrameData();
-                setFrameFormValues(defaultFrameFormValues);
-                setCreatedFrameData(null);
-                setFrameUrl('');
-                setOpenNotice(true);
-              }}
-              onBack={() => {
-                setStep(Steps.CREATE_FRAME);
-              }}
-            />
-          ) : (
-            <>
-              <CreateFrameForm
-                submitting={submitting}
-                disabled={submitting || !!frameUrl}
-                values={frameFormValues}
-                onValuesChange={(values) => {
-                  setFrameFormValues(values);
+    <>
+      <ModalBase
+        isOpen={open}
+        onRequestClose={closeModal}
+        style={{
+          overlay: {
+            zIndex: 40,
+          },
+        }}
+      >
+        <div className="bg-[#1b1e23] rounded-[20px] mx-[0] my-[60px]">
+          <div className="w-[800px] inline-flex p-[20px] box-border flex-col justify-center items-start gap-[20px]">
+            <div className="flex justify-between items-center self-stretch">
+              <span className="text-[#718096] text-[14px] font-medium">
+                Red Envelope
+              </span>
+              <ModalCloseBtn onClick={closeModal} />
+            </div>
+            {step === Steps.POST_FRAME ? (
+              <PostFrameForm
+                frameUrl={frameUrl}
+                frameData={createdFrameData}
+                onSuccess={() => {
+                  setStep(Steps.CREATE_FRAME);
+                  removeStoredUnpublishedFrameData();
+                  setFrameFormValues(defaultFrameFormValues);
+                  setCreatedFrameData(null);
+                  setFrameUrl('');
+                  closeModal();
+                  setOpenNotice(true);
                 }}
-                onSubmit={(values) => {
-                  submitFrame(values);
+                onBack={() => {
+                  setStep(Steps.CREATE_FRAME);
                 }}
               />
-              {!!frameUrl && !!frameFormValues && (
-                <button
-                  type="button"
-                  className="
+            ) : (
+              <>
+                <CreateFrameForm
+                  submitting={submitting}
+                  disabled={submitting || !!frameUrl}
+                  values={frameFormValues}
+                  onValuesChange={(values) => {
+                    setFrameFormValues(values);
+                  }}
+                  onSubmit={(values) => {
+                    submitFrame(values);
+                  }}
+                />
+                {!!frameUrl && !!frameFormValues && (
+                  <button
+                    type="button"
+                    className="
                   w-full flex px-[12px] py-[6px] h-[40px] justify-center items-center rounded-[10px] bg-[#FFF]
                 text-[#000] text-center text-[12px] font-normal leading-[20px]
                 "
-                  onClick={() => {
-                    setStep(Steps.POST_FRAME);
-                  }}
-                >
-                  The red envelope is ready, go publish it.
-                </button>
-              )}
-            </>
-          )}
+                    onClick={() => {
+                      setStep(Steps.POST_FRAME);
+                    }}
+                  >
+                    The red envelope is ready, go publish it.
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </ModalBase>
       <PostNotice
         open={openNotice}
         closeModal={() => {
           setOpenNotice(false);
         }}
       />
-    </ModalBase>
+    </>
   );
 }
 

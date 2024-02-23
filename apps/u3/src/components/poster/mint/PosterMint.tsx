@@ -1,5 +1,5 @@
 import { ComponentPropsWithRef, useEffect, useState } from 'react';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount } from 'wagmi';
 import MintInfo from './MintInfo';
 import { cn } from '@/lib/utils';
 import useLogin from '@/hooks/shared/useLogin';
@@ -27,8 +27,7 @@ export default function PosterMint({
   className,
   ...props
 }: Props) {
-  const { chain } = useNetwork();
-  const { address } = useAccount();
+  const { chain, address } = useAccount();
   const { isLogin, login } = useLogin();
   const [minted, setMinted] = useState(true);
   const [updatedMintersCount, setUpdatedMintersCount] = useState(0);

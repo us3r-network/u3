@@ -21,8 +21,18 @@ import { cn } from '@/lib/utils';
 
 export type LinkPreviewProps = StyledComponentPropsWithRef<'div'> & {
   data?: LinkListItem;
+  isV2Layout?: boolean;
+  castClickAction?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    castHex: string
+  ) => void;
 };
-export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
+export default function LinkPreview({
+  data,
+  isV2Layout,
+  castClickAction,
+  ...otherProps
+}: LinkPreviewProps) {
   // const navigate = useNavigate();
   const { ref, isFullscreen, onToggle } = useFullScreen();
   const [linkParam, setLinkParam] = useState(null);
@@ -71,7 +81,11 @@ export default function LinkPreview({ data, ...otherProps }: LinkPreviewProps) {
               'max-sm:hidden'
             )}
           >
-            <LinkPost url={data.url} />
+            <LinkPost
+              url={data.url}
+              isV2Layout={isV2Layout}
+              castClickAction={castClickAction}
+            />
           </div>
         </div>
       </PreviewBox>

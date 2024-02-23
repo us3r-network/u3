@@ -23,6 +23,7 @@ import useLogin from '@/hooks/shared/useLogin';
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
 import { ReplyCast } from '@/components/social/farcaster/FCastReply';
 import { LoadingWrapper } from '../social/CommonStyles';
+import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 
 export default function FarcasterPostDetail() {
   const navigate = useNavigate();
@@ -140,6 +141,10 @@ export default function FarcasterPostDetail() {
           farcasterUserDataObj={farcasterUserDataObj}
           isDetail
           isV2Layout
+          shareLink={getCommunityPostDetailShareUrlWithFarcaster(
+            channelId,
+            castId
+          )}
           castClickAction={(e, castHex) => {
             navigate(`/community/${channelId}/posts/fc/${castHex}`);
           }}

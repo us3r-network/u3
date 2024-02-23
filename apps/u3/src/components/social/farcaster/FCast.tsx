@@ -65,6 +65,7 @@ export default function FCast({
   disableRenderUrl,
   simpleLayout,
   isV2Layout,
+  shareLink,
   ...wrapperProps
 }: ComponentPropsWithRef<'div'> & {
   cast: FarCast;
@@ -81,6 +82,7 @@ export default function FCast({
     castHex: string
   ) => void;
   isV2Layout?: boolean;
+  shareLink?: string;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);
@@ -223,24 +225,27 @@ export default function FCast({
         }}
         {...wrapperProps}
       >
-        <div className="flex w-[50px] p-[10px] box-border flex-col items-center gap-[10px] self-stretch">
-          <FCastSuperLike
-            openFarcasterQR={openFarcasterQR}
-            cast={updatedCast}
-            linkId={linkId}
-            link={formatLinkParam}
-            onSaveSuccess={(newLinkId) => {
-              setLinkId(newLinkId);
-            }}
-            onLikeSuccess={() => {
-              changeCastLikesWithCurrFid(true);
-            }}
-            onRecastSuccess={() => {
-              changeCastRecastsWithCurrFid(true);
-            }}
-          />
-          <FCastTipDetail cast={cast} isV2Layout />
-        </div>
+        {!simpleLayout && (
+          <div className="flex w-[50px] p-[10px] box-border flex-col items-center gap-[10px] self-stretch">
+            <FCastSuperLike
+              openFarcasterQR={openFarcasterQR}
+              cast={updatedCast}
+              linkId={linkId}
+              link={formatLinkParam}
+              onSaveSuccess={(newLinkId) => {
+                setLinkId(newLinkId);
+              }}
+              onLikeSuccess={() => {
+                changeCastLikesWithCurrFid(true);
+              }}
+              onRecastSuccess={() => {
+                changeCastRecastsWithCurrFid(true);
+              }}
+            />
+            <FCastTipDetail cast={cast} isV2Layout />
+          </div>
+        )}
+
         <PostCardMainWrapper>
           <div className="flex items-center gap-[5px]">
             <PostCardUserInfoV2
@@ -327,37 +332,42 @@ export default function FCast({
                 e.stopPropagation();
               }}
             >
-              <PostCardActionsWrapper
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
-              >
-                <SaveButton
-                  linkId={linkId}
-                  link={linkParam}
-                  onSuccessfullyFavor={(isFavored) => {
-                    if (!linkId && linkParam?.url && linkParam?.type) {
-                      getLinkId(linkParam).then((id) => {
-                        if (id) setLinkId(id);
-                        else setLinkId('');
-                      });
-                    }
-                  }}
-                />
-                <PostShareMenuBtn
-                  offialUrl={getOfficialCastUrl(
-                    userData.userName,
-                    Buffer.from(castId.hash).toString('hex')
-                  )}
-                  shareLink={getSocialDetailShareUrlWithFarcaster(
-                    Buffer.from(castId.hash).toString('hex')
-                  )}
-                  shareLinkDefaultText={SOCIAL_SHARE_TITLE}
-                  shareLinkEmbedTitle={cast.text}
-                  popoverConfig={{ placement: 'top end', offset: 0 }}
-                />
-              </PostCardActionsWrapper>
-              <div className="w-[1px] h-[16px] bg-[#39424C]" />
+              {!simpleLayout && (
+                <>
+                  <PostCardActionsWrapper
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                  >
+                    <SaveButton
+                      linkId={linkId}
+                      link={linkParam}
+                      onSuccessfullyFavor={(isFavored) => {
+                        if (!linkId && linkParam?.url && linkParam?.type) {
+                          getLinkId(linkParam).then((id) => {
+                            if (id) setLinkId(id);
+                            else setLinkId('');
+                          });
+                        }
+                      }}
+                    />
+                    <PostShareMenuBtn
+                      offialUrl={getOfficialCastUrl(
+                        userData.userName,
+                        Buffer.from(castId.hash).toString('hex')
+                      )}
+                      shareLink={getSocialDetailShareUrlWithFarcaster(
+                        Buffer.from(castId.hash).toString('hex')
+                      )}
+                      shareLinkDefaultText={SOCIAL_SHARE_TITLE}
+                      shareLinkEmbedTitle={cast.text}
+                      popoverConfig={{ placement: 'top end', offset: 0 }}
+                    />
+                  </PostCardActionsWrapper>
+                  <div className="w-[1px] h-[16px] bg-[#39424C]" />
+                </>
+              )}
+
               <FCastLike
                 openFarcasterQR={openFarcasterQR}
                 cast={updatedCast}

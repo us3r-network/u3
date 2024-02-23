@@ -1,8 +1,8 @@
 import {
-  useContractRead,
-  usePrepareContractWrite,
-  useContractWrite,
-  useWaitForTransaction,
+  useReadContract,
+  useSimulateContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
 } from 'wagmi';
 import { encodeFunctionData } from 'viem';
 import dayjs from 'dayjs';
@@ -126,7 +126,7 @@ function constructCreate1155Calls({
 }
 
 export function useCreate1155Token({ tokenURI }: { tokenURI: string }) {
-  const { data: nextTokenId } = useContractRead({
+  const { data: nextTokenId } = useReadContract({
     address: casterZora1155ToMintAddress,
     abi: ZoraCreator1155ImplAbi,
     functionName: 'nextTokenId',
@@ -142,7 +142,7 @@ export function useCreate1155Token({ tokenURI }: { tokenURI: string }) {
           fixedPriceStrategyAddress: casterZoraFixedPriceStrategyAddress,
         })
       : null;
-  const { config: prepareConfig } = usePrepareContractWrite({
+  const { data: simulateData } = useSimulateContract({
     address: casterZora1155ToMintAddress, // address of collection to mint new token to
     abi: ZoraCreator1155ImplAbi,
     functionName: 'multicall',
@@ -150,23 +150,23 @@ export function useCreate1155Token({ tokenURI }: { tokenURI: string }) {
     enabled: !!create1155Calls,
   });
   const {
-    write,
+    writeContract,
     data: writeData,
-    isLoading: writing,
+    isPending: writing,
     isError: writeIsError,
-  } = useContractWrite(prepareConfig);
+  } = useWriteContract();
   const {
     data,
     isError: transationIsError,
     isLoading: trading,
     isSuccess,
     status,
-  } = useWaitForTransaction({
-    hash: writeData?.hash,
+  } = useWaitForTransactionReceipt({
+    hash: writeData,
   });
 
   return {
-    write,
+    write: () => writeContract(simulateData.request),
     nextTokenId,
     data,
     writing,

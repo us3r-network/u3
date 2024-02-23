@@ -11,6 +11,7 @@ import {
 } from '@/components/profile/FollowListWidgets';
 import useListScroll from '@/hooks/social/useListScroll';
 import { PostList } from './CommonStyles';
+import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 
 export default function PostsFcNewest() {
   const [parentId] = useState('posts-fc-newest');
@@ -65,6 +66,10 @@ export default function PostsFcNewest() {
                     openFarcasterQR={openFarcasterQR}
                     farcasterUserData={{}}
                     farcasterUserDataObj={fcUserDataObj}
+                    shareLink={getCommunityPostDetailShareUrlWithFarcaster(
+                      channelId,
+                      key
+                    )}
                     castClickAction={(e, castHex) => {
                       setPostScroll({
                         currentParent: parentId,
