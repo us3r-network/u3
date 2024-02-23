@@ -120,7 +120,7 @@ export default function FCastTips({
   return (
     <>
       <div
-        className="flex items-center gap-2 font-[12px] cursor-pointer"
+        className="flex items-center gap-2 font-[12px] cursor-pointer whitespace-nowrap"
         onClick={(e) => {
           e.stopPropagation();
           const replyDirect =

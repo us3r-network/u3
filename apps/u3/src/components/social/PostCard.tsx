@@ -232,7 +232,7 @@ export function PostCardMainWrapper({
   return (
     <div
       className={cn(
-        'flex-1 p-[10px] box-border flex flex-col gap-[10px] ',
+        'w-full flex-1 p-[10px] box-border flex flex-col gap-[10px] ',
         className
       )}
       {...props}
@@ -352,9 +352,11 @@ export function PostCardUserInfoV2({
           src={data.avatar}
           className="w-[20px] h-[20px] rounded-full object-cover"
         />
-        <div className="text-[#FFF] text-[14px] font-medium">{data.name}</div>
+        <div className="text-[#FFF] text-[14px] font-medium  line-clamp-1">
+          {data.name}
+        </div>
       </TooltipProfileNavigateLinkWrapper>
-      <div className="text-[#718096] text-[12px] font-normal">
+      <div className="text-[#718096] text-[12px] font-normal line-clamp-1">
         @{data.handle} · {dayjs(data.createdAt).fromNow()}
       </div>
     </div>

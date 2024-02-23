@@ -1,5 +1,5 @@
 import { useEffect, useCallback, useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import useFeedLinks from '@/hooks/news/useFeedLinks';
 import useLinksSearchParams from '@/hooks/news/useLinksSearchParams';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
@@ -7,6 +7,7 @@ import LinkModal from '@/components/news/links/LinkModal';
 import CommunityLinks from '@/components/news/links/community/CommunityLinks';
 
 export default function PostsFcMentionedLinks() {
+  const navigate = useNavigate();
   const communityContext = useOutletContext<any>();
   // 可以在这个组件根据这个channelId查询，也可以在上层context里查询，数据从communityContext里传递下来
   // 可参考MembersLayout 里的 TotalMembers 组件
@@ -45,8 +46,10 @@ export default function PostsFcMentionedLinks() {
 
   return (
     <div className="w-full h-full overflow-auto">
-      <div className="text-[#fff] text-[16px] mt-[20px] text-center">
-        <h3>Mentioned Links</h3>
+      <div className="mt-[20px]">
+        <h3 className="text-[#718096] text-[14px] font-medium px-[20px] box-border">
+          🔗 Mentioned Links
+        </h3>
         {links && links.length > 0 && (
           <CommunityLinks
             loading={loading}
@@ -65,6 +68,11 @@ export default function PostsFcMentionedLinks() {
             setSelectLink(null);
           }}
           data={selectLink}
+          isV2Layout
+          castClickAction={(e, castHex) => {
+            setSelectLink(null);
+            navigate(`/community/${channelId}/posts/fc/${castHex}`);
+          }}
         />
       </div>
     </div>
