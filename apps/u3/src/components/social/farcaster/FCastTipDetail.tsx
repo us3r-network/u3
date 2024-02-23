@@ -17,6 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  UnitStringCriticalNumber,
+  formatNumberToUnitString,
+} from '@/utils/shared/number';
 
 export default function FCastTipDetail({
   cast,
@@ -71,7 +75,14 @@ export default function FCastTipDetail({
       >
         {/* <span className="text-[#718096] text-sm"> received</span> */}
         {isV2Layout ? (
-          <span className="text-[#FFBB02]"> ${cast.tipsTotalAmount}</span>
+          <span className="text-[#FFBB02]">
+            {' '}
+            $
+            {formatNumberToUnitString(
+              cast.tipsTotalAmount,
+              UnitStringCriticalNumber.w
+            )}
+          </span>
         ) : (
           <span className="text-[#FFBB02]"> {cast.tipsTotalAmount} $DEGEN</span>
         )}
