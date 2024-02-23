@@ -8,10 +8,17 @@ export default function LinkModal({
   show,
   closeModal,
   data,
+  isV2Layout,
+  castClickAction,
 }: {
   show: boolean;
   closeModal: () => void;
   data: LinkListItem | null;
+  isV2Layout?: boolean;
+  castClickAction?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    castHex: string
+  ) => void;
 }) {
   return (
     <ModalContainer open={show} closeModal={closeModal}>
@@ -21,7 +28,13 @@ export default function LinkModal({
           'max-sm:w-[100vw] max-sm:p-[0px] max-sm:pt-[30px]'
         )}
       >
-        {data && <LinkPreview data={data} />}
+        {data && (
+          <LinkPreview
+            data={data}
+            isV2Layout={isV2Layout}
+            castClickAction={castClickAction}
+          />
+        )}
         <ModalCloseBtn
           className={cn(
             'absolute top-[20px] right-[20px]',

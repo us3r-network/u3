@@ -13,7 +13,18 @@ import { useGlobalModalsCtx } from 'src/contexts/shared/GlobalModalsCtx';
 import IconSend from 'src/components/common/icons/IconSend';
 import { ButtonPrimaryLine } from '../../common/button/ButtonBase';
 
-export default function LinkPost({ url }: { url: string }) {
+export default function LinkPost({
+  url,
+  isV2Layout,
+  castClickAction,
+}: {
+  url: string;
+  isV2Layout?: boolean;
+  castClickAction?: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    castHex: string
+  ) => void;
+}) {
   const {
     firstLoading,
     moreLoading,
@@ -70,6 +81,8 @@ export default function LinkPost({ url }: { url: string }) {
                           simpleLayout
                           openFarcasterQR={openFarcasterQR}
                           farcasterUserData={farcasterUserData}
+                          isV2Layout={isV2Layout}
+                          castClickAction={castClickAction}
                         />
                       </ItemWraper>
                     );
