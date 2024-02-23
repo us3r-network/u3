@@ -65,6 +65,7 @@ export default function FCast({
   disableRenderUrl,
   simpleLayout,
   isV2Layout,
+  shareLink,
   ...wrapperProps
 }: ComponentPropsWithRef<'div'> & {
   cast: FarCast;
@@ -81,6 +82,7 @@ export default function FCast({
     castHex: string
   ) => void;
   isV2Layout?: boolean;
+  shareLink?: string;
 }) {
   const navigate = useNavigate();
   const viewRef = useRef<HTMLDivElement>(null);

@@ -599,3 +599,17 @@ export function claimRedEnvelope() {
     },
   });
 }
+
+export function fetchFidWithVerificationAddress(address: string) {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/fid?address=${address}`,
+    method: 'get',
+  });
+}
+
+export function fetchFidSigners(fid: string) {
+  return request({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/fid/signers?fid=${fid}`,
+    method: 'get',
+  });
+}

@@ -34,6 +34,12 @@ export const getSocialDetailShareUrlWithLens = (id: string | number) => {
 export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
   return `${SHARE_DOMAIN}/social/post-detail/fcast/${id}`;
 };
+export const getCommunityPostDetailShareUrlWithFarcaster = (
+  channelId: string,
+  castHex: string | number
+) => {
+  return `${SHARE_DOMAIN}/community/${channelId}/posts/fc/${castHex}`;
+};
 export const getProfileShareUrl = (identity: string | number) => {
   return `${SHARE_DOMAIN}/u/${identity}`;
 };
