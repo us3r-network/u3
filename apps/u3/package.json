@@ -128,7 +128,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build NODE_OPTIONS=--max-old-space-size=6120",
+    "build": "craco build NODE_OPTIONS=--max-old-space-size=4096",
     "build:report": "craco build --report",
     "test": "craco test",
     "eject": "react-scripts eject",
@@ -136,8 +136,7 @@
     "lint": "eslint . --ext .{js,ts,tsx} --cache",
     "lint:fix": "pnpm lint --fix",
     "format": "prettier --write \"**/*.{js,ts,tsx}\"  --parser typescript ",
-    "format:check": "prettier --check \"**/*.{js,ts,tsx}\"  --parser typescript ",
-    "analyz": "webpack-bundle-analyzer --port 8888 ./dist/stats.json"
+    "format:check": "prettier --check \"**/*.{js,ts,tsx}\"  --parser typescript "
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
