@@ -10,6 +10,7 @@ import useListScroll from '@/hooks/social/useListScroll';
 import useFarcasterTrending from '@/hooks/social/farcaster/useFarcasterTrending';
 import { EndMsgContainer, PostList } from './CommonStyles';
 import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getCommunityFcPostDetailPath } from '@/route/path';
 
 export default function PostsFcTrending() {
   const [parentId] = useState('posts-fc-trending');
@@ -73,7 +74,7 @@ export default function PostsFcTrending() {
                       id: key,
                       top: (e.target as HTMLDivElement).offsetTop,
                     });
-                    navigate(`/community/${channelId}/posts/fc/${castHex}`);
+                    navigate(getCommunityFcPostDetailPath(channelId, castHex));
                   }}
                 />
               );

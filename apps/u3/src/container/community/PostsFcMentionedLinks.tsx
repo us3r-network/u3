@@ -5,6 +5,7 @@ import useLinksSearchParams from '@/hooks/news/useLinksSearchParams';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import LinkModal from '@/components/news/links/LinkModal';
 import CommunityLinks from '@/components/news/links/community/CommunityLinks';
+import { getCommunityFcPostDetailPath } from '@/route/path';
 
 export default function PostsFcMentionedLinks() {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ export default function PostsFcMentionedLinks() {
           isV2Layout
           castClickAction={(e, castHex) => {
             setSelectLink(null);
-            navigate(`/community/${channelId}/posts/fc/${castHex}`);
+            navigate(getCommunityFcPostDetailPath(channelId, castHex));
           }}
         />
       </div>
