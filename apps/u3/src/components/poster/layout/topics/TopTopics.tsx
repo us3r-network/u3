@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import TopicCard, { TopicData } from './TopicCard';
+import { getCommunityPath } from '@/route/path';
 
 export type TopTopicsData = Array<TopicData>;
 export type TopTopicsProps = {
@@ -19,8 +20,8 @@ export default function TopTopics({ topics }: TopTopicsProps) {
               key={item.name}
               data={item}
               className="first:pr-[10px] last:pl-[10px] cursor-pointer"
-              onClick={() => navigate(`/social/channel/${item.channel_id}`)}
-              title={`/social/channel/${item.channel_id}`}
+              onClick={() => navigate(getCommunityPath(item.channel_id))}
+              title={getCommunityPath(item.channel_id)}
             />
           );
         })}
