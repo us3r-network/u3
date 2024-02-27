@@ -2,6 +2,7 @@ import { isMobile } from 'react-device-detect';
 
 export const getCommunityPath = (communityId: string) =>
   isMobile ? `/social/channel/${communityId}` : `/community/${communityId}`;
+export const isCommunityPath = (path: string) => path.includes('/community/');
 
 export const getCommunityPostsPath = (communityId: string) =>
   `/community/${communityId}/posts`;

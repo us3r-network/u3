@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import { isMobile } from 'react-device-detect';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
+import { ComponentPropsWithRef } from 'react';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
@@ -22,6 +23,7 @@ import { MobileGuide } from './mobile/MobileGuide';
 import AddPostMobile from '../social/AddPostMobile';
 import ClaimOnboard from '../onboard/Claim';
 import RedEnvelopeFloatingWindow from '../social/frames/red-envelope/RedEnvelopeFloatingWindow';
+import { cn } from '@/lib/utils';
 
 function Layout() {
   const { ready } = useAuthentication();
@@ -32,35 +34,33 @@ function Layout() {
   useGAPageView();
 
   return (
-    <LayoutWrapper id="layout-wrapper">
-      <>
-        {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
-        {ready && isMobile ? <MobileNav /> : null}
-        {isMobile ? (
-          <MobileContentBox>
+    <div
+      id="layout-wrapper"
+      className="w-screen h-screen bg-[#14171a] overflow-x-hidden"
+    >
+      {ready ? isMobile ? <MobileHeader /> : <Menu /> : null}
+      {ready && isMobile ? <MobileNav /> : null}
+      {isMobile ? (
+        <MobileContentBox>
+          <Main />
+          <div className="fixed right-[20px] bottom-[80px]">
+            <AddPostMobile />
+          </div>
+        </MobileContentBox>
+      ) : (
+        <div className="ml-[60px] h-full w-[calc(100vw-60px-30px)] bg-[#20262F] overflow-hidden">
+          <div
+            id="layout-main-wrapper"
+            className="h-full flex-[1] box-border overflow-y-auto overflow-x-hidden"
+          >
             <Main />
-            <div className="fixed right-[20px] bottom-[80px]">
-              <AddPostMobile />
-            </div>
-          </MobileContentBox>
-        ) : (
-          <RightBox>
-            <RightInner id="layout-main-wrapper">
-              {location.pathname.includes('social') ? (
-                <Main />
-              ) : (
-                <MainBox className="main-box">
-                  <Main />
-                </MainBox>
-              )}
-            </RightInner>
-            <DappMenu />
-            <RedEnvelopeFloatingWindow />
-          </RightBox>
-        )}
-        <MobileGuide />
-        {claim === 'true' && <ClaimOnboard />}
-      </>
+          </div>
+          <DappMenu />
+          <RedEnvelopeFloatingWindow />
+        </div>
+      )}
+      <MobileGuide />
+      {claim === 'true' && <ClaimOnboard />}
       <ToastContainer
         position="top-right"
         autoClose={3000}
@@ -73,32 +73,11 @@ function Layout() {
         pauseOnHover
         theme="dark"
       />
-    </LayoutWrapper>
+    </div>
   );
 }
 export default Layout;
-const LayoutWrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: #14171a;
-  overflow: hidden;
-  overflow-y: ${isMobile ? 'auto' : 'hidden'};
-`;
-const RightBox = styled.div`
-  margin-left: 60px;
-  height: 100%;
-  // menu: 60px , dappSideBarList: 30px
-  width: calc(100% - 60px - 30px);
-  display: flex;
-`;
-const RightInner = styled.div`
-  height: 100%;
-  width: 0;
-  flex: 1;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-`;
+
 export const MainBox = styled.div`
   @media (max-width: ${MEDIA_BREAK_POINTS.xxxl}px) {
     width: 100%;

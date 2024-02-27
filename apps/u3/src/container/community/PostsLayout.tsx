@@ -1,4 +1,4 @@
-import { ComponentPropsWithRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import PostsFcMentionedLinks from './PostsFcMentionedLinks';
@@ -7,6 +7,7 @@ import useRoute from '@/route/useRoute';
 import { RouteKey } from '@/route/routes';
 import { SocialPlatform } from '@/services/social/types';
 import useChannelFeeds from '@/hooks/social/useChannelFeeds';
+import NavLinkItem from '@/components/layout/NavLinkItem';
 
 export enum FeedsSort {
   TRENDING = 'trending',
@@ -145,40 +146,6 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
         </NavLinkItem>
       </div>
     </div>
-  );
-}
-
-function NavLinkItem({
-  active,
-  href,
-  className,
-  children,
-  clickAfter,
-  ...props
-}: ComponentPropsWithRef<'a'> & {
-  active?: boolean;
-  clickAfter?: () => void;
-}) {
-  const navigate = useNavigate();
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        e.preventDefault();
-        navigate(href);
-        clickAfter?.();
-      }}
-      className={cn(
-        `block w-auto h-[40px] p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none
-         text-[#718096] text-[16px] font-medium`,
-        `hover:bg-[#20262F] focus:bg-[#1B1E23] active:bg-[#1B1E23]`,
-        active && 'bg-[#1B1E23] text-[#FFF]',
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </a>
   );
 }
 

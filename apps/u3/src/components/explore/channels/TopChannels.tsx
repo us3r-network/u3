@@ -20,7 +20,7 @@ export default function TopChannels({
       <Title
         text="👍 Top Topics"
         viewAllAction={() => {
-          navigate(`/social/trends`);
+          navigate(`/communities`);
         }}
       />
       <div className={cn('w-full mt-[20px]', 'max-sm:mt-[10px]')}>

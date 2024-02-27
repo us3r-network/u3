@@ -1,5 +1,5 @@
 import { ComponentPropsWithRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { CommunityInfo } from '@/services/community/types/community';
 import AddPost from '@/components/social/AddPost';
@@ -11,6 +11,7 @@ import {
   getCommunityPostsPath,
   getCommunityTokenPath,
 } from '@/route/path';
+import NavLinkItem from '@/components/layout/NavLinkItem';
 
 export default function CommunityMenu({
   className,
@@ -147,40 +148,7 @@ export default function CommunityMenu({
           })}
         </div>
       </div>
-      <div className="flex justify-center items-center h-[76px] w-full p-[20px] box-border bg-[#14171A] text-[#FFF] text-[16px] font-normal">
-        <LoginButtonV2 />
-      </div>
+      <LoginButtonV2 />
     </div>
-  );
-}
-
-function NavLinkItem({
-  active,
-  href,
-  className,
-  children,
-  ...props
-}: ComponentPropsWithRef<'a'> & {
-  active?: boolean;
-}) {
-  const navigate = useNavigate();
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        e.preventDefault();
-        navigate(href);
-      }}
-      className={cn(
-        `block w-full h-[40px] p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
-         text-[#718096] text-[16px] font-medium`,
-        `hover:bg-[#20262F] focus:bg-[#20262F] active:bg-[#20262F]`,
-        active && 'bg-[#20262F] text-[#FFF]',
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </a>
   );
 }

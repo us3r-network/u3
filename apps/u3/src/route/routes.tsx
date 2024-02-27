@@ -26,6 +26,7 @@ export enum RouteKey {
   farcasterSignup = 'farcasterSignup',
   farcasterProfile = 'farcasterProfile',
   // community
+  communities = 'communities',
   community = 'community',
   communityPostsLayout = 'communityPostsLayout',
   communityPostsFcTrending = 'communityPostsFcTrending',
@@ -108,24 +109,154 @@ export const NoMatchRoute: CutomRouteObject = {
 export const routes: CutomRouteObject[] = [
   {
     path: '/',
-    element: loadContainerElement('Explore'),
+    element: loadContainerElement('explore/ExploreLayout'),
     key: RouteKey.home,
     title: 'Explore',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('Explore'),
+        key: RouteKey.home,
+        title: 'Explore',
+      },
+      {
+        path: '/poster-gallery',
+        element: loadContainerElement('PosterGallery'),
+        key: RouteKey.posterGallery,
+        title: 'Poster Gallery',
+      } as CutomRouteObject,
+      // social
+      {
+        path: '/social',
+        element: loadContainerElement('social/SocialLayout'),
+        key: RouteKey.socialLayout,
+        title: 'Social',
+        children: [
+          {
+            path: '',
+            element: <Navigate to="all" />,
+            key: RouteKey.home,
+          } as CutomRouteObject,
+          {
+            path: 'all', // social allPlatform
+            element: loadContainerElement('social/SocialAll'),
+            key: RouteKey.socialAll,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialAllTrending'),
+                key: RouteKey.socialAllTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement('social/SocialAllFollowing'),
+                key: RouteKey.socialAllFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialAllWhatsnew'),
+                key: RouteKey.socialAllWhatsnew,
+              } as CutomRouteObject,
+            ],
+          },
+          {
+            path: 'farcaster',
+            element: loadContainerElement('social/SocialFarcaster'),
+            key: RouteKey.socialFarcaster,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialFarcasterTrending'),
+                key: RouteKey.socialFarcasterTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement(
+                  'social/SocialFarcasterFollowing'
+                ),
+                key: RouteKey.socialFarcasterFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialFarcasterWhatsnew'),
+                key: RouteKey.socialFarcasterWhatsnew,
+              },
+            ],
+          },
+          {
+            path: 'lens', // social Lens platform
+            element: loadContainerElement('social/SocialLens'),
+            key: RouteKey.socialLens,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialLensTrending'),
+                key: RouteKey.socialLensTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement('social/SocialLensFollowing'),
+                key: RouteKey.socialLensFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialLensWhatsnew'),
+                key: RouteKey.socialLensWhatsnew,
+              },
+            ],
+          },
+          {
+            path: 'channel/:channelId',
+            element: loadContainerElement('social/SocialChannel'),
+            key: RouteKey.socialChannel,
+          },
+          {
+            path: 'post-detail/lens/:publicationId',
+            element: loadContainerElement('social/LensPostDetail'),
+            key: RouteKey.socialPostDetailLens,
+          } as CutomRouteObject,
+          {
+            path: 'post-detail/fcast/:castId',
+            element: loadContainerElement('social/FarcasterPostDetail'),
+            key: RouteKey.socialPostDetailFcast,
+          },
+          {
+            path: 'suggest-follow',
+            element: loadContainerElement('social/SocialSuggestFollow'),
+            key: RouteKey.socialSuggestFollow,
+          },
+        ],
+      },
+      {
+        path: 'communities',
+        element: loadContainerElement('community/Communities'),
+        key: RouteKey.communities,
+      },
+    ],
   },
-  // poster
-  {
-    path: '/poster-gallery',
-    element: loadContainerElement('PosterGallery'),
-    key: RouteKey.posterGallery,
-    title: 'Poster Gallery',
-  },
+
   // profile
   {
     path: '/u',
-    element: loadContainerElement('profile/Profile'),
+    element: loadContainerElement('profile/ProfileLayout'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
     title: 'Profile',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('profile/Profile'),
+        key: RouteKey.profile,
+        permissions: [RoutePermission.login],
+        title: 'Profile',
+      },
+      {
+        path: ':user',
+        element: loadContainerElement('profile/Profile'),
+        key: RouteKey.profileByUser,
+        title: 'Profile',
+      } as CutomRouteObject,
+    ],
   },
   // community
   {
@@ -196,12 +327,6 @@ export const routes: CutomRouteObject[] = [
         title: 'App',
       },
     ],
-  },
-  {
-    path: '/u/:user',
-    element: loadContainerElement('profile/Profile'),
-    key: RouteKey.profileByUser,
-    title: 'Profile',
   },
   {
     path: '/activity',
@@ -293,111 +418,6 @@ export const routes: CutomRouteObject[] = [
         element: loadContainerElement('news/Favorite'),
         key: RouteKey.favorite,
         permissions: [RoutePermission.login],
-      },
-    ],
-  },
-  // social
-  {
-    path: '/social',
-    element: loadContainerElement('social/SocialLayout'),
-    key: RouteKey.socialLayout,
-    title: 'Social',
-    children: [
-      {
-        path: '',
-        element: <Navigate to="all" />,
-        key: RouteKey.home,
-      } as CutomRouteObject,
-      {
-        path: 'all', // social allPlatform
-        element: loadContainerElement('social/SocialAll'),
-        key: RouteKey.socialAll,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialAllTrending'),
-            key: RouteKey.socialAllTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialAllFollowing'),
-            key: RouteKey.socialAllFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialAllWhatsnew'),
-            key: RouteKey.socialAllWhatsnew,
-          } as CutomRouteObject,
-        ],
-      },
-      {
-        path: 'farcaster',
-        element: loadContainerElement('social/SocialFarcaster'),
-        key: RouteKey.socialFarcaster,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialFarcasterTrending'),
-            key: RouteKey.socialFarcasterTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialFarcasterFollowing'),
-            key: RouteKey.socialFarcasterFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialFarcasterWhatsnew'),
-            key: RouteKey.socialFarcasterWhatsnew,
-          },
-        ],
-      },
-      {
-        path: 'lens', // social Lens platform
-        element: loadContainerElement('social/SocialLens'),
-        key: RouteKey.socialLens,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialLensTrending'),
-            key: RouteKey.socialLensTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialLensFollowing'),
-            key: RouteKey.socialLensFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialLensWhatsnew'),
-            key: RouteKey.socialLensWhatsnew,
-          },
-        ],
-      },
-      {
-        path: 'trends',
-        element: loadContainerElement('social/SocialTrends'),
-        key: RouteKey.socialTrendsChannel,
-      },
-      {
-        path: 'channel/:channelId',
-        element: loadContainerElement('social/SocialChannel'),
-        key: RouteKey.socialChannel,
-      },
-      {
-        path: 'post-detail/lens/:publicationId',
-        element: loadContainerElement('social/LensPostDetail'),
-        key: RouteKey.socialPostDetailLens,
-      } as CutomRouteObject,
-      {
-        path: 'post-detail/fcast/:castId',
-        element: loadContainerElement('social/FarcasterPostDetail'),
-        key: RouteKey.socialPostDetailFcast,
-      },
-      {
-        path: 'suggest-follow',
-        element: loadContainerElement('social/SocialSuggestFollow'),
-        key: RouteKey.socialSuggestFollow,
       },
     ],
   },

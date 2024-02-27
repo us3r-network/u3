@@ -8,28 +8,17 @@
 import styled from 'styled-components';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import LoginButton from './LoginButton';
-import Nav, { NavWrapper, PcNavItem, NavItemIconBox } from './Nav';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
-import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
-import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
-import MessageModal from '../message/MessageModal';
-import { NavModalName, useNav } from '../../contexts/NavCtx';
-import ContactUsModal from './ContactUsModal';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
-import { getCommunityPath } from '@/route/path';
+import { getCommunityPath, isCommunityPath } from '@/route/path';
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const isCommunityRoute = pathname.includes('/community/');
+  const isCommunity = isCommunityPath(pathname);
   return (
-    <MenuWrapper
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-      isOpen={isOpen}
-    >
+    <MenuWrapper isOpen={isOpen}>
       <LogoBox onlyIcon={!isOpen} onClick={() => navigate('/')}>
         <LogoIconBox onlyIcon={!isOpen}>
           <LogoIconSvg />
@@ -48,29 +37,9 @@ export default function Menu() {
           </span>
         )}
       </LogoBox>
-      <NavListBox>
-        <Nav onlyIcon={!isOpen} />
-      </NavListBox>
-
       <hr className="border-t border-[#39424C] my-4 w-full" />
 
       <UserChannels />
-
-      <hr className="border-t border-[#39424C] my-4 w-full" />
-
-      <div className="flex-grow" />
-
-      <FooterBox>
-        <NavWrapper>
-          <MessageButton />
-          <ContactUsButton />
-        </NavWrapper>
-        {!isCommunityRoute && (
-          <LoginButtonBox>
-            <LoginButton onlyIcon={!isOpen} />
-          </LoginButtonBox>
-        )}
-      </FooterBox>
     </MenuWrapper>
   );
 }
@@ -118,51 +87,9 @@ function ChannelItem({ parent_url }: { parent_url: string }) {
   );
 }
 
-function ContactUsButton() {
-  const { openContactUsModal, renderNavItemText, switchNavModal } = useNav();
-
-  return (
-    <>
-      <PcNavItem
-        isActive={openContactUsModal}
-        onClick={() => {
-          switchNavModal(NavModalName.ContactUs);
-        }}
-      >
-        <NavItemIconBox isActive={openContactUsModal}>
-          <ContactUsSvg />
-        </NavItemIconBox>
-        {renderNavItemText('Contact US')}
-      </PcNavItem>
-      <ContactUsModal />
-    </>
-  );
-}
-
-function MessageButton() {
-  const { openMessageModal, renderNavItemText, switchNavModal } = useNav();
-
-  return (
-    <>
-      <PcNavItem
-        isActive={openMessageModal}
-        onClick={() => {
-          switchNavModal(NavModalName.Message);
-        }}
-      >
-        <NavItemIconBox isActive={openMessageModal}>
-          <MessageChatSquareSvg />
-        </NavItemIconBox>
-        {renderNavItemText('Message')}
-      </PcNavItem>
-      <MessageModal />
-    </>
-  );
-}
-
 const MenuWrapper = styled.div<{ isOpen: boolean }>`
   background: #1b1e23;
-  width: ${({ isOpen }) => (isOpen ? '200px' : '60px')};
+  width: 60px;
   height: 100%;
   position: fixed;
   top: 0;
@@ -179,12 +106,10 @@ const MenuWrapper = styled.div<{ isOpen: boolean }>`
 `;
 const LogoBox = styled.div<{ onlyIcon?: boolean }>`
   width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
-  height: ${({ onlyIcon }) => (onlyIcon ? '194px' : '94px')};
   display: flex;
   flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
   gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};
   align-items: 'flex-start';
-  overflow: hidden;
   transition: all 0.3s ease-out;
   cursor: pointer;
 `;
@@ -200,22 +125,4 @@ const LogoIconBox = styled.div<{ onlyIcon?: boolean }>`
       fill: #fff;
     }
   `};
-`;
-const NavListBox = styled.div`
-  width: 100%;
-  flex: 1;
-  display: flex;
-  align-items: start;
-`;
-const FooterBox = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-const LoginButtonBox = styled.div`
-  width: 100%;
-  transition: all 0.3s ease-out;
 `;

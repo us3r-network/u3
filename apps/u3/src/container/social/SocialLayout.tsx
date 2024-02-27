@@ -67,9 +67,6 @@ function SocialLayout() {
   }, []);
 
   const titleElem = useMemo(() => {
-    if (location.pathname.includes('social/trends')) {
-      return <SocialBackNav title="Topics" />;
-    }
     if (location.pathname.includes('social/channel') && channelId) {
       return <SocialBackNav isChannel channelId={channelId} />;
     }

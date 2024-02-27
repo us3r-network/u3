@@ -77,16 +77,16 @@ export default function CommunityLayout() {
   } = useLoadCommunityTopMembers(channelId);
 
   if (communityLoading) {
-    <CommunityLayoutWrapper className="flex justify-center items-center">
+    <div className="w-full h-screen flex justify-center items-center">
       <Loading />
-    </CommunityLayoutWrapper>;
+    </div>;
   }
 
   if (!communityInfo?.id) {
     return null;
   }
   return (
-    <CommunityLayoutWrapper>
+    <div className="w-full h-screen flex flex-col">
       {!joined && (
         <GuestModeHeader
           joining={joining}
@@ -141,29 +141,7 @@ export default function CommunityLayout() {
           />
         </div>
       </div>
-    </CommunityLayoutWrapper>
-  );
-}
-
-function CommunityLayoutWrapper({
-  className,
-  ...props
-}: ComponentPropsWithRef<'div'>) {
-  return (
-    <div
-      className={cn(
-        `w-full h-screen  bg-[#20262F] flex flex-col overflow-hidden`,
-        className
-      )}
-      // 特殊处理，宽度 = 屏幕宽度 - 左侧浮动栏宽度 - 右侧浮动栏宽度
-      style={{
-        width: 'calc(100vw - 60px - 30px)',
-        position: 'fixed',
-        top: 0,
-        left: '60px',
-      }}
-      {...props}
-    />
+    </div>
   );
 }
 
