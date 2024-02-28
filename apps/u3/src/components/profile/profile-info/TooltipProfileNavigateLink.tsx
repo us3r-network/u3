@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import TooltipBase from '../../common/tooltip/TooltipBase';
 import ProfileInfoCard from './ProfileInfoCard';
-import { FollowType } from '../ProfilePageFollowNav';
+import { FollowType } from '@/container/profile/Contacts';
 
 interface TooltipProfileNavigateLinkProps extends Omit<LinkProps, 'children'> {
   children: React.ReactNode;
@@ -66,7 +66,7 @@ export default function TooltipProfileNavigateLink({
       onOpenChange={setIsOpen}
     >
       {linkEl}
-      <TooltipBase placement="bottom">
+      <TooltipBase placement="bottom" className="bg-[#1B1E23] rounded-[20px]">
         <ProfileInfoCard
           identity={identity}
           canNavigateToProfile

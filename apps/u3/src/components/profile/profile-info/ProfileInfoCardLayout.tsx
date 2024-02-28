@@ -236,11 +236,7 @@ export const PostShareMenuBtn = styled(MultiPlatformShareMenuBtn)`
 `;
 const BaseWrapperCss = css`
   padding: 20px;
-  width: 360px;
   box-sizing: border-box;
-  background: #1b1e23;
-  border-radius: 20px;
-  border: 1px solid #39424c;
 `;
 const LoadingWrapper = styled.div`
   ${BaseWrapperCss}
