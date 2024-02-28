@@ -1,5 +1,5 @@
 import { ComponentPropsWithRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
@@ -8,7 +8,9 @@ export default function ProfileMenu({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
+  const { user } = useParams();
   const { pathname } = useLocation();
+  const pathSuffix = user ? `/${user}` : '';
   return (
     <div
       className={cn(
@@ -20,27 +22,45 @@ export default function ProfileMenu({
     >
       <div className="flex-1 w-full p-[20px] box-border overflow-auto">
         <h1 className="text-[#FFF] text-[24px] font-medium leading-[20px] mb-[20px]">
-          Profile
+          {user || 'My'} Profile
         </h1>
         <div className="flex-1 w-full flex flex-col gap-[5px]">
-          <NavLinkItem href="/u" active={pathname === '/u'}>
+          <NavLinkItem
+            href={`/u${pathSuffix}`}
+            active={pathname === `/u${pathSuffix}`}
+          >
             Posts
           </NavLinkItem>
-          <NavLinkItem href="/u/contacts" active={pathname === '/u/contacts'}>
+          <NavLinkItem
+            href={`/u/contacts${pathSuffix}`}
+            active={pathname === `/u/contacts${pathSuffix}`}
+          >
             Contacts
           </NavLinkItem>
-          <NavLinkItem href="/u/activity" active={pathname === '/u/activity'}>
+          <NavLinkItem
+            href={`/u/activity${pathSuffix}`}
+            active={pathname === `/u/activity${pathSuffix}`}
+          >
             Activity
           </NavLinkItem>
-          <NavLinkItem href="/u/fav" active={pathname === '/u/fav'}>
+          <NavLinkItem
+            href={`/u/fav${pathSuffix}`}
+            active={pathname === `/u/fav${pathSuffix}`}
+          >
             Favorites
           </NavLinkItem>
-          <NavLinkItem href="/u/assets" active={pathname === '/u/assets'}>
+          {/* <NavLinkItem
+            href={`/u/asset${pathSuffix}`}
+            active={pathname === `/u/asset${pathSuffix}`}
+          >
             Assets
           </NavLinkItem>
-          <NavLinkItem href="/u/gallery" active={pathname === '/u/gallery'}>
+          <NavLinkItem
+            href={`/u/gallery${pathSuffix}`}
+            active={pathname === `/u/gallery${pathSuffix}`}
+          >
             Gallery
-          </NavLinkItem>
+          </NavLinkItem> */}
         </div>
       </div>
       <LoginButtonV2 />

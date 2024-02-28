@@ -79,9 +79,9 @@ const navMap = {
   },
   save: {
     name: 'Save',
-    activeRouteKeys: [RouteKey.save],
+    activeRouteKeys: [RouteKey.fav],
     icon: React.createElement(BookmarkSvg),
-    route: getRoute(RouteKey.save),
+    route: getRoute(RouteKey.fav),
   },
 };
 export const navs: CustomNavObject[] = [

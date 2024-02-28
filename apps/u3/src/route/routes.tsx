@@ -18,6 +18,8 @@ export enum RouteKey {
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
+  contacts = 'contacts',
+  fav = 'fav',
   asset = 'asset',
   gallery = 'gallery',
   activity = 'activity',
@@ -70,8 +72,6 @@ export enum RouteKey {
   dappStore = 'dappStore',
   dapp = 'dapp',
   dappCreate = 'dappCreate',
-  // save
-  save = 'save',
   // notification
   notification = 'notification',
   // others
@@ -251,15 +251,16 @@ export const routes: CutomRouteObject[] = [
         title: 'Posts',
       },
       {
-        path: ':user',
-        element: loadContainerElement('profile/Posts'),
-        key: RouteKey.profileByUser,
-        title: 'Posts',
-      } as CutomRouteObject,
+        path: 'contacts',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+        permissions: [RoutePermission.login],
+      },
       {
         path: 'fav',
         element: loadContainerElement('profile/Fav'),
-        key: RouteKey.save,
+        key: RouteKey.fav,
         title: 'Favorites',
         permissions: [RoutePermission.login],
       },
@@ -284,6 +285,42 @@ export const routes: CutomRouteObject[] = [
         permissions: [RoutePermission.login],
         title: 'Gallery',
       },
+      {
+        path: ':user',
+        element: loadContainerElement('profile/Posts'),
+        key: RouteKey.profileByUser,
+        title: 'Posts',
+      } as CutomRouteObject,
+      {
+        path: 'contacts/:user',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+      } as CutomRouteObject,
+      {
+        path: 'fav/:user',
+        element: loadContainerElement('profile/Fav'),
+        key: RouteKey.fav,
+        title: 'Favorites',
+      } as CutomRouteObject,
+      {
+        path: 'activity/:user',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        title: 'Activity',
+      } as CutomRouteObject,
+      {
+        path: 'asset/:user',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        title: 'Asset',
+      } as CutomRouteObject,
+      {
+        path: 'gallery/:user',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        title: 'Gallery',
+      } as CutomRouteObject,
     ],
   },
   {

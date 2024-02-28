@@ -1,16 +1,18 @@
-import styled from 'styled-components';
 import { useState } from 'react';
-
 import { isMobile } from 'react-device-detect';
+import { useOutletContext } from 'react-router-dom';
+import styled from 'styled-components';
 import CardBase from '../../components/common/card/CardBase';
+import { CurrencyETH } from '../../components/common/icons/currency-eth';
+import Rss3Content from '../../components/fren/Rss3Content';
+import { MainWrapper } from '../../components/layout/Index';
 import PageTitle from '../../components/layout/PageTitle';
 import MobilePageHeader from '../../components/layout/mobile/MobilePageHeader';
-import Rss3Content from '../../components/fren/Rss3Content';
-import { CurrencyETH } from '../../components/common/icons/currency-eth';
-import { MainWrapper } from '../../components/layout/Index';
+import { ProfileOutletContext } from './ProfileLayout';
 
 const tabs = ['Feeds'];
 function Activity() {
+  const { address: wallets } = useOutletContext<ProfileOutletContext>();
   const [tab, setTab] = useState<string>('Feeds');
   return (
     <Wrapper>
@@ -35,7 +37,7 @@ function Activity() {
 
       {tab === 'Feeds' && (
         <ContentWrapper>
-          <Rss3Content empty={<NoActivity />} />
+          <Rss3Content address={wallets} empty={<NoActivity />} />
         </ContentWrapper>
       )}
     </Wrapper>

@@ -105,6 +105,7 @@ export function ProfileSocialPosts({
                   const key = Buffer.from(data.hash.data).toString('hex');
                   return (
                     <FCast
+                      isV2Layout
                       key={key}
                       cast={data}
                       openFarcasterQR={openFarcasterQR}
