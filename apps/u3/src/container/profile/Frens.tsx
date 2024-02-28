@@ -17,15 +17,15 @@ import styled from 'styled-components';
 import { toast } from 'react-toastify';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
-import { TagType } from '../services/shared/types/common';
-import { AsyncRequestStatus } from '../services/shared/types';
+import { TagType } from '@/services/shared/types/common';
+import { AsyncRequestStatus } from '@/services/shared/types';
 
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import SearchInput from '../components/common/input/SearchInput';
-import Loading from '../components/common/loading/Loading';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import SearchInput from '@/components/common/input/SearchInput';
+import Loading from '@/components/common/loading/Loading';
 
-import Select, { SelectOption } from '../components/common/select/Select';
-import ProjectTypeSvg from '../components/common/assets/svgs/grid.svg';
+import Select, { SelectOption } from '@/components/common/select/Select';
+import ProjectTypeSvg from '@/components/common/assets/svgs/grid.svg';
 
 import {
   getFeed,
@@ -34,12 +34,12 @@ import {
   getFollowing,
   setFollow,
   getReco,
-} from '../features/frens/frensHandles';
-import { MainWrapper } from '../components/layout/Index';
-import FeedsMenu from '../components/news/header/NewsMenu';
-import ListScrollBox from '../components/common/box/ListScrollBox';
-import { messages } from '../utils/shared/message';
-import useLogin from '../hooks/shared/useLogin';
+} from '@/features/frens/frensHandles';
+import { MainWrapper } from '@/components/layout/Index';
+import FeedsMenu from '@/components/news/header/NewsMenu';
+import ListScrollBox from '@/components/common/box/ListScrollBox';
+import { messages } from '@/utils/shared/message';
+import useLogin from '@/hooks/shared/useLogin';
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');

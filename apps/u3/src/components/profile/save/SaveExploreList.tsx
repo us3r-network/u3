@@ -9,7 +9,7 @@
 import styled from 'styled-components';
 import AnimatedListItem, {
   useAnimatedListTransition,
-} from '../common/animation/AnimatedListItem';
+} from '../../common/animation/AnimatedListItem';
 import SaveExploreListItem from './SaveExploreListItem';
 import { MEDIA_BREAK_POINTS } from '@/constants';
 

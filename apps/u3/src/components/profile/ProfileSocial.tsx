@@ -9,7 +9,7 @@ import FCast from '../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
 import Rss3Content from '../fren/Rss3Content';
-import { NoActivity } from '../../container/Activity';
+import { NoActivity } from '../../container/profile/Activity';
 
 export function ProfileSocialPosts({
   lensProfileId,

@@ -2,12 +2,12 @@ import styled from 'styled-components';
 import { useState } from 'react';
 
 import { isMobile } from 'react-device-detect';
-import CardBase from '../components/common/card/CardBase';
-import PageTitle from '../components/layout/PageTitle';
-import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
-import Rss3Content from '../components/fren/Rss3Content';
-import { CurrencyETH } from '../components/common/icons/currency-eth';
-import { MainWrapper } from '../components/layout/Index';
+import CardBase from '../../components/common/card/CardBase';
+import PageTitle from '../../components/layout/PageTitle';
+import MobilePageHeader from '../../components/layout/mobile/MobilePageHeader';
+import Rss3Content from '../../components/fren/Rss3Content';
+import { CurrencyETH } from '../../components/common/icons/currency-eth';
+import { MainWrapper } from '../../components/layout/Index';
 
 const tabs = ['Feeds'];
 function Activity() {

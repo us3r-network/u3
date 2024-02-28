@@ -8,24 +8,24 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { MainWrapper } from '../components/layout/Index';
-import ListScrollBox from '../components/common/box/ListScrollBox';
+import { MainWrapper } from '@/components/layout/Index';
+import ListScrollBox from '@/components/common/box/ListScrollBox';
 import {
   fetchMoreProjectExploreList,
   fetchProjectExploreList,
   selectAll,
   selectState,
-} from '../features/project/projectExploreList';
-import { AsyncRequestStatus } from '../services/shared/types';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
-import Loading from '../components/common/loading/Loading';
-import useProjectHandles from '../hooks/shared/useProjectHandles';
-import NoResult from '../components/layout/NoResult';
+} from '@/features/project/projectExploreList';
+import { AsyncRequestStatus } from '@/services/shared/types';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import Loading from '@/components/common/loading/Loading';
+import useProjectHandles from '@/hooks/shared/useProjectHandles';
+import NoResult from '@/components/layout/NoResult';
 import ProjectExploreListFilter, {
   defaultProjectExploreListFilterValues,
-} from '../components/project/ProjectExploreListFilter';
-import ProjectExploreList from '../components/project/ProjectExploreList';
-import useProjectWebsite from '../hooks/shared/useProjectWebsite';
+} from '@/components/project/ProjectExploreListFilter';
+import ProjectExploreList from '@/components/project/ProjectExploreList';
+import useProjectWebsite from '@/hooks/shared/useProjectWebsite';
 
 export default function Projects() {
   const navigate = useNavigate();
