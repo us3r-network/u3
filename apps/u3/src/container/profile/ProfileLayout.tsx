@@ -44,32 +44,32 @@ export default function ProfileLayout() {
     isSelf,
   });
   const { currFid } = useFarcasterCtx();
-  console.log(
-    'identity',
-    identity,
-    'identityDid',
-    identityDid,
-    'identityFid',
-    identityFid,
-    'identityAddress',
-    identityAddress,
-    'identityLensProfileFirst',
-    identityLensProfileFirst,
-    'identityLoading',
-    identityLoading,
-    'identityDidLoading',
-    identityDidLoading,
-    'u3ProfileFid',
-    u3ProfileFid,
-    'u3ProfileAddress',
-    u3ProfileAddress,
-    'u3ProfileLensProfileFirst',
-    u3ProfileLensProfileFirst,
-    'u3ProfileLoading',
-    u3ProfileLoading,
-    'currFid',
-    currFid
-  );
+  // console.log(
+  //   'identity',
+  //   identity,
+  //   'identityDid',
+  //   identityDid,
+  //   'identityFid',
+  //   identityFid,
+  //   'identityAddress',
+  //   identityAddress,
+  //   'identityLensProfileFirst',
+  //   identityLensProfileFirst,
+  //   'identityLoading',
+  //   identityLoading,
+  //   'identityDidLoading',
+  //   identityDidLoading,
+  //   'u3ProfileFid',
+  //   u3ProfileFid,
+  //   'u3ProfileAddress',
+  //   u3ProfileAddress,
+  //   'u3ProfileLensProfileFirst',
+  //   u3ProfileLensProfileFirst,
+  //   'u3ProfileLoading',
+  //   u3ProfileLoading,
+  //   'currFid',
+  //   currFid
+  // );
   if (identityLoading || identityDidLoading || u3ProfileLoading) {
     return (
       <div className="w-full h-screen flex flex-col justify-center items-center text-[white]">
@@ -82,7 +82,7 @@ export default function ProfileLayout() {
   return (
     <div className="w-full h-screen flex">
       {!isMobile && (
-        <div className="w-[280px] h-full max-sm:hidden">
+        <div className="bg-[#1B1E23] w-[280px] h-full max-sm:hidden">
           <ProfileMenu />
         </div>
       )}
@@ -103,12 +103,12 @@ export default function ProfileLayout() {
         />
       </div>
       {!isMobile && (
-        <div className="w-[360px] h-full overflow-auto mr-20">
+        <div className="bg-[#1B1E23] w-[320px] h-full overflow-auto">
           <ProfileInfoCard
             isSelf={isSelf}
             identity={identity || session?.id}
-            clickFollowing={() => navigate('/u/contacts/following')}
-            clickFollowers={() => navigate('/u/contacts/followers')}
+            clickFollowing={() => navigate('/u/contacts?type=following')}
+            clickFollowers={() => navigate('/u/contacts?type=followers')}
           />
         </div>
       )}

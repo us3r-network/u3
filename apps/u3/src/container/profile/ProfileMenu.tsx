@@ -15,7 +15,7 @@ export default function ProfileMenu({
     <div
       className={cn(
         `
-        w-full h-full flex flex-col bg-[#1B1E23]`,
+        w-full h-full flex flex-col`,
         className
       )}
       {...props}

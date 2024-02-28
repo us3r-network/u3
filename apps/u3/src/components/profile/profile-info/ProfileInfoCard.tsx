@@ -31,7 +31,6 @@ export default function ProfileInfoCard({
   const { getProfileWithDid } = useProfileState();
   const [hasProfile, setHasProfile] = useState(false);
   const [hasProfileLoading, setHasProfileLoading] = useState(false);
-  console.log('ProfileInfoCard: identity', identity, did);
   useEffect(() => {
     (async () => {
       if (isDidPkh(did)) {
@@ -61,7 +60,6 @@ export default function ProfileInfoCard({
     // );
   }
   if (did && hasProfile) {
-    console.log('ProfileInfoCard: U3ProfileInfoCardContainer', did);
     return (
       <>
         <U3ProfileInfoCardContainer

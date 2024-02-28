@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useNav } from '../../contexts/NavCtx';
 import { SocialButtonPrimary } from '../social/button/SocialButton';
-import { FollowType } from '../profile/ProfilePageFollowNav';
+import { FollowType } from '@/container/profile/Contacts';
 
 export default function NoConversations() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ export default function NoConversations() {
       <SocialButtonPrimary
         onClick={() => {
           setOpenMessageModal(false);
-          navigate(`/u?followType=${FollowType.FOLLOWERS}`);
+          navigate(`/u/contacts?type=${FollowType.FOLLOWERS}`);
         }}
       >
         Find from my following/follower list

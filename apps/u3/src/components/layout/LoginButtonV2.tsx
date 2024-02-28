@@ -54,11 +54,13 @@ export default function LoginButtonV2() {
               setOpenMenu((pre) => !pre);
             }}
           >
-            <UserAvatar
-              className="w-[40px] h-[40px] flex-shrink-0"
-              style={{ width: '40px', height: '40px' }}
-            />
-            <UserName className="text-[#FFF] text-[16px] font-normal" />
+            <div className="flex items-center justify-between gap-[12px]">
+              <UserAvatar
+                className="w-[40px] h-[40px] flex-shrink-0"
+                style={{ width: '40px', height: '40px' }}
+              />
+              <UserName className="text-[#FFF] text-[16px] font-normal" />
+            </div>
           </ButtonWrapper>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -116,18 +118,14 @@ export default function LoginButtonV2() {
   );
 }
 
-function ButtonWrapper({
-  className,
-  ...props
-}: ComponentPropsWithRef<'button'>) {
+function ButtonWrapper({ className, ...props }: ComponentPropsWithRef<'div'>) {
   return (
-    <button
-      type="button"
+    <div
       className={cn(
-        `    flex items-center  justify-center gap-[8px]
-      text-white text-[16px] font-bold
-      h-[76px] w-full p-[20px] box-border bg-[#14171A]
-      outline-none border-none`,
+        `flex items-center justify-between
+        text-white text-[16px] font-bold
+        h-[76px] w-full p-[20px] box-border bg-[#14171A]
+        outline-none border-none`,
         className
       )}
       {...props}
