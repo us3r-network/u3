@@ -42,14 +42,14 @@ import useU3ProfileInfoData from '../../hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '../../hooks/profile/usePlatformProfileInfoData';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
 
-export default function ProfileContainer() {
+export default function PostsContainer() {
   return (
     <LivepeerProvider>
-      <Profile />
+      <Posts />
     </LivepeerProvider>
   );
 }
-function Profile() {
+function Posts() {
   const { user: identity } = useParams();
   const { did, loading: didLoading } = useDid(identity);
   const { getProfileWithDid } = useProfileState();
@@ -368,14 +368,6 @@ function ProfileView({
                 }));
               }}
             />
-            {isLoginUser && (
-              <LogoutButton
-                className="logout-button"
-                onClick={() => {
-                  setOpenLogoutConfirm(true);
-                }}
-              />
-            )}
           </MainLeft>
         )}
 
