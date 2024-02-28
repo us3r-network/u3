@@ -6,7 +6,7 @@ import {
   getSavedCasts,
   setSavedCastsSynced,
 } from '@/services/social/api/farcaster';
-import { getAddressWithDidPkh } from '../../utils/shared/did';
+import { getAddressWithDidPkh } from '../../../utils/shared/did';
 
 export default function SyncingBotSaves({
   onComplete,

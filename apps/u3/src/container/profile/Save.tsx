@@ -6,15 +6,15 @@ import { uniqBy } from 'lodash';
 import { MainWrapper } from '../../components/layout/Index';
 import Loading from '../../components/common/loading/Loading';
 import PageTitle from '../../components/layout/PageTitle';
-import SaveExploreList from '../../components/save/SaveExploreList';
-import SaveExploreListMobile from '../../components/save/SaveExploreListMobile';
+import SaveExploreList from '../../components/profile/save/SaveExploreList';
+import SaveExploreListMobile from '../../components/profile/save/SaveExploreListMobile';
 import {
   getContentLinkDataWithJsonValue,
   getContentPlatformLogoWithJsonValue,
 } from '../../utils/news/content';
 import { getDappLinkDataWithJsonValue } from '../../utils/dapp/dapp';
 import { getEventLinkDataWithJsonValue } from '../../utils/news/event';
-import SyncingBotSaves from '@/components/save/SyncingBotSaves';
+import SyncingBotSaves from '@/components/profile/save/SyncingBotSaves';
 // import { DappLinkData } from '../services/dapp/types/dapp';
 // import { ContentLinkData } from '../services/news/types/contents';
 // import { EventLinkData } from '../services/news/types/event';

@@ -6,20 +6,22 @@ import { isMobile } from 'react-device-detect';
 
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useProfileState } from '@us3r-network/profile';
-import Credential, { CredentialMobile } from '../components/profile/Credential';
-import { fetchU3Assets, ProfileDefault } from '../services/profile/api/profile';
-import { ProfileEntity } from '../services/profile/types/profile';
-import Loading from '../components/common/loading/Loading';
-import { mergeProfilesData } from '../utils/profile/mergeProfilesData';
-import { MainWrapper } from '../components/layout/Index';
-import PageTitle from '../components/layout/PageTitle';
-import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
+import OnChainInterest, {
+  OnChainInterestMobile,
+} from '@/components/profile/OnChainInterest';
+import { fetchU3Assets, ProfileDefault } from '@/services/profile/api/profile';
+import { ProfileEntity } from '@/services/profile/types/profile';
+import Loading from '@/components/common/loading/Loading';
+import { mergeProfilesData } from '@/utils/profile/mergeProfilesData';
+import { MainWrapper } from '@/components/layout/Index';
+import PageTitle from '@/components/layout/PageTitle';
+import MobilePageHeader from '@/components/layout/mobile/MobilePageHeader';
 
-export default function Gallery() {
+export default function Asset() {
   const { profile } = useProfileState();
   const { wallet } = useParams();
   const session = useSession();
-  const sessId = session?.id;
+  const sessId = session?.id || '';
   const navigate = useNavigate();
 
   const sessWallet = useMemo(() => sessId.split(':').pop() || '', [sessId]);
@@ -31,7 +33,11 @@ export default function Gallery() {
   const fetchData = useCallback(async (wallets: string[]) => {
     if (!wallets) return;
     try {
-      const { data } = await fetchU3Assets(wallets, ['poap', 'noox', 'galxe']);
+      const { data } = await fetchU3Assets(wallets, [
+        'nfts',
+        'erc20Balances',
+        'ethBalance',
+      ]);
       const r = mergeProfilesData(data.data);
       setProfileData(r);
     } catch (error) {
@@ -55,37 +61,33 @@ export default function Gallery() {
   }, [fetchData, sessWallet, wallet, profile]);
 
   return (
-    <Wrapper>
+    <Wrapper id="top-wrapper">
       {isMobile ? (
         <MobilePageHeader
           tabs={['Asset', 'Gallery']}
-          curTab="Gallery"
+          curTab="Asset"
           setTab={(tab) => navigate(`/${tab}`)}
         />
       ) : (
-        <PageTitle>Gallery</PageTitle>
+        <PageTitle>Asset</PageTitle>
       )}
-      <ContentWrapper id="profile-wrapper">
+      <ContentWrapper id="content-wrapper">
         {(loading && (
           <div className="loading">
             <Loading />
           </div>
         )) ||
           (isMobile ? (
-            <CredentialMobile
-              {...{
-                poap: profileData.poap,
-                noox: profileData.noox,
-                galxe: profileData.galxe,
-              }}
+            <OnChainInterestMobile
+              data={profileData.nfts}
+              wallet={profileData.erc20Balances}
+              ethBalance={profileData.ethBalance}
             />
           ) : (
-            <Credential
-              {...{
-                poap: profileData.poap,
-                noox: profileData.noox,
-                galxe: profileData.galxe,
-              }}
+            <OnChainInterest
+              data={profileData.nfts}
+              wallet={profileData.erc20Balances}
+              ethBalance={profileData.ethBalance}
             />
           ))}
       </ContentWrapper>
@@ -97,10 +99,6 @@ const Wrapper = styled(MainWrapper)`
   display: flex;
   flex-direction: column;
   gap: 20px;
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
   .loading {
     width: 100%;
     height: 100%;
@@ -108,4 +106,8 @@ const ContentWrapper = styled.div`
     justify-content: center;
     align-items: center;
   }
+`;
+
+const ContentWrapper = styled.div`
+  flex: 1;
 `;

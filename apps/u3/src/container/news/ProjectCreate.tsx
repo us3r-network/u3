@@ -10,16 +10,16 @@
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import CardBase from '../components/common/card/CardBase';
-import ProjectForm from '../components/project/ProjectForm';
-import { MainWrapper } from '../components/layout/Index';
-import { createProject } from '../services/shared/api/project';
+import CardBase from '@/components/common/card/CardBase';
+import ProjectForm from '@/components/project/ProjectForm';
+import { MainWrapper } from '@/components/layout/Index';
+import { createProject } from '@/services/shared/api/project';
 import {
   UniprojectStatus,
   UpdateProjectData,
-} from '../services/shared/types/project';
-import { messages } from '../utils/shared/message';
-import useLinkSubmit from '../hooks/shared/useLinkSubmit';
+} from '@/services/shared/types/project';
+import { messages } from '@/utils/shared/message';
+import useLinkSubmit from '@/hooks/shared/useLinkSubmit';
 
 function ProjectCreate() {
   const { createProjectLink } = useLinkSubmit();
