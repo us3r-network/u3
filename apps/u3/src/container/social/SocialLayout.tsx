@@ -101,7 +101,7 @@ function SocialLayout() {
         <div
           id="main-center"
           className={cn(
-            'w-[600px] mt-[20px] box-border h-[fit-content]',
+            'flex-1 mt-[20px] box-border h-[fit-content]',
             'max-sm:w-full'
           )}
         >
@@ -128,11 +128,6 @@ function SocialLayout() {
 
         {!isMobile && (
           <RightWrapper>
-            {/* <SearchInput
-              placeholder="Search"
-              onlyOnKeyDown
-              onSearch={onSearch}
-            /> */}
             <div className="recommend">
               <SocialWhoToFollow />
               <TrendChannel />

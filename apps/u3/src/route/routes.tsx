@@ -258,6 +258,41 @@ export const routes: CutomRouteObject[] = [
       } as CutomRouteObject,
     ],
   },
+  // save
+  {
+    path: '/save',
+    element: loadContainerElement('profile/ProfileLayout'),
+    key: RouteKey.save,
+    permissions: [RoutePermission.login],
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('profile/Save'),
+        key: RouteKey.save,
+        permissions: [RoutePermission.login],
+      },
+    ],
+  },
+  {
+    path: '/policy',
+    element: loadContainerElement('Policy'),
+    key: RouteKey.policy,
+  },
+  // notification
+  {
+    path: '/notification',
+    element: loadContainerElement('notification/NotificationLayout'),
+    key: RouteKey.notification,
+    title: 'Notifications',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notification,
+        title: 'Notifications',
+      },
+    ],
+  },
   // community
   {
     path: '/community/:channelId',
@@ -461,25 +496,6 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('dapp/DappCreate'),
     key: RouteKey.dappCreate,
     permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  // save
-  {
-    path: '/save',
-    element: loadContainerElement('Save'),
-    key: RouteKey.save,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/policy',
-    element: loadContainerElement('Policy'),
-    key: RouteKey.policy,
-  },
-  // notification
-  {
-    path: '/notification',
-    element: loadContainerElement('Notification'),
-    key: RouteKey.notification,
-    title: 'Notifications',
   },
   NoMatchRoute,
 
