@@ -24,10 +24,22 @@ export default function ProfileMenu({
         </h1>
         <div className="flex-1 w-full flex flex-col gap-[5px]">
           <NavLinkItem href="/u" active={pathname === '/u'}>
-            My Profile
+            Posts
           </NavLinkItem>
-          <NavLinkItem href="/save" active={pathname === '/save'}>
-            My Favorites
+          <NavLinkItem href="/u/contacts" active={pathname === '/u/contacts'}>
+            Contacts
+          </NavLinkItem>
+          <NavLinkItem href="/u/activity" active={pathname === '/u/activity'}>
+            Activity
+          </NavLinkItem>
+          <NavLinkItem href="/u/fav" active={pathname === '/u/fav'}>
+            Favorites
+          </NavLinkItem>
+          <NavLinkItem href="/u/assets" active={pathname === '/u/assets'}>
+            Assets
+          </NavLinkItem>
+          <NavLinkItem href="/u/gallery" active={pathname === '/u/gallery'}>
+            Gallery
           </NavLinkItem>
         </div>
       </div>

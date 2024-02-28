@@ -245,31 +245,44 @@ export const routes: CutomRouteObject[] = [
     children: [
       {
         path: '',
-        element: loadContainerElement('profile/Profile'),
+        element: loadContainerElement('profile/Posts'),
         key: RouteKey.profile,
         permissions: [RoutePermission.login],
-        title: 'Profile',
+        title: 'Posts',
       },
       {
         path: ':user',
-        element: loadContainerElement('profile/Profile'),
+        element: loadContainerElement('profile/Posts'),
         key: RouteKey.profileByUser,
-        title: 'Profile',
+        title: 'Posts',
       } as CutomRouteObject,
-    ],
-  },
-  // save
-  {
-    path: '/save',
-    element: loadContainerElement('profile/ProfileLayout'),
-    key: RouteKey.save,
-    permissions: [RoutePermission.login],
-    children: [
       {
-        path: '',
-        element: loadContainerElement('profile/Save'),
+        path: 'fav',
+        element: loadContainerElement('profile/Fav'),
         key: RouteKey.save,
+        title: 'Favorites',
         permissions: [RoutePermission.login],
+      },
+      {
+        path: 'activity',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        permissions: [RoutePermission.login],
+        title: 'Activity',
+      },
+      {
+        path: 'asset',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        permissions: [RoutePermission.login],
+        title: 'Asset',
+      },
+      {
+        path: 'gallery',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        permissions: [RoutePermission.login],
+        title: 'Gallery',
       },
     ],
   },
@@ -362,27 +375,6 @@ export const routes: CutomRouteObject[] = [
         title: 'App',
       },
     ],
-  },
-  {
-    path: '/activity',
-    element: loadContainerElement('Activity'),
-    key: RouteKey.activity,
-    permissions: [RoutePermission.login],
-    title: 'Activity',
-  },
-  {
-    path: '/asset',
-    element: loadContainerElement('Asset'),
-    key: RouteKey.asset,
-    permissions: [RoutePermission.login],
-    title: 'Asset',
-  },
-  {
-    path: '/gallery',
-    element: loadContainerElement('Gallery'),
-    key: RouteKey.gallery,
-    permissions: [RoutePermission.login],
-    title: 'Gallery',
   },
   // news
   {

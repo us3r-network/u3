@@ -50,7 +50,7 @@ const EmptyDesc = styled.span`
   color: #748094;
 `;
 
-export default function Save() {
+export default function Fav() {
   const { isFetching, personalFavors } = usePersonalFavors();
   const [savedLinks, setSavedLinks] = useState([]);
   // console.log('personalFavors', personalFavors);
