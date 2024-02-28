@@ -1,7 +1,7 @@
 import {
   LimitType,
+  Profile,
   useProfileFollowing,
-  useProfiles,
 } from '@lens-protocol/react-web';
 import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -14,13 +14,17 @@ import {
   LoadingWrapper,
 } from '../FollowListWidgets';
 
-export default function LensProfileFollowing({ address }: { address: string }) {
-  const { data: lensProfiles } = useProfiles({
-    where: {
-      ownedBy: [address],
-    },
-  });
-  const lensProfile = lensProfiles?.[0];
+export default function LensProfileFollowing({
+  lensProfile,
+}: {
+  lensProfile: Profile;
+}) {
+  // const { data: lensProfiles } = useProfiles({
+  //   where: {
+  //     ownedBy: [address],
+  //   },
+  // });
+  // const lensProfile = lensProfiles?.[0];
   const {
     data: followingData,
     loading: firstLoading,
