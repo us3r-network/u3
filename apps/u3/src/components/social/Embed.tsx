@@ -219,10 +219,11 @@ function EmbedCastFrame({
       }
       const trustedDataResult = await makeFrameAction(
         {
-          url: Buffer.from(data.url),
+          url: Buffer.from(frameData.url || ''),
           buttonIndex: index,
           castId,
           inputText: Buffer.from(frameText),
+          state: Buffer.from(''),
         },
         {
           fid: currFid,
@@ -237,7 +238,7 @@ function EmbedCastFrame({
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
         fid: currFid,
-        url: frameData.fcFramePostUrl || frameData.url,
+        url: frameData.url || '',
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
         buttonIndex: index,
@@ -246,6 +247,7 @@ function EmbedCastFrame({
           fid: castId.fid,
           hash: toHex(castId.hash),
         },
+        state: '',
       };
       const trustedData = {
         messageBytes: Buffer.from(
@@ -253,7 +255,7 @@ function EmbedCastFrame({
         ).toString('hex'),
       };
       const postData = {
-        actionUrl: frameData.fcFramePostUrl || frameData.url,
+        actionUrl: frameData.fcFramePostUrl,
         untrustedData,
         trustedData,
       };
@@ -265,7 +267,10 @@ function EmbedCastFrame({
           toast.error(resp.data.msg);
           return;
         }
-        setFrameData(resp.data.data?.metadata);
+        setFrameData((prev) => ({
+          url: prev.url,
+          ...resp.data.data?.metadata,
+        }));
       } else if (buttonAction === 'post_redirect') {
         const resp = await postFrameActionRedirectApi(postData);
         if (resp.data.code !== 0) {
@@ -273,6 +278,16 @@ function EmbedCastFrame({
           return;
         }
         setFrameRedirect(resp.data.data?.redirectUrl || '');
+      } else {
+        const resp = await postFrameActionApi(postData);
+        if (resp.data.code !== 0) {
+          toast.error(resp.data.msg);
+          return;
+        }
+        setFrameData((prev) => ({
+          url: prev.url,
+          ...resp.data.data?.metadata,
+        }));
       }
     },
     [frameData, currFid, encryptedSigner, castId, frameText]
