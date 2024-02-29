@@ -4,13 +4,19 @@ import { cn } from '@/lib/utils';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 import AddPost from '@/components/social/AddPost';
+import DailyPosterBtn from '@/components/poster/DailyPosterBtn';
+import { DailyPosterLayoutData } from '@/components/poster/layout/DailyPosterLayout';
 
 export default function ExploreMenu({
   className,
+  dailyPosterLayoutData,
   ...props
-}: ComponentPropsWithRef<'div'>) {
+}: ComponentPropsWithRef<'div'> & {
+  dailyPosterLayoutData: DailyPosterLayoutData;
+}) {
   const { pathname } = useLocation();
   const isPostsPath = pathname.startsWith('/social');
+  const isHomePath = pathname === '/';
 
   return (
     <div
@@ -43,6 +49,7 @@ export default function ExploreMenu({
           </NavLinkItem>
         </div>
         {isPostsPath && <AddPost />}
+        {isHomePath && <DailyPosterBtn {...dailyPosterLayoutData} />}
       </div>
       <LoginButtonV2 />
     </div>

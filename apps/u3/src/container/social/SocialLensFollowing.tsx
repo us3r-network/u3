@@ -17,13 +17,12 @@ import LensPostCard from 'src/components/social/lens/LensPostCard';
 import useLensFollowing from 'src/hooks/social/lens/useLensFollowing';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { MainCenter, NoLoginStyled } from './CommonStyles';
 import {
-  MainCenter,
-  NoLoginStyled,
+  EndMsgContainer,
   LoadingMoreWrapper,
   PostList,
-  EndMsgContainer,
-} from './CommonStyles';
+} from '@/components/social/CommonStyles';
 
 export default function SocialLensFollowing() {
   const [parentId] = useState('social-lens-following');

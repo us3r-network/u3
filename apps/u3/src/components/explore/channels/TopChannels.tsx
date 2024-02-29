@@ -18,7 +18,7 @@ export default function TopChannels({
   return (
     <div className="w-full">
       <Title
-        text="👍 Top Topics"
+        text="Hot Communities"
         viewAllAction={() => {
           navigate(`/communities`);
         }}

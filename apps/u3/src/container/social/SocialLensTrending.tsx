@@ -14,7 +14,11 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { LoadingMoreWrapper, PostList } from './CommonStyles';
+import {
+  EndMsgContainer,
+  LoadingMoreWrapper,
+  PostList,
+} from '@/components/social/CommonStyles';
 
 export default function SocialLensTrending() {
   const [parentId] = useState('social-lens-trending');

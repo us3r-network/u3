@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import { Channelv1 } from '@mod-protocol/farcaster';
 import { CastAddBody, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
@@ -10,10 +9,7 @@ import { getFarcasterCastInfo } from '../../services/social/api/farcaster';
 import { FarCast } from '../../services/social/types';
 import FCast from '../../components/social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import {
-  PostDetailCommentsWrapper,
-  PostDetailWrapper,
-} from '../../components/social/PostDetail';
+import { PostDetailCommentsWrapper } from '../../components/social/PostDetail';
 import Loading from '../../components/common/loading/Loading';
 
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
@@ -22,9 +18,9 @@ import useLogin from '@/hooks/shared/useLogin';
 
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
 import { ReplyCast } from '@/components/social/farcaster/FCastReply';
-import { LoadingWrapper } from '../social/CommonStyles';
 import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 import { getCommunityFcPostDetailPath } from '@/route/path';
+import { LoadingWrapper } from '@/components/social/CommonStyles';
 
 export default function FarcasterPostDetail() {
   const navigate = useNavigate();
@@ -168,6 +164,10 @@ export default function FarcasterPostDetail() {
                 farcasterUserData={{}}
                 farcasterUserDataObj={farcasterUserDataObj}
                 isV2Layout
+                shareLink={getCommunityPostDetailShareUrlWithFarcaster(
+                  channelId,
+                  key
+                )}
                 castClickAction={(e, castHex) => {
                   navigate(getCommunityFcPostDetailPath(channelId, castHex));
                 }}

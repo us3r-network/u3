@@ -4,30 +4,18 @@ import { MainWrapper } from '../layout/Index';
 import HotPosts from './posts/HotPosts';
 import TopLinks from './links/TopLinks';
 import HighScoreDapps from './dapps/HighScoreDapps';
-import type { ExploreState } from '../../container/Explore';
-import PosterMenu from '../poster/PosterMenu';
+import type { ExploreHomeState } from '../../container/explore/Home';
+import DailyPosterBtn from '../poster/DailyPosterBtn';
 import TopChannels from './channels/TopChannels';
 
-export default function ExploreLayout({
+export default function HomeLayout({
   hotPosts,
   topLinks,
   topChannels,
   highScoreDapps,
-}: ExploreState) {
+}: ExploreHomeState) {
   return (
     <Wrapper>
-      {!isMobile && (
-        <PosterMenu
-          disabled={
-            hotPosts.isLoading || topLinks.isLoading || highScoreDapps.isLoading
-          }
-          posts={hotPosts.posts}
-          farcasterUserData={hotPosts.farcasterUserData}
-          topics={topChannels.channels.slice(0, 2)}
-          dapps={highScoreDapps.dapps.slice(0, 2)}
-          links={topLinks.links.slice(0, 4)}
-        />
-      )}
       <Main>
         <MainLeft>
           <HotPosts
@@ -36,20 +24,20 @@ export default function ExploreLayout({
             farcasterUserData={hotPosts.farcasterUserData}
           />
         </MainLeft>
-        <MainRight>
+        {/* <MainRight>
           <TopLinks links={topLinks.links} isLoading={topLinks.isLoading} />
-        </MainRight>
+        </MainRight> */}
       </Main>
       <TopChannels
         channels={topChannels.channels}
         isLoading={topChannels.isLoading}
       />
-      <Footer>
+      {/* <Footer>
         <HighScoreDapps
           dapps={highScoreDapps.dapps}
           isLoading={highScoreDapps.isLoading}
         />
-      </Footer>
+      </Footer> */}
     </Wrapper>
   );
 }

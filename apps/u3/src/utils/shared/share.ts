@@ -5,7 +5,11 @@
  * @LastEditTime: 2023-12-01 17:28:04
  * @Description: file description
  */
-import { getCommunityFcPostDetailPath } from '@/route/path';
+import {
+  getCommunityFcPostDetailPath,
+  getExploreFcPostDetailPath,
+  getExploreLensPostDetailPath,
+} from '@/route/path';
 import { SHARE_DOMAIN } from '../../constants';
 
 export const getEventShareUrl = (id: string | number) => {
@@ -29,11 +33,11 @@ export const getLinkShareUrl = (url: string) => {
 };
 
 export const getSocialDetailShareUrlWithLens = (id: string | number) => {
-  return `${SHARE_DOMAIN}/social/post-detail/lens/${id}`;
+  return `${SHARE_DOMAIN}${getExploreLensPostDetailPath(id)}`;
 };
 
 export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
-  return `${SHARE_DOMAIN}/social/post-detail/fcast/${id}`;
+  return `${SHARE_DOMAIN}${getExploreFcPostDetailPath(id)}`;
 };
 
 export const getCommunityPostDetailShareUrlWithFarcaster = (

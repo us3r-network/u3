@@ -1,7 +1,13 @@
-import { isMobile } from 'react-device-detect';
+// explore
+export const getExploreFcPostDetailPath = (postId: string | number) =>
+  `/social/post-detail/fcast/${postId}`;
 
+export const getExploreLensPostDetailPath = (postId: string | number) =>
+  `/social/post-detail/lens/${postId}`;
+
+// community
 export const getCommunityPath = (communityId: string) =>
-  isMobile ? `/social/channel/${communityId}` : `/community/${communityId}`;
+  `/community/${communityId}`;
 export const isCommunityPath = (path: string) => path.includes('/community/');
 
 export const getCommunityPostsPath = (communityId: string) =>
