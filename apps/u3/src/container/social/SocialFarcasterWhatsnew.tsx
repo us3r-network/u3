@@ -8,20 +8,28 @@
  */
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Loading from 'src/components/common/loading/Loading';
 import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useFarcasterWhatsnew from 'src/hooks/social/farcaster/useFarcasterWhatsnew';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { EndMsgContainer, LoadingMoreWrapper, PostList } from './CommonStyles';
+import {
+  EndMsgContainer,
+  LoadingMoreWrapper,
+  PostList,
+} from '@/components/social/CommonStyles';
+import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getExploreFcPostDetailPath } from '@/route/path';
 
 export default function SocialFarcasterWhatsnew() {
   const [parentId] = useState('social-farcaster-whatsnew');
   const { openFarcasterQR } = useFarcasterCtx();
   const { setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
+  const navigate = useNavigate();
+
   const {
     loading,
     pageInfo,
@@ -60,18 +68,20 @@ export default function SocialFarcasterWhatsnew() {
             const key = Buffer.from(data.hash.data).toString('hex');
             return (
               <FCast
+                isV2Layout
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={farcasterWhatsnewUserDataObj}
-                showMenuBtn
-                cardClickAction={(e) => {
+                shareLink={getSocialDetailShareUrlWithFarcaster(key)}
+                castClickAction={(e, castHex) => {
                   setPostScroll({
                     currentParent: parentId,
                     id: key,
                     top: (e.target as HTMLDivElement).offsetTop,
                   });
+                  navigate(getExploreFcPostDetailPath(castHex));
                 }}
               />
             );

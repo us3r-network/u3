@@ -5,17 +5,17 @@ import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
+import useListScroll from '@/hooks/social/useListScroll';
+import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getCommunityFcPostDetailPath } from '@/route/path';
 import {
   LoadingMoreWrapper,
   LoadingWrapper,
-} from '@/components/profile/FollowListWidgets';
-import useListScroll from '@/hooks/social/useListScroll';
-import { PostList } from './CommonStyles';
-import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
-import { getCommunityFcPostDetailPath } from '@/route/path';
+  PostList,
+} from '@/components/social/CommonStyles';
 
 export default function PostsFcNewest() {
-  const [parentId] = useState('posts-fc-newest');
+  const [parentId] = useState('community-posts-fc-newest');
   const { mounted } = useListScroll(parentId);
   const { openFarcasterQR } = useFarcasterCtx();
   const {
@@ -53,7 +53,7 @@ export default function PostsFcNewest() {
               <Loading />
             </LoadingMoreWrapper>
           }
-          scrollableTarget="posts-scroll-wrapper"
+          scrollableTarget="community-posts-scroll-wrapper"
         >
           <PostList>
             {fcNewestFeeds.map(({ platform, data }) => {

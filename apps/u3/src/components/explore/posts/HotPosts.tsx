@@ -21,7 +21,7 @@ export default function HotPosts({
   return (
     <Wrapper>
       <Title
-        text="🔥 Hot Posts"
+        text="Hot Posts"
         viewAllAction={() => {
           navigate(`/social`);
         }}

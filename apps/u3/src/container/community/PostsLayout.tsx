@@ -48,7 +48,10 @@ export default function PostsLayout() {
 
   return (
     <div className={cn(`w-full h-full flex bg-[#20262F]`)}>
-      <div id="posts-scroll-wrapper" className="flex-1 h-full overflow-auto">
+      <div
+        id="community-posts-scroll-wrapper"
+        className="flex-1 h-full overflow-auto"
+      >
         {isDetail ? (
           <PostDetailHeader />
         ) : (
@@ -98,7 +101,7 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
         <NavLinkItem
           href={getNavUrlWithSort(FeedsSort.TRENDING)}
           active={sortIsActive(FeedsSort.TRENDING)}
-          className="flex items-center gap-[10px]"
+          className="w-auto"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +124,7 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
         <NavLinkItem
           href={getNavUrlWithSort(FeedsSort.NEWEST)}
           active={sortIsActive(FeedsSort.NEWEST)}
-          className="flex items-center gap-[10px]"
+          className="w-auto"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

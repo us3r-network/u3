@@ -50,22 +50,10 @@ export default function PosterGallery() {
   }, [loadFirst]);
 
   return (
-    <div className="w-full">
-      <div
-        className="
-          w-full
-          h-[72px]
-          leading-[72px]
-          mb-[20px]
-        text-white
-          text-[24px]
-          italic
-          font-bold
-          [border-bottom:1px_solid_#39424C]
-      "
-      >
-        Poster Gallery
-      </div>
+    <div
+      className="w-full h-screen p-[20px] box-border overflow-y-auto"
+      id="poster-gallery-scroll"
+    >
       {posters.length === 0 && loading ? (
         <div className="w-full h-[calc(100vh-72px)] flex justify-center items-center">
           <Loading />
@@ -85,7 +73,7 @@ export default function PosterGallery() {
               <Loading />
             </div>
           }
-          scrollableTarget="layout-main-wrapper"
+          scrollableTarget="poster-gallery-scroll"
         >
           <div className="grid grid-cols-4 gap-[30px]">
             {posters.map((item) => {

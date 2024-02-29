@@ -5,7 +5,11 @@ import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { LoadingWrapper, LoadingMoreWrapper, PostList } from './CommonStyles';
+import {
+  LoadingMoreWrapper,
+  LoadingWrapper,
+  PostList,
+} from '@/components/social/CommonStyles';
 
 export default function SocialChannel() {
   const { openFarcasterQR } = useFarcasterCtx();

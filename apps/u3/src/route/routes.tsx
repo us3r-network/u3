@@ -115,7 +115,7 @@ export const routes: CutomRouteObject[] = [
     children: [
       {
         path: '',
-        element: loadContainerElement('Explore'),
+        element: loadContainerElement('explore/Home'),
         key: RouteKey.home,
         title: 'Explore',
       },

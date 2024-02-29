@@ -1,16 +1,18 @@
 import { useEffect, useState } from 'react';
-import { HotPostsData } from '../components/explore/posts/HotPosts';
-import { TopLinksData } from '../components/explore/links/TopLinks';
-import { HighScoreDappsData } from '../components/explore/dapps/HighScoreDapps';
+import { useOutletContext } from 'react-router-dom';
+import { HotPostsData } from '../../components/explore/posts/HotPosts';
+import { TopLinksData } from '../../components/explore/links/TopLinks';
+import { HighScoreDappsData } from '../../components/explore/dapps/HighScoreDapps';
 import {
   getHotPosts,
   getTopLinks,
   getHighScoreDapps,
-} from '../services/shared/api/explore';
-import { processMetadata } from '../utils/news/link';
-import ExploreLayout from '../components/explore/ExploreLayout';
+} from '../../services/shared/api/explore';
+import { processMetadata } from '../../utils/news/link';
+import HomeLayout from '../../components/explore/HomeLayout';
 import { TopChannelsData } from '@/components/explore/channels/TopChannels';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import type { ExploreLayoutCtx } from './ExploreLayout';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 type HotPostsState = {
@@ -30,14 +32,15 @@ type HighScoreDappsState = {
   dapps: HighScoreDappsData;
   isLoading: boolean;
 };
-export type ExploreState = {
+export type ExploreHomeState = {
   hotPosts: HotPostsState;
   topLinks: TopLinksState;
   topChannels: TopChannelsState;
   highScoreDapps: HighScoreDappsState;
 };
 
-export default function Explore() {
+export default function Home() {
+  const { setDailyPosterLayoutData } = useOutletContext<ExploreLayoutCtx>();
   const [hotPosts, setHotPosts] = useState<HotPostsState>({
     posts: [],
     farcasterUserData: {},
@@ -140,8 +143,24 @@ export default function Explore() {
     });
   }, [trendChannels, trendChannelsLoading]);
 
+  useEffect(() => {
+    setDailyPosterLayoutData({
+      posts: hotPosts.posts,
+      farcasterUserData: hotPosts.farcasterUserData,
+      topics: topChannels.channels,
+      dapps: highScoreDapps.dapps,
+      links: topLinks.links,
+    });
+  }, [
+    setDailyPosterLayoutData,
+    hotPosts,
+    topLinks,
+    highScoreDapps,
+    topChannels,
+  ]);
+
   return (
-    <ExploreLayout
+    <HomeLayout
       hotPosts={hotPosts}
       topLinks={topLinks}
       topChannels={topChannels}
