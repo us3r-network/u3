@@ -3,6 +3,7 @@ import Title from '../Title';
 import Loading from '../../common/loading/Loading';
 import { cn } from '@/lib/utils';
 import ChannelCard, { ChannelData } from './ChannelCard';
+import { getCommunityPath } from '@/route/path';
 
 export type TopChannelsData = Array<ChannelData & { channel_id: string }>;
 
@@ -44,7 +45,7 @@ export default function TopChannels({
                 <ChannelCard
                   key={item.channel_id}
                   data={item}
-                  onClick={() => navigate(`/social/channel/${item.channel_id}`)}
+                  onClick={() => navigate(getCommunityPath(item.channel_id))}
                 />
               );
             })}

@@ -4,6 +4,13 @@ import { cn } from '@/lib/utils';
 import { CommunityInfo } from '@/services/community/types/community';
 import AddPost from '@/components/social/AddPost';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
+import {
+  getCommunityAppPath,
+  getCommunityNftPath,
+  getCommunityPointPath,
+  getCommunityPostsPath,
+  getCommunityTokenPath,
+} from '@/route/path';
 
 export default function CommunityMenu({
   className,
@@ -20,14 +27,14 @@ export default function CommunityMenu({
     communityInfo || {};
   const { pathname } = useLocation();
   const mainNavs = [
-    { title: 'Posts', href: `/community/${channelId}/posts` },
+    { title: 'Posts', href: getCommunityPostsPath(channelId) },
     // { title: 'Members', href: `/community/${channelId}/members` },
   ];
   const nft = nfts?.length > 0 ? nfts[0] : null;
   if (nft) {
     mainNavs.push({
       title: 'NFT',
-      href: `/community/${channelId}/nft/${nft?.contract}`,
+      href: getCommunityNftPath(channelId, nft?.contract),
     });
   }
 
@@ -35,7 +42,7 @@ export default function CommunityMenu({
   if (token) {
     mainNavs.push({
       title: 'Token',
-      href: `/community/${channelId}/token/${token?.contract}`,
+      href: getCommunityTokenPath(channelId, token?.contract),
     });
   }
 
@@ -43,14 +50,14 @@ export default function CommunityMenu({
   if (point) {
     mainNavs.push({
       title: 'Points',
-      href: `/community/${channelId}/point`,
+      href: getCommunityPointPath(channelId),
     });
   }
 
   const dappNavs = apps?.map((dapp) => {
     return {
       title: dapp.name,
-      href: `/community/${channelId}/app/${dapp.name}`,
+      href: getCommunityAppPath(channelId, dapp.name),
       icon: dapp.logo,
     };
   });

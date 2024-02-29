@@ -12,6 +12,7 @@ import {
 import useListScroll from '@/hooks/social/useListScroll';
 import { PostList } from './CommonStyles';
 import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getCommunityFcPostDetailPath } from '@/route/path';
 
 export default function PostsFcNewest() {
   const [parentId] = useState('posts-fc-newest');
@@ -76,7 +77,9 @@ export default function PostsFcNewest() {
                         id: key,
                         top: (e.target as HTMLDivElement).offsetTop,
                       });
-                      navigate(`/community/${channelId}/posts/fc/${castHex}`);
+                      navigate(
+                        getCommunityFcPostDetailPath(channelId, castHex)
+                      );
                     }}
                   />
                 );

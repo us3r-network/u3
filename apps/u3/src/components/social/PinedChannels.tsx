@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 
 import PinChannelBtn from './PinChannelBtn';
+import { getCommunityPath } from '@/route/path';
 
 export default function PinedChannels() {
   const { userChannels, currFid } = useFarcasterCtx();
@@ -33,7 +34,7 @@ function PinedChannelItem({ parent_url }: { parent_url: string }) {
   return (
     <ItemBox
       onClick={() => {
-        navigate(`/social/channel/${item.channel_id}`);
+        navigate(getCommunityPath(item.channel_id));
       }}
     >
       <div>

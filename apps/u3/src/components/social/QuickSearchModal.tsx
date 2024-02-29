@@ -13,6 +13,7 @@ import { FarcasterChannel } from '@/hooks/social/farcaster/useFarcasterChannel';
 import { cn } from '@/lib/utils';
 import useDappCollection from '@/hooks/dapp/useDappCollection';
 import useLogin from '@/hooks/shared/useLogin';
+import { getCommunityPath } from '@/route/path';
 
 export const QuickSearchModalName = 'QuickSearchModal';
 
@@ -99,7 +100,7 @@ export default function QuickSearchModal({
           setSearchText('');
           closeModal();
           navigate(
-            `/social/channel/${channelSearchResult[selectedIndex].channel_id}`
+            getCommunityPath(channelSearchResult[selectedIndex].channel_id)
           );
           return true;
         }
@@ -263,7 +264,7 @@ export default function QuickSearchModal({
                   onClick={() => {
                     setSearchText('');
                     closeModal();
-                    navigate(`/social/channel/${channel.channel_id}`);
+                    navigate(getCommunityPath(channel.channel_id));
                   }}
                   onMouseEnter={() => {
                     if (isMouseCtl) setSelectedIndex(idx);

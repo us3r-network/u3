@@ -5,6 +5,7 @@
  * @LastEditTime: 2023-12-01 17:28:04
  * @Description: file description
  */
+import { getCommunityFcPostDetailPath } from '@/route/path';
 import { SHARE_DOMAIN } from '../../constants';
 
 export const getEventShareUrl = (id: string | number) => {
@@ -34,12 +35,14 @@ export const getSocialDetailShareUrlWithLens = (id: string | number) => {
 export const getSocialDetailShareUrlWithFarcaster = (id: string | number) => {
   return `${SHARE_DOMAIN}/social/post-detail/fcast/${id}`;
 };
+
 export const getCommunityPostDetailShareUrlWithFarcaster = (
   channelId: string,
   castHex: string | number
 ) => {
-  return `${SHARE_DOMAIN}/community/${channelId}/posts/fc/${castHex}`;
+  return `${SHARE_DOMAIN}${getCommunityFcPostDetailPath(channelId, castHex)}`;
 };
+
 export const getProfileShareUrl = (identity: string | number) => {
   return `${SHARE_DOMAIN}/u/${identity}`;
 };

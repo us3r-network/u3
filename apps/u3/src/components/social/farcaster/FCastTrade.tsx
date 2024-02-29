@@ -46,6 +46,8 @@ function TradeModal({
 
   const DEFAULT_WIDGET_CONFIG: WidgetConfig = {
     integrator: 'DegenCast/US3R.NETWORK',
+    fromChain: 8453,
+    fromToken: '0x0000000000000000000000000000000000000000',
     toChain: 8453,
     toToken: '0x4ed4E862860beD51a9570b96d89aF5E1B0Efefed',
     containerStyle: {
@@ -55,11 +57,14 @@ function TradeModal({
       palette: {
         primary: {
           main: '#F41F4C',
-          contrastText: '#fff',
         },
         background: {
           paper: '#1B1E23', // bg color for cards
           default: '#14171A',
+        },
+        text: {
+          primary: '#fff',
+          secondary: '#718096',
         },
       },
     },

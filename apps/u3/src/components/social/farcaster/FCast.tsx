@@ -170,7 +170,7 @@ export default function FCast({
       type: 'link',
       title: cast.text.slice(0, 200), // todo: expand this limit at model
     });
-  }, [castId.hash]);
+  }, [castId.hash, isDetail]);
 
   const [updatedCast, setUpdatedCast] = useState(cast);
   const changeCastLikesWithCurrFid = (liked: boolean) => {
@@ -208,7 +208,8 @@ export default function FCast({
     });
   };
   const formatLinkParam = formatLink(linkParam);
-  const { getLinkId, linkId, setLinkId } = useLinkId(formatLinkParam);
+  const [linkId, setLinkId] = useState<string>('');
+  // const { getLinkId, linkId, setLinkId } = useLinkId(formatLinkParam);
 
   /**
    * 注：这里是区分v2版本布局，在这里兼容v2是为了保证功能一致改动时方便
@@ -341,18 +342,21 @@ export default function FCast({
                       e.stopPropagation();
                     }}
                   >
-                    <SaveButton
-                      linkId={linkId}
-                      link={linkParam}
-                      onSuccessfullyFavor={(isFavored) => {
-                        if (!linkId && linkParam?.url && linkParam?.type) {
-                          getLinkId(linkParam).then((id) => {
-                            if (id) setLinkId(id);
-                            else setLinkId('');
-                          });
-                        }
-                      }}
-                    />
+                    {isDetail && (
+                      <SaveButton
+                        linkId={linkId}
+                        link={linkParam}
+                        // onSuccessfullyFavor={(isFavored) => {
+                        //   if (!linkId && linkParam?.url && linkParam?.type) {
+                        //     getLinkId(linkParam).then((id) => {
+                        //       if (id) setLinkId(id);
+                        //       else setLinkId('');
+                        //     });
+                        //   }
+                        // }}
+                      />
+                    )}
+
                     <PostShareMenuBtn
                       offialUrl={getOfficialCastUrl(
                         userData.userName,

@@ -14,6 +14,7 @@ import useFarcasterLikeAction from '@/hooks/social/farcaster/useFarcasterLikeAct
 import useFarcasterRecastAction from '@/hooks/social/farcaster/useFarcasterRecastAction';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { cn } from '@/lib/utils';
+import { useFavorActionWithLink } from '@/hooks/shared/useFavorActionWithLink';
 
 export default function FCastSuperLike({
   cast,
@@ -44,7 +45,17 @@ export default function FCastSuperLike({
   });
   const castId: CastId = useFarcasterCastId({ cast });
 
-  const { isFavored, isFavoring, onFavor } = useFavorAction(linkId, link, {
+  // const { isFavored, isFavoring, onFavor } = useFavorAction(linkId, link, {
+  //   onSuccessfullyFavor: (done: boolean, newLinkId: string) => {
+  //     onSaveSuccess?.(newLinkId);
+  //     toast.success('Save successful');
+  //   },
+  //   onFailedFavor: (err: string) => {
+  //     toast.error(`Save failed: ${err}`);
+  //   },
+  // });
+
+  const { isFavored, isFavoring, onFavor } = useFavorActionWithLink(link, {
     onSuccessfullyFavor: (done: boolean, newLinkId: string) => {
       onSaveSuccess?.(newLinkId);
       toast.success('Save successful');
@@ -75,8 +86,7 @@ export default function FCastSuperLike({
       onFavor();
     }
   };
-  const superLiked = liked && recasted && isFavored;
-  console.log('superLiked', { superLiked, liked, recasted, isFavored });
+  const superLiked = liked && recasted;
 
   return (
     <div

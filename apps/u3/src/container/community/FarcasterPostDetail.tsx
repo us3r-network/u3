@@ -24,6 +24,7 @@ import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
 import { ReplyCast } from '@/components/social/farcaster/FCastReply';
 import { LoadingWrapper } from '../social/CommonStyles';
 import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getCommunityFcPostDetailPath } from '@/route/path';
 
 export default function FarcasterPostDetail() {
   const navigate = useNavigate();
@@ -146,7 +147,7 @@ export default function FarcasterPostDetail() {
             castId
           )}
           castClickAction={(e, castHex) => {
-            navigate(`/community/${channelId}/posts/fc/${castHex}`);
+            navigate(getCommunityFcPostDetailPath(channelId, castHex));
           }}
         />
         <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">
@@ -168,7 +169,7 @@ export default function FarcasterPostDetail() {
                 farcasterUserDataObj={farcasterUserDataObj}
                 isV2Layout
                 castClickAction={(e, castHex) => {
-                  navigate(`/community/${channelId}/posts/fc/${castHex}`);
+                  navigate(getCommunityFcPostDetailPath(channelId, castHex));
                 }}
               />
             );

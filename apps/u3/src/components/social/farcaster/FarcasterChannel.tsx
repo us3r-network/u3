@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { getCommunityPath } from '@/route/path';
 
 export default function FarcasterChannel({
   url,
@@ -21,7 +22,7 @@ export default function FarcasterChannel({
     if (isV2Layout) {
       return (
         <Link
-          to={`/community/${channel.channel_id}`}
+          to={getCommunityPath(channel.channel_id)}
           className="hover:underline"
           onClick={(e) => {
             e.stopPropagation();
@@ -41,7 +42,7 @@ export default function FarcasterChannel({
           e.stopPropagation();
         }}
       >
-        <Link to={`/social/channel/${channel.channel_id}`}>
+        <Link to={getCommunityPath(channel.channel_id)}>
           <span>#</span>
           <img className="channel-img" src={channel.image} alt="" />
           <span>{channel.name}</span>

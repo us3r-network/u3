@@ -2,11 +2,12 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import PinChannelBtn from '../PinChannelBtn';
 import { FarcasterChannel } from '@/hooks/social/farcaster/useFarcasterChannel';
+import { getCommunityPath } from '@/route/path';
 
 export default function ChannelItem({ data }: { data: FarcasterChannel }) {
   return (
     <ItemWrapper>
-      <LeftWrapper to={`/social/channel/${data.channel_id}`}>
+      <LeftWrapper to={getCommunityPath(data.channel_id)}>
         <NameWrapper>
           <span>#</span>
           <img src={data.image} alt="" />

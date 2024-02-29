@@ -17,6 +17,7 @@ import MessageModal from '../message/MessageModal';
 import { NavModalName, useNav } from '../../contexts/NavCtx';
 import ContactUsModal from './ContactUsModal';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { getCommunityPath } from '@/route/path';
 
 export default function Menu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -96,17 +97,12 @@ function ChannelItem({ parent_url }: { parent_url: string }) {
     return getChannelFromUrl(parent_url);
   }, [parent_url, getChannelFromUrl]);
 
-  const toCommunityChannelIds = ['degen'];
   if (!item) return null;
 
   return (
     <div
       onClick={() => {
-        if (toCommunityChannelIds.includes(item.channel_id)) {
-          navigate(`community/${item.channel_id}`);
-          return;
-        }
-        navigate(`/social/channel/${item.channel_id}`);
+        navigate(getCommunityPath(item.channel_id));
       }}
       className="cursor-pointer relative"
     >
