@@ -11,58 +11,18 @@ export default function SaveExploreListItem({
   data,
   ...props
 }: SaveExploreListItemProps) {
-  // console.log('save item', data);
   return (
-    <Wrapper {...props}>
-      <ListItemInner>
-        <IconLink text={data.url} logo={data?.logo} className="iconLink" />
-        <div className="flex-1 flex flex-col justify-between gap-[20px] max-sm:flex-row">
-          <div className="flex-[1] font-medium text-[16px] leading-[19px] text-[#ffffff] line-clamp-4 max-sm:line-clamp-1">
-            {data.title || data.url}
-          </div>
-          {!!data?.createAt && (
-            <TimeText className="timeText">
-              {defaultFormatFromNow(data.createAt)}
-            </TimeText>
-          )}
-        </div>
-      </ListItemInner>
-    </Wrapper>
+    <div className="flex flex-col gap-4 pt-4 pb-4" {...props}>
+      <IconLink text={data.url} logo={data?.logo} className="iconLink" />
+      <p className="flex-[1] font-medium text-[16px] leading-[20px] text-white line-clamp-4 max-sm:line-clamp-1">
+        {data.title || data.url}
+      </p>
+      {!!data?.createAt && (
+        <p className="text-white">{defaultFormatFromNow(data.createAt)}</p>
+      )}
+    </div>
   );
 }
-
-const Wrapper = styled.div`
-  width: 100%;
-  height: 200px;
-  padding: 20px;
-  box-sizing: border-box;
-  background: #1b1e23;
-  border: 1px solid #39424c;
-  border-radius: 20px;
-  position: relative;
-  cursor: pointer;
-  color: #ffffff;
-  &:hover {
-    background: rgba(20, 23, 26, 0.3);
-  }
-`;
-const ListItemInner = styled.div`
-  width: 100%;
-  height: 100%;
-  transition: all 0.3s;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
-`;
-
-const TimeText = styled.span`
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-
-  color: #718096;
-`;
 
 const IconLink = styled(LinkBox)`
   display: flex;
