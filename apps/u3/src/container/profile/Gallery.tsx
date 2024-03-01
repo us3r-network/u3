@@ -1,29 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
-import { toast } from 'react-toastify';
-import { useParams, useNavigate } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
-
-import { useSession } from '@us3r-network/auth-with-rainbowkit';
-import { useProfileState } from '@us3r-network/profile';
-import Credential, { CredentialMobile } from '../components/profile/Credential';
-import { fetchU3Assets, ProfileDefault } from '../services/profile/api/profile';
-import { ProfileEntity } from '../services/profile/types/profile';
-import Loading from '../components/common/loading/Loading';
-import { mergeProfilesData } from '../utils/profile/mergeProfilesData';
-import { MainWrapper } from '../components/layout/Index';
-import PageTitle from '../components/layout/PageTitle';
-import MobilePageHeader from '../components/layout/mobile/MobilePageHeader';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import styled from 'styled-components';
+import Loading from '@/components/common/loading/Loading';
+import { MainWrapper } from '@/components/layout/Index';
+import PageTitle from '@/components/layout/PageTitle';
+import MobilePageHeader from '@/components/layout/mobile/MobilePageHeader';
+import Credential, { CredentialMobile } from '@/components/profile/credential';
+import { ProfileDefault, fetchU3Assets } from '@/services/profile/api/profile';
+import { ProfileEntity } from '@/services/profile/types/profile';
+import { mergeProfilesData } from '@/utils/profile/mergeProfilesData';
+import { ProfileOutletContext } from './ProfileLayout';
 
 export default function Gallery() {
-  const { profile } = useProfileState();
-  const { wallet } = useParams();
-  const session = useSession();
-  const sessId = session?.id;
+  const { address: wallets } = useOutletContext<ProfileOutletContext>();
   const navigate = useNavigate();
-
-  const sessWallet = useMemo(() => sessId.split(':').pop() || '', [sessId]);
-
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState<ProfileEntity>();
 
@@ -43,16 +35,10 @@ export default function Gallery() {
   }, []);
 
   useEffect(() => {
-    if (wallet) {
-      fetchData([wallet]);
-      return;
+    if (wallets) {
+      fetchData(wallets);
     }
-    const profileWallets = profile?.wallets?.map(
-      ({ address: walletAddress }) => walletAddress
-    );
-    const wallets = [...new Set([sessWallet, ...(profileWallets || [])])];
-    fetchData(wallets);
-  }, [fetchData, sessWallet, wallet, profile]);
+  }, [fetchData, wallets]);
 
   return (
     <Wrapper>

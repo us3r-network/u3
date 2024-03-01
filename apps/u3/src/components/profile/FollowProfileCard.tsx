@@ -146,7 +146,6 @@ export default function FollowProfileCard({
 const Wrapper = styled.div`
   padding: 20px;
   box-sizing: border-box;
-  background: #1b1e23;
 `;
 const Top = styled.div`
   display: flex;

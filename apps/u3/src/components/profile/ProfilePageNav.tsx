@@ -7,7 +7,6 @@ export enum FeedsType {
   REPOSTS = 'reposts',
   REPLIES = 'replies',
   LIKES = 'likes',
-  ACTIVITIES = 'activities',
 }
 export default function ProfilePageNav({
   showFeedsTabs = true,
@@ -22,13 +21,6 @@ export default function ProfilePageNav({
 }) {
   return (
     <SocialNavWrapper>
-      {!isMobile && (
-        <SocialNavLeft>
-          <SocialNavTitle>Profile</SocialNavTitle>
-          <SocialNavDividingLine />
-        </SocialNavLeft>
-      )}
-
       <SocialNavCenter>
         {showFeedsTabs &&
           (isMobile ? (
@@ -63,10 +55,6 @@ function PcFeedsTypeTable({
     {
       name: 'Posts',
       value: FeedsType.POSTS,
-    },
-    {
-      name: 'Activities',
-      value: FeedsType.ACTIVITIES,
     },
     {
       name: 'Reposts',
@@ -109,7 +97,6 @@ function MobileFeedsTypeTable({
 }) {
   const tabs = [
     FeedsType.POSTS,
-    FeedsType.ACTIVITIES,
     FeedsType.REPOSTS,
     FeedsType.REPLIES,
     // FeedsType.LIKES,
@@ -137,12 +124,6 @@ const SocialNavWrapper = styled.div`
   border-bottom: 1px solid #39424c;
   `}
 `;
-const SocialNavLeft = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 112px;
-`;
 const SocialNavCenter = styled.div`
   width: 600px;
   height: 100%;
@@ -150,21 +131,6 @@ const SocialNavCenter = styled.div`
 const SocialNavRight = styled.div`
   flex: 1;
 `;
-const SocialNavTitle = styled.div`
-  color: #fff;
-  font-family: Rubik;
-  font-size: 24px;
-  font-style: italic;
-  font-weight: 700;
-  line-height: normal;
-`;
-const SocialNavDividingLine = styled.div`
-  width: 20px;
-  height: 1px;
-  transform: rotate(120deg);
-  background: #39424c;
-`;
-
 const FeedsTypeTabsWrapper = styled.div`
   height: 100%;
   display: flex;

@@ -9,22 +9,22 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { MainWrapper } from '../components/layout/Index';
-import Loading from '../components/common/loading/Loading';
+import { MainWrapper } from '@/components/layout/Index';
+import Loading from '@/components/common/loading/Loading';
 import {
   UpdateProjectData,
   ProjectExploreListItemResponse,
-} from '../services/shared/types/project';
-import { fetchOneProject, updateProject } from '../services/shared/api/project';
-import { ApiRespCode } from '../services/shared/types';
-import Header from '../components/project/detail/Header';
-import Events from '../components/project/detail/Events';
-import Conents from '../components/project/detail/Conents';
-import Team from '../components/project/detail/Team';
-import QA from '../components/project/detail/QA';
-import ProjectEditModal from '../components/project/ProjectEditModal';
-import { messages } from '../utils/shared/message';
-import Dapps from '../components/project/detail/Dapps';
+} from '@/services/shared/types/project';
+import { fetchOneProject, updateProject } from '@/services/shared/api/project';
+import { ApiRespCode } from '@/services/shared/types';
+import Header from '@/components/project/detail/Header';
+import Events from '@/components/project/detail/Events';
+import Conents from '@/components/project/detail/Conents';
+import Team from '@/components/project/detail/Team';
+import QA from '@/components/project/detail/QA';
+import ProjectEditModal from '@/components/project/ProjectEditModal';
+import { messages } from '@/utils/shared/message';
+import Dapps from '@/components/project/detail/Dapps';
 
 export default function Project() {
   const navigate = useNavigate();

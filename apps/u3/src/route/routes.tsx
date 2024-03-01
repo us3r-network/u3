@@ -18,6 +18,8 @@ export enum RouteKey {
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
+  contacts = 'contacts',
+  fav = 'fav',
   asset = 'asset',
   gallery = 'gallery',
   activity = 'activity',
@@ -70,8 +72,6 @@ export enum RouteKey {
   dappStore = 'dappStore',
   dapp = 'dapp',
   dappCreate = 'dappCreate',
-  // save
-  save = 'save',
   // notification
   notification = 'notification',
   // others
@@ -245,32 +245,82 @@ export const routes: CutomRouteObject[] = [
     children: [
       {
         path: '',
-        element: loadContainerElement('profile/Profile'),
+        element: loadContainerElement('profile/Posts'),
         key: RouteKey.profile,
         permissions: [RoutePermission.login],
-        title: 'Profile',
+        title: 'Posts',
+      },
+      {
+        path: 'contacts',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+        permissions: [RoutePermission.login],
+      },
+      {
+        path: 'fav',
+        element: loadContainerElement('profile/Fav'),
+        key: RouteKey.fav,
+        title: 'Favorites',
+        permissions: [RoutePermission.login],
+      },
+      {
+        path: 'activity',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        permissions: [RoutePermission.login],
+        title: 'Activity',
+      },
+      {
+        path: 'asset',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        permissions: [RoutePermission.login],
+        title: 'Asset',
+      },
+      {
+        path: 'gallery',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        permissions: [RoutePermission.login],
+        title: 'Gallery',
       },
       {
         path: ':user',
-        element: loadContainerElement('profile/Profile'),
+        element: loadContainerElement('profile/Posts'),
         key: RouteKey.profileByUser,
-        title: 'Profile',
+        title: 'Posts',
       } as CutomRouteObject,
-    ],
-  },
-  // save
-  {
-    path: '/save',
-    element: loadContainerElement('profile/ProfileLayout'),
-    key: RouteKey.save,
-    permissions: [RoutePermission.login],
-    children: [
       {
-        path: '',
-        element: loadContainerElement('profile/Save'),
-        key: RouteKey.save,
-        permissions: [RoutePermission.login],
-      },
+        path: 'contacts/:user',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+      } as CutomRouteObject,
+      {
+        path: 'fav/:user',
+        element: loadContainerElement('profile/Fav'),
+        key: RouteKey.fav,
+        title: 'Favorites',
+      } as CutomRouteObject,
+      {
+        path: 'activity/:user',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        title: 'Activity',
+      } as CutomRouteObject,
+      {
+        path: 'asset/:user',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        title: 'Asset',
+      } as CutomRouteObject,
+      {
+        path: 'gallery/:user',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        title: 'Gallery',
+      } as CutomRouteObject,
     ],
   },
   {
@@ -362,27 +412,6 @@ export const routes: CutomRouteObject[] = [
         title: 'App',
       },
     ],
-  },
-  {
-    path: '/activity',
-    element: loadContainerElement('Activity'),
-    key: RouteKey.activity,
-    permissions: [RoutePermission.login],
-    title: 'Activity',
-  },
-  {
-    path: '/asset',
-    element: loadContainerElement('Asset'),
-    key: RouteKey.asset,
-    permissions: [RoutePermission.login],
-    title: 'Asset',
-  },
-  {
-    path: '/gallery',
-    element: loadContainerElement('Gallery'),
-    key: RouteKey.gallery,
-    permissions: [RoutePermission.login],
-    title: 'Gallery',
   },
   // news
   {

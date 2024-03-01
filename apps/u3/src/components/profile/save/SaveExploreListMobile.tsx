@@ -2,8 +2,8 @@ import styled from 'styled-components';
 import { SaveExploreListItemMobile } from './SaveExploreListItem';
 import AnimatedListItem, {
   useAnimatedListTransition,
-} from '../common/animation/AnimatedListItem';
-import CardBase from '../common/card/CardBase';
+} from '../../common/animation/AnimatedListItem';
+import CardBase from '../../common/card/CardBase';
 import type { SaveExploreListItemData } from './SaveExploreList';
 
 export type SaveExploreListProps = {

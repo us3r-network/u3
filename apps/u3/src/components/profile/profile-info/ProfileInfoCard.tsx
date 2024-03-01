@@ -1,12 +1,14 @@
 import { useProfileState } from '@us3r-network/profile';
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo, useState } from 'react';
 import useDid from '../../../hooks/profile/useDid';
-import Loading from '../../common/loading/Loading';
+// import Loading from '../../common/loading/Loading';
 import U3ProfileInfoCardContainer from './U3ProfileInfoCardContainer';
 import PlatformProfileInfoCardContainer from './PlatformProfileInfoCardContainer';
 import { isDidPkh } from '../../../utils/shared/did';
 import { getProfileShareUrl } from '../../../utils/shared/share';
+// import UserTagsStyled from '../UserTagsStyled';
+// import UserWalletsStyled from '../UserWalletsStyled';
 
 interface ProfileInfoCardProps extends StyledComponentPropsWithRef<'div'> {
   isSelf?: boolean;
@@ -59,16 +61,20 @@ export default function ProfileInfoCard({
   }
   if (did && hasProfile) {
     return (
-      <U3ProfileInfoCardContainer
-        isSelf={isSelf}
-        did={did}
-        navigateToProfileUrl={navigateToProfileUrl}
-        onNavigateToProfileAfter={onNavigateToProfileAfter}
-        clickFollowing={clickFollowing}
-        clickFollowers={clickFollowers}
-        shareLink={shareLink}
-        {...wrapperProps}
-      />
+      <>
+        <U3ProfileInfoCardContainer
+          isSelf={isSelf}
+          did={did}
+          navigateToProfileUrl={navigateToProfileUrl}
+          onNavigateToProfileAfter={onNavigateToProfileAfter}
+          clickFollowing={clickFollowing}
+          clickFollowers={clickFollowers}
+          shareLink={shareLink}
+          {...wrapperProps}
+        />
+        {/* <UserWalletsStyled did={did} />
+        <UserTagsStyled did={did} /> */}
+      </>
     );
   }
   if (identity) {
@@ -87,14 +93,3 @@ export default function ProfileInfoCard({
   }
   return null;
 }
-
-// const LoadingWrapper = styled.div`
-//   padding: 20px;
-//   width: 360px;
-//   box-sizing: border-box;
-//   background: #1b1e23;
-//   border-radius: 20px;
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-// `;

@@ -5,16 +5,15 @@ import { isMobile } from 'react-device-detect';
 import { uniqBy } from 'lodash';
 import { MainWrapper } from '../../components/layout/Index';
 import Loading from '../../components/common/loading/Loading';
-import PageTitle from '../../components/layout/PageTitle';
-import SaveExploreList from '../../components/save/SaveExploreList';
-import SaveExploreListMobile from '../../components/save/SaveExploreListMobile';
+import SaveExploreList from '../../components/profile/save/SaveExploreList';
+import SaveExploreListMobile from '../../components/profile/save/SaveExploreListMobile';
 import {
   getContentLinkDataWithJsonValue,
   getContentPlatformLogoWithJsonValue,
 } from '../../utils/news/content';
 import { getDappLinkDataWithJsonValue } from '../../utils/dapp/dapp';
 import { getEventLinkDataWithJsonValue } from '../../utils/news/event';
-import SyncingBotSaves from '@/components/save/SyncingBotSaves';
+import SyncingBotSaves from '@/components/profile/save/SyncingBotSaves';
 // import { DappLinkData } from '../services/dapp/types/dapp';
 // import { ContentLinkData } from '../services/news/types/contents';
 // import { EventLinkData } from '../services/news/types/event';
@@ -50,7 +49,7 @@ const EmptyDesc = styled.span`
   color: #748094;
 `;
 
-export default function Save() {
+export default function Fav() {
   const { isFetching, personalFavors } = usePersonalFavors();
   const [savedLinks, setSavedLinks] = useState([]);
   // console.log('personalFavors', personalFavors);
@@ -103,7 +102,7 @@ export default function Save() {
   const isEmpty = useMemo(() => list.length === 0, [list]);
   return (
     <Wrapper>
-      {isMobile ? null : <PageTitle>Saves</PageTitle>}
+      {isMobile ? null : <h3 className="text-white font-bold">Favorites</h3>}
       <SyncingBotSaves
         onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');

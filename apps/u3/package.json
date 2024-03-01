@@ -128,7 +128,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "cross-env NODE_OPTIONS=--max_old_space_size=6120 craco start",
     "build": "craco build",
     "build:report": "craco build --report",
     "test": "craco test",

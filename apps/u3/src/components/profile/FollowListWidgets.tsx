@@ -1,15 +1,10 @@
 import styled from 'styled-components';
 
 export const FollowListWrapper = styled.div`
-  width: 600px;
+  width: 100%;
 `;
 
 export const FollowList = styled.div`
-  width: 600px;
-  border-radius: 20px;
-  border: 1px solid #39424c;
-  box-sizing: border-box;
-  background: #1b1e23;
   overflow: hidden;
   & > * {
     border-bottom: 1px solid #39424c;

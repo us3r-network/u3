@@ -99,7 +99,7 @@ export default function PlatformAccounts({
             break;
         }
         return (
-          <Row key={item.handle}>
+          <Row key={item.handle + item.platform}>
             <Line />
             <Avatar src={item.avatar} />
             <Center
