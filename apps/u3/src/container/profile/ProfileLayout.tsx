@@ -2,7 +2,7 @@ import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
-import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
@@ -32,7 +32,22 @@ export default function ProfileLayout() {
     loading: identityLoading,
   } = usePlatformProfileInfoData({ identity });
   const { did: identityDid, loading: identityDidLoading } = useDid(identity);
-
+  console.log(
+    'identity',
+    identity,
+    'identityDid',
+    identityDid,
+    'identityFid',
+    identityFid,
+    'identityAddress',
+    identityAddress,
+    'identityLensProfileFirst',
+    identityLensProfileFirst,
+    'identityLoading',
+    identityLoading,
+    'identityDidLoading',
+    identityDidLoading
+  );
   const session = useSession();
   const {
     fid: u3ProfileFid,
@@ -40,36 +55,22 @@ export default function ProfileLayout() {
     lensProfileFirst: u3ProfileLensProfileFirst,
     loading: u3ProfileLoading,
   } = useU3ProfileInfoData({
-    did: identityDid || session?.id,
-    isSelf,
+    did: identity ? identityDid : session?.id,
+    isSelf: session && identityDid === session.id,
   });
   const { currFid } = useFarcasterCtx();
-  // console.log(
-  //   'identity',
-  //   identity,
-  //   'identityDid',
-  //   identityDid,
-  //   'identityFid',
-  //   identityFid,
-  //   'identityAddress',
-  //   identityAddress,
-  //   'identityLensProfileFirst',
-  //   identityLensProfileFirst,
-  //   'identityLoading',
-  //   identityLoading,
-  //   'identityDidLoading',
-  //   identityDidLoading,
-  //   'u3ProfileFid',
-  //   u3ProfileFid,
-  //   'u3ProfileAddress',
-  //   u3ProfileAddress,
-  //   'u3ProfileLensProfileFirst',
-  //   u3ProfileLensProfileFirst,
-  //   'u3ProfileLoading',
-  //   u3ProfileLoading,
-  //   'currFid',
-  //   currFid
-  // );
+  console.log(
+    'u3ProfileFid',
+    u3ProfileFid,
+    'u3ProfileAddress',
+    u3ProfileAddress,
+    'u3ProfileLensProfileFirst',
+    u3ProfileLensProfileFirst,
+    'u3ProfileLoading',
+    u3ProfileLoading,
+    'currFid',
+    currFid
+  );
   if (identityLoading || identityDidLoading || u3ProfileLoading) {
     return (
       <div className="w-full h-screen flex flex-col justify-center items-center text-[white]">
