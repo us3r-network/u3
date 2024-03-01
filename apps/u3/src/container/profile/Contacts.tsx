@@ -10,6 +10,7 @@ import FollowingDefault from '@/components/social/FollowingDefault';
 import useFarcasterFollowNum from '@/hooks/social/farcaster/useFarcasterFollowNum';
 import { SocialPlatform } from '@/services/social/types';
 import { ProfileOutletContext } from './ProfileLayout';
+import PlatformFilter from '@/components/shared/select/PlatformFilter';
 
 export enum FollowType {
   FOLLOWING = 'following',
@@ -78,24 +79,35 @@ export default function Contacts() {
           setTab(v);
         }}
       >
-        <TabsList className="flex gap-5 justify-start w-full mb-7 bg-inherit">
-          <TabsTrigger
-            value={FollowType.FOLLOWING}
-            className={cn(
-              'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
-            )}
-          >
-            {`Following(${followingPlatformCount[followingActivePlatform]})`}
-          </TabsTrigger>
-          <TabsTrigger
-            value={FollowType.FOLLOWERS}
-            className={cn(
-              'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
-            )}
-          >
-            {`Followers(${followersPlatformCount[followingActivePlatform]})`}
-          </TabsTrigger>
-        </TabsList>
+        <div className="flex items-center justify-between">
+          <TabsList className="flex gap-5 justify-start w-full bg-inherit">
+            <TabsTrigger
+              value={FollowType.FOLLOWING}
+              className={cn(
+                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
+              )}
+            >
+              {`Following(${followingPlatformCount[followingActivePlatform]})`}
+            </TabsTrigger>
+            <TabsTrigger
+              value={FollowType.FOLLOWERS}
+              className={cn(
+                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
+              )}
+            >
+              {`Followers(${followersPlatformCount[followingActivePlatform]})`}
+            </TabsTrigger>
+          </TabsList>
+          <PlatformFilter
+            defaultValue={followingActivePlatform}
+            onChange={(platform) => {
+              setFollowNavData((prevData) => ({
+                ...prevData,
+                followingActivePlatform: platform,
+              }));
+            }}
+          />
+        </div>
         <TabsContent value={FollowType.FOLLOWING}>
           {(() => {
             if (followingActivePlatform === SocialPlatform.Lens) {
