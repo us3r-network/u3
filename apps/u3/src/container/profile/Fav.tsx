@@ -5,7 +5,6 @@ import { isMobile } from 'react-device-detect';
 import { uniqBy } from 'lodash';
 import { MainWrapper } from '../../components/layout/Index';
 import Loading from '../../components/common/loading/Loading';
-import PageTitle from '../../components/layout/PageTitle';
 import SaveExploreList from '../../components/profile/save/SaveExploreList';
 import SaveExploreListMobile from '../../components/profile/save/SaveExploreListMobile';
 import {
@@ -103,7 +102,7 @@ export default function Fav() {
   const isEmpty = useMemo(() => list.length === 0, [list]);
   return (
     <Wrapper>
-      {isMobile ? null : <PageTitle>Saves</PageTitle>}
+      {isMobile ? null : <h3 className="text-white font-bold">Favorites</h3>}
       <SyncingBotSaves
         onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');
