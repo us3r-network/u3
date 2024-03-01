@@ -22,9 +22,6 @@ export default function ProfileLayout() {
   const navigate = useNavigate();
   const { user: identity } = useParams();
   const pathSuffix = identity ? `/${identity}` : '';
-  const isSelf = useMemo(() => {
-    return !identity;
-  }, [identity]);
   const {
     fid: identityFid,
     recommendAddress: identityAddress,
@@ -32,23 +29,26 @@ export default function ProfileLayout() {
     loading: identityLoading,
   } = usePlatformProfileInfoData({ identity });
   const { did: identityDid, loading: identityDidLoading } = useDid(identity);
-  console.log(
-    'identity',
-    identity,
-    'identityDid',
-    identityDid,
-    'identityFid',
-    identityFid,
-    'identityAddress',
-    identityAddress,
-    'identityLensProfileFirst',
-    identityLensProfileFirst,
-    'identityLoading',
-    identityLoading,
-    'identityDidLoading',
-    identityDidLoading
-  );
+  // console.log(
+  //   'identity',
+  //   identity,
+  //   'identityDid',
+  //   identityDid,
+  //   'identityFid',
+  //   identityFid,
+  //   'identityAddress',
+  //   identityAddress,
+  //   'identityLensProfileFirst',
+  //   identityLensProfileFirst,
+  //   'identityLoading',
+  //   identityLoading,
+  //   'identityDidLoading',
+  //   identityDidLoading
+  // );
   const session = useSession();
+  const isSelf = useMemo(() => {
+    return identity ? session && identityDid === session.id : !!session;
+  }, [identity, session]);
   const {
     fid: u3ProfileFid,
     address: u3ProfileAddress,
@@ -56,24 +56,24 @@ export default function ProfileLayout() {
     loading: u3ProfileLoading,
   } = useU3ProfileInfoData({
     did: identity ? identityDid : session?.id,
-    isSelf: session && identityDid === session.id,
+    isSelf,
   });
   const { currFid } = useFarcasterCtx();
-  console.log(
-    'u3ProfileFid',
-    u3ProfileFid,
-    'u3ProfileAddress',
-    u3ProfileAddress,
-    'u3ProfileLensProfileFirst',
-    u3ProfileLensProfileFirst,
-    'u3ProfileLoading',
-    u3ProfileLoading,
-    'currFid',
-    currFid
-  );
+  // console.log(
+  //   'u3ProfileFid',
+  //   u3ProfileFid,
+  //   'u3ProfileAddress',
+  //   u3ProfileAddress,
+  //   'u3ProfileLensProfileFirst',
+  //   u3ProfileLensProfileFirst,
+  //   'u3ProfileLoading',
+  //   u3ProfileLoading,
+  //   'currFid',
+  //   currFid
+  // );
   if (identityLoading || identityDidLoading || u3ProfileLoading) {
     return (
-      <div className="w-full h-screen flex flex-col justify-center items-center text-[white]">
+      <div className="w-full h-screen flex flex-col justify-center items-center text-[white] gap-4">
         <Loading />
         loading profile from multiple sources and merge...
       </div>
@@ -84,7 +84,7 @@ export default function ProfileLayout() {
     <div className="w-full h-screen flex">
       {!isMobile && (
         <div className="bg-[#1B1E23] w-[280px] h-full max-sm:hidden">
-          <ProfileMenu />
+          <ProfileMenu isSelf={isSelf} />
         </div>
       )}
       <div className="flex-1 h-full overflow-auto">
@@ -120,107 +120,3 @@ export default function ProfileLayout() {
     </div>
   );
 }
-
-// function PostsOld() {
-//   const { user: identity } = useParams();
-//   const { did, loading: didLoading } = useDid(identity);
-//   const { getProfileWithDid } = useProfileState();
-//   const [hasProfile, setHasProfile] = useState(false);
-//   const [hasProfileLoading, setHasProfileLoading] = useState(false);
-//   useEffect(() => {
-//     (async () => {
-//       if (isDidPkh(did)) {
-//         setHasProfileLoading(true);
-//         const profile = await getProfileWithDid(did);
-//         if (profile) {
-//           setHasProfile(true);
-//         }
-//         setHasProfileLoading(false);
-//       } else {
-//         setHasProfile(false);
-//       }
-//     })();
-//   }, [did]);
-
-//   const session = useSession();
-//   const isSelf = useMemo(() => {
-//     return !identity;
-//   }, [identity]);
-
-//   if (!identity) {
-//     return <U3ProfileContainer did={session?.id} isSelf={isSelf} />;
-//   }
-//   if (didLoading || hasProfileLoading) {
-//     return null;
-//   }
-//   if (isDidPkh(did) && hasProfile) {
-//     return <U3ProfileContainer did={did} isSelf={isSelf} />;
-//   }
-//   if (identity) {
-//     return <PlatformProfileContainer identity={identity} isSelf={isSelf} />;
-//   }
-//   return null;
-// }
-
-// function U3ProfileContainer({ did, isSelf }: { did: string; isSelf: boolean }) {
-//   const session = useSession();
-//   const {
-//     fid: u3ProfileFid,
-//     address,
-//     lensProfileFirst,
-//     loading,
-//   } = useU3ProfileInfoData({
-//     did,
-//     isSelf,
-//   });
-//   const { currFid } = useFarcasterCtx();
-//   const fid = useMemo(() => {
-//     if (isSelf) {
-//       return `${currFid || ''}`;
-//     }
-//     return `${u3ProfileFid || ''}`;
-//   }, [currFid, isSelf, u3ProfileFid]);
-
-//   if (loading) {
-//     return (
-//       <LoadingWrapper>
-//         <Loading />
-//       </LoadingWrapper>
-//     );
-//   }
-
-//   return (
-//     <Posts
-//       fid={fid}
-//       lensProfileFirst={lensProfileFirst}
-//       identity=""
-//       isLoginUser={did === session?.id}
-//     />
-//   );
-// }
-// function PlatformProfileContainer({
-//   identity,
-//   isSelf,
-// }: {
-//   identity: string;
-//   isSelf: boolean;
-// }) {
-//   const { fid, recommendAddress, lensProfileFirst, loading } =
-//     usePlatformProfileInfoData({ identity });
-
-//   if (loading) {
-//     return (
-//       <LoadingWrapper>
-//         <Loading />
-//       </LoadingWrapper>
-//     );
-//   }
-//   return (
-//     <Posts
-//       fid={fid}
-//       lensProfileFirst={lensProfileFirst}
-//       identity={identity}
-//       isLoginUser={false}
-//     />
-//   );
-// }

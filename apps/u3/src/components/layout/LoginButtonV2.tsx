@@ -78,7 +78,7 @@ export default function LoginButtonV2() {
             />
             My Profile
           </NavLinkItem>
-          <NavLinkItem href="/save">
+          <NavLinkItem href="/u/fav">
             <BookmarkIcon />
             My favorites
           </NavLinkItem>
