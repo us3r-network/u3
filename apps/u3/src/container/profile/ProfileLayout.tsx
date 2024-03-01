@@ -2,7 +2,7 @@ import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useMemo } from 'react';
 import { isMobile } from 'react-device-detect';
-import { Outlet, useNavigate, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
@@ -20,8 +20,8 @@ export type ProfileOutletContext = {
 
 export default function ProfileLayout() {
   const navigate = useNavigate();
-
   const { user: identity } = useParams();
+  const pathSuffix = identity ? `/${identity}` : '';
   const isSelf = useMemo(() => {
     return !identity;
   }, [identity]);
@@ -107,8 +107,12 @@ export default function ProfileLayout() {
           <ProfileInfoCard
             isSelf={isSelf}
             identity={identity || session?.id}
-            clickFollowing={() => navigate('/u/contacts?type=following')}
-            clickFollowers={() => navigate('/u/contacts?type=followers')}
+            clickFollowing={() =>
+              navigate(`/u/contacts${pathSuffix}?type=following`)
+            }
+            clickFollowers={() =>
+              navigate(`/u/contacts${pathSuffix}?type=followers`)
+            }
           />
         </div>
       )}
