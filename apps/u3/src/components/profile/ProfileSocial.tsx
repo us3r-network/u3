@@ -8,8 +8,6 @@ import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
-import Rss3Content from '../fren/Rss3Content';
-import { NoActivity } from '../../container/profile/Activity';
 
 export function ProfileSocialPosts({
   lensProfileId,
@@ -122,20 +120,6 @@ export function ProfileSocialPosts({
     </MainCenter>
   );
 }
-export function ProfileSocialActivity({ address }: { address: string }) {
-  return (
-    <MainCenter>
-      <Rss3Content
-        address={[address]}
-        empty={
-          <NoActivityWrapper>
-            <NoActivity />
-          </NoActivityWrapper>
-        }
-      />
-    </MainCenter>
-  );
-}
 
 const MainCenter = styled.div`
   width: 100%;
@@ -166,14 +150,5 @@ const PostList = styled.div`
   overflow: hidden;
   & > *:not(:first-child) {
     border-top: 1px solid #718096;
-  }
-`;
-const NoActivityWrapper = styled.div`
-  .no-item {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
 `;
