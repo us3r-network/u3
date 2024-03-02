@@ -21,6 +21,7 @@ import { ReplyCast } from '@/components/social/farcaster/FCastReply';
 import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 import { getExploreFcPostDetailPath } from '@/route/path';
 import { LoadingWrapper } from '@/components/social/CommonStyles';
+import { cn } from '@/lib/utils';
 
 export default function FarcasterPostDetail() {
   const navigate = useNavigate();
@@ -141,7 +142,12 @@ export default function FarcasterPostDetail() {
             navigate(getExploreFcPostDetailPath(castHex));
           }}
         />
-        <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">
+        <div
+          className={cn(
+            'flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]',
+            'max-sm:p-2'
+          )}
+        >
           <ReplyCast
             replyAction={async (data) => {
               await replyCastAction(data);

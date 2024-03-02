@@ -158,12 +158,22 @@ function PostListHeader({
     return sort === feedsSort;
   };
   return (
-    <div className="w-full flex p-[20px] justify-between items-start self-stretch sticky top-0 bg-[#20262F] border-b border-[#39424c] z-10">
-      <div className="w-full flex items-center gap-[20px]">
+    <div
+      className={cn(
+        'w-full flex p-[20px] justify-between items-center self-stretch sticky top-0 bg-[#20262F] border-b border-[#39424c] z-10',
+        'max-sm:px-[10px] max-sm:py-[14px]'
+      )}
+    >
+      <div
+        className={cn(
+          'w-full flex items-center gap-[20px]',
+          'max-sm:gap-[10px]'
+        )}
+      >
         <NavLinkItem
           href={getNavUrl(FeedsType.TRENDING, socialPlatform)}
           active={sortIsActive(FeedsType.TRENDING)}
-          className="w-auto"
+          className="w-auto max-sm:p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -171,6 +181,7 @@ function PostListHeader({
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <path
               d="M14.3945 8.56641C14.207 8.86914 13.9824 9.16602 13.7227 9.45703C13.5966 9.59862 13.4436 9.71369 13.2726 9.79551C13.1015 9.87733 12.9159 9.92427 12.7266 9.93359C12.5371 9.94453 12.3473 9.9177 12.1682 9.85466C11.9892 9.79163 11.8245 9.69364 11.6836 9.56641C11.5211 9.4204 11.3937 9.23945 11.3112 9.03715C11.2287 8.83485 11.193 8.61648 11.207 8.39844C11.2656 7.47266 10.9649 6.38477 10.3125 5.16211C9.98244 4.54883 9.58791 4.02539 9.1172 3.5918C9.06901 3.90167 8.98983 4.20593 8.88087 4.5C8.61349 5.21581 8.22939 5.88238 7.74416 6.47266C7.40726 6.88586 7.02314 7.25819 6.59962 7.58203C5.93556 8.0918 5.38869 8.75391 5.0215 9.49414C4.64579 10.2461 4.45115 11.0754 4.45314 11.916C4.45314 13.3789 5.02931 14.7539 6.07423 15.791C7.12306 16.8301 8.51564 17.4004 10 17.4004C11.4844 17.4004 12.877 16.8301 13.9258 15.791C14.9707 14.7559 15.5469 13.3789 15.5469 11.916C15.5469 11.1504 15.3887 10.4062 15.0781 9.70703C14.8965 9.29688 14.668 8.91602 14.3945 8.56641Z"
@@ -183,10 +194,13 @@ function PostListHeader({
           </svg>
           Trending
         </NavLinkItem>
+        <div
+          className={cn('w-px h-[16px] bg-[#39424C] hidden', 'max-sm:block')}
+        />
         <NavLinkItem
           href={getNavUrl(FeedsType.FOLLOWING, socialPlatform)}
           active={sortIsActive(FeedsType.FOLLOWING)}
-          className="w-auto"
+          className="w-auto max-sm:p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -194,6 +208,7 @@ function PostListHeader({
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <path
               d="M11.6667 11.8766V13.6183C10.9125 13.3517 10.1053 13.2699 9.31288 13.3798C8.52048 13.4897 7.76604 13.7882 7.1129 14.2502C6.45976 14.7121 5.92699 15.324 5.55934 16.0345C5.19169 16.745 4.99989 17.5333 5.00004 18.3333L3.33337 18.3325C3.33312 17.3149 3.56581 16.3107 4.01362 15.397C4.46144 14.4832 5.11249 13.6841 5.91689 13.0608C6.72129 12.4376 7.65769 12.0068 8.65434 11.8014C9.65098 11.5959 10.6814 11.6214 11.6667 11.8758V11.8766ZM10 10.8333C7.23754 10.8333 5.00004 8.59581 5.00004 5.83331C5.00004 3.07081 7.23754 0.833313 10 0.833313C12.7625 0.833313 15 3.07081 15 5.83331C15 8.59581 12.7625 10.8333 10 10.8333ZM10 9.16665C11.8417 9.16665 13.3334 7.67498 13.3334 5.83331C13.3334 3.99165 11.8417 2.49998 10 2.49998C8.15837 2.49998 6.66671 3.99165 6.66671 5.83331C6.66671 7.67498 8.15837 9.16665 10 9.16665ZM14.8275 16.595L17.7734 13.6491L18.9525 14.8275L14.8275 18.9525L11.8809 16.0058L13.06 14.8275L14.8267 16.595H14.8275Z"
@@ -202,10 +217,13 @@ function PostListHeader({
           </svg>
           Following
         </NavLinkItem>
+        <div
+          className={cn('w-px h-[16px] bg-[#39424C] hidden', 'max-sm:block')}
+        />
         <NavLinkItem
           href={getNavUrl(FeedsType.WHATSNEW, socialPlatform)}
           active={sortIsActive(FeedsType.WHATSNEW)}
-          className="w-auto"
+          className="w-auto max-sm:p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -213,6 +231,7 @@ function PostListHeader({
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <g clipPath="url(#clip0_3631_4450)">
               <path
@@ -235,13 +254,19 @@ function PostListHeader({
         }}
         defaultValue={socialPlatform}
       >
-        <SelectTrigger className="w-[180px] border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none">
+        <SelectTrigger
+          className={cn(
+            'w-[180px] border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none',
+            'max-sm:w-auto max-sm:h-auto max-sm:p-0 max-sm:m-0 max-sm:bg-transparent'
+          )}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <path
               d="M5.625 1.875C4.63044 1.875 3.67661 2.27009 2.97335 2.97335C2.27009 3.67661 1.875 4.63044 1.875 5.625C1.875 6.61956 2.27009 7.57339 2.97335 8.27665C3.67661 8.97991 4.63044 9.375 5.625 9.375H8.75C8.91576 9.375 9.07473 9.30915 9.19194 9.19194C9.30915 9.07473 9.375 8.91576 9.375 8.75V5.625C9.375 4.63044 8.97991 3.67661 8.27665 2.97335C7.57339 2.27009 6.61956 1.875 5.625 1.875ZM8.75 10.625H5.625C4.88332 10.625 4.1583 10.8449 3.54161 11.257C2.92493 11.669 2.44428 12.2547 2.16045 12.9399C1.87662 13.6252 1.80236 14.3792 1.94706 15.1066C2.09175 15.834 2.4489 16.5022 2.97335 17.0267C3.4978 17.5511 4.16598 17.9083 4.89341 18.0529C5.62084 18.1976 6.37484 18.1234 7.06006 17.8396C7.74529 17.5557 8.33096 17.0751 8.74301 16.4584C9.15507 15.8417 9.375 15.1167 9.375 14.375V11.25C9.375 11.0842 9.30915 10.9253 9.19194 10.8081C9.07473 10.6908 8.91576 10.625 8.75 10.625ZM14.375 1.875C13.3804 1.875 12.4266 2.27009 11.7234 2.97335C11.0201 3.67661 10.625 4.63044 10.625 5.625V8.75C10.625 8.91576 10.6908 9.07473 10.8081 9.19194C10.9253 9.30915 11.0842 9.375 11.25 9.375H14.375C15.3696 9.375 16.3234 8.97991 17.0267 8.27665C17.7299 7.57339 18.125 6.61956 18.125 5.625C18.125 4.63044 17.7299 3.67661 17.0267 2.97335C16.3234 2.27009 15.3696 1.875 14.375 1.875Z"
@@ -283,7 +308,12 @@ function PostListHeader({
 function PostDetailHeader() {
   const navigate = useNavigate();
   return (
-    <div className="w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]">
+    <div
+      className={cn(
+        'w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]',
+        'max-sm:p-[10px]'
+      )}
+    >
       <div>
         <button
           type="button"

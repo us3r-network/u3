@@ -11,6 +11,7 @@ import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMem
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import useLogin from '@/hooks/shared/useLogin';
+import MobileCommunityHeader from '@/components/community/MobileCommunityHeader';
 
 export default function CommunityLayout() {
   const { isLogin, login } = useLogin();
@@ -89,6 +90,7 @@ export default function CommunityLayout() {
     <div className="w-full h-screen flex flex-col">
       {!joined && (
         <GuestModeHeader
+          className="max-sm:hidden"
           joining={joining}
           joinAction={async () => {
             if (!isLogin) {
@@ -110,15 +112,18 @@ export default function CommunityLayout() {
         />
       )}
 
-      <div className="w-full h-0 flex-1 flex">
-        <div className="w-[280px] h-full">
-          <CommunityMenu
-            communityInfo={communityInfo}
-            channelId={channel?.channel_id}
-            joined={joined}
-          />
-        </div>
-        <div className="flex-1 h-full overflow-auto">
+      <div className={cn('w-full h-0 flex-1 flex', 'max-sm:flex-col')}>
+        <CommunityMenu
+          communityInfo={communityInfo}
+          channelId={channel?.channel_id}
+          joined={joined}
+        />
+        <div
+          className={cn(
+            'flex-1 h-full overflow-auto',
+            'max-sm:w-full max-sm:h-auto'
+          )}
+        >
           <Outlet
             context={{
               channelId,

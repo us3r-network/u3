@@ -79,7 +79,12 @@ export default function PostsLayout() {
           }}
         />
       </div>
-      <div className="w-[320px] h-full overflow-auto bg-[#1B1E23]">
+      <div
+        className={cn(
+          'w-[320px] h-full overflow-auto bg-[#1B1E23]',
+          'max-sm:hidden'
+        )}
+      >
         <PostsFcMentionedLinks />
       </div>
     </div>
@@ -96,12 +101,22 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
     return sort === feedsSort;
   };
   return (
-    <div className="w-full flex p-[20px] justify-between items-start self-stretch sticky top-0 bg-[#20262F] border-b border-[#39424c]">
-      <div className="w-full flex items-center gap-[20px]">
+    <div
+      className={cn(
+        'w-full flex p-[20px] justify-between items-center self-stretch sticky top-0 bg-[#20262F] border-b border-[#39424c] z-10',
+        'max-sm:px-[10px] max-sm:py-[14px]'
+      )}
+    >
+      <div
+        className={cn(
+          'w-full flex items-center gap-[20px]',
+          'max-sm:gap-[10px]'
+        )}
+      >
         <NavLinkItem
           href={getNavUrlWithSort(FeedsSort.TRENDING)}
           active={sortIsActive(FeedsSort.TRENDING)}
-          className="w-auto"
+          className="w-auto max-sm:p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -109,6 +124,7 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <path
               d="M14.3945 8.56641C14.207 8.86914 13.9824 9.16602 13.7227 9.45703C13.5966 9.59862 13.4436 9.71369 13.2726 9.79551C13.1015 9.87733 12.9159 9.92427 12.7266 9.93359C12.5371 9.94453 12.3473 9.9177 12.1682 9.85466C11.9892 9.79163 11.8245 9.69364 11.6836 9.56641C11.5211 9.4204 11.3937 9.23945 11.3112 9.03715C11.2287 8.83485 11.193 8.61648 11.207 8.39844C11.2656 7.47266 10.9649 6.38477 10.3125 5.16211C9.98244 4.54883 9.58791 4.02539 9.1172 3.5918C9.06901 3.90167 8.98983 4.20593 8.88087 4.5C8.61349 5.21581 8.22939 5.88238 7.74416 6.47266C7.40726 6.88586 7.02314 7.25819 6.59962 7.58203C5.93556 8.0918 5.38869 8.75391 5.0215 9.49414C4.64579 10.2461 4.45115 11.0754 4.45314 11.916C4.45314 13.3789 5.02931 14.7539 6.07423 15.791C7.12306 16.8301 8.51564 17.4004 10 17.4004C11.4844 17.4004 12.877 16.8301 13.9258 15.791C14.9707 14.7559 15.5469 13.3789 15.5469 11.916C15.5469 11.1504 15.3887 10.4062 15.0781 9.70703C14.8965 9.29688 14.668 8.91602 14.3945 8.56641Z"
@@ -121,10 +137,13 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
           </svg>
           Trending
         </NavLinkItem>
+        <div
+          className={cn('w-px h-[16px] bg-[#39424C] hidden', 'max-sm:block')}
+        />
         <NavLinkItem
           href={getNavUrlWithSort(FeedsSort.NEWEST)}
           active={sortIsActive(FeedsSort.NEWEST)}
-          className="w-auto"
+          className="w-auto max-sm:p-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -132,6 +151,7 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
             height="20"
             viewBox="0 0 20 20"
             fill="none"
+            className="max-sm:hidden"
           >
             <g clipPath="url(#clip0_3631_4450)">
               <path
@@ -155,7 +175,12 @@ function PostListHeader({ feedsSort }: { feedsSort: FeedsSort }) {
 function PostDetailHeader() {
   const navigate = useNavigate();
   return (
-    <div className="w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]">
+    <div
+      className={cn(
+        'w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]',
+        'max-sm:p-[10px]'
+      )}
+    >
       <div>
         <button
           type="button"
