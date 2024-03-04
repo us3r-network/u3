@@ -11,6 +11,7 @@ import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMem
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import useLogin from '@/hooks/shared/useLogin';
+import CommunityMobileHeader from './CommunityMobileHeader';
 
 export default function CommunityLayout() {
   const { isLogin, login } = useLogin();
@@ -41,6 +42,7 @@ export default function CommunityLayout() {
     setDefaultPostChannelId,
     userChannels,
     joinChannel,
+    unPinChannel,
     openFarcasterQR,
     isConnected: isLoginFarcaster,
   } = useFarcasterCtx();
@@ -76,6 +78,28 @@ export default function CommunityLayout() {
     load: loadTopMembers,
   } = useLoadCommunityTopMembers(channelId);
 
+  const joinChangeAction = async () => {
+    if (!isLogin) {
+      login();
+      return;
+    }
+    if (!isLoginFarcaster) {
+      openFarcasterQR();
+      return;
+    }
+    setJoining(true);
+    if (joined) {
+      await unPinChannel(parentUrl);
+    } else {
+      await joinChannel(parentUrl);
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+    toast.success('Join success');
+    setJoining(false);
+  };
+
   if (communityLoading) {
     <div className="w-full h-full flex justify-center items-center">
       <Loading />
@@ -91,31 +115,25 @@ export default function CommunityLayout() {
         <GuestModeHeader
           className="max-sm:hidden"
           joining={joining}
-          joinAction={async () => {
-            if (!isLogin) {
-              login();
-              return;
-            }
-            if (!isLoginFarcaster) {
-              openFarcasterQR();
-              return;
-            }
-            setJoining(true);
-            await joinChannel(parentUrl);
-            await new Promise((resolve) => {
-              setTimeout(resolve, 1000);
-            });
-            toast.success('Join success');
-            setJoining(false);
-          }}
+          joinAction={joinChangeAction}
         />
       )}
 
       <div className={cn('w-full h-0 flex-1 flex', 'max-sm:flex-col')}>
         <CommunityMenu
+          className="max-sm:hidden"
           communityInfo={communityInfo}
           channelId={channel?.channel_id}
           joined={joined}
+        />
+        <CommunityMobileHeader
+          className="min-sm:hidden"
+          communityInfo={communityInfo}
+          channelId={channel?.channel_id}
+          joined={joined}
+          joining={joining}
+          joinAction={joinChangeAction}
+          unjoinAction={joinChangeAction}
         />
         <div
           className={cn(
