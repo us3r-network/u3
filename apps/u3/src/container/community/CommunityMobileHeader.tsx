@@ -36,6 +36,7 @@ export default function CommunityMobileHeader({
   const navigate = useNavigate();
   const { mainNavs } = getCommunityNavs(channelId, communityInfo);
   const { pathname } = useLocation();
+  const findHref = mainNavs?.find((nav) => pathname.includes(nav.href))?.href;
   return (
     <MobileHeaderWrapper
       className={cn('bg-[#20262F] border-b border-[#39424C]', className)}
@@ -45,7 +46,7 @@ export default function CommunityMobileHeader({
         onValueChange={(href) => {
           navigate(href);
         }}
-        defaultValue={pathname}
+        defaultValue={findHref}
       >
         <SelectTrigger className="w-auto border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none">
           <svg

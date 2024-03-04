@@ -33,7 +33,7 @@ export default function MobileMainNav({
     firstRouteKey === RouteKey.community;
 
   const isMessageRoute = false;
-  const isNotificationRoute = false;
+  const isNotificationRoute = firstRouteKey === RouteKey.notification;
 
   return (
     <div
