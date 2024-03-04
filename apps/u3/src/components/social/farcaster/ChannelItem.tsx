@@ -10,7 +10,7 @@ export default function ChannelItem({ data }: { data: FarcasterChannel }) {
       <LeftWrapper to={getCommunityPath(data.channel_id)}>
         <NameWrapper>
           <span>#</span>
-          <img src={data.image} alt="" />
+          <img src={data.image} alt="" loading="lazy" />
           <NameText>{data.name}</NameText>
         </NameWrapper>
         <HandleText>{`${data.count || 0} posts today`}</HandleText>

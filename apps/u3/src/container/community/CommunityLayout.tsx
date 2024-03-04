@@ -11,6 +11,7 @@ import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMem
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import useLogin from '@/hooks/shared/useLogin';
+import CommunityMobileHeader from './CommunityMobileHeader';
 
 export default function CommunityLayout() {
   const { isLogin, login } = useLogin();
@@ -41,6 +42,7 @@ export default function CommunityLayout() {
     setDefaultPostChannelId,
     userChannels,
     joinChannel,
+    unPinChannel,
     openFarcasterQR,
     isConnected: isLoginFarcaster,
   } = useFarcasterCtx();
@@ -76,8 +78,30 @@ export default function CommunityLayout() {
     load: loadTopMembers,
   } = useLoadCommunityTopMembers(channelId);
 
+  const joinChangeAction = async () => {
+    if (!isLogin) {
+      login();
+      return;
+    }
+    if (!isLoginFarcaster) {
+      openFarcasterQR();
+      return;
+    }
+    setJoining(true);
+    if (joined) {
+      await unPinChannel(parentUrl);
+    } else {
+      await joinChannel(parentUrl);
+    }
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000);
+    });
+    toast.success('Join success');
+    setJoining(false);
+  };
+
   if (communityLoading) {
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center">
       <Loading />
     </div>;
   }
@@ -86,39 +110,37 @@ export default function CommunityLayout() {
     return null;
   }
   return (
-    <div className="w-full h-screen flex flex-col">
+    <div className="w-full h-full flex flex-col">
       {!joined && (
         <GuestModeHeader
+          className="max-sm:hidden"
           joining={joining}
-          joinAction={async () => {
-            if (!isLogin) {
-              login();
-              return;
-            }
-            if (!isLoginFarcaster) {
-              openFarcasterQR();
-              return;
-            }
-            setJoining(true);
-            await joinChannel(parentUrl);
-            await new Promise((resolve) => {
-              setTimeout(resolve, 1000);
-            });
-            toast.success('Join success');
-            setJoining(false);
-          }}
+          joinAction={joinChangeAction}
         />
       )}
 
-      <div className="w-full h-0 flex-1 flex">
-        <div className="w-[280px] h-full">
-          <CommunityMenu
-            communityInfo={communityInfo}
-            channelId={channel?.channel_id}
-            joined={joined}
-          />
-        </div>
-        <div className="flex-1 h-full overflow-auto">
+      <div className={cn('w-full h-0 flex-1 flex', 'max-sm:flex-col')}>
+        <CommunityMenu
+          className="max-sm:hidden"
+          communityInfo={communityInfo}
+          channelId={channel?.channel_id}
+          joined={joined}
+        />
+        <CommunityMobileHeader
+          className="min-sm:hidden"
+          communityInfo={communityInfo}
+          channelId={channel?.channel_id}
+          joined={joined}
+          joining={joining}
+          joinAction={joinChangeAction}
+          unjoinAction={joinChangeAction}
+        />
+        <div
+          className={cn(
+            'flex-1 h-full overflow-auto',
+            'max-sm:w-full max-sm:h-auto'
+          )}
+        >
           <Outlet
             context={{
               channelId,

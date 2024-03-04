@@ -6,6 +6,7 @@ import DappWebsiteModal from './DappWebsiteModal';
 import { ReactComponent as PlusSquareSvg } from '../../common/assets/svgs/plus-square.svg';
 import DappInstallList from './DappInstallList';
 import ExploreDappsNavBtn from './ExploreDappsNavBtn';
+import { cn } from '@/lib/utils';
 
 export default function DappMenu() {
   const navigate = useNavigate();
@@ -13,8 +14,12 @@ export default function DappMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const dappInstallListRef = useRef(null);
   return (
-    <Wrapper
-      isOpen={isOpen}
+    <div
+      className={cn(
+        `bg-[#1b1e23] h-screen px-0 py-[20px] fixed top-[0] right-[0] box-border overflow-x-hidden flex justify-center gap-[20] [transition:all_0.3s_ease-out]`,
+        isOpen ? 'w-[60px]' : 'w-[30px]',
+        'max-sm:w-0 max-sm:hidden'
+      )}
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => {
         setIsOpen(false);
@@ -46,26 +51,9 @@ export default function DappMenu() {
         )}
       </ListWrapper>
       <DappWebsiteModal />
-    </Wrapper>
+    </div>
   );
 }
-const Wrapper = styled.div<{ isOpen: boolean }>`
-  background: #1b1e23;
-  width: ${({ isOpen }) => (isOpen ? '60px' : '30px')};
-  height: 100vh;
-  padding: 20px 0px;
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  border-left: 1px solid #39424c;
-  box-sizing: border-box;
-  overflow-x: hidden;
-  display: flex;
-  justify-content: center;
-  gap: 20;
-  transition: all 0.3s ease-out;
-`;
 
 const OpenIcon = styled.div`
   width: 30px;

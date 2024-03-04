@@ -73,7 +73,7 @@ export default function ProfileLayout() {
   // );
   if (identityLoading || identityDidLoading || u3ProfileLoading) {
     return (
-      <div className="w-full h-screen flex flex-col justify-center items-center text-[white] gap-4">
+      <div className="w-full h-full flex flex-col justify-center items-center text-[white] gap-4">
         <Loading />
         loading profile from multiple sources and merge...
       </div>
@@ -81,7 +81,7 @@ export default function ProfileLayout() {
   }
 
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full h-full flex">
       {!isMobile && (
         <div className="bg-[#1B1E23] w-[280px] h-full max-sm:hidden">
           <ProfileMenu isSelf={isSelf} />

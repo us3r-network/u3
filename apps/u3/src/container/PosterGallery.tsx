@@ -51,7 +51,7 @@ export default function PosterGallery() {
 
   return (
     <div
-      className="w-full h-screen p-[20px] box-border overflow-y-auto"
+      className="w-full h-full p-[20px] box-border overflow-y-auto"
       id="poster-gallery-scroll"
     >
       {posters.length === 0 && loading ? (
@@ -75,7 +75,7 @@ export default function PosterGallery() {
           }
           scrollableTarget="poster-gallery-scroll"
         >
-          <div className="grid grid-cols-4 gap-[30px]">
+          <div className="grid grid-cols-4 gap-[30px] max-lg:grid-cols-2 max-md:grid-cols-1">
             {posters.map((item) => {
               return <GalleryItem key={item.tokenId} data={item} />;
             })}

@@ -1,90 +1,34 @@
-import styled from 'styled-components';
-import { isMobile } from 'react-device-detect';
+import { useNavigate } from 'react-router-dom';
 import { MainWrapper } from '../layout/Index';
 import HotPosts from './posts/HotPosts';
-import TopLinks from './links/TopLinks';
-import HighScoreDapps from './dapps/HighScoreDapps';
 import type { ExploreHomeState } from '../../container/explore/Home';
-import DailyPosterBtn from '../poster/DailyPosterBtn';
 import TopChannels from './channels/TopChannels';
+import ColorButton from '../common/button/ColorButton';
 
 export default function HomeLayout({
   hotPosts,
-  topLinks,
   topChannels,
-  highScoreDapps,
 }: ExploreHomeState) {
+  const navigate = useNavigate();
   return (
-    <Wrapper>
-      <Main>
-        <MainLeft>
-          <HotPosts
-            posts={hotPosts.posts}
-            isLoading={hotPosts.isLoading}
-            farcasterUserData={hotPosts.farcasterUserData}
-          />
-        </MainLeft>
-        {/* <MainRight>
-          <TopLinks links={topLinks.links} isLoading={topLinks.isLoading} />
-        </MainRight> */}
-      </Main>
+    <MainWrapper>
+      <HotPosts
+        posts={hotPosts.posts}
+        isLoading={hotPosts.isLoading}
+        farcasterUserData={hotPosts.farcasterUserData}
+      />
       <TopChannels
         channels={topChannels.channels}
         isLoading={topChannels.isLoading}
       />
-      {/* <Footer>
-        <HighScoreDapps
-          dapps={highScoreDapps.dapps}
-          isLoading={highScoreDapps.isLoading}
-        />
-      </Footer> */}
-    </Wrapper>
+      <ColorButton
+        className="hidden max-sm:flex"
+        onClick={() => {
+          navigate('/poster-gallery');
+        }}
+      >
+        Poster Gallery
+      </ColorButton>
+    </MainWrapper>
   );
 }
-
-const Wrapper = styled(MainWrapper)`
-  padding-bottom: 80px;
-  min-height: 100vh;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 40px;
-  ${isMobile &&
-  `
-    gap: 20px;
-    margin-bottom: 40px;
-  `}
-`;
-const Main = styled.div`
-  display: flex;
-  gap: 20px;
-  ${isMobile &&
-  `
-    flex-direction: column;
-  `}
-`;
-const MainLeft = styled.div`
-  width: 0;
-  flex: 3;
-  ${isMobile &&
-  `
-    width: 100%;
-    felx: none;
-  `}
-`;
-const MainRight = styled.div`
-  width: 0;
-  flex: 1;
-  ${isMobile &&
-  `
-    width: 100%;
-    felx: none;
-  `}
-`;
-const Footer = styled.div`
-  ${isMobile &&
-  `
-    width: 100%;
-    overflow-x: auto;
-  `}
-`;

@@ -216,6 +216,7 @@ export function PostCardWrapperV2({
     <div
       className={cn(
         'bg-[#20262F] hover:bg-[#000000] px-[20px] box-border flex cursor-pointer border-b border-[#39424c]',
+        'max-sm:px-0',
         isDetail && 'hover:bg-[#20262F] cursor-default',
         className
       )}
@@ -525,11 +526,14 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
     }
   }
 `;
-export const PostCardActionsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`;
+export function PostCardActionsWrapper(props: ComponentPropsWithRef<'div'>) {
+  return (
+    <div
+      className={cn('flex items-center gap-[15px]', 'max-sm:gap-[10px]')}
+      {...props}
+    />
+  );
+}
 
 export const PostCardImgWrapper = styled.div<{ len: number }>`
   display: flex;

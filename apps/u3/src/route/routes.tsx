@@ -35,6 +35,7 @@ export enum RouteKey {
   communityPostsFcNewest = 'communityPostsFcNewest',
   communityPostFcDetail = 'communityPostFcDetail',
   communityMembers = 'communityMembers',
+  communityLinks = 'communityLinks',
   iframeLayout = 'iframeLayout',
   // news
   newsLayout = 'newsLayout',
@@ -398,6 +399,12 @@ export const routes: CutomRouteObject[] = [
         element: loadContainerElement('community/MembersLayout'),
         key: RouteKey.communityMembers,
         title: 'Members',
+      },
+      {
+        path: 'links',
+        element: loadContainerElement('community/PostsFcMentionedLinks'),
+        key: RouteKey.communityLinks,
+        title: 'Links',
       },
       {
         path: 'point',

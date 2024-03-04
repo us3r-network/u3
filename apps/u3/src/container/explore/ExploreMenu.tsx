@@ -15,14 +15,16 @@ export default function ExploreMenu({
   dailyPosterLayoutData: DailyPosterLayoutData;
 }) {
   const { pathname } = useLocation();
-  const isPostsPath = pathname.startsWith('/social');
   const isHomePath = pathname === '/';
+  const isCommunitiesPath = pathname === '/communities';
+  const isPosterGalleryPath = pathname === '/poster-gallery';
+  const isPostsPath = pathname.startsWith('/social');
 
   return (
     <div
       className={cn(
         `
-        w-full h-full flex flex-col bg-[#1B1E23]`,
+        w-[280px] h-full flex flex-col bg-[#1B1E23]`,
         className
       )}
       {...props}
@@ -32,16 +34,13 @@ export default function ExploreMenu({
           Explore
         </h1>
         <div className="flex-1 w-full flex flex-col gap-[5px]">
-          <NavLinkItem href="/" active={pathname === '/'}>
+          <NavLinkItem href="/" active={isHomePath}>
             Home
           </NavLinkItem>
-          <NavLinkItem
-            href="/poster-gallery"
-            active={pathname === '/poster-gallery'}
-          >
+          <NavLinkItem href="/poster-gallery" active={isPosterGalleryPath}>
             Poster Gallery
           </NavLinkItem>
-          <NavLinkItem href="/communities" active={pathname === '/communities'}>
+          <NavLinkItem href="/communities" active={isCommunitiesPath}>
             Communities
           </NavLinkItem>
           <NavLinkItem href="/social" active={isPostsPath}>

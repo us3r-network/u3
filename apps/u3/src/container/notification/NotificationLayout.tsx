@@ -3,7 +3,7 @@ import NotificationMenu from './NotificationMenu';
 
 export default function ProfileLayout() {
   return (
-    <div className="w-full h-screen flex">
+    <div className="w-full h-full flex">
       <div className="w-[280px] h-full max-sm:hidden">
         <NotificationMenu />
       </div>
