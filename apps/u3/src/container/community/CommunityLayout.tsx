@@ -11,7 +11,6 @@ import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMem
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import useLogin from '@/hooks/shared/useLogin';
-import MobileCommunityHeader from '@/components/community/MobileCommunityHeader';
 
 export default function CommunityLayout() {
   const { isLogin, login } = useLogin();
@@ -78,7 +77,7 @@ export default function CommunityLayout() {
   } = useLoadCommunityTopMembers(channelId);
 
   if (communityLoading) {
-    <div className="w-full h-screen flex justify-center items-center">
+    <div className="w-full h-full flex justify-center items-center">
       <Loading />
     </div>;
   }
@@ -87,7 +86,7 @@ export default function CommunityLayout() {
     return null;
   }
   return (
-    <div className="w-full h-screen flex flex-col">
+    <div className="w-full h-full flex flex-col">
       {!joined && (
         <GuestModeHeader
           className="max-sm:hidden"

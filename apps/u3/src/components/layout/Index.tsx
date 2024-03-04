@@ -8,47 +8,49 @@
 import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
-import { isMobile } from 'react-device-detect';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { useAuthentication } from '@us3r-network/auth-with-rainbowkit';
+import { ComponentPropsWithRef } from 'react';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
 import Menu from './menu';
 import DappMenu from '../dapp/launcher/DappMenu';
-import MobileHeader from './mobile/MobileHeader';
-import MobileNav from './mobile/MobileNav';
+import MobileMainNav from './mobile/MobileMainNav';
 import { MobileGuide } from './mobile/MobileGuide';
 import ClaimOnboard from '../onboard/Claim';
 import RedEnvelopeFloatingWindow from '../social/frames/red-envelope/RedEnvelopeFloatingWindow';
 import { cn } from '@/lib/utils';
+import { isCommunityPath } from '@/route/path';
 
 function Layout() {
-  const { ready } = useAuthentication();
-  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const claim = searchParams.get('claim');
+  const { pathname } = useLocation();
+  const isCommunity = isCommunityPath(pathname);
 
   useGAPageView();
 
   return (
     <div
       id="layout-wrapper"
-      className="w-screen h-screen bg-[#14171a] overflow-x-hidden"
+      className="w-screen h-screen bg-[#14171a] overflow-x-hidden overflow-y-auto flex"
     >
-      <MobileHeader />
-      <Menu />
-      <MobileNav />
-      <div
-        id="layout-main-wrapper"
+      <Menu
         className={cn(
-          'h-full w-[calc(100vw-60px-30px)] ml-[60px] bg-[#20262F] box-border overflow-y-auto overflow-x-hidden',
-          'max-sm:ml-0 max-sm:w-full max-sm:h-full'
+          '',
+          !isCommunity ? 'max-sm:hidden' : ' max-sm:h-[calc(100vh-80px)]'
         )}
-      >
-        <Main />
-      </div>
+      />
       <DappMenu />
+      <Main
+        className={cn(
+          'h-full w-[calc(100vw-60px-30px)] bg-[#20262F] box-border overflow-y-auto overflow-x-hidden',
+          'max-sm:ml-0 max-sm:w-full max-sm:h-[calc(100vh-80px)]',
+          isCommunity ? 'max-sm:w-[calc(100vw-60px)]' : ''
+        )}
+        id="layout-main-wrapper"
+      />
+      <MobileMainNav />
       <RedEnvelopeFloatingWindow />
       <MobileGuide />
       {claim === 'true' && <ClaimOnboard />}
@@ -80,22 +82,18 @@ export const MainBox = styled.div`
   margin: 0 auto;
 `;
 
-export const MainWrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  padding: 24px;
-  box-sizing: border-box;
-  overflow-y: auto;
-  overflow-x: hidden;
-  @media (max-width: ${MEDIA_BREAK_POINTS.xl}px) {
-    width: ${MEDIA_BREAK_POINTS.xl}px;
-  }
-  ${isMobile &&
-  `
-    padding: 10px;
-    height: calc(100vh - 56px);
-    @media (max-width: ${MEDIA_BREAK_POINTS.xl}px) {
-      width: 100%;
-    }
-  `}
-`;
+export function MainWrapper({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
+  return (
+    <div
+      className={cn(
+        'w-full min-h-full h-auto p-[24px] box-border overflow-y-auto overflow-x-hidden flex flex-col gap-[40px]',
+        'max-sm:gap-[20px] max-sm:p-[10px]',
+        className
+      )}
+      {...props}
+    />
+  );
+}

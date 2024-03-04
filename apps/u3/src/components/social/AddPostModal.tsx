@@ -13,6 +13,7 @@ import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import ModalContainer from '../common/modal/ModalContainer';
 import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import AddPostForm from './AddPostForm';
+import { cn } from '@/lib/utils';
 
 export default function AddPostModal({
   open,
@@ -35,31 +36,18 @@ export default function AddPostModal({
       zIndex={40}
       contentTop="30%"
     >
-      <ModalBody isMobile={isMobile}>
-        <CloseBtn onClick={closeModal} />
+      <div
+        className={cn(
+          'w-[600px] flex-shrink-0 p-[20px] box-border flex flex-col justify-between gap-[20px] relative',
+          'max-sm:w-[96vw]'
+        )}
+      >
+        <ModalCloseBtn
+          className="absolute top-[20px] right-[20px]"
+          onClick={closeModal}
+        />
         <AddPostForm onSuccess={closeModal} channel={defaultChannel} />
-      </ModalBody>
+      </div>
     </ModalContainer>
   );
 }
-
-const ModalBody = styled.div<{ isMobile?: boolean }>`
-  width: ${(props) => (props.isMobile ? '96vw' : '600px')};
-  /* min-height: 194px; */
-  flex-shrink: 0;
-
-  padding: 20px;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
-
-  position: relative;
-`;
-const CloseBtn = styled(ModalCloseBtn)`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-`;

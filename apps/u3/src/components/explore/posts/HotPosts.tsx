@@ -1,11 +1,10 @@
-import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
 import CardBase from '../../common/card/CardBase';
 import Title from '../Title';
 import { SocialPlatform } from '../../../services/social/types';
 import FarcasterPostCard from './FarcasterPostCard';
 import Loading from '../../common/loading/Loading';
+import { cn } from '@/lib/utils';
 
 export type HotPostsData = Array<{ data: any; platform: SocialPlatform }>;
 export default function HotPosts({
@@ -19,20 +18,30 @@ export default function HotPosts({
 }) {
   const navigate = useNavigate();
   return (
-    <Wrapper>
+    <div className="w-full">
       <Title
         text="Hot Posts"
         viewAllAction={() => {
           navigate(`/social`);
         }}
       />
-      <CardsWrapper>
+      <CardBase
+        className={cn(
+          'w-full h-[534px] mt-[20px]',
+          'max-sm:bg-transparent max-sm:h-auto max-sm:p-0 max-sm:border-none max-sm:mt-[10px] max-sm:bg-none max-sm:overflow-visible'
+        )}
+      >
         {isLoading ? (
-          <LoadingWrapper>
+          <div className="w-full h-full flex justify-center items-center">
             <Loading />
-          </LoadingWrapper>
+          </div>
         ) : (
-          <CardsLayout>
+          <div
+            className={cn(
+              'w-full h-full grid gap-[20px] auto-cols-auto auto-rows-auto',
+              'max-sm:flex max-sm:flex-col max-sm:gap-[10px]'
+            )}
+          >
             {posts.map(({ platform, data }, idx) => {
               if (platform === SocialPlatform.Farcaster) {
                 const id = Buffer.from(data.hash.data).toString('hex');
@@ -48,51 +57,9 @@ export default function HotPosts({
               }
               return null;
             })}
-          </CardsLayout>
+          </div>
         )}
-      </CardsWrapper>
-    </Wrapper>
+      </CardBase>
+    </div>
   );
 }
-const Wrapper = styled.div`
-  width: 100%;
-`;
-const CardsWrapper = styled(CardBase)`
-  width: 100%;
-  height: 534px;
-  margin-top: 20px;
-  ${isMobile &&
-  `
-    height: auto;
-    padding: 0;
-    border: none;
-    margin-top: 10px;
-    background: none;
-    overflow: visible;
-  `}
-`;
-const LoadingWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  ${isMobile &&
-  `
-    height: 430px;
-  `}
-`;
-const CardsLayout = styled.div`
-  width: 100%;
-  height: 100%;
-  display: grid;
-  grid-gap: 20px;
-  grid-auto-columns: auto;
-  grid-auto-rows: auto;
-  ${isMobile &&
-  `
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  `}
-`;

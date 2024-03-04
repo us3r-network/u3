@@ -6,49 +6,42 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { ComponentPropsWithRef, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ComponentPropsWithRef, useMemo } from 'react';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
-import { getCommunityPath, isCommunityPath } from '@/route/path';
+import { getCommunityPath } from '@/route/path';
 import { cn } from '@/lib/utils';
 
 export default function Menu({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
-  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const isCommunity = isCommunityPath(pathname);
   return (
     <div
       className={cn(
-        'bg-[#1b1e23] w-[60px] h-full fixed top-[0] left-[0] px-[10px] py-[20px] box-border flex flex-col gap-[20] items-start',
-        'max-sm:hidden',
+        'bg-[#1b1e23] w-[60px] h-full px-[10px] py-[20px] box-border flex flex-col gap-[20] items-start',
         className
       )}
       {...props}
     >
-      <LogoBox onlyIcon={!isOpen} onClick={() => navigate('/')}>
-        <LogoIconBox onlyIcon={!isOpen}>
+      <div
+        className="w-[36px] flex flex-col gap-[4px] cursor-pointer max-sm:hidden"
+        onClick={() => navigate('/')}
+      >
+        <LogoIconBox>
           <LogoIconSvg />
         </LogoIconBox>
-        {isOpen ? (
-          <span className={'font-medium text-[24px] text-[#ffffff]'}>
-            U3.XYZ
-          </span>
-        ) : (
-          <span
-            className={
-              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
-            }
-          >
-            Alpha
-          </span>
-        )}
-      </LogoBox>
-      <hr className="border-t border-[#39424C] my-4 w-full" />
+        <span
+          className={
+            'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
+          }
+        >
+          Alpha
+        </span>
+      </div>
+      <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
 
       <UserChannels />
     </div>
@@ -98,25 +91,10 @@ function ChannelItem({ parent_url }: { parent_url: string }) {
   );
 }
 
-const LogoBox = styled.div<{ onlyIcon?: boolean }>`
-  width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
-  display: flex;
-  flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
-  gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};
-  align-items: 'flex-start';
-  transition: all 0.3s ease-out;
-  cursor: pointer;
-`;
-const LogoIconBox = styled.div<{ onlyIcon?: boolean }>`
+const LogoIconBox = styled.div`
   width: 36px;
   height: 36px;
   path {
-    transition: all 0.3s ease-out;
+    fill: #fff;
   }
-  ${({ onlyIcon }) =>
-    onlyIcon &&
-    `path {
-      fill: #fff;
-    }
-  `};
 `;

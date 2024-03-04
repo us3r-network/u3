@@ -311,7 +311,7 @@ function PostDetailHeader() {
     <div
       className={cn(
         'w-full z-10 flex p-[20px] justify-between items-start self-stretch bg-[#20262F] border-b border-[#39424c]',
-        'max-sm:p-[10px]'
+        'max-sm:p-[10px] max-sm:hidden'
       )}
     >
       <div>

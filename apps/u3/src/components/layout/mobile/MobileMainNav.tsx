@@ -16,7 +16,7 @@ import NotificationIcon from '../nav-icons/NotificationIcon';
 import MessageIcon from '../nav-icons/MessageIcon';
 import ExploreIcon from '../nav-icons/ExploreIcon';
 
-export default function MobileNav({
+export default function MobileMainNav({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
@@ -38,7 +38,7 @@ export default function MobileNav({
   return (
     <div
       className={cn(
-        'fixed bottom-[0] w-screen px-[10px] py-[20px] box-border bg-[#14171A] flex justify-between items-center z-10',
+        'fixed bottom-[0] w-screen h-[80px] px-[10px] py-[20px] box-border bg-[#14171A] flex justify-between items-center z-10',
         'hidden max-sm:flex',
         className
       )}

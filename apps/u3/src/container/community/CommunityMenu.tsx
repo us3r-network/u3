@@ -22,6 +22,7 @@ import {
 import { MobileHeaderWrapper } from '@/components/layout/mobile/MobileHeaderCommon';
 import SearchIconBtn from '@/components/layout/SearchIconBtn';
 import AddPostMobileBtn from '@/components/social/AddPostMobileBtn';
+import CommunityBaseInfo from '@/components/community/CommunityBaseInfo';
 
 export default function CommunityMenu({
   className,
@@ -35,8 +36,7 @@ export default function CommunityMenu({
   joined: boolean;
 }) {
   const navigate = useNavigate();
-  const { logo, name, description, memberInfo, nfts, tokens, points, apps } =
-    communityInfo || {};
+  const { nfts, tokens, points, apps } = communityInfo || {};
   const { pathname } = useLocation();
   const mainNavs = [
     { title: 'Posts', href: getCommunityPostsPath(channelId) },
@@ -91,44 +91,7 @@ export default function CommunityMenu({
         {...props}
       >
         <div className="flex-1 w-full p-[20px] box-border overflow-auto">
-          <div className="flex gap-[10px] items-center ">
-            <img
-              src={logo}
-              alt=""
-              className="w-[50px] h-[50px] rounded-[4px]"
-            />
-            <div className="flex flex-col gap-[5px]">
-              {communityInfo?.types?.length > 0 && (
-                <div className="text-[#718096] text-[12px] font-normal line-clamp-1">
-                  {communityInfo?.types.reduce((acc, cur) => {
-                    return `${acc}, ${cur}`;
-                  })}
-                </div>
-              )}
-
-              <div className="text-[#FFF] text-[16px] font-medium">{name}</div>
-            </div>
-          </div>
-          <div className="text-[#FFF] text-[14px] font-normal leading-[20px] mt-[20px]">
-            {description}
-          </div>
-          <div className="flex gap-[10px] items-center  mt-[20px]">
-            {memberInfo?.newPostNumber > 0 && (
-              <div className="text-[#718096] text-[12px] font-normal leading-[15px]">
-                {memberInfo?.newPostNumber} new posts
-              </div>
-            )}
-            {memberInfo?.totalNumber > 0 && (
-              <div className="text-[#718096] text-[12px] font-normal leading-[15px]">
-                {memberInfo?.totalNumber} members
-              </div>
-            )}
-          </div>
-          {memberInfo?.friendMemberNumber > 0 && (
-            <div className="text-[#718096] text-[12px] font-normal leading-[15px] mt-[20px]">
-              {memberInfo?.friendMemberNumber} of your friends are members
-            </div>
-          )}
+          <CommunityBaseInfo communityInfo={communityInfo} />
 
           <AddPost
             className={cn(
