@@ -11,7 +11,7 @@ import { getAddressWithDidPkh } from '../../utils/shared/did';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import useFarcasterUserData from '../social/farcaster/useFarcasterUserData';
-import { PlatformAccountData } from '../../components/profile/profile-info/PlatformAccounts';
+import { PlatformAccountData } from '../../components/profile/info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import {

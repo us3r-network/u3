@@ -4,7 +4,7 @@ import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
-import { PlatformAccountData } from '../../components/profile/profile-info/PlatformAccounts';
+import { PlatformAccountData } from '../../components/profile/info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import {

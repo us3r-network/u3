@@ -12,7 +12,7 @@ import {
   FollowListWrapper,
   LoadingMoreWrapper,
   LoadingWrapper,
-} from '../FollowListWidgets';
+} from './FollowListWidgets';
 
 export default function LensProfileFollowing({
   lensProfile,

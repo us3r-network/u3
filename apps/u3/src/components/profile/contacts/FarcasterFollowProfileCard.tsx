@@ -3,7 +3,7 @@ import useFarcasterUserData from 'src/hooks/social/farcaster/useFarcasterUserDat
 import { SocialPlatform } from 'src/services/social/types';
 import useFarcasterFollowAction from 'src/hooks/social/farcaster/useFarcasterFollowAction';
 
-import FollowProfileCard from '../FollowProfileCard';
+import FollowProfileCard from './FollowProfileCard';
 
 export default function FarcasterFollowProfileCard({
   fid,

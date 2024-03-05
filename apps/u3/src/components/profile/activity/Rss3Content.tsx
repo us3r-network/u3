@@ -27,12 +27,12 @@ import {
   setFollow,
   getReco,
   getRss3,
-} from '../../features/frens/frensHandles';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { AsyncRequestStatus } from '../../services/shared/types';
-import Loading from '../common/loading/Loading';
-import ListScrollBox from '../common/box/ListScrollBox';
-import { messages } from '../../utils/shared/message';
+} from '../../../features/frens/frensHandles';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { AsyncRequestStatus } from '../../../services/shared/types';
+import Loading from '../../common/loading/Loading';
+import ListScrollBox from '../../common/box/ListScrollBox';
+import { messages } from '../../../utils/shared/message';
 
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');

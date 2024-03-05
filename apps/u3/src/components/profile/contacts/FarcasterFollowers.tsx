@@ -5,13 +5,15 @@ import {
   FollowList,
   FollowListWrapper,
   LoadingWrapper,
-} from '../FollowListWidgets';
+} from './FollowListWidgets';
+
 import FarcasterFollowProfileCard from './FarcasterFollowProfileCard';
 
-export default function FarcasterFollowing({ fid }: { fid: string | number }) {
+export default function FarcasterFollowers({ fid }: { fid: string | number }) {
   const { farcasterFollowData, loading } = useFarcasterFollowData({
     fid,
   });
+  const followers = farcasterFollowData.followerData;
   const following = farcasterFollowData.followingData;
 
   if (loading) {
@@ -26,7 +28,7 @@ export default function FarcasterFollowing({ fid }: { fid: string | number }) {
   return (
     <FollowListWrapper>
       <FollowList>
-        {(following || []).map((item) => (
+        {(followers || []).map((item) => (
           <FarcasterFollowProfileCard
             key={item}
             fid={item}

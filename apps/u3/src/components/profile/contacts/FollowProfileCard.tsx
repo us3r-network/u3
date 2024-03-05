@@ -1,21 +1,21 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { useEffect, useMemo } from 'react';
-import { SocialButtonPrimaryLine } from '../social/button/SocialButton';
-import { SocialMessageChatBtn } from '../message/MessageChatBtn';
-import { SocialPlatform } from '../../services/social/types';
-import LensIcon from '../common/icons/LensIcon';
-import FarcasterIcon from '../common/icons/FarcasterIcon';
-import useCanMessage from '../../hooks/message/xmtp/useCanMessage';
-import { useNav } from '../../contexts/NavCtx';
+import { SocialButtonPrimaryLine } from '../../social/button/SocialButton';
+import { SocialMessageChatBtn } from '../../message/MessageChatBtn';
+import { SocialPlatform } from '../../../services/social/types';
+import LensIcon from '../../common/icons/LensIcon';
+import FarcasterIcon from '../../common/icons/FarcasterIcon';
+import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
+import { useNav } from '../../../contexts/NavCtx';
 import {
   useXmtpClient,
   MessageRoute,
-} from '../../contexts/message/XmtpClientCtx';
+} from '../../../contexts/message/XmtpClientCtx';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
-} from '../../utils/profile/biolink';
-import NavigateToProfileLink from './NavigateToProfileLink';
+} from '../../../utils/profile/biolink';
+import NavigateToProfileLink from '../info/NavigateToProfileLink';
 
 export type FollowProfileData = {
   handle: string;

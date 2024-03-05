@@ -2,16 +2,16 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile, useFollow, useUnfollow } from '@lens-protocol/react-web';
 import { useCallback, useMemo } from 'react';
 import { toast } from 'react-toastify';
-import { SocialButtonPrimary } from '../social/button/SocialButton';
-import useFarcasterFollowAction from '../../hooks/social/farcaster/useFarcasterFollowAction';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
+import { SocialButtonPrimary } from '../../social/button/SocialButton';
+import useFarcasterFollowAction from '../../../hooks/social/farcaster/useFarcasterFollowAction';
+import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import {
   canFollow,
   canUnfollow,
   getHandle,
   isFollowedByMe,
-} from '../../utils/social/lens/profile';
-import { useLensCtx } from '../../contexts/social/AppLensCtx';
+} from '../../../utils/social/lens/profile';
+import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 
 interface ProfileFollowBtnProps extends StyledComponentPropsWithRef<'button'> {
   lensProfiles?: Profile[];

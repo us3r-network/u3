@@ -7,7 +7,7 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
 import useDid from '@/hooks/profile/useDid';
-import ProfileInfoCard from '@/components/profile/profile-info/ProfileInfoCard';
+import ProfileInfoCard from '@/components/profile/info/ProfileInfoCard';
 import Loading from '@/components/common/loading/Loading';
 import ProfileMenu from './ProfileMenu';
 
