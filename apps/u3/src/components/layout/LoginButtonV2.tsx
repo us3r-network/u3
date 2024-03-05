@@ -1,6 +1,5 @@
 import { UserAvatar, UserName } from '@us3r-network/profile';
 import React, { ComponentPropsWithRef, useState } from 'react';
-import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import useLogin from '../../hooks/shared/useLogin';
 import {
