@@ -9,7 +9,7 @@ import PageTitle from '@/components/layout/PageTitle';
 import MobilePageHeader from '@/components/layout/mobile/MobilePageHeader';
 import OnChainInterest, {
   OnChainInterestMobile,
-} from '@/components/profile/OnChainInterest';
+} from '@/components/profile/asset/OnChainInterest';
 import { ProfileDefault, fetchU3Assets } from '@/services/profile/api/profile';
 import { ProfileEntity } from '@/services/profile/types/profile';
 import { mergeProfilesData } from '@/utils/profile/mergeProfilesData';

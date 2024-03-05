@@ -22,7 +22,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
-import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
+import TooltipProfileNavigateLink from '../profile/info/TooltipProfileNavigateLink';
 import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../constants';
 import { SaveButton } from '../shared/button/SaveButton';

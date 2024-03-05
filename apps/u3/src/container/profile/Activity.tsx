@@ -1,6 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
-import { CurrencyETH } from '../../components/common/icons/currency-eth';
-import Rss3Content from '../../components/fren/Rss3Content';
+import { CurrencyETH } from '@/components/common/icons/currency-eth';
+import Rss3Content from '@/components/profile/activity/Rss3Content';
 import { ProfileOutletContext } from './ProfileLayout';
 import { shortPubKey } from '@/utils/shared/shortPubKey';
 

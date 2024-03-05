@@ -4,19 +4,15 @@ import {
   UserInfoEditForm,
   UserName,
 } from '@us3r-network/profile';
-import styled, { css } from 'styled-components';
-import { Dialog, Heading, Modal } from 'react-aria-components';
 import { useState } from 'react';
-import { toast } from 'react-toastify';
+import { Dialog, Heading, Modal } from 'react-aria-components';
+import styled from 'styled-components';
+import { getAvatarUploadOpts } from '../../../utils/profile/uploadAvatar';
+import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
 import { InputBaseCss } from '../../common/input/InputBase';
 import { TextareaBaseCss } from '../../common/input/TextareaBase';
-import { ButtonPrimaryLineCss } from '../../common/button/ButtonBase';
-import { getAddressWithDidPkh } from '../../../utils/shared/did';
-import { getAvatarUploadOpts } from '../../../utils/profile/uploadAvatar';
-import { shortPubKey } from '../../../utils/shared/shortPubKey';
-import { Copy } from '../../common/icons/copy';
+import NavigateToProfileLink from './NavigateToProfileLink';
 import ProfileAvatar from './ProfileAvatar';
-import NavigateToProfileLink from '../NavigateToProfileLink';
 
 const extractErrorMessage = (message) => {
   try {
@@ -43,10 +39,9 @@ export function U3ProfileBasicInfo({
   navigateToProfileUrl?: string;
   onNavigateToProfileAfter?: () => void;
 }) {
-  const address = getAddressWithDidPkh(did);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   return (
-    <U3ProfileBasicInfoWrapper did={did}>
+    <UserInfo className="flex flex-col gap-4" did={did}>
       {({ isLoginUser }) => {
         return (
           <>
@@ -77,32 +72,17 @@ export function U3ProfileBasicInfo({
                 );
               }}
             </UserAvatar>
-            <BasicCenter>
-              {navigateToProfileUrl ? (
-                <NavigateToProfileLink
-                  href={navigateToProfileUrl}
-                  onNavigateToProfileAfter={onNavigateToProfileAfter}
-                >
-                  <U3ProfileName did={did} />
-                </NavigateToProfileLink>
-              ) : (
-                <U3ProfileName did={did} />
-              )}
-
-              {address && (
-                <AddressWrapper
-                  onClick={() => {
-                    navigator.clipboard.writeText(address).then(() => {
-                      toast.success('Copied!');
-                    });
-                  }}
-                >
-                  <Address>{shortPubKey(address)}</Address>
-                  <Copy />
-                </AddressWrapper>
-              )}
-            </BasicCenter>
-
+            {navigateToProfileUrl ? (
+              <NavigateToProfileLink
+                href={navigateToProfileUrl}
+                onNavigateToProfileAfter={onNavigateToProfileAfter}
+              >
+                <UserName className="text-xl text-white" did={did} />
+              </NavigateToProfileLink>
+            ) : (
+              <UserName className="text-xl text-white" did={did} />
+            )}
+            <UserInfo.Bio className="text-md text-white" />
             {isLoginUser && (
               <Modal
                 isDismissable
@@ -142,7 +122,7 @@ export function U3ProfileBasicInfo({
           </>
         );
       }}
-    </U3ProfileBasicInfoWrapper>
+    </UserInfo>
   );
 }
 
@@ -154,15 +134,15 @@ export function PlatformProfileBasicInfo({
   data: {
     avatar: string;
     name: string;
-    address?: string;
+    bio?: string;
     identity?: string | number;
   };
   navigateToProfileUrl?: string;
   onNavigateToProfileAfter?: () => void;
 }) {
-  const { avatar, name, address, identity = '' } = data;
+  const { avatar, name, bio } = data;
   return (
-    <PlatformProfileBasicInfoWrapper>
+    <div className="flex flex-col gap-4">
       {navigateToProfileUrl ? (
         <NavigateToProfileLink
           href={navigateToProfileUrl}
@@ -173,88 +153,21 @@ export function PlatformProfileBasicInfo({
       ) : (
         <ProfileAvatar src={avatar} />
       )}
-
-      <BasicCenter>
-        {navigateToProfileUrl ? (
-          <NavigateToProfileLink
-            href={navigateToProfileUrl}
-            onNavigateToProfileAfter={onNavigateToProfileAfter}
-          >
-            <PlatformProfileName>{name}</PlatformProfileName>
-          </NavigateToProfileLink>
-        ) : (
-          <PlatformProfileName>{name}</PlatformProfileName>
-        )}
-
-        <AddressWrapper
-          onClick={() => {
-            if (!address) return;
-            navigator.clipboard.writeText(address).then(() => {
-              toast.success('Copied!');
-            });
-          }}
+      {navigateToProfileUrl ? (
+        <NavigateToProfileLink
+          href={navigateToProfileUrl}
+          onNavigateToProfileAfter={onNavigateToProfileAfter}
         >
-          <Address>{address ? shortPubKey(address) : identity}</Address>
-          {address && <Copy />}
-        </AddressWrapper>
-      </BasicCenter>
-    </PlatformProfileBasicInfoWrapper>
+          <h3 className="text-white">{name}</h3>
+        </NavigateToProfileLink>
+      ) : (
+        <h3 className="text-xl text-white">{name}</h3>
+      )}
+      <p className="text-white line-clamp-3">{bio}</p>
+    </div>
   );
 }
 
-const BaseWrapperCss = css`
-  display: flex;
-  gap: 20px;
-`;
-
-const U3ProfileBasicInfoWrapper = styled(UserInfo)`
-  ${BaseWrapperCss}
-`;
-
-const PlatformProfileBasicInfoWrapper = styled.div`
-  ${BaseWrapperCss}
-`;
-const BasicCenter = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 15px;
-`;
-
-const NameCss = css`
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 17px;
-  font-style: italic;
-  font-weight: 700;
-  font-size: 24px;
-  line-height: 28px;
-  color: #fff;
-`;
-const U3ProfileName = styled(UserName)`
-  ${NameCss}
-`;
-const PlatformProfileName = styled.span`
-  ${NameCss}
-`;
-const AddressWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: fit-content;
-  cursor: pointer;
-`;
-const Address = styled.span`
-  color: var(--718096, #718096);
-
-  /* Regular-16 */
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
 const UserInfoEditFormWrapper = styled(UserInfoEditForm)`
   display: flex;
   flex-direction: column;
