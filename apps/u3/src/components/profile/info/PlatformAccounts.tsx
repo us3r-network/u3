@@ -11,7 +11,7 @@ import { useFarcasterCtx } from '../../../contexts/social/FarcasterCtx';
 import { getFarcasterProfileExternalLinkWithHandle } from '../../../utils/social/farcaster/getFarcasterExternalLink';
 import { getLensProfileExternalLinkWithHandle } from '../../../utils/social/lens/getLensExternalLink';
 
-export type PlatformAccountsData = Array<{
+export type PlatformAccountData = {
   platform: SocialPlatform;
   avatar: string;
   name: string;
@@ -19,9 +19,9 @@ export type PlatformAccountsData = Array<{
   id: string | number;
   bio: string;
   address?: string;
-}>;
+};
 interface PlatformAccountsProps extends StyledComponentPropsWithRef<'div'> {
-  data: PlatformAccountsData;
+  data: PlatformAccountData[];
   isLoginUser?: boolean;
   isSelf: boolean;
 }

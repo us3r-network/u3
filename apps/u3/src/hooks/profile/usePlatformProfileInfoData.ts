@@ -4,7 +4,7 @@ import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
-import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
+import { PlatformAccountData } from '../../components/profile/info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import {
@@ -53,7 +53,7 @@ export default function usePlatformProfileInfoData({
 
   const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
-  const platformAccounts: PlatformAccountsData = useMemo(() => {
+  const platformAccounts: PlatformAccountData[] = useMemo(() => {
     const accounts = [];
     for (const fcastProfile of fcastBioLinks) {
       accounts.push({
@@ -100,6 +100,7 @@ export default function usePlatformProfileInfoData({
     lensProfiles,
     recommendAddress,
     platformAccounts,
+    postsCount: 0,
     followersCount,
     followingCount,
     bioLinkLoading,

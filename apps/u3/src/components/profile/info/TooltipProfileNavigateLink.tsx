@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { isMobile } from 'react-device-detect';
 import TooltipBase from '../../common/tooltip/TooltipBase';
 import ProfileInfoCard from './ProfileInfoCard';
-import { FollowType } from '@/container/profile/Contacts';
 
 interface TooltipProfileNavigateLinkProps extends Omit<LinkProps, 'children'> {
   children: React.ReactNode;
@@ -31,7 +30,7 @@ export default function TooltipProfileNavigateLink({
     if (!linkRef.current || !isOpen) return;
     const el = linkRef.current;
 
-    const handleMouseWheel = (e: WheelEvent) => {
+    const handleMouseWheel = () => {
       setIsOpen(false);
     };
     el.addEventListener('wheel', handleMouseWheel);
@@ -66,23 +65,14 @@ export default function TooltipProfileNavigateLink({
       onOpenChange={setIsOpen}
     >
       {linkEl}
-      <TooltipBase placement="bottom" className="bg-[#1B1E23] rounded-[20px]">
+      <TooltipBase
+        placement="bottom"
+        className="bg-[#1B1E23] rounded-[20px] max-w-xs min-w-xs"
+      >
         <ProfileInfoCard
           identity={identity}
           canNavigateToProfile
           onNavigateToProfileAfter={() => setIsOpen(false)}
-          clickFollowers={() => {
-            if (profileUrl) {
-              navigate(`${profileUrl}?followType=${FollowType.FOLLOWERS}`);
-              setIsOpen(false);
-            }
-          }}
-          clickFollowing={() => {
-            if (profileUrl) {
-              navigate(`${profileUrl}?followType=${FollowType.FOLLOWING}`);
-              setIsOpen(false);
-            }
-          }}
         />
       </TooltipBase>
     </TooltipTrigger>

@@ -7,7 +7,7 @@ import Loading from '@/components/common/loading/Loading';
 import { MainWrapper } from '@/components/layout/Index';
 import PageTitle from '@/components/layout/PageTitle';
 import MobilePageHeader from '@/components/layout/mobile/MobilePageHeader';
-import Credential, { CredentialMobile } from '@/components/profile/credential';
+import Credential, { CredentialMobile } from '@/components/profile/gallery';
 import { ProfileDefault, fetchU3Assets } from '@/services/profile/api/profile';
 import { ProfileEntity } from '@/services/profile/types/profile';
 import { mergeProfilesData } from '@/utils/profile/mergeProfilesData';

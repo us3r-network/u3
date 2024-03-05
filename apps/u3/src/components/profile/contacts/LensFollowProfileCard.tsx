@@ -1,7 +1,7 @@
 import { Profile, useFollow, useUnfollow } from '@lens-protocol/react-web';
 import { useMemo } from 'react';
 import { StyledComponentPropsWithRef } from 'styled-components';
-import FollowProfileCard from '../FollowProfileCard';
+import FollowProfileCard from './FollowProfileCard';
 import { useLensCtx } from '../../../contexts/social/AppLensCtx';
 import { SocialPlatform } from '../../../services/social/types';
 import getAvatar from '../../../utils/social/lens/getAvatar';

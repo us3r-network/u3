@@ -1,7 +1,7 @@
 import {
   LimitType,
   Profile,
-  useProfileFollowers,
+  useProfileFollowing,
 } from '@lens-protocol/react-web';
 import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -12,9 +12,9 @@ import {
   FollowListWrapper,
   LoadingMoreWrapper,
   LoadingWrapper,
-} from '../FollowListWidgets';
+} from './FollowListWidgets';
 
-export default function LensProfileFollowers({
+export default function LensProfileFollowing({
   lensProfile,
 }: {
   lensProfile: Profile;
@@ -26,13 +26,13 @@ export default function LensProfileFollowers({
   // });
   // const lensProfile = lensProfiles?.[0];
   const {
-    data: followersData,
+    data: followingData,
     loading: firstLoading,
     hasMore,
     next,
-  } = useProfileFollowers({
+  } = useProfileFollowing({
     limit: LimitType.TwentyFive,
-    of: lensProfile?.id,
+    for: lensProfile?.id,
   });
 
   const [moreLoading, setMoreLoading] = useState(false);
@@ -60,12 +60,12 @@ export default function LensProfileFollowers({
         }
         return (
           <InfiniteScroll
-            dataLength={followersData?.length || 0}
+            dataLength={followingData?.length || 0}
             next={() => {
               if (moreLoading) return;
               loadMore();
             }}
-            hasMore={!firstLoading && hasMore}
+            hasMore={hasMore}
             loader={
               moreLoading ? (
                 <LoadingMoreWrapper>
@@ -76,8 +76,12 @@ export default function LensProfileFollowers({
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {(followersData || []).map((item) => (
-                <LensFollowProfileCard profile={item} />
+              {(followingData || []).map((item) => (
+                <LensFollowProfileCard
+                  key={item.id}
+                  profile={item}
+                  isFollowingCard
+                />
               ))}
             </FollowList>
           </InfiniteScroll>

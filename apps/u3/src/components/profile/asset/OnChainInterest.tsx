@@ -1,20 +1,17 @@
 import { BigNumber, ethers } from 'ethers';
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { MEDIA_BREAK_POINTS } from '../../constants';
+import { MEDIA_BREAK_POINTS } from '@/constants';
 import {
   ERC20Balances,
   NFTData,
   NFTDataListItem,
-} from '../../services/profile/types/profile';
-import Select from '../common/select/Select';
-import { NoItem } from '../common/icons/no-item';
-
-import CrownImg from '../common/assets/imgs/crown.svg';
-import ethImage from '../common/assets/imgs/eth.png';
-import NFTShower from './credential/NFTShower';
-import { ERC20Tokens } from '../airstack/ERC20Tokens';
-import { Tokens } from '../airstack/Tokens';
+} from '@/services/profile/types/profile';
+import { NoItem } from '../../common/icons/no-item';
+import CrownImg from '../../common/assets/imgs/crown.svg';
+import ethImage from '../../common/assets/imgs/eth.png';
+import NFTShower from '../gallery/NFTShower';
+import { ERC20Tokens } from './airstack/ERC20Tokens';
+import { Tokens } from './airstack/Tokens';
 
 export default function OnChainInterest({
   data,

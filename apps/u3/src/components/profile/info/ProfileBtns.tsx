@@ -9,7 +9,7 @@ import {
   useXmtpClient,
   MessageRoute,
 } from '../../../contexts/message/XmtpClientCtx';
-import ProfileFollowBtn from '../ProfileFollowBtn';
+import ProfileFollowBtn from './ProfileFollowBtn';
 
 interface ProfileBtnsProps extends StyledComponentPropsWithRef<'div'> {
   showFollowBtn: boolean;
@@ -58,7 +58,6 @@ const BtnsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin-top: 30px;
 `;
 
 const FollowBtn = styled(ProfileFollowBtn)`

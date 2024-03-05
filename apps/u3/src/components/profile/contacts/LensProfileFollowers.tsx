@@ -1,7 +1,7 @@
 import {
   LimitType,
   Profile,
-  useProfileFollowing,
+  useProfileFollowers,
 } from '@lens-protocol/react-web';
 import { useCallback, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -12,9 +12,9 @@ import {
   FollowListWrapper,
   LoadingMoreWrapper,
   LoadingWrapper,
-} from '../FollowListWidgets';
+} from './FollowListWidgets';
 
-export default function LensProfileFollowing({
+export default function LensProfileFollowers({
   lensProfile,
 }: {
   lensProfile: Profile;
@@ -26,13 +26,13 @@ export default function LensProfileFollowing({
   // });
   // const lensProfile = lensProfiles?.[0];
   const {
-    data: followingData,
+    data: followersData,
     loading: firstLoading,
     hasMore,
     next,
-  } = useProfileFollowing({
+  } = useProfileFollowers({
     limit: LimitType.TwentyFive,
-    for: lensProfile?.id,
+    of: lensProfile?.id,
   });
 
   const [moreLoading, setMoreLoading] = useState(false);
@@ -60,12 +60,12 @@ export default function LensProfileFollowing({
         }
         return (
           <InfiniteScroll
-            dataLength={followingData?.length || 0}
+            dataLength={followersData?.length || 0}
             next={() => {
               if (moreLoading) return;
               loadMore();
             }}
-            hasMore={hasMore}
+            hasMore={!firstLoading && hasMore}
             loader={
               moreLoading ? (
                 <LoadingMoreWrapper>
@@ -76,8 +76,8 @@ export default function LensProfileFollowing({
             scrollableTarget="profile-wrapper"
           >
             <FollowList>
-              {(followingData || []).map((item) => (
-                <LensFollowProfileCard profile={item} isFollowingCard />
+              {(followersData || []).map((item) => (
+                <LensFollowProfileCard key={item.id} profile={item} />
               ))}
             </FollowList>
           </InfiniteScroll>

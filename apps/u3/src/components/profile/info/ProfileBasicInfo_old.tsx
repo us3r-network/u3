@@ -16,7 +16,7 @@ import { getAvatarUploadOpts } from '../../../utils/profile/uploadAvatar';
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { Copy } from '../../common/icons/copy';
 import ProfileAvatar from './ProfileAvatar';
-import NavigateToProfileLink from '../NavigateToProfileLink';
+import NavigateToProfileLink from './NavigateToProfileLink';
 
 const extractErrorMessage = (message) => {
   try {

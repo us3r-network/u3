@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import { useOutletContext, useSearchParams } from 'react-router-dom';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
-import FarcasterFollowers from '@/components/profile/farcaster/FarcasterFollowers';
-import FarcasterFollowing from '@/components/profile/farcaster/FarcasterFollowing';
-import LensProfileFollowers from '@/components/profile/lens/LensProfileFollowers';
-import LensProfileFollowing from '@/components/profile/lens/LensProfileFollowing';
+import FarcasterFollowers from '@/components/profile/contacts/FarcasterFollowers';
+import FarcasterFollowing from '@/components/profile/contacts/FarcasterFollowing';
+import LensProfileFollowers from '@/components/profile/contacts/LensProfileFollowers';
+import LensProfileFollowing from '@/components/profile/contacts/LensProfileFollowing';
 import FollowingDefault from '@/components/social/FollowingDefault';
 import useFarcasterFollowNum from '@/hooks/social/farcaster/useFarcasterFollowNum';
 import { SocialPlatform } from '@/services/social/types';
@@ -21,10 +21,8 @@ export default function Contacts() {
   const { fid, lensProfileFirst } = useOutletContext<ProfileOutletContext>();
   const [searchParams] = useSearchParams();
   const [followNavData, setFollowNavData] = useState({
-    showFollowNav: false,
-    followNavType: searchParams.get('type') || FollowType.FOLLOWING,
-    followingActivePlatform: SocialPlatform.Farcaster,
-    followersActivePlatform: SocialPlatform.Farcaster,
+    type: searchParams.get('type') || FollowType.FOLLOWING,
+    platform: SocialPlatform.Farcaster,
     followingPlatformCount: {
       [SocialPlatform.Lens]: 0,
       [SocialPlatform.Farcaster]: 0,
@@ -34,13 +32,8 @@ export default function Contacts() {
       [SocialPlatform.Farcaster]: 0,
     },
   });
-  const {
-    followNavType,
-    followingActivePlatform,
-    followersActivePlatform,
-    followingPlatformCount,
-    followersPlatformCount,
-  } = followNavData;
+  const { type, platform, followingPlatformCount, followersPlatformCount } =
+    followNavData;
 
   const { farcasterFollowData } = useFarcasterFollowNum(fid);
 
@@ -57,7 +50,7 @@ export default function Contacts() {
       },
     }));
   }, [lensProfileFirst, farcasterFollowData]);
-  const [tab, setTab] = useState(followNavType);
+  const [tab, setTab] = useState(type);
   return (
     <div
       className="
@@ -87,7 +80,7 @@ export default function Contacts() {
                 'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
               )}
             >
-              {`Following(${followingPlatformCount[followingActivePlatform]})`}
+              {`Following(${followingPlatformCount[platform]})`}
             </TabsTrigger>
             <TabsTrigger
               value={FollowType.FOLLOWERS}
@@ -95,25 +88,25 @@ export default function Contacts() {
                 'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
               )}
             >
-              {`Followers(${followersPlatformCount[followingActivePlatform]})`}
+              {`Followers(${followersPlatformCount[platform]})`}
             </TabsTrigger>
           </TabsList>
           <PlatformFilter
-            defaultValue={followingActivePlatform}
-            onChange={(platform) => {
+            defaultValue={platform}
+            onChange={(v) => {
               setFollowNavData((prevData) => ({
                 ...prevData,
-                followingActivePlatform: platform,
+                platform: v,
               }));
             }}
           />
         </div>
         <TabsContent value={FollowType.FOLLOWING}>
           {(() => {
-            if (followingActivePlatform === SocialPlatform.Lens) {
+            if (platform === SocialPlatform.Lens) {
               return <LensProfileFollowing lensProfile={lensProfileFirst} />;
             }
-            if (followingActivePlatform === SocialPlatform.Farcaster) {
+            if (platform === SocialPlatform.Farcaster) {
               return <FarcasterFollowing fid={fid} />;
             }
             if (!lensProfileFirst?.id && !fid) {
@@ -124,10 +117,10 @@ export default function Contacts() {
         </TabsContent>
         <TabsContent value={FollowType.FOLLOWERS}>
           {(() => {
-            if (followersActivePlatform === SocialPlatform.Lens) {
+            if (platform === SocialPlatform.Lens) {
               return <LensProfileFollowers lensProfile={lensProfileFirst} />;
             }
-            if (followersActivePlatform === SocialPlatform.Farcaster) {
+            if (platform === SocialPlatform.Farcaster) {
               return <FarcasterFollowers fid={fid} />;
             }
             if (!lensProfileFirst?.id && !fid) {

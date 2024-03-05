@@ -6,10 +6,10 @@ import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { MEDIA_BREAK_POINTS } from 'src/constants';
 import styled from 'styled-components';
 
-import { POAPQuery, TokensQuery } from '../../services/shared/queries';
+import { POAPQuery, TokensQuery } from '../../../../services/shared/queries';
 import { PoapType, TokenType } from './types';
 import { Asset } from './Asset';
-import Loading from '../common/loading/Loading';
+import Loading from '../../../common/loading/Loading';
 
 type TokenProps = {
   type: string;
