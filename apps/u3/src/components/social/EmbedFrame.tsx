@@ -63,6 +63,7 @@ export default function EmbedCastFrame({
           castId,
           inputText: Buffer.from(frameText),
           state: Buffer.from(''),
+          transactionId: Buffer.from(''),
         },
         {
           fid: currFid,
@@ -87,6 +88,7 @@ export default function EmbedCastFrame({
           hash: toHex(castId.hash),
         },
         state: '',
+        transactionId: '',
       };
       const trustedData = {
         messageBytes: Buffer.from(
