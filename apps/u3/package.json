@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@airstack/airstack-react": "^0.4.7",
-    "@farcaster/hub-web": "^0.8.2",
+    "@farcaster/hub-web": "^0.8.4",
     "@lens-protocol/metadata": "^1.1.5",
     "@lens-protocol/react-web": "^2.0.0-alpha.33",
     "@lens-protocol/wagmi": "^4.0.0-alpha.2",
