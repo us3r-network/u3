@@ -1,6 +1,12 @@
 import axios, { AxiosPromise } from 'axios';
 import { UrlMetadata } from '@mod-protocol/core';
-import { ApiResp, FarCast, FarCastEmbedMeta, SocialPlatform } from '../types';
+import {
+  ApiResp,
+  FarCast,
+  FarCastEmbedMeta,
+  FarCastEmbedMetaV2,
+  SocialPlatform,
+} from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import request from '@/services/shared/api/request';
 
@@ -94,6 +100,22 @@ export function getFarcasterEmbedMetadata(urls: string[]): AxiosPromise<
 > {
   return axios({
     url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/embed`,
+    method: 'get',
+    params: {
+      urls,
+      timeout: 3000,
+      maxRedirects: 2,
+    },
+  });
+}
+
+export function getFarcasterEmbedMetadataV2(urls: string[]): AxiosPromise<
+  ApiResp<{
+    metadata: (null | FarCastEmbedMetaV2)[];
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/embedv2`,
     method: 'get',
     params: {
       urls,

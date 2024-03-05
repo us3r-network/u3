@@ -1,3 +1,5 @@
+import type { Frame } from 'frames.js';
+
 export enum ApiRespCode {
   SUCCESS = 0,
   ERROR = 1,
@@ -36,6 +38,19 @@ export type FarCastEmbedMeta = {
   fcFrameImage?: string;
   fcFramePostUrl?: string;
   fcFrameInputText?: string;
+};
+
+export type OGData = {
+  ogDescription: string;
+  ogImage: { url: string }[];
+  ogTitle: string;
+};
+
+export type FarCastEmbedMetaV2 = {
+  url: string;
+  frame: Frame;
+  ogData: OGData;
+  metadata?: FarCastEmbedMeta;
 };
 
 export type FarCast = {
