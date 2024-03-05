@@ -109,7 +109,10 @@ export default function LoginButtonV2() {
           sideOffset={10}
         >
           <DropdownMenuItemWarper onClick={() => navigate('/u')}>
-            <UserAvatar className="size-4 flex-shrink-0" />
+            <UserAvatar
+              className="size-4 flex-shrink-0"
+              style={{ width: '20px', height: '20px' }}
+            />
             My Profile
           </DropdownMenuItemWarper>
 
@@ -138,7 +141,7 @@ export default function LoginButtonV2() {
                 className={cn(
                   'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
                 )}
-                sideOffset={20}
+                sideOffset={30}
               >
                 <DropdownMenuItemWarper>
                   <span>Farcaster</span>
@@ -165,7 +168,7 @@ export default function LoginButtonV2() {
                 className={cn(
                   'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
                 )}
-                sideOffset={20}
+                sideOffset={30}
               >
                 {CONTACT_LINKS.map((link) => (
                   <DropdownMenuItemWarper
