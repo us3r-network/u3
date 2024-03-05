@@ -1,59 +1,59 @@
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import { ComponentPropsWithRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
-interface PlatformFollowCountsProps extends StyledComponentPropsWithRef<'div'> {
+interface PlatformFollowCountsProps {
+  identity?: string;
+  postsCount: number;
   followersCount: number;
   followingCount: number;
-  clickFollowing?: () => void;
-  clickFollowers?: () => void;
 }
 export default function PlatformFollowCounts({
+  identity,
+  postsCount,
   followersCount,
   followingCount,
-  clickFollowing,
-  clickFollowers,
-  ...wrapperProps
 }: PlatformFollowCountsProps) {
+  const navigate = useNavigate();
+  const pathSuffix = identity ? `/${identity}` : '';
   return (
-    <CountsWrapper {...wrapperProps}>
-      <CountItem onClick={clickFollowers}>
-        <Count>{followersCount}</Count>
-        <CountText>Followers</CountText>
-      </CountItem>
-      <CountItem onClick={clickFollowing}>
-        <Count>{followingCount}</Count>
-        <CountText>Following</CountText>
-      </CountItem>
-    </CountsWrapper>
+    <div className="flex items-center justify-between">
+      <CountItem
+        label="Posts"
+        count={postsCount}
+        onClick={() => navigate(`/u${pathSuffix}?type=following`)}
+      />
+      <CountItem
+        label="Followers"
+        count={followersCount}
+        onClick={() => navigate(`/u/contacts${pathSuffix}?type=follower`)}
+      />
+      <CountItem
+        label="Following"
+        count={followingCount}
+        onClick={() => navigate(`/u/contacts${pathSuffix}?type=following`)}
+      />
+    </div>
   );
 }
 
-const CountsWrapper = styled.div`
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-`;
-const CountItem = styled.div<{ onClick: () => void }>`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  ${(props) => !!props.onClick && `cursor: pointer;`}
-`;
-const Count = styled.span`
-  color: #fff;
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-`;
-const CountText = styled.span`
-  color: #718096;
-
-  /* Regular-16 */
-  font-family: Rubik;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
+function CountItem({
+  label,
+  count,
+  onClick,
+  className,
+}: ComponentPropsWithRef<'div'> & {
+  label: string;
+  count: number;
+  onClick: (path: string) => void;
+}) {
+  return (
+    <div
+      className={cn(`flex flex-col items-center gap-1`, className)}
+      onClick={onClick}
+    >
+      <p className="text-xs text-gray-400">{label}</p>
+      <p className="text-xl font-bold text-white">{count}</p>
+    </div>
+  );
+}

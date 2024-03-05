@@ -11,7 +11,7 @@ import { getAddressWithDidPkh } from '../../utils/shared/did';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import useFarcasterUserData from '../social/farcaster/useFarcasterUserData';
-import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
+import { PlatformAccountData } from '../../components/profile/profile-info/PlatformAccounts';
 import { SocialPlatform } from '../../services/social/types';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import {
@@ -105,7 +105,7 @@ export default function useU3ProfileInfoData({
   });
 
   const platformAccounts = useMemo(() => {
-    const accounts: PlatformAccountsData = [];
+    const accounts: PlatformAccountData[] = [];
     if (userData?.fid && userData?.display) {
       accounts.push({
         platform: SocialPlatform.Farcaster,
@@ -151,6 +151,7 @@ export default function useU3ProfileInfoData({
     address,
     lensProfiles,
     platformAccounts,
+    postsCount: 0,
     followersCount,
     followingCount,
     farcasterFollowData,
