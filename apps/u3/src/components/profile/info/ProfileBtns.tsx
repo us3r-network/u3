@@ -58,7 +58,6 @@ const BtnsWrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin-top: 30px;
 `;
 
 const FollowBtn = styled(ProfileFollowBtn)`

@@ -1,15 +1,14 @@
+import { Profile as U3Profile } from '@us3r-network/data-model';
 import { useProfileState } from '@us3r-network/profile';
 import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
-import { Profile as U3Profile } from '@us3r-network/data-model';
-import useDid from '../../../hooks/profile/useDid';
+import useDid from '@/hooks/profile/useDid';
 // import Loading from '../../common/loading/Loading';
-import usePlatformProfileInfoData from '../../../hooks/profile/usePlatformProfileInfoData';
-import useU3ProfileInfoData from '../../../hooks/profile/useU3ProfileInfoData';
-import { isDidPkh } from '../../../utils/shared/did';
-import { getProfileShareUrl } from '../../../utils/shared/share';
+import { MultiPlatformShareMenuBtn } from '@/components/shared/share/MultiPlatformShareMenuBtn';
+import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
+import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
+import { isDidPkh } from '@/utils/shared/did';
+import { getProfileShareUrl } from '@/utils/shared/share';
 import ProfileInfoCardLayout from './ProfileInfoCardLayout';
-// import UserTagsStyled from '../UserTagsStyled';
-// import UserWalletsStyled from '../UserWalletsStyled';
 
 interface ProfileInfoCardProps extends ComponentPropsWithRef<'div'> {
   isSelf?: boolean;
@@ -111,22 +110,41 @@ function PlatformProfileInfoCardContainer({
     bioLinkLoading,
   } = usePlatformProfileInfoData({ identity });
   return (
-    <ProfileInfoCardLayout
-      identity={identity}
-      isSelf={isSelf}
-      navigateToProfileUrl={navigateToProfileUrl}
-      onNavigateToProfileAfter={onNavigateToProfileAfter}
-      loading={bioLinkLoading}
-      address={recommendAddress}
-      platformAccounts={platformAccounts}
-      postsCount={postsCount}
-      followersCount={followersCount}
-      followingCount={followingCount}
-      lensProfiles={lensProfiles}
-      fid={Number(fid)}
-      shareLink={shareLink}
-      {...wrapperProps}
-    />
+    <div className="relative">
+      <ProfileInfoCardLayout
+        identity={identity}
+        isSelf={isSelf}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
+        loading={bioLinkLoading}
+        address={recommendAddress}
+        platformAccounts={platformAccounts}
+        postsCount={postsCount}
+        followersCount={followersCount}
+        followingCount={followingCount}
+        lensProfiles={lensProfiles}
+        fid={Number(fid)}
+        {...wrapperProps}
+      />
+      {platformAccounts.length > 0 && (
+        <div className="absolute top-6 right-6">
+          <MultiPlatformShareMenuBtn
+            shareLink={shareLink}
+            shareLinkDefaultText={
+              isSelf
+                ? MY_PROFILE_SHARE_TITLE
+                : getShareNewFriendProfileTitle(
+                    platformAccounts?.[0]?.name ||
+                      platformAccounts?.[0]?.handle ||
+                      recommendAddress
+                  )
+            }
+            shareLinkEmbedTitle={'Profile'}
+            popoverConfig={{ placement: 'bottom end', offset: 0 }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -159,21 +177,41 @@ function U3ProfileInfoCardContainer({
   } = useU3ProfileInfoData({ did, isSelf: !!isSelf });
 
   return (
-    <ProfileInfoCardLayout
-      isSelf={isSelf}
-      navigateToProfileUrl={navigateToProfileUrl}
-      onNavigateToProfileAfter={onNavigateToProfileAfter}
-      loading={bioLinkLoading}
-      u3Profile={u3Profile}
-      address={address}
-      platformAccounts={platformAccounts}
-      postsCount={postsCount}
-      followersCount={followersCount}
-      followingCount={followingCount}
-      lensProfiles={lensProfiles}
-      fid={Number(fid)}
-      shareLink={shareLink}
-      {...wrapperProps}
-    />
+    <div className="relative">
+      <ProfileInfoCardLayout
+        isSelf={isSelf}
+        navigateToProfileUrl={navigateToProfileUrl}
+        onNavigateToProfileAfter={onNavigateToProfileAfter}
+        loading={bioLinkLoading}
+        u3Profile={u3Profile}
+        address={address}
+        platformAccounts={platformAccounts}
+        postsCount={postsCount}
+        followersCount={followersCount}
+        followingCount={followingCount}
+        lensProfiles={lensProfiles}
+        fid={Number(fid)}
+        {...wrapperProps}
+      />{' '}
+      {platformAccounts.length > 0 && (
+        <div className="absolute top-6 right-6">
+          <MultiPlatformShareMenuBtn
+            shareLink={shareLink}
+            shareLinkDefaultText={getShareNewFriendProfileTitle(
+              u3Profile?.name && !u3Profile?.name?.startsWith('0x')
+                ? u3Profile?.name
+                : platformAccounts?.[0]?.name ||
+                    platformAccounts?.[0]?.handle ||
+                    address
+            )}
+            shareLinkEmbedTitle={'Profile'}
+            popoverConfig={{ placement: 'bottom end', offset: 0 }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
+
+const MY_PROFILE_SHARE_TITLE = 'View my profile in U3!';
+const getShareNewFriendProfileTitle = (name) => `New friend ${name} in U3!`;

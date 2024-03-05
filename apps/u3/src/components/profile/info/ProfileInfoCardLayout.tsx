@@ -14,16 +14,12 @@ import {
 import { shortPubKey } from '../../../utils/shared/shortPubKey';
 import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
 import { SocialPlatform } from '../../../services/social/types';
-import { MultiPlatformShareMenuBtn } from '../../shared/share/MultiPlatformShareMenuBtn';
 import { Copy } from '../../common/icons/copy';
 import { cn } from '@/lib/utils';
 import { getLensProfileExternalLinkWithHandle } from '@/utils/social/lens/getLensExternalLink';
 import LensIcon from '@/components/common/icons/LensIcon';
 import { getFarcasterProfileExternalLinkWithHandle } from '@/utils/social/farcaster/getFarcasterExternalLink';
 import FarcasterIcon from '@/components/common/icons/FarcasterIcon';
-
-const MY_PROFILE_SHARE_TITLE = 'View my profile in U3!';
-const getShareNewFriendProfileTitle = (name) => `New friend ${name} in U3!`;
 
 interface ProfileInfoCardLayoutProps extends ComponentPropsWithRef<'div'> {
   navigateToProfileUrl?: string;
@@ -39,7 +35,6 @@ interface ProfileInfoCardLayoutProps extends ComponentPropsWithRef<'div'> {
   fid?: number;
   loading?: boolean;
   isSelf: boolean;
-  shareLink: string;
 }
 export default function ProfileInfoCardLayout({
   navigateToProfileUrl,
@@ -55,7 +50,6 @@ export default function ProfileInfoCardLayout({
   fid,
   loading,
   isSelf,
-  shareLink,
   ...wrapperProps
 }: ProfileInfoCardLayoutProps) {
   const session = useSession();
@@ -77,7 +71,7 @@ export default function ProfileInfoCardLayout({
 
   return (
     <div
-      className="flex flex-col gap-4 p-6"
+      className="flex flex-col gap-4 p-6 w-full"
       onClick={(e) => {
         e.stopPropagation();
       }}
@@ -127,23 +121,6 @@ export default function ProfileInfoCardLayout({
       )}
       {platformAccounts?.length > 0 && (
         <SocialAccounts accounts={platformAccounts} />
-      )}
-
-      {platformAccounts.length > 0 && (
-        <div className="absolute top-6 right-6">
-          <MultiPlatformShareMenuBtn
-            shareLink={shareLink}
-            shareLinkDefaultText={getShareNewFriendProfileTitle(
-              u3Profile?.name && !u3Profile?.name?.startsWith('0x')
-                ? u3Profile?.name
-                : platformAccounts?.[0]?.name ||
-                    platformAccounts?.[0]?.handle ||
-                    address
-            )}
-            shareLinkEmbedTitle={'Profile'}
-            popoverConfig={{ placement: 'bottom end', offset: 0 }}
-          />
-        </div>
       )}
     </div>
   );

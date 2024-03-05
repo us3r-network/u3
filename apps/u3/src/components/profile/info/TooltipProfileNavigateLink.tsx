@@ -30,7 +30,7 @@ export default function TooltipProfileNavigateLink({
     if (!linkRef.current || !isOpen) return;
     const el = linkRef.current;
 
-    const handleMouseWheel = (e: WheelEvent) => {
+    const handleMouseWheel = () => {
       setIsOpen(false);
     };
     el.addEventListener('wheel', handleMouseWheel);
@@ -67,7 +67,7 @@ export default function TooltipProfileNavigateLink({
       {linkEl}
       <TooltipBase
         placement="bottom"
-        className="bg-[#1B1E23] rounded-[20px] w-[400px]"
+        className="bg-[#1B1E23] rounded-[20px] max-w-xs min-w-xs"
       >
         <ProfileInfoCard
           identity={identity}
