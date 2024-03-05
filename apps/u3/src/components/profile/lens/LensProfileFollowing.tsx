@@ -77,7 +77,11 @@ export default function LensProfileFollowing({
           >
             <FollowList>
               {(followingData || []).map((item) => (
-                <LensFollowProfileCard profile={item} isFollowingCard />
+                <LensFollowProfileCard
+                  key={item.id}
+                  profile={item}
+                  isFollowingCard
+                />
               ))}
             </FollowList>
           </InfiniteScroll>

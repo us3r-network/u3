@@ -77,7 +77,7 @@ export default function LensProfileFollowers({
           >
             <FollowList>
               {(followersData || []).map((item) => (
-                <LensFollowProfileCard profile={item} />
+                <LensFollowProfileCard key={item.id} profile={item} />
               ))}
             </FollowList>
           </InfiniteScroll>
