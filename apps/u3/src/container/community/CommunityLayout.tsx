@@ -45,6 +45,7 @@ export default function CommunityLayout() {
     unPinChannel,
     openFarcasterQR,
     isConnected: isLoginFarcaster,
+    setBrowsingChannel,
   } = useFarcasterCtx();
 
   useEffect(() => {
@@ -61,6 +62,13 @@ export default function CommunityLayout() {
     const joinItem = userChannels.find((c) => c.parent_url === parentUrl);
     return !!joinItem;
   }, [userChannels, parentUrl]);
+
+  useEffect(() => {
+    setBrowsingChannel(channel);
+    return () => {
+      setBrowsingChannel(undefined);
+    };
+  }, [channel, setBrowsingChannel]);
 
   // members state
   const {
