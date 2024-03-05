@@ -20,10 +20,12 @@ export function MobileHeaderWrapper({
 
 export function MobileHeaderBackBtn({
   title,
+  backToPath,
   className,
   ...props
 }: ComponentPropsWithRef<'button'> & {
   title?: string;
+  backToPath?: string;
 }) {
   const navigate = useNavigate();
   return (
@@ -34,7 +36,11 @@ export function MobileHeaderBackBtn({
         className
       )}
       onClick={() => {
-        navigate(-1);
+        if (backToPath) {
+          navigate(backToPath);
+        } else {
+          navigate(-1);
+        }
       }}
       {...props}
     >
