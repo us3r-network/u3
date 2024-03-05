@@ -1,10 +1,10 @@
 import styled from 'styled-components';
-import { isMobile } from 'react-device-detect';
 
 import ModalContainer from '../../common/modal/ModalContainer';
 import { ModalCloseBtn } from '../../common/modal/ModalWidgets';
 import AddPostForm from '../../social/AddPostForm';
 import { useGlobalModalsCtx } from '../../../contexts/shared/GlobalModalsCtx';
+import { cn } from '@/lib/utils';
 
 export default function MultiPlatformShareModal({
   open,
@@ -32,8 +32,16 @@ export default function MultiPlatformShareModal({
       contentTop="60px"
       contentTransform="translateX(-50%)"
     >
-      <ModalBody isMobile={isMobile}>
-        <CloseBtn onClick={closeModal} />
+      <div
+        className={cn(
+          'w-[600px] flex-shrink-0 p-[20px] box-border flex flex-col justify-between gap-[20px] relative',
+          'max-sm:w-[96vw]'
+        )}
+      >
+        <ModalCloseBtn
+          className="absolute top-[20px] right-[20px]"
+          onClick={closeModal}
+        />
         <AddPostForm
           onSuccess={() => {
             closeModal();
@@ -50,28 +58,7 @@ export default function MultiPlatformShareModal({
             previewDomain: shareLinkDomain,
           }}
         />
-      </ModalBody>
+      </div>
     </ModalContainer>
   );
 }
-
-const ModalBody = styled.div<{ isMobile?: boolean }>`
-  width: ${(props) => (props.isMobile ? 'fit-content' : '600px')};
-  /* min-height: 194px; */
-  flex-shrink: 0;
-
-  padding: 20px;
-  box-sizing: border-box;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
-
-  position: relative;
-`;
-const CloseBtn = styled(ModalCloseBtn)`
-  position: absolute;
-  top: 20px;
-  right: 20px;
-`;

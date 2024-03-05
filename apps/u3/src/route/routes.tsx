@@ -15,6 +15,7 @@ export enum RouteKey {
   home = 'home',
   // poster
   posterGallery = 'posterGallery',
+  casterDaily = 'casterDaily',
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
@@ -122,10 +123,22 @@ export const routes: CutomRouteObject[] = [
       },
       {
         path: '/poster-gallery',
-        element: loadContainerElement('PosterGallery'),
+        element: loadContainerElement('poster/PosterGallery'),
         key: RouteKey.posterGallery,
         title: 'Poster Gallery',
       } as CutomRouteObject,
+      {
+        path: '/caster-daily',
+        element: loadContainerElement('poster/CasterDaily'),
+        key: RouteKey.casterDaily,
+        title: 'Caster Daily',
+      } as CutomRouteObject,
+      {
+        path: 'communities',
+        element: loadContainerElement('community/Communities'),
+        key: RouteKey.communities,
+        title: 'Communities',
+      },
       // social
       {
         path: '/social',
@@ -227,11 +240,6 @@ export const routes: CutomRouteObject[] = [
             key: RouteKey.socialSuggestFollow,
           },
         ],
-      },
-      {
-        path: 'communities',
-        element: loadContainerElement('community/Communities'),
-        key: RouteKey.communities,
       },
     ],
   },

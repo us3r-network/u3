@@ -13,6 +13,7 @@ import {
   MobileHeaderWrapper,
 } from '@/components/layout/mobile/MobileHeaderCommon';
 import SearchIconBtn from '@/components/layout/SearchIconBtn';
+import ColorButton from '@/components/common/button/ColorButton';
 
 export default function ExploreMobileHeader(
   props: ComponentPropsWithRef<'div'>
@@ -22,6 +23,7 @@ export default function ExploreMobileHeader(
   const isHomePath = pathname === '/';
   const isCommunitiesPath = pathname === '/communities';
   const isPosterGalleryPath = pathname === '/poster-gallery';
+  const isCasterDailyPath = pathname === '/caster-daily';
   const isPostsPath = pathname.startsWith('/social');
 
   return (
@@ -38,6 +40,13 @@ export default function ExploreMobileHeader(
               </div>
               <div className="flex items-center gap-[20px]">
                 <SearchIconBtn />
+                <ColorButton
+                  onClick={() => {
+                    navigate('/caster-daily');
+                  }}
+                >
+                  Mint
+                </ColorButton>
               </div>
             </>
           );
@@ -54,6 +63,9 @@ export default function ExploreMobileHeader(
         }
         if (isPosterGalleryPath) {
           return <MobileHeaderBackBtn title="Poster Gallery" />;
+        }
+        if (isCasterDailyPath) {
+          return <MobileHeaderBackBtn title="Caster Daily" />;
         }
         if (isPostsPath) {
           return (
