@@ -7,7 +7,7 @@ import FarcasterFollowing from '@/components/profile/contacts/FarcasterFollowing
 import LensProfileFollowers from '@/components/profile/contacts/LensProfileFollowers';
 import LensProfileFollowing from '@/components/profile/contacts/LensProfileFollowing';
 import FollowingDefault from '@/components/social/FollowingDefault';
-import useFarcasterFollowNum from '@/hooks/social/farcaster/useFarcasterFollowNum';
+import useFarcasterUserStats from '@/hooks/social/farcaster/useFarcasterUserStats';
 import { SocialPlatform } from '@/services/social/types';
 import { ProfileOutletContext } from './ProfileLayout';
 import PlatformFilter from '@/components/shared/select/PlatformFilter';
@@ -35,21 +35,21 @@ export default function Contacts() {
   const { type, platform, followingPlatformCount, followersPlatformCount } =
     followNavData;
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterUserStats } = useFarcasterUserStats(fid);
 
   useEffect(() => {
     setFollowNavData((prevData) => ({
       ...prevData,
       followingPlatformCount: {
         [SocialPlatform.Lens]: lensProfileFirst?.stats.following || 0,
-        [SocialPlatform.Farcaster]: farcasterFollowData.following,
+        [SocialPlatform.Farcaster]: farcasterUserStats.followingCount,
       },
       followersPlatformCount: {
         [SocialPlatform.Lens]: lensProfileFirst?.stats.followers || 0,
-        [SocialPlatform.Farcaster]: farcasterFollowData.followers,
+        [SocialPlatform.Farcaster]: farcasterUserStats.followerCount,
       },
     }));
-  }, [lensProfileFirst, farcasterFollowData]);
+  }, [lensProfileFirst, farcasterUserStats]);
   const [tab, setTab] = useState(type);
   return (
     <div

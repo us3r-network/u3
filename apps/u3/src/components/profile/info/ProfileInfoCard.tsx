@@ -104,8 +104,8 @@ function PlatformProfileInfoCardContainer({
     lensProfiles,
     recommendAddress,
     platformAccounts,
-    postsCount,
-    followersCount,
+    postCount,
+    followerCount,
     followingCount,
     bioLinkLoading,
   } = usePlatformProfileInfoData({ identity });
@@ -119,8 +119,8 @@ function PlatformProfileInfoCardContainer({
         loading={bioLinkLoading}
         address={recommendAddress}
         platformAccounts={platformAccounts}
-        postsCount={postsCount}
-        followersCount={followersCount}
+        postCount={postCount}
+        followerCount={followerCount}
         followingCount={followingCount}
         lensProfiles={lensProfiles}
         fid={Number(fid)}
@@ -170,8 +170,8 @@ function U3ProfileInfoCardContainer({
     address,
     lensProfiles,
     platformAccounts,
-    postsCount,
-    followersCount,
+    postCount,
+    followerCount,
     followingCount,
     bioLinkLoading,
   } = useU3ProfileInfoData({ did, isSelf: !!isSelf });
@@ -186,8 +186,8 @@ function U3ProfileInfoCardContainer({
         u3Profile={u3Profile}
         address={address}
         platformAccounts={platformAccounts}
-        postsCount={postsCount}
-        followersCount={followersCount}
+        postCount={postCount}
+        followerCount={followerCount}
         followingCount={followingCount}
         lensProfiles={lensProfiles}
         fid={Number(fid)}
