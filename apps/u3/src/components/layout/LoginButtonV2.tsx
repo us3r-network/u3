@@ -27,6 +27,10 @@ import twitterIconUrl from '../common/assets/platform/pngs/twitter.png';
 import discordIconUrl from '../common/assets/platform/pngs/discord.png';
 import warpcastIconUrl from '../common/assets/platform/svgs/warpcast.svg';
 import { CONTACT_US_LINKS } from '@/constants';
+import {
+  FarcasterAccount,
+  LensAccount,
+} from '../profile/info/PlatformAccounts';
 
 const CONTACT_LINKS = [
   {
@@ -143,10 +147,10 @@ export default function LoginButtonV2() {
                 sideOffset={30}
               >
                 <DropdownMenuItemWarper>
-                  <span>Farcaster</span>
+                  <FarcasterAccount />
                 </DropdownMenuItemWarper>
                 <DropdownMenuItemWarper>
-                  <span>Lens</span>
+                  <LensAccount />
                 </DropdownMenuItemWarper>
               </DropdownMenuSubContent>
             </DropdownMenuPortal>

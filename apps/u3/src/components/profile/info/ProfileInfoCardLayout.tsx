@@ -4,16 +4,15 @@ import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { toast } from 'react-toastify';
 import { ComponentPropsWithRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { PlatformAccountData } from './PlatformAccounts';
 import PlatformFollowCounts from './PlatformFollowCounts';
 import ProfileBtns from './ProfileBtns';
 import {
   PlatformProfileBasicInfo,
   U3ProfileBasicInfo,
 } from './ProfileBasicInfo';
-import { shortPubKey } from '../../../utils/shared/shortPubKey';
-import { getDefaultAvatarWithIdentity } from '../../../utils/profile/avatar';
-import { SocialPlatform } from '../../../services/social/types';
+import { shortPubKey } from '@/utils/shared/shortPubKey';
+import { getDefaultAvatarWithIdentity } from '@/utils/profile/avatar';
+import { PlatformAccountData, SocialPlatform } from '@/services/social/types';
 import { Copy } from '../../common/icons/copy';
 import { cn } from '@/lib/utils';
 import { getLensProfileExternalLinkWithHandle } from '@/utils/social/lens/getLensExternalLink';

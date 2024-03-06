@@ -1,18 +1,17 @@
 import { useEffect, useMemo } from 'react';
 import { useProfiles } from '@lens-protocol/react-web';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
-import { PlatformAccountData } from '../../components/profile/info/PlatformAccounts';
-import { SocialPlatform } from '../../services/social/types';
-import getAvatar from '../../utils/social/lens/getAvatar';
+import { PlatformAccountData, SocialPlatform } from '@/services/social/types';
+import getAvatar from '@/utils/social/lens/getAvatar';
 import {
   getBio,
   getHandle,
   getName,
   getOwnedByAddress,
-} from '../../utils/social/lens/profile';
+} from '@/utils/social/lens/profile';
 import useFetchFidWithFname from '../social/farcaster/useFetchFidWithFname';
 
 export default function usePlatformProfileInfoData({

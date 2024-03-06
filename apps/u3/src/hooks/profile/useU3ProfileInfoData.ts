@@ -4,22 +4,21 @@ import useBioLinkListWithDid from './useBioLinkListWithDid';
 import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
-} from '../../utils/profile/biolink';
+} from '@/utils/profile/biolink';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import { getAddressWithDidPkh } from '../../utils/shared/did';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import { getAddressWithDidPkh } from '@/utils/shared/did';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
 import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
 import useFarcasterUserData from '../social/farcaster/useFarcasterUserData';
-import { PlatformAccountData } from '../../components/profile/info/PlatformAccounts';
-import { SocialPlatform } from '../../services/social/types';
-import getAvatar from '../../utils/social/lens/getAvatar';
+import { PlatformAccountData, SocialPlatform } from '@/services/social/types';
+import getAvatar from '@/utils/social/lens/getAvatar';
 import {
   getBio,
   getHandle,
   getName,
   getOwnedByAddress,
-} from '../../utils/social/lens/profile';
+} from '@/utils/social/lens/profile';
 import useFetchFidWithFname from '../social/farcaster/useFetchFidWithFname';
 
 export default function useU3ProfileInfoData({
