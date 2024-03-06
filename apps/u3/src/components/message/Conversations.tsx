@@ -1,7 +1,7 @@
-import styled, { StyledComponentPropsWithRef } from 'styled-components';
+import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
+import { ComponentPropsWithRef, useEffect, useState } from 'react';
 import {
   getAttachmentUrl,
   isAttachment,
@@ -16,22 +16,24 @@ import Name from './Name';
 import Avatar from './Avatar';
 import Loading from '../common/loading/Loading';
 import NoConversations from './NoConversations';
+import { cn } from '@/lib/utils';
 
-export default function ConversationList(
-  props: StyledComponentPropsWithRef<'div'>
-) {
+export default function Conversations({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
   const { setMessageRouteParams } = useXmtpClient();
 
   const { isLoading, conversationList } = useConversationList();
 
   return (
-    <ConversationListWrap {...props}>
+    <div className={cn('w-full', className)} {...props}>
       {isLoading ? (
-        <LoadingWrapper>
+        <div className="flex justify-center items-center">
           <Loading />
-        </LoadingWrapper>
+        </div>
       ) : conversationList.length > 0 ? (
-        <CardListWrap>
+        <div className="flex flex-col">
           {conversationList.map(({ conversation, latestMessage }) => (
             <ConversationCard
               key={`Convo_${conversation.peerAddress}`}
@@ -45,25 +47,14 @@ export default function ConversationList(
               latestMessage={latestMessage}
             />
           ))}
-        </CardListWrap>
+        </div>
       ) : (
         <NoConversations />
       )}
-    </ConversationListWrap>
+    </div>
   );
 }
-const ConversationListWrap = styled.div`
-  width: 100%;
-`;
-const LoadingWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-const CardListWrap = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
+
 function ConversationCard({
   selectConvoAction,
   address,
@@ -84,11 +75,14 @@ function ConversationCard({
     })();
   }, [latestMessage, xmtpClient]);
   return (
-    <ConversationCardWrap onClick={() => selectConvoAction(address)}>
+    <div
+      className="px-0 py-[12px] flex gap-[10px] items-start cursor-pointer text-[#fff]"
+      onClick={() => selectConvoAction(address)}
+    >
       <Avatar address={address} />
-      <Center>
+      <div className="w-[0] flex-[1] flex flex-col gap-[5px]">
         <Name address={address} />
-        <LatestMessage>
+        <div className="text-[#9c9c9c] text-[12px] font-normal line-clamp-1">
           {latestMessage &&
             (() => {
               if (isAttachment(latestMessage)) {
@@ -96,47 +90,11 @@ function ConversationCard({
               }
               return truncate(latestMessage.content, 75);
             })()}
-        </LatestMessage>
-      </Center>
-      <LatestMessageTime>
+        </div>
+      </div>
+      <span className="text-[#9c9c9c] text-[12px] font-normal">
         {latestMessage && dayjs(latestMessage.sent).fromNow()}
-      </LatestMessageTime>
-    </ConversationCardWrap>
+      </span>
+    </div>
   );
 }
-
-const ConversationCardWrap = styled.div`
-  padding: 12px 0px;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  cursor: pointer;
-  color: #fff;
-`;
-const Center = styled.div`
-  width: 0;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-`;
-
-const LatestMessage = styled.div`
-  color: #9c9c9c;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const LatestMessageTime = styled.span`
-  color: #9c9c9c;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-`;
