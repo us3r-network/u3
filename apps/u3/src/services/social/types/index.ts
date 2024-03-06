@@ -79,6 +79,16 @@ export enum SocialPlatform {
   Lens = 'lens',
 }
 
+export type PlatformAccountData = {
+  platform: SocialPlatform;
+  avatar: string;
+  name: string;
+  handle: string;
+  id: string | number;
+  bio: string;
+  address?: string;
+};
+
 export type GalxeDataListItem = {
   id: string;
   name: string;
