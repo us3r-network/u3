@@ -38,7 +38,8 @@ export default function EmbedCastFrame({
   const postFrameAction = useCallback(
     async (index: number, action: string, target?: string) => {
       if (action === 'link') {
-        setFrameRedirect(url);
+        // c637bf4bb03cb409f54afa926689312f1960af85
+        setFrameRedirect(target || url);
         return;
       }
       if (action === 'mint') {

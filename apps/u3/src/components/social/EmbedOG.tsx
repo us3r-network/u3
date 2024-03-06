@@ -1,7 +1,8 @@
 import { OGData } from '@/services/social/types';
 
 export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
-  const img = data.ogImage[0]?.url;
+  const img = data.ogImage?.[0]?.url;
+
   return (
     <div
       className="border rounded-xl overflow-hidden border-[#39424c]"
@@ -10,13 +11,15 @@ export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
         window.open(url, '_blank');
       }}
     >
-      <div className="img">
-        <img
-          className="img w-full object-cover max-h-[300px]"
-          src={img}
-          alt=""
-        />
-      </div>
+      {img && (
+        <div className="img">
+          <img
+            className="img w-full object-cover max-h-[300px]"
+            src={img}
+            alt=""
+          />
+        </div>
+      )}
       <div className="flex flex-col gap-[10px] p-[16px] font-[Rubik]">
         <h4 className="text-[#fff] text-[14px] not-italic font-bold leading-[20px]">
           {data.ogTitle}

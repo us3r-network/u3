@@ -38,7 +38,6 @@ export function getEmbeds(cast: FarCast): {
   const webpages = [];
   const casts = [];
 
-  console.log('cast', cast.embeds);
   for (const embed of cast.embeds) {
     if (embed?.castId) {
       casts.push(embed);
