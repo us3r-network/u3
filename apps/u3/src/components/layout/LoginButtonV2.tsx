@@ -1,14 +1,18 @@
 import { UserAvatar, UserName } from '@us3r-network/profile';
-import { ComponentPropsWithRef, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { ComponentPropsWithRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useLogin from '../../hooks/shared/useLogin';
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { cn } from '@/lib/utils';
-import NavLinkItem from './NavLinkItem';
 import { LogoutIcon2 } from '../common/icons/LogoutIcon';
 import NotificationIcon from '../common/icons/NotificationIcon';
 import BookmarkIcon from '../common/icons/BookmarkIcon';
@@ -17,11 +21,46 @@ import SocialAccountIcon from '../common/icons/SocialAccountIcon';
 import ContactUsIcon from '../common/icons/ContactUsIcon';
 import EmailIcon from '../common/icons/EmailIcon';
 import LogoutConfirmModal from './LogoutConfirmModal';
+import feedbackIconUrl from '../common/assets/platform/pngs/feedback.png';
+import telegramIconUrl from '../common/assets/platform/pngs/telegram.png';
+import twitterIconUrl from '../common/assets/platform/pngs/twitter.png';
+import discordIconUrl from '../common/assets/platform/pngs/discord.png';
+import warpcastIconUrl from '../common/assets/platform/svgs/warpcast.svg';
+import { CONTACT_US_LINKS } from '@/constants';
+
+const CONTACT_LINKS = [
+  {
+    link: CONTACT_US_LINKS.feedback,
+    iconUrl: feedbackIconUrl,
+    name: 'Feedback',
+  },
+  {
+    link: CONTACT_US_LINKS.farcaster,
+    iconUrl: warpcastIconUrl,
+    name: 'Farcaster',
+  },
+  {
+    link: CONTACT_US_LINKS.discord,
+    iconUrl: discordIconUrl,
+    name: 'Discord',
+  },
+  {
+    link: CONTACT_US_LINKS.twitter,
+    iconUrl: twitterIconUrl,
+    name: 'Twitter',
+  },
+  {
+    link: CONTACT_US_LINKS.telegram,
+    iconUrl: telegramIconUrl,
+    name: 'Telegram',
+  },
+];
 
 export default function LoginButtonV2() {
   const { isLogin, login, logout } = useLogin();
   const [openMenu, setOpenMenu] = useState(false);
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
+  const navigate = useNavigate();
 
   if (!isLogin) {
     return (
@@ -55,10 +94,7 @@ export default function LoginButtonV2() {
             }}
           >
             <div className="flex items-center justify-between gap-[12px]">
-              <UserAvatar
-                className="w-[40px] h-[40px] flex-shrink-0"
-                style={{ width: '40px', height: '40px' }}
-              />
+              <UserAvatar className="size-8 flex-shrink-0" />
               <UserName className="text-[#FFF] text-[16px] font-normal" />
             </div>
           </ButtonWrapper>
@@ -71,38 +107,86 @@ export default function LoginButtonV2() {
           align="center"
           sideOffset={10}
         >
-          <NavLinkItem href="/u">
+          <DropdownMenuItemWarper onClick={() => navigate('/u')}>
             <UserAvatar
-              className="w-[20px] h-[20px] flex-shrink-0"
+              className="size-4 flex-shrink-0"
               style={{ width: '20px', height: '20px' }}
             />
             My Profile
-          </NavLinkItem>
-          <NavLinkItem href="/u/fav">
+          </DropdownMenuItemWarper>
+
+          <DropdownMenuItemWarper onClick={() => navigate('/u/fav')}>
             <BookmarkIcon />
             My favorites
-          </NavLinkItem>
-          <NavLinkItem href="/notification">
+          </DropdownMenuItemWarper>
+
+          <DropdownMenuItemWarper onClick={() => navigate('/notification')}>
             <NotificationIcon />
             Notifications
-          </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
+          </DropdownMenuItemWarper>
+
+          <DropdownMenuItemWarper disabled>
             <ChatRoomIcon2 />
             Message
-          </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
-            <SocialAccountIcon />
-            Social Accounts
-          </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
+          </DropdownMenuItemWarper>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTriggerWarper>
+              <SocialAccountIcon />
+              Social Accounts
+            </DropdownMenuSubTriggerWarper>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent
+                className={cn(
+                  'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
+                )}
+                sideOffset={30}
+              >
+                <DropdownMenuItemWarper>
+                  <span>Farcaster</span>
+                </DropdownMenuItemWarper>
+                <DropdownMenuItemWarper>
+                  <span>Lens</span>
+                </DropdownMenuItemWarper>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+
+          <DropdownMenuItemWarper disabled>
             <EmailIcon />
             Subscribe
-          </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
-            <ContactUsIcon />
-            Contact us
-          </NavLinkItem>
-          <NavLinkItem
+          </DropdownMenuItemWarper>
+
+          <DropdownMenuSub>
+            <DropdownMenuSubTriggerWarper>
+              <ContactUsIcon />
+              Contact us
+            </DropdownMenuSubTriggerWarper>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent
+                className={cn(
+                  'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
+                )}
+                sideOffset={30}
+              >
+                {CONTACT_LINKS.map((link) => (
+                  <DropdownMenuItemWarper
+                    key={link.link}
+                    onClick={() => window.open(link.link, '_blank')}
+                  >
+                    <img
+                      className="size-4"
+                      src={link.iconUrl}
+                      alt={link.name}
+                    />
+                    <span>{link.name}</span>
+                  </DropdownMenuItemWarper>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+
+          <DropdownMenuItemWarper
             onClick={(e) => {
               e.preventDefault();
               setOpenLogoutConfirm(true);
@@ -111,7 +195,7 @@ export default function LoginButtonV2() {
           >
             <LogoutIcon2 />
             Logout
-          </NavLinkItem>
+          </DropdownMenuItemWarper>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
@@ -132,3 +216,41 @@ function ButtonWrapper({ className, ...props }: ComponentPropsWithRef<'div'>) {
     />
   );
 }
+
+const DropdownMenuItemWarper = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuItem>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuItem>
+  // eslint-disable-next-line react/prop-types
+>(({ className, ...props }, ref) => (
+  <DropdownMenuItem
+    ref={ref}
+    className={cn(
+      `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
+         text-[#718096] text-[16px] font-medium
+         flex gap-[10px] items-center`,
+      `hover:bg-[#20262F]`,
+      'max-sm:text-[14px]',
+      className
+    )}
+    {...props}
+  />
+));
+
+const DropdownMenuSubTriggerWarper = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuSubTrigger>,
+  React.ComponentPropsWithoutRef<typeof DropdownMenuSubTrigger>
+  // eslint-disable-next-line react/prop-types
+>(({ className, ...props }, ref) => (
+  <DropdownMenuSubTrigger
+    ref={ref}
+    className={cn(
+      `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
+         text-[#718096] text-[16px] font-medium
+         flex gap-[10px] items-center`,
+      `hover:bg-[#20262F]`,
+      'max-sm:text-[14px]',
+      className
+    )}
+    {...props}
+  />
+));
