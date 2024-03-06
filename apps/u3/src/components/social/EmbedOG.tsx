@@ -1,7 +1,10 @@
 import { OGData } from '@/services/social/types';
 
 export default function EmbedOG({ data, url }: { data: OGData; url: string }) {
-  const img = data.ogImage[0]?.url;
+  const img = data.ogImage?.[0]?.url;
+  if (!img) {
+    // console.warn('NoImageOG', data, url);
+  }
   return (
     <div
       className="border rounded-xl overflow-hidden border-[#39424c]"
