@@ -49,13 +49,24 @@ export default function Menu({
 }
 
 function UserChannels() {
-  const { userChannels, currFid } = useFarcasterCtx();
+  const { userChannels, currFid, browsingChannel } = useFarcasterCtx();
 
-  if (!currFid) return null;
+  let showChannels = [];
+  if (currFid) {
+    showChannels = userChannels;
+  }
+  if (browsingChannel?.parent_url) {
+    const findChannel = showChannels.find(
+      (c) => c.parent_url === browsingChannel.parent_url
+    );
+    if (!findChannel) {
+      showChannels.unshift(browsingChannel);
+    }
+  }
 
   return (
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
-      {userChannels.map(({ parent_url }) => (
+      {showChannels.map(({ parent_url }) => (
         <ChannelItem parent_url={parent_url} key={parent_url} />
       ))}
     </div>

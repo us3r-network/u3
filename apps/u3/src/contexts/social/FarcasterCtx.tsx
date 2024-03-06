@@ -100,6 +100,10 @@ export interface FarcasterContextData {
   unPinChannel: (parent_url: string) => Promise<void>;
   userChannels: { parent_url: string }[];
   getUserChannels: () => Promise<void>;
+  browsingChannel: { parent_url: string } | undefined;
+  setBrowsingChannel: React.Dispatch<
+    React.SetStateAction<{ parent_url: string } | undefined>
+  >;
   setSignerSelectModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   pinupHashes: Set<string>;
   updatePinupHashes: () => Promise<void>;
@@ -178,6 +182,9 @@ export default function FarcasterProvider({
   } = useFarcasterChannel({
     currFid,
   });
+  const [browsingChannel, setBrowsingChannel] = useState<{
+    parent_url: string;
+  }>();
 
   const { walletCheckStatus, walletUserData, walletFid, walletSigner } =
     useFarcasterWallet();
@@ -360,6 +367,8 @@ export default function FarcasterProvider({
         joinChannel,
         unPinChannel,
         getUserChannels,
+        browsingChannel,
+        setBrowsingChannel,
         setSignerSelectModalOpen,
         updatePinupHashes,
         pinupHashes,
