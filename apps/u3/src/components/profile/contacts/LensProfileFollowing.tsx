@@ -13,6 +13,7 @@ import {
   LoadingMoreWrapper,
   LoadingWrapper,
 } from './FollowListWidgets';
+import { EndMsgContainer } from '@/components/social/CommonStyles';
 
 export default function LensProfileFollowing({
   lensProfile,
@@ -49,7 +50,7 @@ export default function LensProfileFollowing({
     }
   }, [hasMore, next, moreLoading]);
   return (
-    <FollowListWrapper>
+    <FollowListWrapper id="follow-warper" className="h-full overflow-auto">
       {(() => {
         if (firstLoading) {
           return (
@@ -73,7 +74,9 @@ export default function LensProfileFollowing({
                 </LoadingMoreWrapper>
               ) : null
             }
-            scrollableTarget="profile-wrapper"
+            endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
+            scrollThreshold="2000px"
+            scrollableTarget="follow-warper"
           >
             <FollowList>
               {(followingData || []).map((item) => (

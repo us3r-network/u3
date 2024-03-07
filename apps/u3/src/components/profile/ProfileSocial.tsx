@@ -8,6 +8,7 @@ import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
+import { EndMsgContainer } from '../social/CommonStyles';
 
 export function ProfileSocialPosts({
   lensProfileId,
@@ -52,7 +53,7 @@ export function ProfileSocialPosts({
   }, [activeLensProfileLoading, loadFirstSocialFeeds]);
 
   return (
-    <MainCenter>
+    <MainCenter id="posts-warper" className="h-full overflow-auto">
       {(() => {
         if (firstLoading) {
           return (
@@ -77,7 +78,9 @@ export function ProfileSocialPosts({
                 </LoadingMoreWrapper>
               ) : null
             }
-            scrollableTarget="layout-main-wrapper"
+            endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
+            scrollThreshold="5000px"
+            scrollableTarget="posts-warper"
           >
             <PostList>
               {feeds.map(({ platform, data }) => {

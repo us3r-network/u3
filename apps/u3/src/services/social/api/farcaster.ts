@@ -3,9 +3,10 @@ import { UrlMetadata } from '@mod-protocol/core';
 import { ApiResp, FarCast, FarCastEmbedMeta, SocialPlatform } from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import request from '@/services/shared/api/request';
+import { FollowType } from '@/container/profile/Contacts';
 
 // console.log({ REACT_APP_API_SOCIAL_URL });
-
+export const PAGE_SIZE = 25;
 export type FarcasterNotification = {
   message_fid: number;
   message_type: number;
@@ -184,14 +185,15 @@ export function clearFarcasterUnreadNotification({
   });
 }
 
-export function getFarcasterFollow(fid: string | number): AxiosPromise<
+export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   ApiResp<{
-    followers: number;
-    following: number;
+    followerCount: number;
+    followingCount: number;
+    postCount: number;
   }>
 > {
   return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/follow`,
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/statics`,
     method: 'get',
     params: {
       fid,
@@ -217,6 +219,41 @@ export function getFarcasterLinks(
     params: {
       fid,
       withInfo,
+    },
+  });
+}
+
+export type FarcasterLink = {
+  fid: number;
+  targetFid: number;
+  type: number;
+};
+
+export function getFarcasterUserLinks({
+  fid,
+  type,
+  pageSize,
+  endCursor,
+}: {
+  fid: string | number;
+  type: FollowType;
+  endCursor?: string;
+  pageSize?: number;
+}): AxiosPromise<
+  ApiResp<{
+    links: FarcasterLink[];
+    farcasterUserData: FarcasterUserData[];
+    pageInfo: FarcasterPageInfo;
+  }>
+> {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/followLinks`,
+    method: 'get',
+    params: {
+      fid,
+      type,
+      pageSize,
+      endCursor,
     },
   });
 }

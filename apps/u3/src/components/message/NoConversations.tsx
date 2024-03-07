@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { FollowType } from '@/container/profile/Contacts';
 import ColorButton from '../common/button/ColorButton';
 
 export default function NoConversations() {
@@ -12,7 +11,7 @@ export default function NoConversations() {
       <Description>Send a message to your friend?</Description>
       <ColorButton
         onClick={() => {
-          navigate(`/u/contacts?type=${FollowType.FOLLOWERS}`);
+          navigate(`/u/contacts`);
         }}
       >
         Find from <br />

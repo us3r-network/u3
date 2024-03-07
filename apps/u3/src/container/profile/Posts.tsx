@@ -23,9 +23,7 @@ export default function Posts() {
       h-full
       overflow-scroll
       box-border
-      p-[24px]
-      mb-[20px]"
-      id="profile-wrapper"
+      p-[24px]"
     >
       <div className="flex items-center justify-between">
         <h2 className="text-white font-bold">Posts</h2>
@@ -44,21 +42,15 @@ export default function Posts() {
           />
         </div>
       </div>
-      <div
-        className="mt-[20px]
-                    flex
-                    gap-[40px]"
-      >
-        <LivepeerProvider>
-          <ProfileSocialPosts
-            lensProfileId={
-              platform === SocialPlatform.Lens ? lensProfileFirst?.id : ''
-            }
-            fid={platform === SocialPlatform.Farcaster ? fid : ''}
-            group={feedsGroup as unknown as ProfileFeedsGroups}
-          />
-        </LivepeerProvider>
-      </div>
+      <LivepeerProvider>
+        <ProfileSocialPosts
+          lensProfileId={
+            platform === SocialPlatform.Lens ? lensProfileFirst?.id : ''
+          }
+          fid={platform === SocialPlatform.Farcaster ? fid : ''}
+          group={feedsGroup as unknown as ProfileFeedsGroups}
+        />
+      </LivepeerProvider>
     </div>
   );
 }

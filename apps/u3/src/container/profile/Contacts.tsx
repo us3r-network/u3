@@ -7,14 +7,14 @@ import FarcasterFollowing from '@/components/profile/contacts/FarcasterFollowing
 import LensProfileFollowers from '@/components/profile/contacts/LensProfileFollowers';
 import LensProfileFollowing from '@/components/profile/contacts/LensProfileFollowing';
 import FollowingDefault from '@/components/social/FollowingDefault';
-import useFarcasterFollowNum from '@/hooks/social/farcaster/useFarcasterFollowNum';
+import useFarcasterUserStats from '@/hooks/social/farcaster/useFarcasterUserStats';
 import { SocialPlatform } from '@/services/social/types';
 import { ProfileOutletContext } from './ProfileLayout';
 import PlatformFilter from '@/components/shared/select/PlatformFilter';
 
 export enum FollowType {
   FOLLOWING = 'following',
-  FOLLOWERS = 'followers',
+  FOLLOWER = 'follower',
 }
 
 export default function Contacts() {
@@ -35,21 +35,21 @@ export default function Contacts() {
   const { type, platform, followingPlatformCount, followersPlatformCount } =
     followNavData;
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterUserStats } = useFarcasterUserStats(fid);
 
   useEffect(() => {
     setFollowNavData((prevData) => ({
       ...prevData,
       followingPlatformCount: {
         [SocialPlatform.Lens]: lensProfileFirst?.stats.following || 0,
-        [SocialPlatform.Farcaster]: farcasterFollowData.following,
+        [SocialPlatform.Farcaster]: farcasterUserStats.followingCount,
       },
       followersPlatformCount: {
         [SocialPlatform.Lens]: lensProfileFirst?.stats.followers || 0,
-        [SocialPlatform.Farcaster]: farcasterFollowData.followers,
+        [SocialPlatform.Farcaster]: farcasterUserStats.followerCount,
       },
     }));
-  }, [lensProfileFirst, farcasterFollowData]);
+  }, [lensProfileFirst, farcasterUserStats]);
   const [tab, setTab] = useState(type);
   return (
     <div
@@ -58,12 +58,11 @@ export default function Contacts() {
         h-full
         overflow-scroll
         box-border
-        p-[24px]
-        mb-[20px]"
+        p-[24px]"
       id="profile-wrapper"
     >
       <Tabs
-        className="h-60"
+        className="h-full"
         value={tab}
         onValueChange={(v) => {
           if (v === 'TabTransaction') {
@@ -83,7 +82,7 @@ export default function Contacts() {
               {`Following(${followingPlatformCount[platform]})`}
             </TabsTrigger>
             <TabsTrigger
-              value={FollowType.FOLLOWERS}
+              value={FollowType.FOLLOWER}
               className={cn(
                 'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit data-[state=active]:text-white data-[state=active]:border-white'
               )}
@@ -101,7 +100,11 @@ export default function Contacts() {
             }}
           />
         </div>
-        <TabsContent value={FollowType.FOLLOWING}>
+        <TabsContent
+          id="profile-contacts-following-warper"
+          value={FollowType.FOLLOWING}
+          className="h-full"
+        >
           {(() => {
             if (platform === SocialPlatform.Lens) {
               return <LensProfileFollowing lensProfile={lensProfileFirst} />;
@@ -115,7 +118,11 @@ export default function Contacts() {
             return null;
           })()}
         </TabsContent>
-        <TabsContent value={FollowType.FOLLOWERS}>
+        <TabsContent
+          id="profile-contacts-follower-warper"
+          value={FollowType.FOLLOWER}
+          className="h-full"
+        >
           {(() => {
             if (platform === SocialPlatform.Lens) {
               return <LensProfileFollowers lensProfile={lensProfileFirst} />;

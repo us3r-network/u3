@@ -27,8 +27,8 @@ interface ProfileInfoCardLayoutProps extends ComponentPropsWithRef<'div'> {
   address: string;
   identity?: string;
   platformAccounts: PlatformAccountData[];
-  postsCount: number;
-  followersCount: number;
+  postCount: number;
+  followerCount: number;
   followingCount: number;
   lensProfiles: LensProfile[];
   fid?: number;
@@ -42,8 +42,8 @@ export default function ProfileInfoCardLayout({
   identity,
   address,
   platformAccounts,
-  postsCount,
-  followersCount,
+  postCount,
+  followerCount,
   followingCount,
   lensProfiles,
   fid,
@@ -108,8 +108,8 @@ export default function ProfileInfoCardLayout({
       )}
       <PlatformFollowCounts
         identity={identity}
-        postsCount={postsCount}
-        followersCount={followersCount}
+        postCount={postCount}
+        followerCount={followerCount}
         followingCount={followingCount}
       />
       {address && (
