@@ -1,12 +1,11 @@
-import styled from 'styled-components';
 import { useState } from 'react';
 import {
   MessageRoute,
   useXmtpClient,
 } from '../../contexts/message/XmtpClientCtx';
 import useStartNewConvo from '../../hooks/message/xmtp/useStartNewConvo';
+import ColorButton from '../common/button/ColorButton';
 import InputBase from '../common/input/InputBase';
-import { ButtonPrimaryLine } from '../common/button/ButtonBase';
 
 export default function StartNewConversation() {
   const { setMessageRouteParams } = useXmtpClient();
@@ -14,25 +13,10 @@ export default function StartNewConversation() {
   const [errMsg, setErrMsg] = useState('');
   const [convoAddress, setConvoAddress] = useState('');
   return (
-    <StartNewConversationWrap
-      onSubmit={(e) => {
-        e.preventDefault();
-        startNewConvo(convoAddress, {
-          onSuccess: () => {
-            setConvoAddress('');
-            setMessageRouteParams({
-              route: MessageRoute.DETAIL,
-              peerAddress: convoAddress,
-            });
-          },
-          onFail: (error) => {
-            setErrMsg(error.message);
-          },
-        });
-      }}
-    >
-      <StartFormWrap>
-        <ConvoAddress
+    <div className="w-full flex flex-col gap-[10px]">
+      <div className="flex gap-[10px">
+        <InputBase
+          className="text-white"
           disabled={isStarting}
           placeholder="Enter address of recipient"
           value={convoAddress}
@@ -41,31 +25,29 @@ export default function StartNewConversation() {
             setErrMsg('');
           }}
         />
-        <SubmitButton type="submit" disabled={!convoAddress || isStarting}>
+        <ColorButton
+          className="h-[40px]"
+          disabled={!convoAddress || isStarting}
+          onClick={(e) => {
+            e.preventDefault();
+            startNewConvo(convoAddress, {
+              onSuccess: () => {
+                setConvoAddress('');
+                setMessageRouteParams({
+                  route: MessageRoute.DETAIL,
+                  peerAddress: convoAddress,
+                });
+              },
+              onFail: (error) => {
+                setErrMsg(error.message);
+              },
+            });
+          }}
+        >
           Start
-        </SubmitButton>
-      </StartFormWrap>
-      {errMsg && <ErrMsg>{errMsg}</ErrMsg>}
-    </StartNewConversationWrap>
+        </ColorButton>
+      </div>
+      {errMsg && <p className="text-[red]">{errMsg}</p>}
+    </div>
   );
 }
-const StartNewConversationWrap = styled.form`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-`;
-const StartFormWrap = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-const ConvoAddress = styled(InputBase)`
-  width: 0;
-  flex: 1;
-`;
-const SubmitButton = styled(ButtonPrimaryLine)`
-  height: 40px;
-`;
-const ErrMsg = styled.p`
-  color: red;
-`;

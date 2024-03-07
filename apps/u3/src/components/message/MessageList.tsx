@@ -1,12 +1,11 @@
 import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import { useXmtpStore } from '../../contexts/message/XmtpStoreCtx';
 import { getAttachmentUrl, isAttachment } from '../../utils/message/xmtp';
 import Avatar from './Avatar';
-import { useNav } from '../../contexts/NavCtx';
 
 export default function MessageList() {
   const { xmtpClient, messageRouteParams } = useXmtpClient();
@@ -15,8 +14,20 @@ export default function MessageList() {
   const messages =
     convoMessages.get(messageRouteParams?.peerAddress || '') || [];
 
+  const messageListEndRef = useRef<HTMLDivElement>(null);
+  const megLen = messages.length;
+  useEffect(() => {
+    (async () => {
+      await new Promise((r) => {
+        setTimeout(r, 100);
+      });
+      messageListEndRef?.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    })();
+  }, [megLen]);
   return (
-    <MessageListWrap>
+    <div className="w-full flex flex-col gap-[20px] py-[20px]">
       {!loadingConversations &&
         messages.map((msg) => {
           const isMe = xmtpClient?.address === msg.senderAddress;
@@ -25,19 +36,13 @@ export default function MessageList() {
           }
           return <MessageRow key={msg.id} msg={msg} />;
         })}
-    </MessageListWrap>
+      <div id="message-list-end" ref={messageListEndRef} />
+    </div>
   );
 }
-const MessageListWrap = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
 
 function MessageRow({ msg }: { msg: DecodedMessage }) {
   const navigate = useNavigate();
-  const { setOpenMessageModal } = useNav();
   const { xmtpClient } = useXmtpClient();
   const [attachmentUrl, setAttachmentUrl] = useState<string>('');
   useEffect(() => {
@@ -60,7 +65,6 @@ function MessageRow({ msg }: { msg: DecodedMessage }) {
           e.stopPropagation();
           e.preventDefault();
           navigate(profileUrl);
-          setOpenMessageModal(false);
         }}
       >
         <AvatarStyled address={msg.senderAddress} />

@@ -14,7 +14,6 @@ import {
 } from '../../contexts/notification/NotificationStoreCtx';
 import NotificationModal from './NotificationModal';
 import useFarcasterCurrFid from '../../hooks/social/farcaster/useFarcasterCurrFid';
-import { NavModalName, useNav } from '../../contexts/NavCtx';
 
 export default function NotificationButtonContainer() {
   const isAuthenticated = useIsAuthenticated();
@@ -32,17 +31,15 @@ export default function NotificationButtonContainer() {
 }
 
 function NotificationButton() {
-  const { openNotificationModal, switchNavModal } = useNav();
   const { unreadCount, clearUnread } = useNotificationStore();
 
   return (
     <>
       <NotificationButtonStyled
         unreadCount={unreadCount}
-        isActive={openNotificationModal}
+        isActive={false}
         onClick={() => {
-          if (unreadCount && !openNotificationModal) clearUnread();
-          switchNavModal(NavModalName.Notification);
+          if (unreadCount) clearUnread();
         }}
       />
 
@@ -60,7 +57,6 @@ function NotificationButtonStyled({
   isActive: boolean;
   onClick: () => void;
 }) {
-  const { renderNavItemText } = useNav();
   return (
     <PcNavItem isActive={isActive} onClick={onClick}>
       <NavItemIconBox isActive={isActive}>
@@ -81,7 +77,6 @@ function NotificationButtonStyled({
           />
         )}
       </NavItemIconBox>
-      {renderNavItemText(`Notifications`)}
       {unreadCount > 0 && (
         <div
           className="

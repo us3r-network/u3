@@ -6,7 +6,6 @@ import { SocialPlatform } from '../../../services/social/types';
 import LensIcon from '../../common/icons/LensIcon';
 import FarcasterIcon from '../../common/icons/FarcasterIcon';
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
-import { useNav } from '../../../contexts/NavCtx';
 import {
   useXmtpClient,
   MessageRoute,
@@ -51,7 +50,6 @@ export default function FollowProfileCard({
   const { handle, avatar, name, address, bio, platforms, isFollowed } = data;
   const { canMessage } = useCanMessage(address);
   const { setMessageRouteParams } = useXmtpClient();
-  const { setOpenMessageModal } = useNav();
 
   const profileIdentity = useMemo(() => {
     if (handle.endsWith('.eth')) return handle;
@@ -128,7 +126,6 @@ export default function FollowProfileCard({
           {canMessage && (
             <SocialMessageChatBtn
               onClick={() => {
-                setOpenMessageModal(true);
                 setMessageRouteParams({
                   route: MessageRoute.DETAIL,
                   peerAddress: address,

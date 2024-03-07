@@ -129,7 +129,7 @@ export default function LoginButtonV2() {
             Notifications
           </DropdownMenuItemWarper>
 
-          <DropdownMenuItemWarper disabled>
+          <DropdownMenuItemWarper onClick={() => navigate('/message')}>
             <ChatRoomIcon2 />
             Message
           </DropdownMenuItemWarper>

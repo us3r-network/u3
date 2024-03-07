@@ -76,6 +76,8 @@ export enum RouteKey {
   dappCreate = 'dappCreate',
   // notification
   notification = 'notification',
+  // message
+  message = 'message',
   // others
   noMatch = 'noMatch',
   policy = 'policy',
@@ -351,6 +353,13 @@ export const routes: CutomRouteObject[] = [
         title: 'Notifications',
       },
     ],
+  },
+  // message
+  {
+    path: '/message',
+    element: loadContainerElement('message/MessageLayout'),
+    key: RouteKey.message,
+    title: 'Message',
   },
   // community
   {
