@@ -3,7 +3,7 @@ import { useProfiles } from '@lens-protocol/react-web';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
-import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
+import useFarcasterUserStats from '../social/farcaster/useFarcasterUserStats';
 import { PlatformAccountData, SocialPlatform } from '@/services/social/types';
 import getAvatar from '@/utils/social/lens/getAvatar';
 import {
@@ -50,7 +50,7 @@ export default function usePlatformProfileInfoData({
     }
   }, [fid, farcasterUserData]);
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterUserStats } = useFarcasterUserStats(fid);
 
   const platformAccounts: PlatformAccountData[] = useMemo(() => {
     const accounts = [];
@@ -81,17 +81,20 @@ export default function usePlatformProfileInfoData({
     return accounts;
   }, [lensProfiles, fcastBioLinks, fid]);
 
-  const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.followers || 0;
+  const postCount = useMemo(() => {
+    const lensCount = lensProfileFirst?.stats.posts || 0;
+    return lensCount + farcasterUserStats.postCount || 0;
+  }, [lensProfileFirst, farcasterUserStats]);
 
-    return lensFollowersCount + farcasterFollowData.followers;
-  }, [lensProfileFirst, farcasterFollowData]);
+  const followerCount = useMemo(() => {
+    const lensCount = lensProfileFirst?.stats.followers || 0;
+    return lensCount + farcasterUserStats.followerCount;
+  }, [lensProfileFirst, farcasterUserStats]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.following || 0;
-
-    return lensFollowersCount + farcasterFollowData.following;
-  }, [lensProfileFirst, farcasterFollowData]);
+    const lensCount = lensProfileFirst?.stats.following || 0;
+    return lensCount + farcasterUserStats.followingCount;
+  }, [lensProfileFirst, farcasterUserStats]);
 
   return {
     fid,
@@ -99,8 +102,8 @@ export default function usePlatformProfileInfoData({
     lensProfiles,
     recommendAddress,
     platformAccounts,
-    postsCount: 0,
-    followersCount,
+    postCount,
+    followerCount,
     followingCount,
     bioLinkLoading,
     lensProfilesLoading,

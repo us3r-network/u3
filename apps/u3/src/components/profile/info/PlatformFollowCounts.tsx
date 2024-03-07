@@ -4,14 +4,14 @@ import { cn } from '@/lib/utils';
 
 interface PlatformFollowCountsProps {
   identity?: string;
-  postsCount: number;
-  followersCount: number;
+  postCount: number;
+  followerCount: number;
   followingCount: number;
 }
 export default function PlatformFollowCounts({
   identity,
-  postsCount,
-  followersCount,
+  postCount,
+  followerCount,
   followingCount,
 }: PlatformFollowCountsProps) {
   const navigate = useNavigate();
@@ -20,12 +20,12 @@ export default function PlatformFollowCounts({
     <div className="flex items-center justify-between">
       <CountItem
         label="Posts"
-        count={postsCount}
+        count={postCount}
         onClick={() => navigate(`/u${pathSuffix}?type=following`)}
       />
       <CountItem
         label="Followers"
-        count={followersCount}
+        count={followerCount}
         onClick={() => navigate(`/u/contacts${pathSuffix}?type=follower`)}
       />
       <CountItem
