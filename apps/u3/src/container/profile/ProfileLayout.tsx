@@ -85,7 +85,7 @@ export default function ProfileLayout() {
           <ProfileMenu isSelf={isSelf} />
         </div>
       )}
-      <div className="flex-1 h-full overflow-auto">
+      <div className="flex-1 h-full overflow-auto" id="profile-warper">
         <Outlet
           context={{
             did: identity ? identityDid : session?.id,
