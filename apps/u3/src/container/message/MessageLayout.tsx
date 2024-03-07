@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { useXmtpClient } from '@/contexts/message/XmtpClientCtx';
+import { MessageRoute, useXmtpClient } from '@/contexts/message/XmtpClientCtx';
 import MessageMenu from './MessageMenu';
-import ConvoMessagesPage from '@/components/message/ConvoMessagesPage';
-import ProfileInfoCard from '@/components/profile/info/ProfileInfoCard';
 import { XmtpStoreProvider } from '@/contexts/message/XmtpStoreCtx';
+import MessageDetail from './MessageDetail';
 
 export default function ProfileLayout() {
   const { messageRouteParams, setCanEnableXmtp } = useXmtpClient();
-  const { peerAddress } = messageRouteParams;
+  const { route, peerAddress } = messageRouteParams;
   useEffect(() => {
     setCanEnableXmtp(true);
   }, [setCanEnableXmtp]);
@@ -17,17 +16,9 @@ export default function ProfileLayout() {
         <div className="w-[280px] h-full max-sm:hidden">
           <MessageMenu />
         </div>
-        {peerAddress && (
-          <>
-            {' '}
-            <div className="flex-1 h-full overflow-auto">
-              <ConvoMessagesPage />
-            </div>
-            <div className="w-[320px] h-full max-sm:hidden">
-              <ProfileInfoCard identity={peerAddress} />
-            </div>
-          </>
-        )}
+        <div className="flex-1 h-full overflow-auto">
+          {route === MessageRoute.DETAIL && peerAddress && <MessageDetail />}
+        </div>
       </div>
     </XmtpStoreProvider>
   );

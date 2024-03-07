@@ -2,7 +2,6 @@ import styled, { StyledComponentPropsWithRef } from 'styled-components';
 import { Profile } from '@lens-protocol/react-web';
 import { useEffect } from 'react';
 import { SocialButtonPrimary } from '../../social/button/SocialButton';
-import { useNav } from '../../../contexts/NavCtx';
 import { ReactComponent as MessageChatSquareSvg } from '../../common/assets/svgs/message-chat-square.svg';
 import useCanMessage from '../../../hooks/message/xmtp/useCanMessage';
 import {
@@ -30,8 +29,6 @@ export default function ProfileBtns({
   useEffect(() => {
     setCanEnableXmtp(true);
   }, []);
-
-  const { setOpenMessageModal } = useNav();
   const { canMessage } = useCanMessage(address);
   return (
     <BtnsWrapper {...wrapperProps}>
@@ -40,7 +37,6 @@ export default function ProfileBtns({
       {showMessageBtn && canMessage && (
         <MessageBtn
           onClick={() => {
-            setOpenMessageModal(true);
             setMessageRouteParams({
               route: MessageRoute.DETAIL,
               peerAddress: address,

@@ -5,7 +5,7 @@ import {
 } from '../../contexts/message/XmtpClientCtx';
 import useStartNewConvo from '../../hooks/message/xmtp/useStartNewConvo';
 import ColorButton from '../common/button/ColorButton';
-import { Input } from '../ui/input';
+import InputBase from '../common/input/InputBase';
 
 export default function StartNewConversation() {
   const { setMessageRouteParams } = useXmtpClient();
@@ -15,7 +15,7 @@ export default function StartNewConversation() {
   return (
     <div className="w-full flex flex-col gap-[10px]">
       <div className="flex gap-[10px">
-        <Input
+        <InputBase
           className="text-white"
           disabled={isStarting}
           placeholder="Enter address of recipient"
@@ -26,6 +26,7 @@ export default function StartNewConversation() {
           }}
         />
         <ColorButton
+          className="h-[40px]"
           disabled={!convoAddress || isStarting}
           onClick={(e) => {
             e.preventDefault();

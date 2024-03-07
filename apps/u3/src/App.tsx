@@ -29,7 +29,6 @@ import { injectStore, injectU3Token } from './services/shared/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/message/XmtpClientCtx';
 import { AppLensProvider } from './contexts/social/AppLensCtx';
-import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
 import { GlobalModalsProvider } from './contexts/shared/GlobalModalsCtx';
@@ -62,11 +61,9 @@ function App() {
                   <BrowserRouter>
                     <FarcasterProvider>
                       <GlobalModalsProvider>
-                        <NavProvider>
-                          <GlobalModals />
-                          <LensGlobalModals />
-                          <Layout />
-                        </NavProvider>
+                        <GlobalModals />
+                        <LensGlobalModals />
+                        <Layout />
                       </GlobalModalsProvider>
                     </FarcasterProvider>
                   </BrowserRouter>

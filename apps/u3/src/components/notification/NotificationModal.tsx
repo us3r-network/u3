@@ -9,29 +9,25 @@ import dayjs from 'dayjs';
 import getContent from 'src/utils/social/lens/getContent';
 import { getHandle, getName } from 'src/utils/social/lens/profile';
 import { useNotificationStore } from '../../contexts/notification/NotificationStoreCtx';
-import { ModalCloseBtn } from '../common/modal/ModalWidgets';
 import { FarcasterNotification } from '../../services/social/api/farcaster';
 import useFarcasterUserData from '../../hooks/social/farcaster/useFarcasterUserData';
 import getAvatar from '../../utils/social/lens/getAvatar';
 import LensIcon from '../common/icons/LensIcon';
 import FarcasterIcon from '../common/icons/FarcasterIcon';
 import Loading from '../common/loading/Loading';
-import { useNav } from '../../contexts/NavCtx';
 // import { NotificationSettingsGroup } from './PushNotificationsToogleBtn';
 
 export default function NotificationModal() {
-  const { openNotificationModal, setOpenNotificationModal } = useNav();
   const { notifications, loading, hasMore, loadMore, farcasterUserData } =
     useNotificationStore();
   return (
-    <Wrapper open={openNotificationModal}>
+    <Wrapper open={false}>
       <Body>
         <Header>
           <Title>Notifications</Title>
           {/* <div className="text-[white] flex gap-[100px] w-[100px] overflow-hidden whitespace-nowrap">
             <NotificationSettingsGroup />
           </div> */}
-          <ModalCloseBtn onClick={() => setOpenNotificationModal(false)} />
         </Header>
         {notifications && notifications.length > 0 && (
           <NotificationListWraper id="notification-list-wraper">
@@ -107,7 +103,6 @@ export function FarcasterNotificationItem({
   farcasterUserData,
 }: StyledComponentPropsWithRef<'div'> & FarcasterNotificationItemProps) {
   const navigate = useNavigate();
-  const { setOpenNotificationModal } = useNav();
   const userData = useFarcasterUserData({
     fid: String(notification.message_fid),
     farcasterUserData,
@@ -125,7 +120,6 @@ export function FarcasterNotificationItem({
                   notification.replies_hash
                 ).toString('hex')}`
               );
-              setOpenNotificationModal(false);
             }}
           >
             <Avatar src={userData.pfp} />
@@ -154,7 +148,6 @@ export function FarcasterNotificationItem({
                   notification.casts_hash
                 ).toString('hex')}`
               );
-              setOpenNotificationModal(false);
             }}
           >
             <Avatar src={userData.pfp} />
@@ -183,7 +176,6 @@ export function FarcasterNotificationItem({
                     notification.casts_hash
                   ).toString('hex')}`
                 );
-                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -209,7 +201,6 @@ export function FarcasterNotificationItem({
                     notification.casts_hash
                   ).toString('hex')}`
                 );
-                setOpenNotificationModal(false);
               }}
             >
               <Avatar src={userData.pfp} />
@@ -235,7 +226,6 @@ export function FarcasterNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/u/${userData.userName}.fcast`);
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={userData.pfp} />
@@ -272,7 +262,6 @@ function LensNotificationItem({
   notification,
 }: StyledComponentPropsWithRef<'div'> & LensNotificationItemProps) {
   const navigate = useNavigate();
-  const { setOpenNotificationModal } = useNav();
   switch (notification.__typename) {
     case LensNotificationType.NEW_COMMENT:
       return (
@@ -281,7 +270,6 @@ function LensNotificationItem({
             navigate(
               `/social/post-detail/lens/${notification?.comment?.commentOn?.id}#${notification?.comment?.id}`
             );
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.comment.by)} />
@@ -307,7 +295,6 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.publication.id}`);
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.reactions[0].profile)} />
@@ -335,7 +322,6 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.publication.id}`);
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.mirrors[0].profile)} />
@@ -361,7 +347,6 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/u/${notification.followers[0].handle.fullHandle}.lens`);
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.followers[0])} />
@@ -386,7 +371,6 @@ function LensNotificationItem({
         <NotificationItem
           onClick={() => {
             navigate(`/social/post-detail/lens/${notification.publication.id}`);
-            setOpenNotificationModal(false);
           }}
         >
           <Avatar src={getAvatar(notification.publication.by)} />

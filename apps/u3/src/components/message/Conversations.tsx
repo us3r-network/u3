@@ -1,4 +1,3 @@
-import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
 import dayjs from 'dayjs';
 import { ComponentPropsWithRef, useEffect, useState } from 'react';
@@ -22,9 +21,20 @@ export default function Conversations({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
-  const { setMessageRouteParams } = useXmtpClient();
+  const { messageRouteParams, setMessageRouteParams } = useXmtpClient();
+  const { peerAddress } = messageRouteParams;
 
   const { isLoading, conversationList } = useConversationList();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (conversationList.length === 0) return;
+    if (peerAddress) return;
+    setMessageRouteParams({
+      route: MessageRoute.DETAIL,
+      peerAddress: conversationList[0].conversation.peerAddress,
+    });
+  }, [isLoading, conversationList, peerAddress]);
 
   return (
     <div className={cn('w-full', className)} {...props}>
