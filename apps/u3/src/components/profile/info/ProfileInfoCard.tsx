@@ -1,14 +1,13 @@
 import { Profile as U3Profile } from '@us3r-network/data-model';
-import { useProfileState } from '@us3r-network/profile';
-import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
+import { ComponentPropsWithRef, useMemo } from 'react';
 import useDid from '@/hooks/profile/useDid';
 // import Loading from '../../common/loading/Loading';
 import { MultiPlatformShareMenuBtn } from '@/components/shared/share/MultiPlatformShareMenuBtn';
 import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
 import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
-import { isDidPkh } from '@/utils/shared/did';
 import { getProfileShareUrl } from '@/utils/shared/share';
 import ProfileInfoCardLayout from './ProfileInfoCardLayout';
+import useHasU3ProfileWithDid from '@/hooks/profile/useHasU3ProfileWithDid';
 
 interface ProfileInfoCardProps extends ComponentPropsWithRef<'div'> {
   isSelf?: boolean;
@@ -24,30 +23,14 @@ export default function ProfileInfoCard({
   ...wrapperProps
 }: ProfileInfoCardProps) {
   const { did, loading: didLoading } = useDid(identity);
-  const { getProfileWithDid } = useProfileState();
-  const [u3Profile, setU3Profile] = useState(null);
-  const [hasProfileLoading, setHasProfileLoading] = useState(false);
-  useEffect(() => {
-    (async () => {
-      if (isDidPkh(did)) {
-        setHasProfileLoading(true);
-        const profile = await getProfileWithDid(did);
-        if (profile) {
-          setU3Profile(profile);
-        }
-        setHasProfileLoading(false);
-      } else {
-        setU3Profile(null);
-      }
-    })();
-  }, [did]);
+  const { u3Profile, hasU3ProfileLoading } = useHasU3ProfileWithDid(did);
 
   const shareLink = useMemo(() => getProfileShareUrl(identity), [identity]);
   const navigateToProfileUrl = useMemo(
     () => (canNavigateToProfile ? `/u/${identity}` : undefined),
     [canNavigateToProfile, identity]
   );
-  if (didLoading || hasProfileLoading) {
+  if (didLoading || hasU3ProfileLoading) {
     return null;
     // return (
     //   <LoadingWrapper {...wrapperProps}>
