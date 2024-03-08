@@ -127,7 +127,7 @@ export default function FollowProfileCard({
             <SocialMessageChatBtn
               onClick={() => {
                 setMessageRouteParams({
-                  route: MessageRoute.DETAIL,
+                  route: MessageRoute.PRIVATE_CHAT,
                   peerAddress: address,
                 });
               }}

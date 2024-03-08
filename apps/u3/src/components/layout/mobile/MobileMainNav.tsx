@@ -32,7 +32,7 @@ export default function MobileMainNav({
     lastRouteKey === RouteKey.communities ||
     firstRouteKey === RouteKey.community;
 
-  const isMessageRoute = false;
+  const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
 
   return (
@@ -52,10 +52,7 @@ export default function MobileMainNav({
         <ExploreIcon active={isExploreRoute} />
         Explore
       </MobileNavItem>
-      <MobileNavItem
-        active={isMessageRoute}
-        onClick={() => alert('Comming soon!')}
-      >
+      <MobileNavItem active={isMessageRoute} href="/message">
         <MessageIcon active={isMessageRoute} />
         Message
       </MobileNavItem>

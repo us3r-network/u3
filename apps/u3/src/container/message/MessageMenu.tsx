@@ -1,16 +1,30 @@
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import StartNewConversation from '@/components/message/StartNewConversation';
 import Conversations from '@/components/message/Conversations';
-import { useXmtpClient } from '@/contexts/message/XmtpClientCtx';
+import { MessageRoute, useXmtpClient } from '@/contexts/message/XmtpClientCtx';
 import NoEnableXmtp from '@/components/message/NoEnableXmtp';
+import useConversationList from '@/hooks/message/xmtp/useConversationList';
 
 export default function MessageMenu({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
-  const { xmtpClient } = useXmtpClient();
+  const { xmtpClient, messageRouteParams, setMessageRouteParams } =
+    useXmtpClient();
+  const { peerAddress } = messageRouteParams;
+  const { isLoading, conversationList } = useConversationList();
+  useEffect(() => {
+    if (isLoading) return;
+    if (conversationList.length === 0) return;
+    if (peerAddress) return;
+    setMessageRouteParams({
+      route: MessageRoute.HOME,
+      peerAddress: conversationList[0]?.conversation?.peerAddress,
+    });
+  }, [isLoading, conversationList, peerAddress]);
+
   return (
     <div
       className={cn(`w-[280px] h-full flex flex-col bg-[#1B1E23]`, className)}

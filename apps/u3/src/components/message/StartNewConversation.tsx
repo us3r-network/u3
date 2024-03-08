@@ -34,7 +34,7 @@ export default function StartNewConversation() {
               onSuccess: () => {
                 setConvoAddress('');
                 setMessageRouteParams({
-                  route: MessageRoute.DETAIL,
+                  route: MessageRoute.PRIVATE_CHAT,
                   peerAddress: convoAddress,
                 });
               },

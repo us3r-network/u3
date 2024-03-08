@@ -20,20 +20,8 @@ export default function Conversations({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
-  const { messageRouteParams, setMessageRouteParams } = useXmtpClient();
-  const { peerAddress } = messageRouteParams;
-
+  const { setMessageRouteParams } = useXmtpClient();
   const { isLoading, conversationList } = useConversationList();
-
-  useEffect(() => {
-    if (isLoading) return;
-    if (conversationList.length === 0) return;
-    if (peerAddress) return;
-    setMessageRouteParams({
-      route: MessageRoute.DETAIL,
-      peerAddress: conversationList[0].conversation.peerAddress,
-    });
-  }, [isLoading, conversationList, peerAddress]);
 
   return (
     <div className={cn('w-full', className)} {...props}>
@@ -48,7 +36,7 @@ export default function Conversations({
               key={`Convo_${conversation.peerAddress}`}
               selectConvoAction={(address) => {
                 setMessageRouteParams({
-                  route: MessageRoute.DETAIL,
+                  route: MessageRoute.PRIVATE_CHAT,
                   peerAddress: address,
                 });
               }}
