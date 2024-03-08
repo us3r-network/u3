@@ -201,28 +201,6 @@ export function getFarcasterUserStats(fid: string | number): AxiosPromise<
   });
 }
 
-export function getFarcasterLinks(
-  fid: string | number,
-  withInfo = false
-): AxiosPromise<
-  ApiResp<{
-    followerCount: number;
-    followingCount: number;
-    followerData: string[];
-    followingData: string[];
-    farcasterUserData: { fid: string; type: number; value: string }[];
-  }>
-> {
-  return axios({
-    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/links`,
-    method: 'get',
-    params: {
-      fid,
-      withInfo,
-    },
-  });
-}
-
 export type FarcasterLink = {
   fid: number;
   targetFid: number;
