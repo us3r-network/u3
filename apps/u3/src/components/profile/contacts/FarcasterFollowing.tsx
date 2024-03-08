@@ -1,24 +1,19 @@
-import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
-import Loading from 'src/components/common/loading/Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Loading from 'src/components/common/loading/Loading';
+import { EndMsgContainer } from '@/components/social/CommonStyles';
+import { FollowType } from '@/container/profile/Contacts';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
+import useFarcasterLinks from '@/hooks/social/farcaster/useFarcasterLinks';
+import FarcasterFollowProfileCard from './FarcasterFollowProfileCard';
 import {
   FollowList,
   FollowListWrapper,
   LoadingMoreWrapper,
   LoadingWrapper,
 } from './FollowListWidgets';
-import FarcasterFollowProfileCard from './FarcasterFollowProfileCard';
-import useFarcasterLinks from '@/hooks/social/farcaster/useFarcasterLinks';
-import { FollowType } from '@/container/profile/Contacts';
-import { EndMsgContainer } from '@/components/social/CommonStyles';
 
 export default function FarcasterFollowing({ fid }: { fid: string | number }) {
-  const { farcasterFollowData, loading: followingLoading } =
-    useFarcasterFollowData({
-      fid,
-    });
-  const following = farcasterFollowData.followingData;
-
+  const { following } = useFarcasterCtx();
   const {
     links,
     firstLoading,
@@ -32,7 +27,7 @@ export default function FarcasterFollowing({ fid }: { fid: string | number }) {
     type: FollowType.FOLLOWING,
   });
 
-  if (firstLoading || followingLoading) {
+  if (firstLoading) {
     return (
       <FollowListWrapper>
         <LoadingWrapper>

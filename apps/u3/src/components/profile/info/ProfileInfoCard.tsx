@@ -93,7 +93,7 @@ function PlatformProfileInfoCardContainer({
     bioLinkLoading,
   } = usePlatformProfileInfoData({ identity });
   return (
-    <div className="relative">
+    <div className="relative border-b">
       <ProfileInfoCardLayout
         identity={identity}
         isSelf={isSelf}

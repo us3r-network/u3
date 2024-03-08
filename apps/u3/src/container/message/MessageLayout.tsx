@@ -9,7 +9,7 @@ import Conversations from '@/components/message/Conversations';
 import NoEnableXmtp from '@/components/message/NoEnableXmtp';
 import StartNewConversation from '@/components/message/StartNewConversation';
 
-export default function ProfileLayout() {
+export default function MessageLayout() {
   const { messageRouteParams, setCanEnableXmtp, xmtpClient } = useXmtpClient();
   const { route, peerAddress } = messageRouteParams;
   useEffect(() => {

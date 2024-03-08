@@ -1,6 +1,8 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { NobleEd25519Signer, UserDataType } from '@farcaster/hub-web';
+import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { useProfileState } from '@us3r-network/profile';
 import {
   ReactNode,
   createContext,
@@ -10,45 +12,41 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { useSession } from '@us3r-network/auth-with-rainbowkit';
-import { useProfileState } from '@us3r-network/profile';
-
-import useLogin from 'src/hooks/shared/useLogin';
-import FarcasterSignerSelectModal from 'src/components/social/farcaster/FarcasterSignerSelectModal';
-import useFarcasterWallet from 'src/hooks/social/farcaster/useFarcasterWallet';
-import useFarcasterQR from 'src/hooks/social/farcaster/useFarcasterQR';
-import useFarcasterTrendChannel from 'src/hooks/social/farcaster/useFarcasterTrendChannel';
-import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
-import useFarcasterChannel, {
-  FarcasterChannel,
-} from 'src/hooks/social/farcaster/useFarcasterChannel';
-
-import {
-  getDefaultFarcaster,
-  setDefaultFarcaster,
-} from 'src/utils/social/farcaster/farcaster-default';
-
-import { getPrivateKey } from '../../utils/social/farcaster/farsign-utils';
-import FarcasterQRModal from '../../components/social/farcaster/FarcasterQRModal';
-import useBioLinkActions from '../../hooks/profile/useBioLinkActions';
+import { useNavigate } from 'react-router-dom';
+import { getPrivateKey } from '@/utils/social/farcaster/farsign-utils';
 import {
   BIOLINK_FARCASTER_NETWORK,
   BIOLINK_PLATFORMS,
   farcasterHandleToBioLinkHandle,
-} from '../../utils/profile/biolink';
-import {
-  UserData,
-  userDataObjFromArr,
-} from '@/utils/social/farcaster/user-data';
-import usePinupHashes from '@/hooks/social/farcaster/usePinupHashes';
+} from '@/utils/profile/biolink';
+import useBioLinkActions from '@/hooks/profile/useBioLinkActions';
+import FarcasterQRModal from '@/components/social/farcaster/FarcasterQRModal';
 import AddPostModal from '@/components/social/AddPostModal';
 import QuickSearchModal, {
   QuickSearchModalName,
 } from '@/components/social/QuickSearchModal';
 import ClaimNotice from '@/components/social/farcaster/ClaimNotice';
+import FarcasterSignerSelectModal from '@/components/social/farcaster/FarcasterSignerSelectModal';
+import { FollowType } from '@/container/profile/Contacts';
+import useLogin from '@/hooks/shared/useLogin';
+import useFarcasterChannel, {
+  FarcasterChannel,
+} from '@/hooks/social/farcaster/useFarcasterChannel';
 import useFarcasterClaim from '@/hooks/social/farcaster/useFarcasterClaim';
+import useFarcasterLinks from '@/hooks/social/farcaster/useFarcasterLinks';
+import useFarcasterQR from '@/hooks/social/farcaster/useFarcasterQR';
+import useFarcasterTrendChannel from '@/hooks/social/farcaster/useFarcasterTrendChannel';
+import useFarcasterWallet from '@/hooks/social/farcaster/useFarcasterWallet';
+import usePinupHashes from '@/hooks/social/farcaster/usePinupHashes';
+import {
+  getDefaultFarcaster,
+  setDefaultFarcaster,
+} from '@/utils/social/farcaster/farcaster-default';
+import {
+  UserData,
+  userDataObjFromArr,
+} from '@/utils/social/farcaster/user-data';
 
 export type Token = {
   token: string;
@@ -163,13 +161,18 @@ export default function FarcasterProvider({
   const [currFid, setCurrFid] = useState<number>();
   const [signerSelectModalOpen, setSignerSelectModalOpen] = useState(false);
   const [following, setFollowing] = useState<string[]>([]);
-  const { farcasterFollowData } = useFarcasterFollowData({
+  const { links: farcasterFollowingLinks } = useFarcasterLinks({
     fid: currFid,
+    pageSize: 999,
+    type: FollowType.FOLLOWING,
   });
   const { claimStatus, setClaimStatus } = useFarcasterClaim({ currFid });
   useEffect(() => {
-    setFollowing(farcasterFollowData?.followingData || []);
-  }, [farcasterFollowData]);
+    const following = farcasterFollowingLinks?.map((item) =>
+      String(item.targetFid)
+    );
+    setFollowing(following || []);
+  }, [farcasterFollowingLinks]);
   const {
     userChannels,
     getUserChannels,

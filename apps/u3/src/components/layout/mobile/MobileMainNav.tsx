@@ -15,12 +15,15 @@ import { cn } from '@/lib/utils';
 import NotificationIcon from '../nav-icons/NotificationIcon';
 import MessageIcon from '../nav-icons/MessageIcon';
 import ExploreIcon from '../nav-icons/ExploreIcon';
+import LoginButtonV2 from '../LoginButtonV2';
+import useLogin from '@/hooks/shared/useLogin';
 
 export default function MobileMainNav({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
   const { firstRouteMeta, lastRouteMeta } = useRoute();
+  const { isLogin } = useLogin();
 
   const firstRouteKey = firstRouteMeta?.key;
   const lastRouteKey = lastRouteMeta?.key;
@@ -34,7 +37,7 @@ export default function MobileMainNav({
 
   const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
-
+  const isProfileRoute = firstRouteKey === RouteKey.profile;
   return (
     <div
       className={cn(
@@ -59,6 +62,10 @@ export default function MobileMainNav({
       <MobileNavItem href="/notification" active={isNotificationRoute}>
         <NotificationIcon active={isNotificationRoute} />
         Notification
+      </MobileNavItem>
+      <MobileNavItem active={isProfileRoute}>
+        <LoginButtonV2 />
+        {isLogin ? 'Profile' : 'Login'}
       </MobileNavItem>
     </div>
   );
