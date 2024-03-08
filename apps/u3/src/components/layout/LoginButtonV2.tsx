@@ -31,6 +31,7 @@ import {
   FarcasterAccount,
   LensAccount,
 } from '../profile/info/PlatformAccounts';
+import LoginIcon from './nav-icons/LoginIcon';
 
 const CONTACT_LINKS = [
   {
@@ -69,7 +70,10 @@ export default function LoginButtonV2() {
   if (!isLogin) {
     return (
       <ButtonWrapper onClick={login}>
-        <span className="wl-user-button_no-login-text">Login</span>
+        <div className="flex items-center gap-4">
+          <LoginIcon />
+          <span className="max-sm:hidden">Login</span>
+        </div>
       </ButtonWrapper>
     );
   }
@@ -97,9 +101,9 @@ export default function LoginButtonV2() {
               setOpenMenu((pre) => !pre);
             }}
           >
-            <div className="flex items-center justify-between gap-[12px]">
-              <UserAvatar className="size-8 flex-shrink-0" />
-              <UserName className="text-[#FFF] text-[16px] font-normal" />
+            <div className="flex items-center gap-4">
+              <UserAvatar style={{ width: '24px', height: '24px' }} />
+              <UserName className="max-sm:hidden" />
             </div>
           </ButtonWrapper>
         </DropdownMenuTrigger>
@@ -124,12 +128,18 @@ export default function LoginButtonV2() {
             My favorites
           </DropdownMenuItemWarper>
 
-          <DropdownMenuItemWarper onClick={() => navigate('/notification')}>
+          <DropdownMenuItemWarper
+            className="max-sm:hidden"
+            onClick={() => navigate('/notification')}
+          >
             <NotificationIcon />
             Notifications
           </DropdownMenuItemWarper>
 
-          <DropdownMenuItemWarper onClick={() => navigate('/message')}>
+          <DropdownMenuItemWarper
+            className="max-sm:hidden"
+            onClick={() => navigate('/message')}
+          >
             <ChatRoomIcon2 />
             Message
           </DropdownMenuItemWarper>
@@ -212,7 +222,7 @@ function ButtonWrapper({ className, ...props }: ComponentPropsWithRef<'div'>) {
       className={cn(
         `flex items-center justify-between
         text-white text-[16px] font-bold
-        h-[76px] w-full p-[20px] box-border bg-[#14171A]
+        sm:h-[76px] sm:w-full sm:p-[20px] box-border
         outline-none border-none`,
         className
       )}

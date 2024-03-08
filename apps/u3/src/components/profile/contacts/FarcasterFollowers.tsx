@@ -1,6 +1,5 @@
-import useFarcasterFollowData from 'src/hooks/social/farcaster/useFarcasterFollowData';
-import Loading from 'src/components/common/loading/Loading';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import Loading from '@/components/common/loading/Loading';
 import {
   FollowList,
   FollowListWrapper,
@@ -11,14 +10,10 @@ import FarcasterFollowProfileCard from './FarcasterFollowProfileCard';
 import useFarcasterLinks from '@/hooks/social/farcaster/useFarcasterLinks';
 import { FollowType } from '@/container/profile/Contacts';
 import { EndMsgContainer } from '@/components/social/CommonStyles';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function FarcasterFollowers({ fid }: { fid: string | number }) {
-  const { farcasterFollowData, loading: followingLoading } =
-    useFarcasterFollowData({
-      fid,
-    });
-  const following = farcasterFollowData.followingData;
-
+  const { following } = useFarcasterCtx();
   const {
     links,
     firstLoading,
@@ -32,7 +27,7 @@ export default function FarcasterFollowers({ fid }: { fid: string | number }) {
     type: FollowType.FOLLOWER,
   });
 
-  if (firstLoading || followingLoading) {
+  if (firstLoading) {
     return (
       <FollowListWrapper>
         <LoadingWrapper>
