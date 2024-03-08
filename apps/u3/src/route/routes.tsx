@@ -344,6 +344,7 @@ export const routes: CutomRouteObject[] = [
     path: '/notification',
     element: loadContainerElement('notification/NotificationLayout'),
     key: RouteKey.notification,
+    permissions: [RoutePermission.login],
     title: 'Notifications',
     children: [
       {
