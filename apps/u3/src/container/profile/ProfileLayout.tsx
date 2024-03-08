@@ -9,6 +9,7 @@ import useDid from '@/hooks/profile/useDid';
 import ProfileInfoCard from '@/components/profile/info/ProfileInfoCard';
 import Loading from '@/components/common/loading/Loading';
 import ProfileMenu from './ProfileMenu';
+import ProfileMobileHeader from './ProfileMobileHeader';
 
 export type ProfileOutletContext = {
   did: string;
@@ -108,6 +109,7 @@ export default function ProfileLayout() {
       </div>
       {/* Mobile */}
       <div className="w-full h-full flex-col sm:hidden">
+        <ProfileMobileHeader />
         <div className="bg-[#1B1E23] overflow-auto">
           <ProfileInfoCard isSelf={isSelf} identity={identity || session?.id} />
         </div>
