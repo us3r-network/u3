@@ -563,6 +563,14 @@ export function postFrameActionRedirectApi(data: any) {
   });
 }
 
+export function postFrameActionTxApi(data: any) {
+  return axios({
+    url: `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/frame-action-tx/proxy`,
+    method: 'post',
+    data,
+  });
+}
+
 export function notifyTipApi(data: {
   txHash: string;
   amount: number;
