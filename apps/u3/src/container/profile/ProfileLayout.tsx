@@ -108,7 +108,7 @@ export default function ProfileLayout() {
       </div>
       {/* Mobile */}
       <div className="w-full h-full flex-col sm:hidden">
-        <div className="overflow-auto">
+        <div className="bg-[#1B1E23] overflow-auto">
           <ProfileInfoCard isSelf={isSelf} identity={identity || session?.id} />
         </div>
         <div className="flex-1 h-full overflow-auto" id="profile-warper">
