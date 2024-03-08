@@ -2,8 +2,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useCallback, useState } from 'react';
 import { Frame } from 'frames.js';
+import {
+  sendTransaction,
+  simulateContract,
+  switchChain,
+  waitForTransactionReceipt,
+  writeContract,
+} from '@wagmi/core';
+import { useAccount, useConfig } from 'wagmi';
+
 import { CastId, Message, makeFrameAction } from '@farcaster/hub-web';
-import { toHex } from 'viem';
+import { formatEther, parseEther, toHex } from 'viem';
 import { toast } from 'react-toastify';
 import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import { FarCast } from '../../services/social/types';
@@ -17,6 +26,7 @@ import { cn } from '@/lib/utils';
 import {
   postFrameActionApi,
   postFrameActionRedirectApi,
+  postFrameActionTxApi,
 } from '@/services/social/api/farcaster';
 
 export default function EmbedCastFrame({
@@ -30,10 +40,127 @@ export default function EmbedCastFrame({
 }) {
   const castId: CastId = useFarcasterCastId({ cast });
   const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
-
+  const { chain, address } = useAccount();
   const [frameText, setFrameText] = useState('');
   const [frameRedirect, setFrameRedirect] = useState('');
   const [frameData, setFrameData] = useState<Frame>(data);
+
+  const config = useConfig();
+
+  const reportTransaction = useCallback(
+    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+      if (!castId) {
+        console.error('no castId');
+        toast.error('cast is required');
+        return;
+      }
+      if (!encryptedSigner || !currFid) {
+        console.error('no encryptedSigner');
+        toast.error('farcaster login is required');
+        return;
+      }
+      const trustedDataResult = await makeFrameAction(
+        {
+          url: Buffer.from(url),
+          buttonIndex: btnIdx,
+          castId,
+          inputText: Buffer.from(frameText),
+          state: Buffer.from(state || ''),
+          transactionId: Buffer.from(txId),
+        },
+        {
+          fid: currFid,
+          network: FARCASTER_NETWORK,
+        },
+        encryptedSigner
+      );
+      if (trustedDataResult.isErr()) {
+        throw new Error(trustedDataResult.error.message);
+      }
+
+      const trustedDataValue = trustedDataResult.value;
+      const untrustedData = {
+        fid: currFid,
+        url,
+        messageHash: toHex(trustedDataValue.hash),
+        network: FARCASTER_NETWORK,
+        buttonIndex: btnIdx,
+        inputText: frameText,
+        castId: {
+          fid: castId.fid,
+          hash: toHex(castId.hash),
+        },
+        state: state || '',
+        transactionId: txId,
+      };
+      const trustedData = {
+        messageBytes: Buffer.from(
+          Message.encode(trustedDataValue).finish()
+        ).toString('hex'),
+      };
+      const postData = {
+        actionUrl: postUrl,
+        untrustedData,
+        trustedData,
+      };
+      const resp = await postFrameActionApi(postData);
+      if (resp.data.code !== 0) {
+        toast.error(resp.data.msg);
+        return;
+      }
+      const { frame } = resp.data.data;
+      setFrameData(frame);
+    },
+    [frameData, currFid, encryptedSigner, castId, frameText]
+  );
+
+  const sendEthTransactionAction = async ({
+    txData,
+    chainId,
+  }: {
+    txData: any;
+    chainId: string;
+  }) => {
+    console.log('txData', txData, chainId);
+    try {
+      const parsedChainId = parseInt(chainId, 10);
+
+      // Switch chains if the user is not on the right one
+      if (chain?.id !== parsedChainId)
+        await switchChain(config, { chainId: parsedChainId });
+
+      const hash = await sendTransaction(config, {
+        ...txData,
+        // value: txData.value ? BigInt(txData.value) : 0n,
+        chainId: parsedChainId,
+      });
+      // const { request: transferDegenRequest } = await simulateContract(config, {
+      //   ...txData,
+      //   value: txData.value ? BigInt(txData.value) : 0n,
+      //   chainId: parsedChainId,
+      // });
+      // const hash = await writeContract(config, transferDegenRequest);
+      // const degenTxReceipt = await waitForTransactionReceipt(config, {
+      //   hash: degenTxHash,
+      //   chainId: base.id,
+      // });
+
+      const { status } = await waitForTransactionReceipt(config, {
+        hash,
+        chainId: parsedChainId,
+      });
+      console.log('tx status', status);
+      if (status === 'success') {
+        return hash;
+      }
+      console.error('transaction failed', hash, status);
+      //     toast.error(`mint action failed: ${status}`);
+    } catch (e: any) {
+      console.error(e);
+      // toast.error(e.message.split('\n')[0]);
+    }
+    return undefined;
+  };
 
   const postFrameAction = useCallback(
     async (index: number, action: string, target?: string) => {
@@ -63,7 +190,7 @@ export default function EmbedCastFrame({
           buttonIndex: index,
           castId,
           inputText: Buffer.from(frameText),
-          state: Buffer.from(''),
+          state: Buffer.from(frameData.state || ''),
           transactionId: Buffer.from(''),
         },
         {
@@ -88,7 +215,7 @@ export default function EmbedCastFrame({
           fid: castId.fid,
           hash: toHex(castId.hash),
         },
-        state: '',
+        state: frameData.state || '',
         transactionId: '',
       };
       const trustedData = {
@@ -97,10 +224,40 @@ export default function EmbedCastFrame({
         ).toString('hex'),
       };
       const postData = {
-        actionUrl: frameData.postUrl,
+        actionUrl: target || frameData.postUrl,
         untrustedData,
         trustedData,
+        fromAddress: '',
       };
+
+      if (action === 'tx') {
+        console.log('tx', target);
+        postData.actionUrl = target;
+        postData.fromAddress = address;
+        const resp = await postFrameActionTxApi(postData);
+        if (resp.data.code !== 0) {
+          toast.error(resp.data.msg);
+          return;
+        }
+        const chainId = resp.data.data.chainId.split(':')[1];
+        console.log('tx resp', resp.data.data.params);
+        const txHash = await sendEthTransactionAction({
+          txData: resp.data.data.params,
+          chainId,
+        });
+        if (!txHash) {
+          toast.error('transaction failed');
+          return;
+        }
+        setFrameText('');
+        await reportTransaction(
+          txHash,
+          index,
+          frameData.postUrl,
+          frameData.state
+        );
+        return;
+      }
 
       if (action === 'post_redirect') {
         const resp = await postFrameActionRedirectApi(postData);
@@ -116,10 +273,11 @@ export default function EmbedCastFrame({
           return;
         }
         const { frame } = resp.data.data;
+        console.log('frame', frame);
         setFrameData(frame);
       }
     },
-    [frameData, currFid, encryptedSigner, castId, frameText]
+    [frameData, currFid, encryptedSigner, castId, frameText, address]
   );
   return (
     <>
