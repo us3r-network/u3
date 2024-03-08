@@ -18,7 +18,7 @@ export default function NavLinkItem({
       href={href}
       onClick={(e) => {
         e.preventDefault();
-        navigate(href);
+        if (href) navigate(href);
       }}
       className={cn(
         `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors

@@ -4,7 +4,7 @@ import MessageMenu from './MessageMenu';
 import { XmtpStoreProvider } from '@/contexts/message/XmtpStoreCtx';
 import MessageDetail from './MessageDetail';
 
-export default function ProfileLayout() {
+export default function MessageLayout() {
   const { messageRouteParams, setCanEnableXmtp } = useXmtpClient();
   const { route, peerAddress } = messageRouteParams;
   useEffect(() => {
