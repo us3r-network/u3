@@ -33,6 +33,7 @@ import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
 import { GlobalModalsProvider } from './contexts/shared/GlobalModalsCtx';
 import GlobalModals from './components/shared/modal/GlobalModals';
+import { ProfileInfoProvider } from './contexts/profile/ProfileInfoCtx';
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -60,11 +61,13 @@ function App() {
                   <GlobalStyle />
                   <BrowserRouter>
                     <FarcasterProvider>
-                      <GlobalModalsProvider>
-                        <GlobalModals />
-                        <LensGlobalModals />
-                        <Layout />
-                      </GlobalModalsProvider>
+                      <ProfileInfoProvider>
+                        <GlobalModalsProvider>
+                          <GlobalModals />
+                          <LensGlobalModals />
+                          <Layout />
+                        </GlobalModalsProvider>
+                      </ProfileInfoProvider>
                     </FarcasterProvider>
                   </BrowserRouter>
                 </ReduxProvider>

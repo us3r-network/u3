@@ -11,11 +11,10 @@ import {
   useXmtpClient,
   MessageRoute,
 } from '../../contexts/message/XmtpClientCtx';
-import Name from './Name';
-import Avatar from './Avatar';
 import Loading from '../common/loading/Loading';
 import NoConversations from './NoConversations';
 import { cn } from '@/lib/utils';
+import ProfileInfoHeadless from '../profile/info/ProfileInfoHeadless';
 
 export default function Conversations({
   className,
@@ -89,22 +88,37 @@ function ConversationCard({
       className="px-0 py-[12px] flex gap-[10px] items-start cursor-pointer text-[#fff]"
       onClick={() => selectConvoAction(address)}
     >
-      <Avatar address={address} />
-      <div className="w-[0] flex-[1] flex flex-col gap-[5px]">
-        <Name address={address} />
-        <div className="text-[#9c9c9c] text-[12px] font-normal line-clamp-1">
-          {latestMessage &&
-            (() => {
-              if (isAttachment(latestMessage)) {
-                return attachmentUrl;
-              }
-              return truncate(latestMessage.content, 75);
-            })()}
-        </div>
-      </div>
-      <span className="text-[#9c9c9c] text-[12px] font-normal">
-        {latestMessage && dayjs(latestMessage.sent).fromNow()}
-      </span>
+      <ProfileInfoHeadless identity={address} isSelf={false}>
+        {({ displayAvatar, displayName }) => {
+          return (
+            <>
+              <img
+                src={displayAvatar}
+                alt=""
+                className="w-[50px] h-[50px] rounded-full"
+              />
+              <div className="w-[0] flex-[1] flex flex-col gap-[5px]">
+                {/* <Name address={address} /> */}
+                <span className="text-[#FFF] text-[16px] font-medium">
+                  {displayName}
+                </span>
+                <div className="text-[#9c9c9c] text-[12px] font-normal line-clamp-1">
+                  {latestMessage &&
+                    (() => {
+                      if (isAttachment(latestMessage)) {
+                        return attachmentUrl;
+                      }
+                      return truncate(latestMessage.content, 75);
+                    })()}
+                </div>
+              </div>
+              <span className="text-[#9c9c9c] text-[12px] font-normal">
+                {latestMessage && dayjs(latestMessage.sent).fromNow()}
+              </span>
+            </>
+          );
+        }}
+      </ProfileInfoHeadless>
     </div>
   );
 }
