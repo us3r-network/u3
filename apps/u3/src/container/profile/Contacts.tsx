@@ -69,7 +69,7 @@ export default function Contacts() {
         }}
       >
         <div className="flex items-center justify-between">
-          <TabsList className="flex gap-5 justify-start w-full bg-inherit">
+          <TabsList className="flex gap-5 justify-start bg-inherit">
             <TabsTrigger
               value={FollowType.FOLLOWING}
               className={cn(
@@ -87,15 +87,17 @@ export default function Contacts() {
               {`Followers(${followersPlatformCount[platform]})`}
             </TabsTrigger>
           </TabsList>
-          <PlatformFilter
-            defaultValue={platform}
-            onChange={(v) => {
-              setFollowNavData((prevData) => ({
-                ...prevData,
-                platform: v,
-              }));
-            }}
-          />
+          <div>
+            <PlatformFilter
+              defaultValue={platform}
+              onChange={(v) => {
+                setFollowNavData((prevData) => ({
+                  ...prevData,
+                  platform: v,
+                }));
+              }}
+            />
+          </div>
         </div>
         <TabsContent
           id="profile-contacts-following-warper"
