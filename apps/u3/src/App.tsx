@@ -47,6 +47,10 @@ function App() {
     <Us3rAuthWithRainbowkitProvider
       projectId={WALLET_CONNECT_PROJECT_ID}
       appName="U3"
+      authOpts={{
+        resources: ['ceramic://*'],
+        expirationTime: '',
+      }}
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
         <LinkStateProvider ceramicHost={CERAMIC_HOST}>

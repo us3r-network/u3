@@ -1,7 +1,7 @@
 import { Profile as LensProfile } from '@lens-protocol/react-web';
 import { useSession } from '@us3r-network/auth-with-rainbowkit';
 import { useMemo } from 'react';
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useLocation, useParams } from 'react-router-dom';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useU3ProfileInfoData from '@/hooks/profile/useU3ProfileInfoData';
 import usePlatformProfileInfoData from '@/hooks/profile/usePlatformProfileInfoData';
@@ -20,6 +20,8 @@ export type ProfileOutletContext = {
 
 export default function ProfileLayout() {
   const { user: identity } = useParams();
+  const { pathname } = useLocation();
+  const isFav = useMemo(() => pathname.includes('fav'), [pathname]);
   const {
     fid: identityFid,
     recommendAddress: identityAddress,
@@ -110,9 +112,14 @@ export default function ProfileLayout() {
       {/* Mobile */}
       <div className="w-full h-full flex-col sm:hidden">
         <ProfileMobileHeader />
-        <div className="bg-[#1B1E23] overflow-auto">
-          <ProfileInfoCard isSelf={isSelf} identity={identity || session?.id} />
-        </div>
+        {!isFav && (
+          <div className="bg-[#1B1E23] overflow-auto">
+            <ProfileInfoCard
+              isSelf={isSelf}
+              identity={identity || session?.id}
+            />
+          </div>
+        )}
         <div className="flex-1 h-full overflow-auto" id="profile-warper">
           <Outlet
             context={{

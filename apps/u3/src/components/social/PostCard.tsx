@@ -98,10 +98,11 @@ export default function PostCard({
     if (isDetail)
       setLinkParam({
         url: getOfficialPublicationUrl(id),
-        type: 'link',
+        type: 'post',
         title: data?.content.slice(0, 200), // todo: expand this limit at model
+        data,
       });
-  }, [id, isDetail]);
+  }, [id, isDetail, data?.content]);
   return (
     <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>

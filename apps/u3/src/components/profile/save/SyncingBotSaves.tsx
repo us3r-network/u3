@@ -29,8 +29,8 @@ export default function SyncingBotSaves({
           title: text
             ? text.slice(0, 200)
             : 'Saved Farcaster Cast using U3 Bot',
-          type: 'link',
-          data: JSON.stringify(item),
+          type: 'post',
+          data: JSON.stringify({ hash: item.castHash, text }),
         };
       });
       setSaves(links);

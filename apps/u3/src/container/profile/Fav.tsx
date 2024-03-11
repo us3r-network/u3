@@ -1,57 +1,31 @@
-import { useMemo, useState } from 'react';
-import styled from 'styled-components';
+import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { usePersonalFavors } from '@us3r-network/link';
-import { isMobile } from 'react-device-detect';
 import { uniqBy } from 'lodash';
-import { MainWrapper } from '../../components/layout/Index';
-import Loading from '../../components/common/loading/Loading';
-import SaveExploreList from '../../components/profile/save/SaveExploreList';
-import SaveExploreListMobile from '../../components/profile/save/SaveExploreListMobile';
+import { useMemo, useState } from 'react';
+import Loading from '@/components/common/loading/Loading';
+import { MainWrapper } from '@/components/layout/Index';
+import SaveExploreList from '@/components/profile/save/FavList';
+import SyncingBotSaves from '@/components/profile/save/SyncingBotSaves';
+import { Tabs } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
+import { getDappLinkDataWithJsonValue } from '@/utils/dapp/dapp';
 import {
   getContentLinkDataWithJsonValue,
   getContentPlatformLogoWithJsonValue,
-} from '../../utils/news/content';
-import { getDappLinkDataWithJsonValue } from '../../utils/dapp/dapp';
-import { getEventLinkDataWithJsonValue } from '../../utils/news/event';
-import SyncingBotSaves from '@/components/profile/save/SyncingBotSaves';
-// import { DappLinkData } from '../services/dapp/types/dapp';
-// import { ContentLinkData } from '../services/news/types/contents';
-// import { EventLinkData } from '../services/news/types/event';
+} from '@/utils/news/content';
+import { getEventLinkDataWithJsonValue } from '@/utils/news/event';
 
-function EmptyList() {
-  return (
-    <EmptyBox>
-      <EmptyDesc>
-        Nothing to see here！ Explore and favorite what you like！
-      </EmptyDesc>
-    </EmptyBox>
-  );
+enum FavType {
+  Link = 'link',
+  Dapp = 'dapp',
+  Content = 'content',
+  Event = 'event',
+  Post = 'post',
 }
-
-const EmptyBox = styled.div`
-  width: 100%;
-  height: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 20px;
-  background-color: #1b1e23;
-`;
-
-const EmptyDesc = styled.span`
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 19px;
-  text-align: center;
-  color: #748094;
-`;
-
 export default function Fav() {
   const { isFetching, personalFavors } = usePersonalFavors();
   const [savedLinks, setSavedLinks] = useState([]);
+  const [type, setType] = useState(FavType.Post);
   // console.log('personalFavors', personalFavors);
   const list = useMemo(
     () => [
@@ -99,52 +73,71 @@ export default function Fav() {
     ],
     [personalFavors, savedLinks]
   );
-  const isEmpty = useMemo(() => list.length === 0, [list]);
   return (
-    <Wrapper>
-      {isMobile ? null : <h3 className="text-white font-bold">Favorites</h3>}
+    <MainWrapper className="flex flex-col gap-4">
       <SyncingBotSaves
         onComplete={(saves) => {
           console.log('onComplete SyncingBotSaves');
           setSavedLinks(saves);
         }}
       />
-      <ContentWrapper>
-        {isFetching ? (
+      {isFetching ? (
+        <div className="flex items-center justify-center">
           <Loading />
-        ) : isEmpty ? (
-          <EmptyList />
-        ) : isMobile ? (
-          <SaveExploreListMobile
-            data={list}
-            onItemClick={(item) => {
-              window.open(item.url, '_blank');
-            }}
-          />
-        ) : (
-          <div className="w-full h-full">
+        </div>
+      ) : (
+        <Tabs
+          className="h-full items-start"
+          value={type}
+          onValueChange={(v) => {
+            setType(v as FavType);
+          }}
+        >
+          <TabsList className="flex gap-5 justify-start w-full bg-inherit">
+            <TabsTrigger
+              value={FavType.Post}
+              className={cn(
+                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit text-gray-400 data-[state=active]:text-white data-[state=active]:border-white'
+              )}
+            >
+              {`Posts`}
+            </TabsTrigger>
+            <TabsTrigger
+              value={FavType.Link}
+              className={cn(
+                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit text-gray-400 data-[state=active]:text-white data-[state=active]:border-white'
+              )}
+            >
+              {`Links`}
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent
+            id="profile-contacts-following-warper"
+            value={FavType.Post}
+            className="h-full"
+          >
+            {' '}
             <SaveExploreList
-              data={list}
+              data={list.filter((item) => item.type === FavType.Post)}
               onItemClick={(item) => {
                 window.open(item.url, '_blank');
               }}
             />
-          </div>
-        )}
-      </ContentWrapper>
-    </Wrapper>
+          </TabsContent>
+          <TabsContent
+            id="profile-contacts-follower-warper"
+            value={FavType.Link}
+            className="h-full"
+          >
+            <SaveExploreList
+              data={list.filter((item) => item.type === FavType.Link)}
+              onItemClick={(item) => {
+                window.open(item.url, '_blank');
+              }}
+            />
+          </TabsContent>
+        </Tabs>
+      )}
+    </MainWrapper>
   );
 }
-
-const Wrapper = styled(MainWrapper)`
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
-
-const ContentWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;

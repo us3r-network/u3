@@ -21,7 +21,7 @@ export default function PlatformFilter({
       }}
       defaultValue={defaultValue}
     >
-      <SelectTrigger className="w-[180px] border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none">
+      <SelectTrigger className="border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none space-x-2">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="20"
