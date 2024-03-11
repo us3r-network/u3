@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useNavigate, useOutletContext } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import PostsFcMentionedLinks from './PostsFcMentionedLinks';
@@ -6,8 +6,18 @@ import { ArrowLeft } from '@/components/common/icons/ArrowLeft';
 import useRoute from '@/route/useRoute';
 import { RouteKey } from '@/route/routes';
 import { SocialPlatform } from '@/services/social/types';
-import useChannelFeeds from '@/hooks/social/useChannelFeeds';
+import { getDefaultFarcasterWhatsnewCachedData } from '@/hooks/social/useChannelFeeds';
 import NavLinkItem from '@/components/layout/NavLinkItem';
+import { getDefaultFarcasterTrendingCachedData } from '@/hooks/social/farcaster/useFarcasterTrending';
+
+const getDefaultPostsCachedData = () => {
+  return {
+    fc: {
+      trending: getDefaultFarcasterTrendingCachedData(),
+      whatsnew: getDefaultFarcasterWhatsnewCachedData(),
+    },
+  };
+};
 
 export enum FeedsSort {
   TRENDING = 'trending',
@@ -26,15 +36,8 @@ export default function PostsLayout() {
     id: '',
     top: 0,
   });
-  const {
-    feeds: fcNewestFeeds,
-    firstLoading: fcNewestFirstLoading,
-    moreLoading: fcNewestMoreLoading,
-    loadFirstFeeds: loadFcNewestFirstFeeds,
-    loadMoreFeeds: loadFcNewestMoreFeeds,
-    pageInfo: fcNewestPageInfo,
-    farcasterUserDataObj: fcUserDataObj,
-  } = useChannelFeeds();
+
+  const postsCachedData = useRef({ ...getDefaultPostsCachedData() }).current;
 
   useEffect(() => {
     if (routeKey === RouteKey.communityPostsFcTrending) {
@@ -66,16 +69,10 @@ export default function PostsLayout() {
             socialPlatform,
             setSocialPlatform,
 
-            fcNewestFeeds,
-            fcNewestPageInfo,
-            fcNewestFirstLoading,
-            fcNewestMoreLoading,
-            loadFcNewestFirstFeeds,
-            loadFcNewestMoreFeeds,
-            fcUserDataObj,
-
             postScroll,
             setPostScroll,
+
+            postsCachedData,
           }}
         />
       </div>

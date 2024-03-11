@@ -4,9 +4,13 @@ import { useEffect, useRef } from 'react';
 import { FeedsType } from 'src/components/social/SocialPageNav';
 
 export default function SocialFarcaster() {
-  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { feedsType, postScroll, setPostScroll, postsCachedData } =
+    useOutletContext<any>(); // TODO: any
 
   const currentFeedType = useRef<FeedsType>();
+  const trendingCachedData = postsCachedData?.fc?.trending;
+  const whatsnewCachedData = postsCachedData?.fc?.whatsnew;
+  const followingCachedData = postsCachedData?.fc?.following;
 
   useEffect(() => {
     if (feedsType === currentFeedType.current) return;
@@ -21,6 +25,10 @@ export default function SocialFarcaster() {
           feedsType,
           postScroll,
           setPostScroll,
+
+          trendingCachedData,
+          whatsnewCachedData,
+          followingCachedData,
         }}
       />
     </FarcasterListBox>

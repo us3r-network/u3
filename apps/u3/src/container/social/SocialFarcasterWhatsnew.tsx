@@ -26,7 +26,7 @@ import { getExploreFcPostDetailPath } from '@/route/path';
 export default function SocialFarcasterWhatsnew() {
   const [parentId] = useState('social-farcaster-whatsnew');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { whatsnewCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
   const navigate = useNavigate();
 
@@ -36,10 +36,12 @@ export default function SocialFarcasterWhatsnew() {
     loadFarcasterWhatsnew,
     farcasterWhatsnew,
     farcasterWhatsnewUserDataObj,
-  } = useFarcasterWhatsnew();
+  } = useFarcasterWhatsnew({
+    cachedDataRefValue: whatsnewCachedData,
+  });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !whatsnewCachedData?.data?.length) {
       loadFarcasterWhatsnew();
     }
   }, [mounted]);

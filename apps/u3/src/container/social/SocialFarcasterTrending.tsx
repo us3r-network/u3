@@ -26,7 +26,7 @@ import { getExploreFcPostDetailPath } from '@/route/path';
 export default function SocialFarcasterTrending() {
   const [parentId] = useState('social-farcaster-trending');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>();
+  const { trendingCachedData, setPostScroll } = useOutletContext<any>();
   const { mounted } = useListScroll(parentId);
   const navigate = useNavigate();
 
@@ -36,10 +36,12 @@ export default function SocialFarcasterTrending() {
     farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo: farcasterTrendingPageInfo,
-  } = useFarcasterTrending();
+  } = useFarcasterTrending({
+    cachedDataRefValue: trendingCachedData,
+  });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !trendingCachedData?.data?.length) {
       loadFarcasterTrending();
     }
   }, [mounted]);

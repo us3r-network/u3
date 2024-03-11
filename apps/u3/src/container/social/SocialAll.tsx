@@ -14,7 +14,12 @@ import { FeedsType } from '../../components/social/SocialPageNav';
 
 export default function SocialAll() {
   const currentFeedType = useRef<FeedsType>();
-  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any type
+  const { feedsType, postScroll, setPostScroll, postsCachedData } =
+    useOutletContext<any>(); // TODO: any type
+
+  const trendingCachedData = postsCachedData?.all?.trending;
+  const whatsnewCachedData = postsCachedData?.all?.whatsnew;
+  const followingCachedData = postsCachedData?.all?.following;
 
   useEffect(() => {
     if (feedsType === currentFeedType.current) return;
@@ -29,6 +34,10 @@ export default function SocialAll() {
           feedsType,
           postScroll,
           setPostScroll,
+
+          trendingCachedData,
+          whatsnewCachedData,
+          followingCachedData,
         }}
       />
     </MainCenter>

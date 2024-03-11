@@ -1,17 +1,31 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 import { getLensFollowing } from 'src/services/social/api/lens';
 
-const lensFollowingData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  endLensCursor: '',
+export const getDefaultLensFollowingCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    endLensCursor: '',
+  };
+};
+type LensFollowingCachedData = ReturnType<
+  typeof getDefaultLensFollowingCachedData
+>;
+type LensFollowingOpts = {
+  cachedDataRefValue?: LensFollowingCachedData;
 };
 
-export default function useLensFollowing() {
+export default function useLensFollowing(opts?: LensFollowingOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultLensFollowingCachedData(),
+  });
+  const lensFollowingData = cachedDataRefValue || defaultCachedDataRef.current;
+
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
   // TODO any
@@ -56,12 +70,4 @@ export default function useLensFollowing() {
     loading,
     pageInfo,
   };
-}
-
-export function resetLensFollowingData() {
-  lensFollowingData.data = [];
-  lensFollowingData.pageInfo = {
-    hasNextPage: true,
-  };
-  lensFollowingData.endLensCursor = '';
 }

@@ -15,14 +15,17 @@ import {
 export default function SocialLensWhatsnew() {
   const [parentId] = useState('social-lens-whatsnew');
 
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { whatsnewCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
-  const { loadLensTrending, loading, lensTrending, pageInfo } =
-    useLensTrending();
+  const { loadLensTrending, loading, lensTrending, pageInfo } = useLensTrending(
+    {
+      cachedDataRefValue: whatsnewCachedData,
+    }
+  );
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !whatsnewCachedData?.data?.length) {
       loadLensTrending();
     }
   }, [mounted]);
