@@ -27,15 +27,17 @@ import { getExploreFcPostDetailPath } from '@/route/path';
 export default function SocialAllWhatsnew() {
   const [parentId] = useState('social-all-whatsnew');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>();
+  const { whatsnewCachedData, setPostScroll } = useOutletContext<any>();
   const navigate = useNavigate();
 
   const { mounted } = useListScroll(parentId);
   const { loading, loadAllWhatsnew, allWhatsnew, allUserDataObj, pageInfo } =
-    useAllWhatsnew();
+    useAllWhatsnew({
+      cachedDataRefValue: whatsnewCachedData,
+    });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !whatsnewCachedData?.data?.length) {
       loadAllWhatsnew();
     }
   }, [mounted]);

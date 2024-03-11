@@ -21,7 +21,7 @@ export default function Menu({
   return (
     <div
       className={cn(
-        'bg-[#1b1e23] w-[60px] h-full px-[10px] py-[20px] box-border flex flex-col gap-[20] items-start',
+        'bg-[#14171A] w-[60px] h-full px-[10px] py-[20px] box-border flex flex-col gap-[20] items-start',
         className
       )}
       {...props}
@@ -53,7 +53,7 @@ function UserChannels() {
 
   let showChannels = [];
   if (currFid) {
-    showChannels = userChannels;
+    showChannels = [...userChannels];
   }
   if (browsingChannel?.parent_url) {
     const findChannel = showChannels.find(

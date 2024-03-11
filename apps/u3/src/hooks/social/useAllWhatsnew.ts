@@ -1,23 +1,36 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 import { getAllWhatsnew } from 'src/services/social/api/all';
 
-const allWhatsnewData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  userData: {},
-  userDataObj: {},
-  endFarcasterCursor: '',
-  endTimestamp: Date.now(),
-  endLensCursor: '',
+export const getDefaultAllWhatsnewCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    userData: {},
+    userDataObj: {},
+    endFarcasterCursor: '',
+    endTimestamp: Date.now(),
+    endLensCursor: '',
+  };
+};
+type AllWhatsnewCachedData = ReturnType<typeof getDefaultAllWhatsnewCachedData>;
+
+type AllWhatsnewOpts = {
+  channelId?: string;
+  cachedDataRefValue?: AllWhatsnewCachedData;
 };
 
-export default function useAllWhatsnew() {
+export default function useAllWhatsnew(opts?: AllWhatsnewOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultAllWhatsnewCachedData(),
+  });
+  const allWhatsnewData = cachedDataRefValue || defaultCachedDataRef.current;
   // TODO any
   const [allWhatsnew, setAllWhatsnew] = useState<any[]>(allWhatsnewData.data);
   const [loading, setLoading] = useState(false);

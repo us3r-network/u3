@@ -23,14 +23,17 @@ import {
 export default function SocialLensTrending() {
   const [parentId] = useState('social-lens-trending');
 
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { trendingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
-  const { loadLensTrending, loading, lensTrending, pageInfo } =
-    useLensTrending();
+  const { loadLensTrending, loading, lensTrending, pageInfo } = useLensTrending(
+    {
+      cachedDataRefValue: trendingCachedData,
+    }
+  );
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !trendingCachedData?.data?.length) {
       loadLensTrending();
     }
   }, [mounted]);

@@ -31,10 +31,6 @@ import {
   PostList,
 } from '@/components/social/CommonStyles';
 
-export const AllFirst = {
-  done: false,
-};
-
 export default function SocialAllFollowing() {
   const [parentId] = useState('social-all-following');
   const { isLogin } = useLogin();
@@ -42,22 +38,22 @@ export default function SocialAllFollowing() {
   const { id: lensSessionProfileId } = lensSessionProfile || {};
   const { currFid } = useFarcasterCtx();
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
   const { allFollowing, loadAllFollowing, loading, pageInfo, allUserDataObj } =
-    useAllFollowing();
+    useAllFollowing({
+      cachedDataRefValue: followingCachedData,
+    });
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (AllFirst.done) return;
     if (!mounted) return;
     if (!isLogin) return;
     if (!currFid && !lensSessionProfileId) return;
+    if (followingCachedData?.data?.length > 0) return;
 
-    loadAllFollowing().finally(() => {
-      AllFirst.done = true;
-    });
+    loadAllFollowing();
   }, [mounted, isLogin, currFid, lensSessionProfileId]);
 
   if (!isLogin) {

@@ -19,7 +19,9 @@ export default function PostsFcTrending() {
   const [parentId] = useState('community-posts-fc-trending');
   const { mounted } = useListScroll(parentId);
   const { openFarcasterQR } = useFarcasterCtx();
-  const { channelId, setPostScroll } = useOutletContext<any>();
+  const { channelId, setPostScroll, postsCachedData } = useOutletContext<any>();
+  const trendingCachedData = postsCachedData?.fc?.trending;
+
   const navigate = useNavigate();
 
   const {
@@ -28,10 +30,13 @@ export default function PostsFcTrending() {
     farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo: farcasterTrendingPageInfo,
-  } = useFarcasterTrending({ channelId });
+  } = useFarcasterTrending({
+    channelId,
+    cachedDataRefValue: trendingCachedData,
+  });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !trendingCachedData?.data?.length) {
       loadFarcasterTrending();
     }
   }, [mounted]);

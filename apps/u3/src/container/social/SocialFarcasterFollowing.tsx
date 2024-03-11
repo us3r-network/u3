@@ -20,10 +20,10 @@ import {
   PostList,
 } from '@/components/social/CommonStyles';
 
-export default function SocialFarcaster() {
+export default function SocialFarcasterFollowing() {
   const [parentId] = useState('social-farcaster-following');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { isLogin } = useLogin();
@@ -35,12 +35,15 @@ export default function SocialFarcaster() {
     loading: farcasterFollowingLoading,
     pageInfo: farcasterFollowingPageInfo,
     farcasterFollowingUserDataObj,
-  } = useFarcasterFollowing();
+  } = useFarcasterFollowing({
+    cachedDataRefValue: followingCachedData,
+  });
 
   useEffect(() => {
     if (!mounted) return;
     if (!isLogin) return;
     if (!isConnectedFarcaster) return;
+    if (followingCachedData?.data?.length > 0) return;
     loadFarcasterFollowing();
   }, [mounted, isLogin, isConnectedFarcaster]);
 

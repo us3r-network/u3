@@ -1,14 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
-
-import { resetFarcasterFollowingData } from 'src/hooks/social/farcaster/useFarcasterFollowing';
-import { resetAllFollowingData } from 'src/hooks/social/useAllFollowing';
-import { resetLensFollowingData } from 'src/hooks/social/lens/useLensFollowing';
 
 import { FeedsType } from '../../components/social/SocialPageNav';
 import { SocialPlatform } from '../../services/social/types';
 import { LivepeerProvider } from '../../contexts/social/LivepeerCtx';
-import { AllFirst } from './SocialAllFollowing';
 import { cn } from '@/lib/utils';
 import { ArrowLeft } from '@/components/common/icons/ArrowLeft';
 import NavLinkItem from '@/components/layout/NavLinkItem';
@@ -22,6 +17,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import PostsMentionedLinks from './PostsMentionedLinks';
+import { getDefaultFarcasterTrendingCachedData } from '@/hooks/social/farcaster/useFarcasterTrending';
+import { getDefaultAllWhatsnewCachedData } from '@/hooks/social/useAllWhatsnew';
+import { getDefaultAllFollowingCachedData } from '@/hooks/social/useAllFollowing';
+import { getDefaultFarcasterWhatsnewCachedData } from '@/hooks/social/farcaster/useFarcasterWhatsnew';
+import { getDefaultFarcasterFollowingCachedData } from '@/hooks/social/farcaster/useFarcasterFollowing';
+import { getDefaultLensTrendingCachedData } from '@/hooks/social/lens/useLensTrending';
+import { getDefaultLensFollowingCachedData } from '@/hooks/social/lens/useLensFollowing';
 
 export default function SocialLayoutContainer() {
   return (
@@ -31,6 +33,25 @@ export default function SocialLayoutContainer() {
   );
 }
 
+const getDefaultPostsCachedData = () => {
+  return {
+    all: {
+      trending: getDefaultFarcasterTrendingCachedData(),
+      whatsnew: getDefaultAllWhatsnewCachedData(),
+      following: getDefaultAllFollowingCachedData(),
+    },
+    fc: {
+      trending: getDefaultFarcasterTrendingCachedData(),
+      whatsnew: getDefaultFarcasterWhatsnewCachedData(),
+      following: getDefaultFarcasterFollowingCachedData(),
+    },
+    lens: {
+      trending: getDefaultLensTrendingCachedData(),
+      whatsnew: getDefaultLensTrendingCachedData(),
+      following: getDefaultLensFollowingCachedData(),
+    },
+  };
+};
 const socialPlatformDefault = 'all' as SocialPlatform;
 function SocialLayout() {
   const { lastRouteMeta } = useRoute();
@@ -46,14 +67,7 @@ function SocialLayout() {
     socialPlatformDefault
   );
 
-  useEffect(() => {
-    return () => {
-      resetFarcasterFollowingData();
-      resetAllFollowingData();
-      AllFirst.done = false;
-      resetLensFollowingData();
-    };
-  }, []);
+  const postsCachedData = useRef({ ...getDefaultPostsCachedData() }).current;
 
   useEffect(() => {
     if (
@@ -125,6 +139,8 @@ function SocialLayout() {
 
             postScroll,
             setPostScroll,
+
+            postsCachedData,
           }}
         />
       </div>

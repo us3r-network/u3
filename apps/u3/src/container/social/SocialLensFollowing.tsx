@@ -26,19 +26,22 @@ import {
 
 export default function SocialLensFollowing() {
   const [parentId] = useState('social-lens-following');
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
   const { isLogin } = useLogin();
   const { sessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = sessionProfile || {};
 
   const { lensFollowing, loadLensFollowing, loading, pageInfo } =
-    useLensFollowing();
+    useLensFollowing({
+      cachedDataRefValue: followingCachedData,
+    });
 
   useEffect(() => {
     if (!mounted) return;
     if (!isLogin) return;
     if (!lensSessionProfileId) return;
+    if (followingCachedData?.data?.length > 0) return;
     loadLensFollowing();
   }, [mounted, isLogin, lensSessionProfileId]);
 
