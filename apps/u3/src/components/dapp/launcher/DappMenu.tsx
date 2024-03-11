@@ -16,7 +16,7 @@ export default function DappMenu() {
   return (
     <div
       className={cn(
-        `bg-[#1b1e23] h-screen px-0 py-[20px] fixed top-[0] right-[0] box-border overflow-x-hidden flex justify-center gap-[20] [transition:all_0.3s_ease-out]`,
+        `bg-[#14171A] h-screen px-0 py-[20px] fixed top-[0] right-[0] box-border overflow-x-hidden flex justify-center gap-[20] [transition:all_0.3s_ease-out]`,
         isOpen ? 'w-[60px]' : 'w-[30px]',
         'max-sm:w-0 max-sm:hidden'
       )}
