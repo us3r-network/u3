@@ -53,7 +53,7 @@ function UserChannels() {
 
   let showChannels = [];
   if (currFid) {
-    showChannels = userChannels;
+    showChannels = [...userChannels];
   }
   if (browsingChannel?.parent_url) {
     const findChannel = showChannels.find(
