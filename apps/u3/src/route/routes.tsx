@@ -361,6 +361,7 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('message/MessageLayout'),
     key: RouteKey.message,
     title: 'Message',
+    permissions: [RoutePermission.login],
   },
   // community
   {

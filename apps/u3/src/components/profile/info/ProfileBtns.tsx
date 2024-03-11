@@ -38,7 +38,7 @@ export default function ProfileBtns({
         <MessageBtn
           onClick={() => {
             setMessageRouteParams({
-              route: MessageRoute.DETAIL,
+              route: MessageRoute.PRIVATE_CHAT,
               peerAddress: address,
             });
           }}
