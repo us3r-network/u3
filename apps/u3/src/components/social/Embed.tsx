@@ -2,44 +2,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   ComponentPropsWithRef,
-  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  CastId,
-  Message,
-  UserDataType,
-  makeFrameAction,
-} from '@farcaster/hub-web';
+import { UserDataType } from '@farcaster/hub-web';
 import dayjs from 'dayjs';
-import { toHex } from 'viem';
-import { toast } from 'react-toastify';
-import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import {
   FarCast,
   FarCastEmbedMeta,
   FarCastEmbedMetaCast,
 } from '../../services/social/types';
 import { PostCardEmbedWrapper, PostCardImgWrapper } from './PostCard';
-import {
-  getFarcasterEmbedCast,
-  getFarcasterEmbedMetadata,
-  postFrameActionApi,
-  postFrameActionRedirectApi,
-} from '../../services/social/api/farcaster';
+import { getFarcasterEmbedCast } from '../../services/social/api/farcaster';
 import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
-import ColorButton from '../common/button/ColorButton';
-import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
-import { FARCASTER_NETWORK } from '@/constants/farcaster';
-import useFarcasterCastId from '@/hooks/social/farcaster/useFarcasterCastId';
-import ModalContainerFixed from '../common/modal/ModalContainerFixed';
-import { cn } from '@/lib/utils';
+import EmbedFrameWebsite from './EmbedFrameWebsite';
 
 const ValidFrameButtonValue = [
   [0, 0, 0, 0].join(''),
@@ -51,12 +31,14 @@ const ValidFrameButtonValue = [
 
 export default function Embed({
   embedImgs,
+  embedVideos,
   embedWebpages,
   embedCasts,
   cast,
   embedCastClick,
 }: {
   embedImgs: { url: string }[];
+  embedVideos: { url: string }[];
   embedWebpages: { url: string }[];
   embedCasts: { castId: { fid: number; hash: string } }[];
   cast: FarCast;
@@ -66,25 +48,10 @@ export default function Embed({
   ) => void;
 }) {
   const viewRef = useRef<HTMLDivElement>(null);
-  const [metadata, setMetadata] = useState<FarCastEmbedMeta[]>([]);
   const [metadataCasts, setMetadataCasts] = useState<FarCastEmbedMetaCast[]>(
     []
   );
   const [modalImgIdx, setModalImgIdx] = useState(-1);
-
-  const getEmbedWebpagesMetadata = async () => {
-    const urls = embedWebpages.map((embed) => embed.url);
-    if (urls.length === 0) return;
-    try {
-      const res = await getFarcasterEmbedMetadata([urls[0]]);
-      const { metadata: respMetadata } = res.data.data;
-      const data = respMetadata.flatMap((m) => (m ? [m] : []));
-      setMetadata(data);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error(error);
-    }
-  };
 
   const getEmbedCastsMetadata = async () => {
     const castIds = embedCasts.map((embed) => embed.castId);
@@ -104,7 +71,6 @@ export default function Embed({
     if (!viewRef.current) return;
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        getEmbedWebpagesMetadata();
         getEmbedCastsMetadata();
         observer.disconnect();
       }
@@ -120,7 +86,8 @@ export default function Embed({
   if (
     embedImgs.length === 0 &&
     embedWebpages.length === 0 &&
-    embedCasts.length === 0
+    embedCasts.length === 0 &&
+    embedVideos.length === 0
   ) {
     return null;
   }
@@ -152,7 +119,8 @@ export default function Embed({
           />
         </>
       )}
-      <div className="w-full max-w-[630px]">
+      {/* {embedVideos */}
+      <div className="w-full max-w-[630px] space-y-2">
         {[...metadataCasts].map((item) => {
           if (item.cast === undefined) return null;
           const castHex = Buffer.from(item.cast.hash.data).toString('hex');
@@ -167,249 +135,12 @@ export default function Embed({
             />
           );
         })}
-        {[...metadata].map((item: FarCastEmbedMeta, idx) => {
-          if (item.collection) {
-            return (
-              <EmbedNFT item={item} key={String(idx) + (item as any).url} />
-            );
-          }
-          if (checkFarcastFrameValid(item)) {
-            return (
-              <EmbedCastFrame
-                data={item}
-                key={String(idx) + (item as any).url}
-                cast={cast}
-              />
-            );
-          }
-          return (
-            <EmbedWebsite item={item} key={String(idx) + (item as any).url} />
-          );
+
+        {embedWebpages.map((item, idx) => {
+          return <EmbedFrameWebsite url={item.url} cast={cast} key={idx} />;
         })}
       </div>
     </div>
-  );
-}
-
-function EmbedCastFrame({
-  data,
-  cast,
-}: {
-  data: FarCastEmbedMeta;
-  cast: FarCast;
-}) {
-  const castId: CastId = useFarcasterCastId({ cast });
-  const { encryptedSigner, isConnected, currFid } = useFarcasterCtx();
-
-  const [frameText, setFrameText] = useState('');
-  const [frameRedirect, setFrameRedirect] = useState('');
-  const [frameData, setFrameData] = useState<FarCastEmbedMeta>(data);
-
-  const postFrameAction = useCallback(
-    async (index: number) => {
-      if (!castId) {
-        console.error('no castId');
-        toast.error('no castId');
-        return;
-      }
-      if (!encryptedSigner || !currFid) {
-        console.error('no encryptedSigner');
-        toast.error('no encryptedSigner');
-        return;
-      }
-      const trustedDataResult = await makeFrameAction(
-        {
-          url: Buffer.from(frameData.url || ''),
-          buttonIndex: index,
-          castId,
-          inputText: Buffer.from(frameText),
-          state: Buffer.from(''),
-        },
-        {
-          fid: currFid,
-          network: FARCASTER_NETWORK,
-        },
-        encryptedSigner
-      );
-      if (trustedDataResult.isErr()) {
-        throw new Error(trustedDataResult.error.message);
-      }
-
-      const trustedDataValue = trustedDataResult.value;
-      const untrustedData = {
-        fid: currFid,
-        url: frameData.url || '',
-        messageHash: toHex(trustedDataValue.hash),
-        network: FARCASTER_NETWORK,
-        buttonIndex: index,
-        inputText: frameText,
-        castId: {
-          fid: castId.fid,
-          hash: toHex(castId.hash),
-        },
-        state: '',
-      };
-      const trustedData = {
-        messageBytes: Buffer.from(
-          Message.encode(trustedDataValue).finish()
-        ).toString('hex'),
-      };
-      const postData = {
-        actionUrl: frameData.fcFramePostUrl,
-        untrustedData,
-        trustedData,
-      };
-      const buttonAction = frameData[`fcFrameButton${index}Action`] || 'post';
-      console.log('buttonAction', buttonAction);
-      if (buttonAction === 'post') {
-        const resp = await postFrameActionApi(postData);
-        if (resp.data.code !== 0) {
-          toast.error(resp.data.msg);
-          return;
-        }
-        setFrameData((prev) => ({
-          url: prev.url,
-          ...resp.data.data?.metadata,
-        }));
-      } else if (buttonAction === 'post_redirect') {
-        const resp = await postFrameActionRedirectApi(postData);
-        if (resp.data.code !== 0) {
-          toast.error(resp.data.msg);
-          return;
-        }
-        setFrameRedirect(resp.data.data?.redirectUrl || '');
-      } else {
-        const resp = await postFrameActionApi(postData);
-        if (resp.data.code !== 0) {
-          toast.error(resp.data.msg);
-          return;
-        }
-        setFrameData((prev) => ({
-          url: prev.url,
-          ...resp.data.data?.metadata,
-        }));
-      }
-    },
-    [frameData, currFid, encryptedSigner, castId, frameText]
-  );
-  return (
-    <>
-      <div className="border rounded-xl overflow-hidden border-[#39424c]">
-        <div className="w-full h-80 overflow-hidden flex items-center">
-          <img
-            src={frameData.fcFrameImage}
-            alt=""
-            className="w-full h-full object-cover"
-          />
-        </div>
-        {frameData.fcFrameInputText && (
-          <div className="p-3">
-            <input
-              type="text"
-              className="w-full p-3 rounded-xl bg-[#39424c] border-[#39424c] text-[#fff] placeholder-[#718096] focus:outline-none"
-              placeholder={frameData.fcFrameInputText}
-              value={frameText}
-              onChange={(e) => {
-                setFrameText(e.target.value);
-              }}
-            />
-          </div>
-        )}
-        {isConnected && (
-          <div className="flex items-center justify-around gap-3 mt-1">
-            {[
-              frameData.fcFrameButton1,
-              frameData.fcFrameButton2,
-              frameData.fcFrameButton3,
-              frameData.fcFrameButton4,
-            ].map((item, idx) => {
-              if (!item) return null;
-              return (
-                <ColorButton
-                  key={idx}
-                  type="button"
-                  className="flex-grow p-2 m-2 mt-1 rounded-xl"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    postFrameAction(idx + 1);
-                  }}
-                >
-                  {item}
-                </ColorButton>
-              );
-            })}
-          </div>
-        )}
-      </div>
-      {frameRedirect && (
-        <EmbedCastFrameRedirect
-          url={frameRedirect}
-          resetUrl={() => {
-            setFrameRedirect('');
-          }}
-        />
-      )}
-    </>
-  );
-}
-
-function EmbedCastFrameRedirect({
-  url,
-  resetUrl,
-}: {
-  url: string;
-  resetUrl: () => void;
-}) {
-  return (
-    <ModalContainerFixed
-      open={!!url}
-      closeModal={() => {
-        resetUrl();
-      }}
-      className="w-full md:w-[420px]"
-    >
-      <div
-        className={cn(
-          'flex flex-col gap-5 w-full overflow-hidden rounded-2xl p-5',
-          ' text-white bg-inherit  max-h-[600px] overflow-y-auto'
-        )}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-      >
-        <div className="flex items-center justify-between text-[#718096] text-base">
-          <h3>⚠️ Leaving u3</h3>
-          <button type="button" onClick={resetUrl}>
-            <Cross2Icon />
-          </button>
-        </div>
-        <p className="">
-          You are about to leave u3, please connect your wallet carefully and
-          take care of your funds.
-        </p>
-        <div className="flex items-end justify-between gap-5">
-          <button
-            type="button"
-            className={cn(
-              'h-10 w-full bg-white text-black font-bold rounded-xl',
-              'flex items-center justify-center'
-            )}
-            onClick={resetUrl}
-          >
-            <CaretLeftIcon className="h-7 w-7" /> back to u3
-          </button>
-          <button
-            type="button"
-            className="h-10 bg-[#F41F4C] font-bold rounded-xl w-36"
-            onClick={() => {
-              window.open(url, '_blank');
-            }}
-          >
-            Still leave
-          </button>
-        </div>
-      </div>
-    </ModalContainerFixed>
   );
 }
 

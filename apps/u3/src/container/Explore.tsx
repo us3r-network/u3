@@ -74,7 +74,9 @@ export default function Explore() {
           }
         });
         setHotPosts({
-          posts: casts.splice(0, 6),
+          posts: casts
+            .filter((item) => item?.platform && item?.data)
+            .splice(0, 6),
           farcasterUserData: temp,
           isLoading: false,
         });
