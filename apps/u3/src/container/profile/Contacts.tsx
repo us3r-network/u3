@@ -65,9 +65,6 @@ export default function Contacts() {
         className="h-full"
         value={tab}
         onValueChange={(v) => {
-          if (v === 'TabTransaction') {
-            localStorage.setItem('tipTab', 'TabTransaction');
-          }
           setTab(v);
         }}
       >

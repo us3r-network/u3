@@ -162,15 +162,18 @@ export default function FCast({
 
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
+    if (!castId.hash || !cast) return;
+    if (!userData.userName) return;
     setLinkParam({
       url: getOfficialCastUrl(
         userData.userName,
         Buffer.from(castId.hash).toString('hex')
       ),
-      type: 'link',
+      type: 'post',
       title: cast.text.slice(0, 200), // todo: expand this limit at model
+      data: JSON.stringify(cast),
     });
-  }, [castId.hash, isDetail]);
+  }, [castId.hash, userData.userName, cast]);
 
   const [updatedCast, setUpdatedCast] = useState(cast);
   const changeCastLikesWithCurrFid = (liked: boolean) => {
