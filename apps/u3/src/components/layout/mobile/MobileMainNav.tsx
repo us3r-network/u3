@@ -75,7 +75,7 @@ function MobileNavItem({ active, className, ...props }: NavLinkItemProps) {
   return (
     <NavLinkItem
       className={cn(
-        'flex-col gap-[4px] text-[10px] p-0 bg-transparent hover:bg-transparent',
+        'flex-col gap-[4px] text-[10px] p-0 bg-transparent hover:bg-transparent  max-sm:text-[10px]',
         active && 'bg-transparent text-[#FFF]',
         className
       )}
