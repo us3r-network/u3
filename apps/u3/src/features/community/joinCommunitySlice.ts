@@ -34,7 +34,7 @@ export const joinCommunitySlice = createSlice({
       state: JoinCommunityState,
       action: PayloadAction<JoinedCommunitiesData[0]>
     ) => {
-      state.joinedCommunities.push(action.payload);
+      state.joinedCommunities.unshift(action.payload);
     },
     removeOneFromJoinedCommunities: (
       state: JoinCommunityState,
@@ -48,7 +48,7 @@ export const joinCommunitySlice = createSlice({
       state: JoinCommunityState,
       action: PayloadAction<string | number>
     ) => {
-      state.joinActionPendingIds.push(action.payload);
+      state.joinActionPendingIds.unshift(action.payload);
     },
     removeOneFromJoinActionPendingIds: (
       state: JoinCommunityState,

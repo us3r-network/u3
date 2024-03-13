@@ -1,12 +1,12 @@
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import {
-  NewestCommunitiesData,
-  fetchNewestCommunities,
+  GrowingCommunitiesData,
+  fetchGrowingCommunities,
 } from '@/services/community/api/community';
 
 const PAGE_SIZE = 30;
-export const getDefaultNewestCommunitiesCachedData = () => {
+export const getDefaultGrowingCommunitiesCachedData = () => {
   return {
     data: [],
     pageInfo: {
@@ -17,34 +17,36 @@ export const getDefaultNewestCommunitiesCachedData = () => {
   };
 };
 
-type NewestCommunitiesCachedData = ReturnType<
-  typeof getDefaultNewestCommunitiesCachedData
+type GrowingCommunitiesCachedData = ReturnType<
+  typeof getDefaultGrowingCommunitiesCachedData
 >;
 
-type NewestCommunitiesOpts = {
-  cachedDataRefValue?: NewestCommunitiesCachedData;
+type GrowingCommunitiesOpts = {
+  cachedDataRefValue?: GrowingCommunitiesCachedData;
 };
 
-export default function useLoadNewestCommunities(opts?: NewestCommunitiesOpts) {
+export default function useLoadGrowingCommunities(
+  opts?: GrowingCommunitiesOpts
+) {
   const { cachedDataRefValue } = opts || {};
   const defaultCachedDataRef = useRef({
-    ...getDefaultNewestCommunitiesCachedData(),
+    ...getDefaultGrowingCommunitiesCachedData(),
   });
   const cachedData = cachedDataRefValue || defaultCachedDataRef.current;
 
-  const [newestCommunities, setNewestCommunities] =
-    useState<NewestCommunitiesData>(cachedData.data);
+  const [growingCommunities, setGrowingCommunities] =
+    useState<GrowingCommunitiesData>(cachedData.data);
   const [loading, setLoading] = useState(false);
   const [pageInfo, setPageInfo] = useState(cachedData.pageInfo);
 
-  const loadNewestCommunities = useCallback(
+  const loadGrowingCommunities = useCallback(
     async (params?: { type?: string }) => {
       const { type } = params || {};
       if (type !== cachedData?.type) {
-        setNewestCommunities([]);
+        setGrowingCommunities([]);
         setPageInfo({ hasNextPage: true });
         Object.assign(cachedData, {
-          ...getDefaultNewestCommunitiesCachedData(),
+          ...getDefaultGrowingCommunitiesCachedData(),
           type,
         });
       }
@@ -53,7 +55,7 @@ export default function useLoadNewestCommunities(opts?: NewestCommunitiesOpts) {
       }
       setLoading(true);
       try {
-        const res = await fetchNewestCommunities({
+        const res = await fetchGrowingCommunities({
           pageSize: PAGE_SIZE,
           pageNumber: cachedData.nextPageNumber,
           type: cachedData?.type || undefined,
@@ -62,7 +64,7 @@ export default function useLoadNewestCommunities(opts?: NewestCommunitiesOpts) {
         if (code === 0) {
           const newCommunities = data || [];
           const hasNextPage = newCommunities.length >= PAGE_SIZE;
-          setNewestCommunities((prev) => [...prev, ...newCommunities]);
+          setGrowingCommunities((prev) => [...prev, ...newCommunities]);
           setPageInfo({ hasNextPage });
           cachedData.data = cachedData.data.concat(newCommunities);
           cachedData.nextPageNumber += 1;
@@ -72,7 +74,7 @@ export default function useLoadNewestCommunities(opts?: NewestCommunitiesOpts) {
         }
       } catch (error) {
         console.error(error);
-        toast.error(`Load newest communities failed: ${error.message}`);
+        toast.error(`Load growing communities failed: ${error.message}`);
       } finally {
         setLoading(false);
       }
@@ -82,8 +84,8 @@ export default function useLoadNewestCommunities(opts?: NewestCommunitiesOpts) {
 
   return {
     loading,
-    newestCommunities,
-    loadNewestCommunities,
+    growingCommunities,
+    loadGrowingCommunities,
     pageInfo,
   };
 }

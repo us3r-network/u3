@@ -3,7 +3,6 @@ import { CommunityInfo } from '@/services/community/types/community';
 import ColorButton from '../common/button/ColorButton';
 import { cn } from '@/lib/utils';
 import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
-import useLogin from '@/hooks/shared/useLogin';
 
 export default function JoinCommunityBtn({
   className,
@@ -12,39 +11,29 @@ export default function JoinCommunityBtn({
 }: ComponentPropsWithRef<'button'> & {
   communityInfo: CommunityInfo;
 }) {
-  const { isLogin, login } = useLogin();
-  const {
-    joiningAction,
-    unjoiningAction,
-    validateJoinActionIsDisabled,
-    validateJoinActionIsPending,
-    validateJoined,
-  } = useJoinCommunityAction();
+  const { joined, isPending, isDisabled, joinChangeAction } =
+    useJoinCommunityAction(communityInfo);
   return (
     <ColorButton
-      className={cn('h-[30px]', className)}
-      disabled={validateJoinActionIsDisabled(communityInfo.id)}
-      onClick={() => {
-        if (!isLogin) {
-          login();
-          return;
-        }
-        if (validateJoined(communityInfo.id)) {
-          unjoiningAction(communityInfo.id);
-        } else {
-          joiningAction(communityInfo.id, communityInfo);
-        }
+      className={cn(
+        'px-[12px] min-w-[48px] h-[30px] py-[8px] box-border gap-[20px] rounded-[20px] bg-[#F41F4C] text-[#FFF] text-[12px] font-normal',
+        className
+      )}
+      disabled={isDisabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        joinChangeAction();
       }}
       {...props}
     >
       {(() => {
-        if (validateJoined(communityInfo.id)) {
-          if (validateJoinActionIsPending(communityInfo.id)) {
+        if (joined) {
+          if (isPending) {
             return 'Unjoining...';
           }
-          return 'Unjoin';
+          return 'Joined';
         }
-        if (validateJoinActionIsPending(communityInfo.id)) {
+        if (isPending) {
           return 'Joining...';
         }
         return 'Join';

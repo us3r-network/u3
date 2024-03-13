@@ -38,7 +38,8 @@ export default function useLoadJoinedCommunities(opts?: JoinedCommunitiesOpts) {
   const [pageInfo, setPageInfo] = useState(cachedData.pageInfo);
 
   const loadJoinedCommunities = useCallback(
-    async ({ type }: { type?: string }) => {
+    async (params?: { type?: string }) => {
+      const { type } = params || {};
       if (type !== cachedData?.type) {
         setJoinedCommunities([]);
         setPageInfo({ hasNextPage: true });

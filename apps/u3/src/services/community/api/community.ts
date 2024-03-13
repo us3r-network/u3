@@ -74,6 +74,24 @@ export function fetchJoinedCommunities(
   });
 }
 
+export type GrowingCommunitiesParams = {
+  pageSize?: number;
+  pageNumber?: number;
+  type?: string;
+};
+export type GrowingCommunitiesData = Array<
+  CommunityEntity & CommunityStatistics
+>;
+export function fetchGrowingCommunities(
+  params: GrowingCommunitiesParams
+): RequestPromise<ApiResp<GrowingCommunitiesData>> {
+  return request({
+    url: `/topics/trending`,
+    method: 'get',
+    params,
+  });
+}
+
 export type JoiningCommunityData = null;
 export function fetchJoiningCommunity(
   topicId: string | number

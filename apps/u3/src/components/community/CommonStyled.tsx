@@ -8,7 +8,7 @@ export function CommunityList({
   return (
     <div
       className={cn(
-        'grid grid-cols-2 gap-[20px] max-md:grid-cols-1',
+        'grid grid-cols-2 gap-[20px] max-lg:grid-cols-1 max-sm:gap-[10px]',
         className
       )}
       {...props}

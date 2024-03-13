@@ -40,7 +40,8 @@ export default function useLoadTrendingCommunities(
   const [pageInfo, setPageInfo] = useState(cachedData.pageInfo);
 
   const loadTrendingCommunities = useCallback(
-    async ({ type }: { type?: string }) => {
+    async (params?: { type?: string }) => {
+      const { type } = params || {};
       if (type !== cachedData?.type) {
         setTrendingCommunities([]);
         setPageInfo({ hasNextPage: true });

@@ -31,7 +31,7 @@ export default function CommunitiesTrending() {
   }, [mounted, communityTypeFilter]);
 
   return (
-    <div className="w-full">
+    <div className="w-full p-[20px] box-border max-sm:p-[10px]">
       <InfiniteScroll
         style={{ overflow: 'hidden' }}
         dataLength={trendingCommunities.length}

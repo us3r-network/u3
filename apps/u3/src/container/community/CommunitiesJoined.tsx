@@ -9,35 +9,45 @@ import {
 import { CommunityList } from '@/components/community/CommonStyled';
 import CommunityItem from '@/components/community/CommunityItem';
 import useLoadJoinedCommunities from '@/hooks/community/useLoadJoinedCommunities';
+import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
 
 export default function CommunitiesJoined() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // const [mounted, setMounted] = useState(false);
+  // useEffect(() => {
+  //   setMounted(true);
+  // }, []);
 
   const { communitiesCachedData, communityTypeFilter } =
     useOutletContext<any>();
-  const joinedCachedData = communitiesCachedData?.joined;
+  // const joinedCachedData = communitiesCachedData?.joined;
 
-  const { loading, joinedCommunities, loadJoinedCommunities, pageInfo } =
-    useLoadJoinedCommunities({
-      cachedDataRefValue: joinedCachedData,
-    });
+  // const { loading, joinedCommunities, loadJoinedCommunities, pageInfo } =
+  //   useLoadJoinedCommunities({
+  //     cachedDataRefValue: joinedCachedData,
+  //   });
 
-  useEffect(() => {
-    if (!mounted) return;
-    loadJoinedCommunities({ type: communityTypeFilter });
-  }, [mounted, communityTypeFilter]);
+  // useEffect(() => {
+  //   if (!mounted) return;
+  //   loadJoinedCommunities({ type: communityTypeFilter });
+  // }, [mounted, communityTypeFilter]);
+
+  const {
+    joinedCommunities: allJoinedCommunities,
+    joinedCommunitiesPending: loading,
+  } = useAllJoinedCommunities();
+  const pageInfo = { hasNextPage: false };
+  const joinedCommunities = allJoinedCommunities.filter(
+    (item) => !communityTypeFilter || item.types.includes(communityTypeFilter)
+  );
 
   return (
-    <div className="w-full">
+    <div className="w-full p-[20px] box-border max-sm:p-[10px]">
       <InfiniteScroll
         style={{ overflow: 'hidden' }}
         dataLength={joinedCommunities.length}
         next={() => {
-          if (loading) return;
-          loadJoinedCommunities({ type: communityTypeFilter });
+          // if (loading) return;
+          // loadJoinedCommunities({ type: communityTypeFilter });
         }}
         hasMore={pageInfo.hasNextPage}
         loader={

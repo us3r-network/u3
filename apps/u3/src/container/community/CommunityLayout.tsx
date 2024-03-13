@@ -1,7 +1,5 @@
-import { ComponentPropsWithRef, useEffect, useMemo, useState } from 'react';
+import { ComponentPropsWithRef, useEffect, useState } from 'react';
 import { Outlet, useParams } from 'react-router-dom';
-
-import { toast } from 'react-toastify';
 import { cn } from '@/lib/utils';
 import CommunityMenu from './CommunityMenu';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
@@ -10,15 +8,15 @@ import useLoadCommunityMembers from '@/hooks/community/useLoadCommunityMembers';
 import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMembers';
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
-import useLogin from '@/hooks/shared/useLogin';
 import CommunityMobileHeader from './CommunityMobileHeader';
+import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
 
 export default function CommunityLayout() {
-  const { isLogin, login } = useLogin();
   const { channelId } = useParams();
 
   const [communityLoading, setCommunityLoading] = useState(true);
   const [communityInfo, setCommunityInfo] = useState<CommunityInfo | null>();
+  const communityId = communityInfo?.id;
   useEffect(() => {
     (async () => {
       setCommunityInfo(null);
@@ -37,16 +35,8 @@ export default function CommunityLayout() {
     })();
   }, [channelId]);
 
-  const {
-    farcasterChannels,
-    setDefaultPostChannelId,
-    userChannels,
-    joinChannel,
-    unPinChannel,
-    openFarcasterQR,
-    isConnected: isLoginFarcaster,
-    setBrowsingChannel,
-  } = useFarcasterCtx();
+  const { farcasterChannels, setDefaultPostChannelId, setBrowsingChannel } =
+    useFarcasterCtx();
 
   useEffect(() => {
     setDefaultPostChannelId(channelId);
@@ -56,12 +46,6 @@ export default function CommunityLayout() {
   }, [channelId, setDefaultPostChannelId]);
 
   const channel = farcasterChannels.find((c) => c?.channel_id === channelId);
-  const [joining, setJoining] = useState(false);
-  const parentUrl = channel?.parent_url;
-  const joined = useMemo(() => {
-    const joinItem = userChannels.find((c) => c.parent_url === parentUrl);
-    return !!joinItem;
-  }, [userChannels, parentUrl]);
 
   useEffect(() => {
     setBrowsingChannel(channel);
@@ -86,27 +70,7 @@ export default function CommunityLayout() {
     load: loadTopMembers,
   } = useLoadCommunityTopMembers(channelId);
 
-  const joinChangeAction = async () => {
-    if (!isLogin) {
-      login();
-      return;
-    }
-    if (!isLoginFarcaster) {
-      openFarcasterQR();
-      return;
-    }
-    setJoining(true);
-    if (joined) {
-      await unPinChannel(parentUrl);
-    } else {
-      await joinChannel(parentUrl);
-    }
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
-    toast.success('Join success');
-    setJoining(false);
-  };
+  const { joined } = useJoinCommunityAction(communityInfo);
 
   if (communityLoading) {
     <div className="w-full h-full flex justify-center items-center">
@@ -114,7 +78,7 @@ export default function CommunityLayout() {
     </div>;
   }
 
-  if (!communityInfo?.id) {
+  if (!communityId) {
     return null;
   }
   return (
@@ -122,8 +86,7 @@ export default function CommunityLayout() {
       {!joined && (
         <GuestModeHeader
           className="max-sm:hidden"
-          joining={joining}
-          joinAction={joinChangeAction}
+          communityInfo={communityInfo}
         />
       )}
 
@@ -132,16 +95,11 @@ export default function CommunityLayout() {
           className="max-sm:hidden"
           communityInfo={communityInfo}
           channelId={channel?.channel_id}
-          joined={joined}
         />
         <CommunityMobileHeader
           className="min-sm:hidden"
           communityInfo={communityInfo}
           channelId={channel?.channel_id}
-          joined={joined}
-          joining={joining}
-          joinAction={joinChangeAction}
-          unjoinAction={joinChangeAction}
         />
         <div
           className={cn(
@@ -177,23 +135,21 @@ export default function CommunityLayout() {
 
 function GuestModeHeader({
   className,
-  joinAction,
-  joining,
+  communityInfo,
   ...props
 }: ComponentPropsWithRef<'div'> & {
-  joined?: boolean;
-  joining?: boolean;
-  joinAction?: () => void;
-  unjoinAction?: () => void;
+  communityInfo: CommunityInfo;
 }) {
+  const { joined, isPending, isDisabled, joinChangeAction } =
+    useJoinCommunityAction(communityInfo);
   return (
     <div
       className={cn(
         `
-          w-full h-[42px] bg-[#F41F4C]
-          rounded-t-[20px] rounded-tr-[20px]
-          flex justify-center items-center gap-[20px] self-stretch
-           text-[#FFF] text-[16px] font-medium leading-[20px]`,
+        w-full h-[42px] bg-[#F41F4C]
+        rounded-t-[20px] rounded-tr-[20px]
+        flex justify-center items-center gap-[20px] self-stretch
+         text-[#FFF] text-[16px] font-medium leading-[20px]`,
         className
       )}
       {...props}
@@ -203,16 +159,31 @@ function GuestModeHeader({
       </span>
       <button
         type="button"
-        className="px-[12px] h-[22px] box-border rounded-[4px] border-[1px] border-solid border-[#FFF] text-[#FFF] text-[12px] font-normal"
-        onClick={() => {
-          joinAction?.();
+        className={cn(
+          'px-[12px] h-[22px] box-border rounded-[4px] border-[1px] border-solid border-[#FFF] text-[#FFF] text-[12px] font-normal'
+        )}
+        disabled={isDisabled}
+        onClick={(e) => {
+          e.stopPropagation();
+          joinChangeAction();
         }}
       >
-        {joining ? 'Joining...' : 'Join the community'}
+        {(() => {
+          if (joined) {
+            if (isPending) {
+              return 'Leaving ...';
+            }
+            return 'Leave Community';
+          }
+          if (isPending) {
+            return 'Joining ...';
+          }
+          return 'Join the community';
+        })()}
       </button>
       {/* <Button className="px-[12px] h-[22px] box-border rounded-[4px] border-[1px] border-solid border-[#FFF] text-[#FFF] text-[12px] font-normal">
-        Mint NFT & Add to Shortcut
-      </Button> */}
+      Mint NFT & Add to Shortcut
+    </Button> */}
     </div>
   );
 }
