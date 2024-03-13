@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { MessageType, ReactionType } from '@farcaster/hub-web';
+import { ReactionType } from '@farcaster/hub-web';
 import { useMemo } from 'react';
 import { FarcasterNotification } from '@/services/social/api/farcaster';
 import useFarcasterUserData from '@/hooks/social/farcaster/useFarcasterUserData';
 import NotificationItem, {
   NotificationActionType,
 } from '../ui/NotificationItem';
+import { NotificationType as FarcasterNotificationType } from '@/services/notification/types/notifications';
 
 interface FarcasterNotificationItemProps {
   notification: FarcasterNotification;
@@ -23,12 +24,12 @@ export default function FarcasterNotificationItem({
 
   const viewData = useMemo(() => {
     let actionType: NotificationActionType;
-    switch (notification.message_type) {
-      case MessageType.CAST_ADD:
+    switch (notification.type) {
+      case FarcasterNotificationType.REPLY:
         actionType = NotificationActionType.comment;
         break;
-      case MessageType.REACTION_ADD:
-        switch (notification.reaction_type) {
+      case FarcasterNotificationType.REACTION:
+        switch (notification.reactions_type) {
           case ReactionType.LIKE:
             actionType = NotificationActionType.like;
             break;
@@ -39,8 +40,11 @@ export default function FarcasterNotificationItem({
             break;
         }
         break;
-      case MessageType.LINK_ADD:
+      case FarcasterNotificationType.FOLLOW:
         actionType = NotificationActionType.follow;
+        break;
+      case FarcasterNotificationType.MENTION:
+        actionType = NotificationActionType.mention;
         break;
       default:
         break;
@@ -49,23 +53,25 @@ export default function FarcasterNotificationItem({
       actionType,
       userName: userData.userName,
       userAvatar: userData.pfp,
-      text: notification.replies_text,
+      timeStamp: notification.message_timestamp,
+      text: notification.replies_text || notification.casts_text,
     };
   }, [notification, userData]);
 
   const clickAction = () => {
-    switch (notification.message_type) {
-      case MessageType.CAST_ADD:
+    console.log('notification', notification);
+    switch (notification.type) {
+      case FarcasterNotificationType.REPLY:
         navigate(
           `/social/post-detail/fcast/${Buffer.from(
             notification.replies_parent_hash
-          ).toString('hex')}#${Buffer.from(notification.casts_hash).toString(
+          ).toString('hex')}#${Buffer.from(notification.replies_hash).toString(
             'hex'
           )}`
         );
         break;
-      case MessageType.REACTION_ADD:
-        switch (notification.reaction_type) {
+      case FarcasterNotificationType.REACTION:
+        switch (notification.reactions_type) {
           case ReactionType.LIKE:
           case ReactionType.RECAST:
             navigate(
@@ -77,6 +83,18 @@ export default function FarcasterNotificationItem({
           default:
             break;
         }
+        break;
+      case FarcasterNotificationType.MENTION:
+        navigate(
+          `/social/post-detail/fcast/${Buffer.from(
+            notification.casts_hash
+          ).toString('hex')}#${Buffer.from(notification.casts_hash).toString(
+            'hex'
+          )}`
+        );
+        break;
+      case FarcasterNotificationType.FOLLOW:
+        navigate('/u/contacts?type=follower');
         break;
       default:
         break;

@@ -76,6 +76,8 @@ export enum RouteKey {
   dappCreate = 'dappCreate',
   // notification
   notification = 'notification',
+  notificationActivity = 'notificationActivity',
+  notificationMention = 'notificationMention',
   // message
   message = 'message',
   // others
@@ -351,6 +353,18 @@ export const routes: CutomRouteObject[] = [
         path: '',
         element: loadContainerElement('notification/Notification'),
         key: RouteKey.notification,
+        title: 'Notifications',
+      },
+      {
+        path: 'activity',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notificationActivity,
+        title: 'Notifications',
+      },
+      {
+        path: 'mention',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notificationMention,
         title: 'Notifications',
       },
     ],

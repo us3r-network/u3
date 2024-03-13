@@ -5,9 +5,11 @@ import {
   FarcasterNotification,
   getFarcasterNotifications,
 } from '../../../services/social/api/farcaster';
+import { NotificationType } from '@/services/notification/types/notifications';
 
 export default function useFarcasterNotifications(
   fid: number,
+  type: NotificationType[],
   pageSize: number
 ) {
   const [farcasterNotifications, setFarcasterNotifications] = useState<
@@ -30,6 +32,7 @@ export default function useFarcasterNotifications(
       const resp = await getFarcasterNotifications({
         fid,
         pageSize,
+        type,
         endFarcasterCursor: cursor,
       });
       const {
@@ -72,7 +75,7 @@ export default function useFarcasterNotifications(
     if (!fid) return;
     setLoading(true);
     try {
-      const resp = await getFarcasterNotifications({ fid, pageSize });
+      const resp = await getFarcasterNotifications({ fid, pageSize, type });
       if (!resp?.data?.data) return;
       const {
         notifications,

@@ -15,8 +15,8 @@ import { ReactComponent as BookmarkSvg } from './svgs/bookmark.svg';
 import { ReactComponent as BellSvg } from './svgs/bell.svg';
 
 import { CutomRouteObject, getRoute, RouteKey } from './routes';
-import NotificationButton from '@/components/notification/NotificationNavBtn';
-import MobileNotificationNavBtn from '@/components/notification/MobileNotificationNavBtn';
+// import NotificationButton from '@/components/notification/NotificationNavBtn';
+// import MobileNotificationNavBtn from '@/components/notification/MobileNotificationNavBtn';
 
 export type CustomNavObject = {
   name: string;
@@ -62,15 +62,15 @@ const navMap = {
     icon: React.createElement(SocialSvg),
     route: getRoute(RouteKey.socialLayout),
   },
-  notifications: {
-    name: 'notifications',
-    activeRouteKeys: [RouteKey.notification],
-    component: isMobile ? (
-      <MobileNotificationNavBtn key={RouteKey.notification} />
-    ) : (
-      <NotificationButton key={RouteKey.notification} />
-    ),
-  },
+  // notifications: {
+  //   name: 'notifications',
+  //   activeRouteKeys: [RouteKey.notification],
+  //   component: isMobile ? (
+  //     <MobileNotificationNavBtn key={RouteKey.notification} />
+  //   ) : (
+  //     <NotificationButton key={RouteKey.notification} />
+  //   ),
+  // },
   apps: {
     name: 'Apps',
     activeRouteKeys: [RouteKey.dappStore, RouteKey.dapp],
@@ -90,7 +90,7 @@ export const navs: CustomNavObject[] = [
         navMap.explore,
         navMap.social,
         navMap.news,
-        navMap.notifications,
+        // navMap.notifications,
         navMap.apps,
         navMap.save,
       ]
@@ -98,7 +98,7 @@ export const navs: CustomNavObject[] = [
         navMap.explore,
         navMap.news,
         navMap.social,
-        navMap.notifications,
+        // navMap.notifications,
         navMap.save,
       ]),
   // {

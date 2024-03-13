@@ -4,16 +4,18 @@ import { ApiResp, FarCast, FarCastEmbedMeta, SocialPlatform } from '../types';
 import { REACT_APP_API_SOCIAL_URL } from '../../../constants';
 import request from '@/services/shared/api/request';
 import { FollowType } from '@/container/profile/Contacts';
+import { NotificationType } from '@/services/notification/types/notifications';
 
 // console.log({ REACT_APP_API_SOCIAL_URL });
 export const PAGE_SIZE = 25;
 export type FarcasterNotification = {
+  type: NotificationType;
   message_fid: number;
   message_type: number;
   message_timestamp: string;
   message_hash: Buffer;
   userData: unknown;
-  reaction_type?: number;
+  reactions_type?: number;
   casts_id?: string;
   casts_hash?: Buffer;
   casts_text?: string;
@@ -123,10 +125,12 @@ export function getFarcasterEmbedCast({
 
 export function getFarcasterNotifications({
   fid,
+  type,
   endFarcasterCursor,
   pageSize,
 }: {
   fid: number;
+  type: NotificationType[];
   endFarcasterCursor?: string;
   pageSize?: number;
 }): AxiosPromise<
@@ -141,6 +145,7 @@ export function getFarcasterNotifications({
     method: 'get',
     params: {
       fid,
+      type,
       pageSize,
       next: endFarcasterCursor,
       withInfo: true,
