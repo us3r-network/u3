@@ -151,7 +151,7 @@ export function NotificationSettingsGroup() {
   return (
     // <div>
     //   <p>Web Push</p>
-    <>
+    <div>
       <Switch
         onColor="#5057AA"
         disabled={webpushDisabled}
@@ -165,7 +165,7 @@ export function NotificationSettingsGroup() {
           }
           return 'Subscribing...';
         }
-        return 'Subscribe Notifications';
+        return 'Subscribe';
       })()}
 
       {/* {!(isLoginFarcaster && farcasterUserInfo) && (
@@ -176,7 +176,7 @@ export function NotificationSettingsGroup() {
           Login Farcaster
         </ColorButton>
       )} */}
-    </>
+    </div>
     // </div>
   );
 }

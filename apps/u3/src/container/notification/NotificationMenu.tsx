@@ -1,6 +1,5 @@
 import { ComponentPropsWithRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { cn } from '@/lib/utils';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
@@ -25,17 +24,20 @@ export default function NotificationMenu({
         </h1>
         <div className="flex-1 w-full flex flex-col gap-[5px]">
           <NavLinkItem
-            href="/notification"
-            active={pathname === '/notification'}
+            href="/notification/activity"
+            active={pathname === '/notification/activity'}
           >
             Activity
           </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
+          <NavLinkItem
+            href="/notification/mention"
+            active={pathname === '/notification/mention'}
+          >
             Mention
           </NavLinkItem>
-          <NavLinkItem onClick={() => toast.info('Comming Soon')}>
+          {/* <NavLinkItem >
             Setting
-          </NavLinkItem>
+          </NavLinkItem> */}
         </div>
       </div>
       <LoginButtonV2 />

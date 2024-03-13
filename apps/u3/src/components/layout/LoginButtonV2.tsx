@@ -130,7 +130,7 @@ export default function LoginButtonV2() {
 
           <DropdownMenuItemWarper
             className="max-sm:hidden"
-            onClick={() => navigate('/notification')}
+            onClick={() => navigate('/notification/activity')}
           >
             <NotificationIcon />
             Notifications

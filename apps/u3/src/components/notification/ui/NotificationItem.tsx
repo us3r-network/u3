@@ -1,4 +1,5 @@
 import { ComponentPropsWithRef } from 'react';
+import dayjs from 'dayjs';
 import { cn } from '@/lib/utils';
 
 export enum NotificationActionType {
@@ -28,6 +29,7 @@ type NotificationData = {
   actionType: NotificationActionType;
   userName: string;
   userAvatar?: string;
+  timeStamp?: string;
   text?: string;
 };
 interface NotificationItemProps extends ComponentPropsWithRef<'div'> {
@@ -38,7 +40,7 @@ export default function NotificationItem({
   className,
   ...divProps
 }: NotificationItemProps) {
-  const { actionType, userName, userAvatar, text } = data;
+  const { actionType, userName, userAvatar, text, timeStamp } = data;
   return (
     <div
       className={cn(
@@ -49,14 +51,19 @@ export default function NotificationItem({
     >
       <ActionTypeStyled actionType={actionType} userAvatar={userAvatar} />
       <div className="w-0 flex-1 flex flex-col gap-[15px] text-start leading-normal">
-        <span className="text-white font-[Roboto] text-[16px] font-normal">
-          <span className="underline">{userName}</span>
-          <span className="ml-[5px]">{getActionTypeTitle(actionType)}</span>
-        </span>
+        <div className="flex items-center justify-between">
+          <p className="w-full text-white text-xl ">
+            <span className="underline">{userName}</span>
+            <span className="ml-[5px]">{getActionTypeTitle(actionType)}</span>
+          </p>
+          <p className="text-gray-400 text-[12px]">
+            {dayjs(timeStamp).fromNow()}
+          </p>
+        </div>
         {text?.trim() && (
-          <span className="text-[#718096] font-[Roboto] text-[12px] font-normal line-clamp-1">
+          <p className="w-full text-gray-400 text-[12px] line-clamp-1">
             {text}
-          </span>
+          </p>
         )}
       </div>
     </div>
