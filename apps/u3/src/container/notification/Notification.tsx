@@ -14,8 +14,6 @@ export default function Notification() {
     fid: number;
     type?: NotificationType[];
   }>();
-  const isAuthenticated = useIsAuthenticated();
-  if (!isAuthenticated) return null;
   return (
     <div className="w-full h-[calc(100vh-56px-40px)] px-4">
       <NotificationStoreProvider
