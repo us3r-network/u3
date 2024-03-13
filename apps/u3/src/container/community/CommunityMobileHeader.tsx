@@ -15,23 +15,16 @@ import AddPostMobileBtn from '@/components/social/AddPostMobileBtn';
 import CommunityBaseInfo from '@/components/community/CommunityBaseInfo';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import getCommunityNavs from '@/utils/community/getCommunityNavs';
+import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
 
 export default function CommunityMobileHeader({
   className,
   communityInfo,
   channelId,
-  joined,
-  joining,
-  joinAction,
-  unjoinAction,
   ...props
 }: ComponentPropsWithRef<'div'> & {
   communityInfo: CommunityInfo;
   channelId: string;
-  joined: boolean;
-  joining: boolean;
-  joinAction: () => void;
-  unjoinAction: () => void;
 }) {
   const navigate = useNavigate();
   const { mainNavs } = getCommunityNavs(channelId, communityInfo);
@@ -89,24 +82,7 @@ export default function CommunityMobileHeader({
               <CommunityBaseInfo communityInfo={communityInfo} />
               <hr className="border-[#39424C]" />
               <div>
-                <button
-                  type="button"
-                  className="w-auto text-[#F41F4C] text-[12px] font-normal leading-[15px]"
-                  onClick={() => {
-                    if (joined) {
-                      unjoinAction?.();
-                    } else {
-                      joinAction?.();
-                    }
-                  }}
-                >
-                  {(() => {
-                    if (joining) {
-                      return joined ? 'Leaving ...' : 'Joining ...';
-                    }
-                    return joined ? 'Leave Community' : 'Join Community';
-                  })()}
-                </button>
+                <JoinCommunityBtn communityInfo={communityInfo} />
               </div>
             </DrawerContent>
           </Drawer>
@@ -117,5 +93,44 @@ export default function CommunityMobileHeader({
         <AddPostMobileBtn />
       </div>
     </MobileHeaderWrapper>
+  );
+}
+
+function JoinCommunityBtn({
+  className,
+  communityInfo,
+  ...props
+}: ComponentPropsWithRef<'button'> & {
+  communityInfo: CommunityInfo;
+}) {
+  const { joined, isPending, isDisabled, joinChangeAction } =
+    useJoinCommunityAction(communityInfo);
+  return (
+    <button
+      type="button"
+      className={cn(
+        'w-auto text-[#F41F4C] text-[12px] font-normal leading-[15px]',
+        className
+      )}
+      disabled={isDisabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        joinChangeAction();
+      }}
+      {...props}
+    >
+      {(() => {
+        if (joined) {
+          if (isPending) {
+            return 'Leaving ...';
+          }
+          return 'Leave Community';
+        }
+        if (isPending) {
+          return 'Joining ...';
+        }
+        return 'Join Community';
+      })()}
+    </button>
   );
 }

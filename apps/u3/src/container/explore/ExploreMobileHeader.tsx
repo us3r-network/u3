@@ -21,7 +21,7 @@ export default function ExploreMobileHeader(
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const isHomePath = pathname === '/';
-  const isCommunitiesPath = pathname === '/communities';
+  const isCommunitiesPath = pathname.startsWith('/communities');
   const isPosterGalleryPath = pathname === '/poster-gallery';
   const isCasterDailyPath = pathname === '/caster-daily';
   const isPostsPath = pathname.startsWith('/social');

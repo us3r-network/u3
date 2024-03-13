@@ -16,7 +16,7 @@ export default function ExploreMenu({
 }) {
   const { pathname } = useLocation();
   const isHomePath = pathname === '/';
-  const isCommunitiesPath = pathname === '/communities';
+  const isCommunitiesPath = pathname.startsWith('/communities');
   const isPosterGalleryPath = pathname === '/poster-gallery';
   const isPostsPath = pathname.startsWith('/social');
 

@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { ComponentPropsWithRef } from 'react';
+import { ComponentPropsWithRef, useEffect } from 'react';
 import { MEDIA_BREAK_POINTS } from '../../constants/index';
 import Main from './Main';
 import { useGAPageView } from '../../hooks/shared/useGoogleAnalytics';
@@ -21,6 +21,8 @@ import ClaimOnboard from '../onboard/Claim';
 import RedEnvelopeFloatingWindow from '../social/frames/red-envelope/RedEnvelopeFloatingWindow';
 import { cn } from '@/lib/utils';
 import { isCommunityPath } from '@/route/path';
+import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
+import useLogin from '@/hooks/shared/useLogin';
 
 function Layout() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,6 +31,17 @@ function Layout() {
   const isCommunity = isCommunityPath(pathname);
 
   useGAPageView();
+
+  const { isLogin } = useLogin();
+  const { loadAllJoinedCommunities, clearJoinedCommunities } =
+    useAllJoinedCommunities();
+  useEffect(() => {
+    if (isLogin) {
+      loadAllJoinedCommunities();
+    } else {
+      clearJoinedCommunities();
+    }
+  }, [isLogin]);
 
   return (
     <div

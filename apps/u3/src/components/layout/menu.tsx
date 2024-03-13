@@ -7,11 +7,12 @@
  */
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { ComponentPropsWithRef, useMemo } from 'react';
+import { ComponentPropsWithRef } from 'react';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
-import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import { getCommunityPath } from '@/route/path';
 import { cn } from '@/lib/utils';
+import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
+import { CommunityInfo } from '@/services/community/types/community';
 
 export default function Menu({
   className,
@@ -43,60 +44,51 @@ export default function Menu({
       </div>
       <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
 
-      <UserChannels />
+      <UserCommunities />
     </div>
   );
 }
 
-function UserChannels() {
-  const { userChannels, currFid, browsingChannel } = useFarcasterCtx();
-
-  let showChannels = [];
-  if (currFid) {
-    showChannels = [...userChannels];
-  }
-  if (browsingChannel?.parent_url) {
-    const findChannel = showChannels.find(
-      (c) => c.parent_url === browsingChannel.parent_url
+function UserCommunities() {
+  const { joinedCommunities } = useAllJoinedCommunities();
+  // TODO : browsingCommunity
+  const browsingCommunity = null;
+  const showCommunities = [...joinedCommunities];
+  if (browsingCommunity?.parent_url) {
+    const findCommunity = showCommunities.find(
+      (c) => c.id === browsingCommunity.id
     );
-    if (!findChannel) {
-      showChannels.unshift(browsingChannel);
+    if (!findCommunity) {
+      showCommunities.unshift(browsingCommunity);
     }
   }
 
   return (
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
-      {showChannels.map(({ parent_url }) => (
-        <ChannelItem parent_url={parent_url} key={parent_url} />
+      {showCommunities.map((item) => (
+        <CommunityItem communityInfo={item} />
       ))}
     </div>
   );
 }
 
-function ChannelItem({ parent_url }: { parent_url: string }) {
-  const { getChannelFromUrl } = useFarcasterCtx();
+function CommunityItem({ communityInfo }: { communityInfo: CommunityInfo }) {
   const navigate = useNavigate();
-
-  const item = useMemo(() => {
-    return getChannelFromUrl(parent_url);
-  }, [parent_url, getChannelFromUrl]);
-
-  if (!item) return null;
 
   return (
     <div
       onClick={() => {
-        navigate(getCommunityPath(item.channel_id));
+        navigate(getCommunityPath(communityInfo.channelId));
       }}
       className="cursor-pointer relative"
     >
       <div className="flex items-center gap-3">
         <img
-          src={item.image}
-          alt={item.name}
+          src={communityInfo.logo}
+          alt={communityInfo.name}
           className="rounded-md w-[40px] h-[40px]"
         />
-        <div className="text-white font-bold">{item.name}</div>
+        <div className="text-white font-bold">{communityInfo.name}</div>
       </div>
     </div>
   );
