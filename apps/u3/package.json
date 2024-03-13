@@ -110,7 +110,7 @@
     "tslib": "^2.3.0",
     "typescript": "^5.3.3",
     "validator": "^13.11.0",
-    "viem": "^2.7.11",
+    "viem": "~2.7.11",
     "wagmi": "^2.5.7",
     "web-vitals": "^2.1.4",
     "workbox-background-sync": "^6.6.0",
