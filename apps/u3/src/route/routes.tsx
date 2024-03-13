@@ -30,6 +30,9 @@ export enum RouteKey {
   farcasterProfile = 'farcasterProfile',
   // community
   communities = 'communities',
+  trendingCommunities = 'trendingCommunities',
+  newestCommunities = 'newestCommunities',
+  joinedCommunities = 'joinedCommunities',
   community = 'community',
   communityPostsLayout = 'communityPostsLayout',
   communityPostsFcTrending = 'communityPostsFcTrending',
@@ -140,6 +143,32 @@ export const routes: CutomRouteObject[] = [
         element: loadContainerElement('community/Communities'),
         key: RouteKey.communities,
         title: 'Communities',
+        children: [
+          {
+            path: '',
+            element: <Navigate to="trending" />,
+            key: RouteKey.trendingCommunities,
+          } as CutomRouteObject,
+          {
+            path: 'trending',
+            element: loadContainerElement('community/CommunitiesTrending'),
+            key: RouteKey.trendingCommunities,
+            title: 'Trending Communities',
+          },
+          {
+            path: 'newest',
+            element: loadContainerElement('community/CommunitiesNewest'),
+            key: RouteKey.newestCommunities,
+            title: 'Newest Communities',
+          },
+          {
+            path: 'joined',
+            element: loadContainerElement('community/CommunitiesJoined'),
+            key: RouteKey.joinedCommunities,
+            title: 'Joined Communities',
+            permissions: [RoutePermission.login],
+          },
+        ],
       },
       // social
       {

@@ -28,6 +28,7 @@ export type CommunityEntity = {
     channel_id: string;
     parent_url: string;
   }>;
+  channelId?: string;
 };
 
 export type CommunityStatistics = {
@@ -47,3 +48,10 @@ export type MemberEntity = {
 };
 
 export type CommunityInfo = CommunityEntity & CommunityStatistics;
+
+export type CommunityTypeEntity = {
+  id: number;
+  type: string;
+  created_at: string;
+  last_modified_at: string;
+};

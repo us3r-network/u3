@@ -32,8 +32,12 @@ export default function MobileMainNav({
     firstRouteKey === RouteKey.home && lastRouteKey !== RouteKey.communities;
 
   const isCommunityRoute =
-    lastRouteKey === RouteKey.communities ||
-    firstRouteKey === RouteKey.community;
+    [
+      RouteKey.communities,
+      RouteKey.trendingCommunities,
+      RouteKey.newestCommunities,
+      RouteKey.joinedCommunities,
+    ].includes(lastRouteKey) || firstRouteKey === RouteKey.community;
 
   const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
