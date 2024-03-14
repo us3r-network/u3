@@ -123,7 +123,7 @@ export default function LoginButtonV2() {
             My Profile
           </DropdownMenuItemWarper>
 
-          <DropdownMenuItemWarper onClick={() => navigate('/u/fav')}>
+          <DropdownMenuItemWarper onClick={() => navigate('/fav/posts')}>
             <BookmarkIcon />
             My favorites
           </DropdownMenuItemWarper>

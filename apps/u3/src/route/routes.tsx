@@ -20,7 +20,6 @@ export enum RouteKey {
   profile = 'profile',
   profileByUser = 'profileByUser',
   contacts = 'contacts',
-  fav = 'fav',
   asset = 'asset',
   gallery = 'gallery',
   activity = 'activity',
@@ -77,6 +76,11 @@ export enum RouteKey {
   dappStore = 'dappStore',
   dapp = 'dapp',
   dappCreate = 'dappCreate',
+  // fav
+  fav = 'fav',
+  favPosts = 'favPosts',
+  favLinks = 'favLinks',
+  favApps = 'favApps',
   // notification
   notification = 'notification',
   notificationActivity = 'notificationActivity',
@@ -369,6 +373,34 @@ export const routes: CutomRouteObject[] = [
     path: '/policy',
     element: loadContainerElement('Policy'),
     key: RouteKey.policy,
+  },
+  // fav
+  {
+    path: '/fav',
+    element: loadContainerElement('fav/FavLayout'),
+    key: RouteKey.fav,
+    permissions: [RoutePermission.login],
+    title: 'Favorites',
+    children: [
+      {
+        path: 'posts',
+        element: loadContainerElement('fav/Fav'),
+        key: RouteKey.favPosts,
+        title: 'Favorite Posts',
+      },
+      {
+        path: 'links',
+        element: loadContainerElement('fav/Fav'),
+        key: RouteKey.favLinks,
+        title: 'Favorite Links',
+      },
+      {
+        path: 'apps',
+        element: loadContainerElement('fav/Apps'),
+        key: RouteKey.favApps,
+        title: 'Favorite Apps',
+      },
+    ],
   },
   // notification
   {
