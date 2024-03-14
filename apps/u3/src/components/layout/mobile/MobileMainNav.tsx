@@ -28,16 +28,17 @@ export default function MobileMainNav({
   const firstRouteKey = firstRouteMeta?.key;
   const lastRouteKey = lastRouteMeta?.key;
 
-  const isExploreRoute =
-    firstRouteKey === RouteKey.home && lastRouteKey !== RouteKey.communities;
+  const isCommunitiesRoute = [
+    RouteKey.communities,
+    RouteKey.trendingCommunities,
+    RouteKey.newestCommunities,
+    RouteKey.joinedCommunities,
+  ].includes(lastRouteKey);
+
+  const isExploreRoute = firstRouteKey === RouteKey.home && !isCommunitiesRoute;
 
   const isCommunityRoute =
-    [
-      RouteKey.communities,
-      RouteKey.trendingCommunities,
-      RouteKey.newestCommunities,
-      RouteKey.joinedCommunities,
-    ].includes(lastRouteKey) || firstRouteKey === RouteKey.community;
+    isCommunitiesRoute || firstRouteKey === RouteKey.community;
 
   const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
