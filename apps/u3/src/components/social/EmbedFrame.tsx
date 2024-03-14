@@ -52,17 +52,17 @@ export default function EmbedCastFrame({
 
   const config = useConfig();
 
-  const reportTransaction = useCallback(
-    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+  const generateFrameActionData = useCallback(
+    async (btnIdx: number, txId?: string) => {
       if (!castId) {
         console.error('no castId');
         toast.error('cast is required');
-        return;
+        throw new Error('cast is required');
       }
       if (!encryptedSigner || !currFid) {
         console.error('no encryptedSigner');
         toast.error('farcaster login is required');
-        return;
+        throw new Error('farcaster login is required');
       }
       const trustedDataResult = await makeFrameAction(
         {
@@ -70,9 +70,10 @@ export default function EmbedCastFrame({
           buttonIndex: btnIdx,
           castId,
           inputText: Buffer.from(frameText),
-          state: Buffer.from(state || ''),
-          transactionId: Buffer.from(txId),
-          address: address ? fromHex(address, 'bytes') : Buffer.from(''),
+          state: Buffer.from(frameData.state || ''),
+          transactionId: Buffer.from(txId || ''),
+          address:
+            address && txId ? fromHex(address, 'bytes') : Buffer.from(''),
         },
         {
           fid: currFid,
@@ -86,24 +87,40 @@ export default function EmbedCastFrame({
 
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
-        fid: currFid,
+        fid: Number(currFid),
         url,
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
-        buttonIndex: btnIdx,
+        buttonIndex: trustedDataResult.value.data.frameActionBody.buttonIndex,
+        timestamp: trustedDataResult.value.data.timestamp,
         inputText: frameText,
         castId: {
-          fid: castId.fid,
+          fid: Number(castId.fid),
           hash: toHex(castId.hash),
         },
-        state: state || '',
-        transactionId: txId,
+        state: frameData.state || '',
+        transactionId: txId || '',
+        address: address && txId ? address : '',
       };
       const trustedData = {
         messageBytes: Buffer.from(
           Message.encode(trustedDataValue).finish()
         ).toString('hex'),
       };
+      return {
+        untrustedData,
+        trustedData,
+      };
+    },
+    [address, castId.fid, castId.hash, currFid, frameData, url]
+  );
+
+  const reportTransaction = useCallback(
+    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+      const { untrustedData, trustedData } = await generateFrameActionData(
+        btnIdx,
+        txId
+      );
       const postData = {
         actionUrl: postUrl,
         untrustedData,
@@ -170,56 +187,9 @@ export default function EmbedCastFrame({
         setFrameRedirect(url);
         return;
       }
-      if (!castId) {
-        console.error('no castId');
-        toast.error('cast is required');
-        return;
-      }
-      if (!encryptedSigner || !currFid) {
-        console.error('no encryptedSigner');
-        toast.error('farcaster login is required');
-        return;
-      }
-      const trustedDataResult = await makeFrameAction(
-        {
-          url: Buffer.from(url),
-          buttonIndex: index,
-          castId,
-          inputText: Buffer.from(frameText),
-          state: Buffer.from(frameData.state || ''),
-          transactionId: Buffer.from(''),
-          address: address ? fromHex(address, 'bytes') : Buffer.from(''),
-        },
-        {
-          fid: currFid,
-          network: FARCASTER_NETWORK,
-        },
-        encryptedSigner
+      const { untrustedData, trustedData } = await generateFrameActionData(
+        index
       );
-      if (trustedDataResult.isErr()) {
-        throw new Error(trustedDataResult.error.message);
-      }
-
-      const trustedDataValue = trustedDataResult.value;
-      const untrustedData = {
-        fid: currFid,
-        url,
-        messageHash: toHex(trustedDataValue.hash),
-        network: FARCASTER_NETWORK,
-        buttonIndex: index,
-        inputText: frameText,
-        castId: {
-          fid: castId.fid,
-          hash: toHex(castId.hash),
-        },
-        state: frameData.state || '',
-        transactionId: '',
-      };
-      const trustedData = {
-        messageBytes: Buffer.from(
-          Message.encode(trustedDataValue).finish()
-        ).toString('hex'),
-      };
       const postData = {
         actionUrl: target || frameData.postUrl,
         untrustedData,
@@ -274,7 +244,7 @@ export default function EmbedCastFrame({
         <div className="w-full overflow-hidden flex items-center">
           <img src={frameData.image} alt="" className="w-full " />
         </div>
-        {frameData.inputText && (
+        {(frameData.inputText && (
           <div className="p-3">
             <input
               type="text"
@@ -286,8 +256,9 @@ export default function EmbedCastFrame({
               }}
             />
           </div>
-        )}
-        {isConnected && frameData.buttons.length && (
+        )) ||
+          null}
+        {(isConnected && frameData.buttons.length && (
           <div className="flex items-center justify-around gap-3 mt-1">
             {frameData.buttons.map((item, idx) => {
               if (!item) return null;
@@ -312,17 +283,19 @@ export default function EmbedCastFrame({
               );
             })}
           </div>
-        )}
+        )) ||
+          null}
       </div>
-      {frameRedirect && (
+      {(frameRedirect && (
         <EmbedCastFrameRedirect
           url={frameRedirect}
           resetUrl={() => {
             setFrameRedirect('');
           }}
         />
-      )}
-      {txBtnIdx && (
+      )) ||
+        null}
+      {(txBtnIdx && (
         <EmbedCastFrameTxSimulate
           walletAddress={address}
           txBtnIdx={txBtnIdx}
@@ -342,7 +315,8 @@ export default function EmbedCastFrame({
             setTxBtnIdx(0);
           }}
         />
-      )}
+      )) ||
+        null}
     </>
   );
 }
