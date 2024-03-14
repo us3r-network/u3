@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import NotificationMenu from './NotificationMenu';
 import useFarcasterCurrFid from '@/hooks/social/farcaster/useFarcasterCurrFid';
 import { NotificationType } from '@/services/notification/types/notifications';
+import NotificationMobileHeader from './NotificationMobileHeader';
 
 export default function NotificationLayout() {
   const fid = Number(useFarcasterCurrFid());
@@ -32,6 +33,7 @@ export default function NotificationLayout() {
         <NotificationMenu />
       </div>
       <div className="flex-1 h-full overflow-auto">
+        <NotificationMobileHeader className="w-full sm:hidden" />
         <Outlet
           context={{
             fid,
