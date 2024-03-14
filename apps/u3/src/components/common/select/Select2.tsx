@@ -50,7 +50,11 @@ export default function SelectWithOptions({
       <SelectContent className="rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium border-none">
         {options.map(({ value, label }) => {
           return (
-            <SelectItem value={value} className="hover:bg-[#20262F]">
+            <SelectItem
+              key={value}
+              value={value}
+              className="hover:bg-[#20262F]"
+            >
               {label}
             </SelectItem>
           );

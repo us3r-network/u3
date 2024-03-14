@@ -13,7 +13,34 @@ import * as SelectPrimitive from '@radix-ui/react-select';
 
 import { cn } from '@/lib/utils';
 
-const Select = SelectPrimitive.Root;
+// TODO see issue: https://github.com/radix-ui/primitives/issues/1658
+
+// const Select = SelectPrimitive.Root;
+const Select = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Root>
+>(({ open: openSelect, onOpenChange, ...props }) => {
+  const [open, setOpen] = React.useState(openSelect);
+  return (
+    <SelectPrimitive.Root
+      open={openSelect !== undefined ? openSelect : open}
+      onOpenChange={(o) => {
+        setTimeout(() => {
+          const selection = document.getSelection();
+          if (selection) {
+            selection.removeAllRanges();
+          }
+          if (openSelect !== undefined && onOpenChange) {
+            onOpenChange(o);
+          } else {
+            setOpen(o);
+          }
+        }, 10);
+      }}
+      {...props}
+    />
+  );
+});
 
 const SelectGroup = SelectPrimitive.Group;
 

@@ -41,3 +41,42 @@ export default function JoinCommunityBtn({
     </ColorButton>
   );
 }
+
+export function JoinCommunityTextBtn({
+  className,
+  communityInfo,
+  ...props
+}: ComponentPropsWithRef<'button'> & {
+  communityInfo: CommunityInfo;
+}) {
+  const { joined, isPending, isDisabled, joinChangeAction } =
+    useJoinCommunityAction(communityInfo);
+  return (
+    <button
+      type="button"
+      className={cn(
+        'w-auto text-[#F41F4C] text-[12px] font-normal leading-[15px]',
+        className
+      )}
+      disabled={isDisabled}
+      onClick={(e) => {
+        e.stopPropagation();
+        joinChangeAction();
+      }}
+      {...props}
+    >
+      {(() => {
+        if (joined) {
+          if (isPending) {
+            return 'Leaving ...';
+          }
+          return 'Leave Community';
+        }
+        if (isPending) {
+          return 'Joining ...';
+        }
+        return 'Join Community';
+      })()}
+    </button>
+  );
+}
