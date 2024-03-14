@@ -66,6 +66,7 @@ function UserCommunities() {
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
       {showCommunities.map((item) => (
         <SidebarCommunityItem
+          key={item.id}
           communityInfo={item}
           active={browsingCommunity?.id === item.id}
         />
