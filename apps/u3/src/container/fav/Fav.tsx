@@ -1,13 +1,11 @@
-import { TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { usePersonalFavors } from '@us3r-network/link';
 import { uniqBy } from 'lodash';
 import { useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Loading from '@/components/common/loading/Loading';
 import { MainWrapper } from '@/components/layout/Index';
 import SaveExploreList from '@/components/profile/save/FavList';
 import SyncingBotSaves from '@/components/profile/save/SyncingBotSaves';
-import { Tabs } from '@/components/ui/tabs';
-import { cn } from '@/lib/utils';
 import { getDappLinkDataWithJsonValue } from '@/utils/dapp/dapp';
 import {
   getContentLinkDataWithJsonValue,
@@ -23,10 +21,18 @@ enum FavType {
   Post = 'post',
 }
 export default function Fav() {
+  const { pathname } = useLocation();
+
   const { isFetching, personalFavors } = usePersonalFavors();
   const [savedLinks, setSavedLinks] = useState([]);
-  const [type, setType] = useState(FavType.Post);
-  // console.log('personalFavors', personalFavors);
+  const type = useMemo(() => {
+    if (pathname.includes('dapps')) return FavType.Dapp;
+    if (pathname.includes('contents')) return FavType.Content;
+    if (pathname.includes('events')) return FavType.Event;
+    if (pathname.includes('posts')) return FavType.Post;
+    if (pathname.includes('links')) return FavType.Link;
+    return '';
+  }, [pathname]);
   const list = useMemo(
     () => [
       ...savedLinks.map((item) => {
@@ -86,57 +92,12 @@ export default function Fav() {
           <Loading />
         </div>
       ) : (
-        <Tabs
-          className="h-full items-start"
-          value={type}
-          onValueChange={(v) => {
-            setType(v as FavType);
+        <SaveExploreList
+          data={list.filter((item) => (type ? item.type === type : true))}
+          onItemClick={(item) => {
+            window.open(item.url, '_blank');
           }}
-        >
-          <TabsList className="flex gap-5 justify-start w-full bg-inherit">
-            <TabsTrigger
-              value={FavType.Post}
-              className={cn(
-                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit text-gray-400 data-[state=active]:text-white data-[state=active]:border-white'
-              )}
-            >
-              {`Posts`}
-            </TabsTrigger>
-            <TabsTrigger
-              value={FavType.Link}
-              className={cn(
-                'border-[#1B1E23] border-b-2 px-0 pb-2 text-base rounded-none data-[state=active]:bg-inherit text-gray-400 data-[state=active]:text-white data-[state=active]:border-white'
-              )}
-            >
-              {`Links`}
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent
-            id="profile-contacts-following-warper"
-            value={FavType.Post}
-            className="h-full"
-          >
-            {' '}
-            <SaveExploreList
-              data={list.filter((item) => item.type === FavType.Post)}
-              onItemClick={(item) => {
-                window.open(item.url, '_blank');
-              }}
-            />
-          </TabsContent>
-          <TabsContent
-            id="profile-contacts-follower-warper"
-            value={FavType.Link}
-            className="h-full"
-          >
-            <SaveExploreList
-              data={list.filter((item) => item.type === FavType.Link)}
-              onItemClick={(item) => {
-                window.open(item.url, '_blank');
-              }}
-            />
-          </TabsContent>
-        </Tabs>
+        />
       )}
     </MainWrapper>
   );
