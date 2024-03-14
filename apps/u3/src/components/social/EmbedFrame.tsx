@@ -12,7 +12,7 @@ import {
 import { useAccount, useConfig, useChains } from 'wagmi';
 
 import { CastId, Message, makeFrameAction } from '@farcaster/hub-web';
-import { formatEther, parseEther, toHex } from 'viem';
+import { formatEther, fromHex, parseEther, toHex } from 'viem';
 import { toast } from 'react-toastify';
 import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import { FarCast } from '../../services/social/types';
@@ -72,6 +72,7 @@ export default function EmbedCastFrame({
           inputText: Buffer.from(frameText),
           state: Buffer.from(state || ''),
           transactionId: Buffer.from(txId),
+          address: address ? fromHex(address, 'bytes') : Buffer.from(''),
         },
         {
           fid: currFid,
@@ -116,7 +117,7 @@ export default function EmbedCastFrame({
       const { frame } = resp.data.data;
       setFrameData(frame);
     },
-    [frameData, currFid, encryptedSigner, castId, frameText]
+    [frameData, currFid, encryptedSigner, castId, frameText, address]
   );
 
   const sendEthTransactionAction = useCallback(async () => {
@@ -187,6 +188,7 @@ export default function EmbedCastFrame({
           inputText: Buffer.from(frameText),
           state: Buffer.from(frameData.state || ''),
           transactionId: Buffer.from(''),
+          address: address ? fromHex(address, 'bytes') : Buffer.from(''),
         },
         {
           fid: currFid,
