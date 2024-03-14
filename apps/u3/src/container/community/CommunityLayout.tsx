@@ -10,6 +10,7 @@ import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import CommunityMobileHeader from './CommunityMobileHeader';
 import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
+import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
 
 export default function CommunityLayout() {
   const { channelId } = useParams();
@@ -35,8 +36,7 @@ export default function CommunityLayout() {
     })();
   }, [channelId]);
 
-  const { farcasterChannels, setDefaultPostChannelId, setBrowsingChannel } =
-    useFarcasterCtx();
+  const { farcasterChannels, setDefaultPostChannelId } = useFarcasterCtx();
 
   useEffect(() => {
     setDefaultPostChannelId(channelId);
@@ -47,12 +47,14 @@ export default function CommunityLayout() {
 
   const channel = farcasterChannels.find((c) => c?.channel_id === channelId);
 
+  const { setBrowsingCommunity, clearBrowsingCommunity } =
+    useBrowsingCommunity();
   useEffect(() => {
-    setBrowsingChannel(channel);
+    setBrowsingCommunity(communityInfo);
     return () => {
-      setBrowsingChannel(undefined);
+      clearBrowsingCommunity();
     };
-  }, [channel, setBrowsingChannel]);
+  }, [communityInfo, setBrowsingCommunity, clearBrowsingCommunity]);
 
   // members state
   const {

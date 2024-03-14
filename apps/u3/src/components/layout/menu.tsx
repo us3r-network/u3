@@ -13,6 +13,7 @@ import { getCommunityPath } from '@/route/path';
 import { cn } from '@/lib/utils';
 import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
 import { CommunityInfo } from '@/services/community/types/community';
+import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
 
 export default function Menu({
   className,
@@ -22,13 +23,13 @@ export default function Menu({
   return (
     <div
       className={cn(
-        'bg-[#14171A] w-[60px] h-full px-[10px] py-[20px] box-border flex flex-col gap-[20] items-start',
+        'bg-[#14171A] w-[60px] h-full py-[20px] box-border flex flex-col gap-[20] items-start',
         className
       )}
       {...props}
     >
       <div
-        className="w-[36px] flex flex-col gap-[4px] cursor-pointer max-sm:hidden"
+        className="w-full flex flex-col items-center gap-[4px] cursor-pointer max-sm:hidden"
         onClick={() => navigate('/')}
       >
         <LogoIconBox>
@@ -51,10 +52,9 @@ export default function Menu({
 
 function UserCommunities() {
   const { joinedCommunities } = useAllJoinedCommunities();
-  // TODO : browsingCommunity
-  const browsingCommunity = null;
+  const { browsingCommunity } = useBrowsingCommunity();
   const showCommunities = [...joinedCommunities];
-  if (browsingCommunity?.parent_url) {
+  if (browsingCommunity) {
     const findCommunity = showCommunities.find(
       (c) => c.id === browsingCommunity.id
     );
@@ -66,13 +66,22 @@ function UserCommunities() {
   return (
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
       {showCommunities.map((item) => (
-        <CommunityItem communityInfo={item} />
+        <CommunityItem
+          communityInfo={item}
+          active={browsingCommunity?.id === item.id}
+        />
       ))}
     </div>
   );
 }
 
-function CommunityItem({ communityInfo }: { communityInfo: CommunityInfo }) {
+function CommunityItem({
+  communityInfo,
+  active,
+}: {
+  communityInfo: CommunityInfo;
+  active?: boolean;
+}) {
   const navigate = useNavigate();
 
   return (
@@ -80,16 +89,20 @@ function CommunityItem({ communityInfo }: { communityInfo: CommunityInfo }) {
       onClick={() => {
         navigate(getCommunityPath(communityInfo.channelId));
       }}
-      className="cursor-pointer relative"
+      className="w-full flex justify-center items-center cursor-pointer relative"
     >
-      <div className="flex items-center gap-3">
-        <img
-          src={communityInfo.logo}
-          alt={communityInfo.name}
-          className="rounded-md w-[40px] h-[40px]"
-        />
-        <div className="text-white font-bold">{communityInfo.name}</div>
-      </div>
+      <div
+        className={cn(
+          'w-[5px] h-[40px] rounded-tl-none rounded-br-[10px] rounded-tr-[10px] rounded-bl-none bg-[#FFF] absolute left-0',
+          'transition-all duration-300',
+          active ? 'block' : 'hidden'
+        )}
+      />
+      <img
+        src={communityInfo.logo}
+        alt={communityInfo.name}
+        className="rounded-md w-[40px] h-[40px]"
+      />
     </div>
   );
 }
