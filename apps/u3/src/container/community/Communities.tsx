@@ -108,7 +108,7 @@ function Header({
   const communitTypeOptions = [
     {
       value: null,
-      label: 'All Platform',
+      label: 'All Types',
     },
     ...communityTypes.map((item) => ({
       label: item.type,
