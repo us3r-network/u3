@@ -7,7 +7,6 @@ import {
 import NotificationList from '@/components/notification/ui/NotificationList';
 import { NotificationSettingsGroup } from '@/components/notification/PushNotificationsToogleBtn';
 import { NotificationType } from '@/services/notification/types/notifications';
-import NotificationMobileHeader from './NotificationMobileHeader';
 // import isInstalledPwa from '@/utils/shared/isInstalledPwa';
 export default function Notification() {
   const { fid, type } = useOutletContext<{
