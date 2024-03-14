@@ -9,11 +9,10 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { ComponentPropsWithRef } from 'react';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
-import { getCommunityPath } from '@/route/path';
 import { cn } from '@/lib/utils';
 import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
-import { CommunityInfo } from '@/services/community/types/community';
 import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
+import SidebarCommunityItem from '../community/SidebarCommunityItem';
 
 export default function Menu({
   className,
@@ -66,43 +65,11 @@ function UserCommunities() {
   return (
     <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
       {showCommunities.map((item) => (
-        <CommunityItem
+        <SidebarCommunityItem
           communityInfo={item}
           active={browsingCommunity?.id === item.id}
         />
       ))}
-    </div>
-  );
-}
-
-function CommunityItem({
-  communityInfo,
-  active,
-}: {
-  communityInfo: CommunityInfo;
-  active?: boolean;
-}) {
-  const navigate = useNavigate();
-
-  return (
-    <div
-      onClick={() => {
-        navigate(getCommunityPath(communityInfo.channelId));
-      }}
-      className="w-full flex justify-center items-center cursor-pointer relative"
-    >
-      <div
-        className={cn(
-          'w-[5px] h-[40px] rounded-tl-none rounded-br-[10px] rounded-tr-[10px] rounded-bl-none bg-[#FFF] absolute left-0',
-          'transition-all duration-300',
-          active ? 'block' : 'hidden'
-        )}
-      />
-      <img
-        src={communityInfo.logo}
-        alt={communityInfo.name}
-        className="rounded-md w-[40px] h-[40px]"
-      />
     </div>
   );
 }

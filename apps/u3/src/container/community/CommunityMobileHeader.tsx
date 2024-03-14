@@ -12,10 +12,9 @@ import {
 import { MobileHeaderWrapper } from '@/components/layout/mobile/MobileHeaderCommon';
 import SearchIconBtn from '@/components/layout/SearchIconBtn';
 import AddPostMobileBtn from '@/components/social/AddPostMobileBtn';
-import CommunityBaseInfo from '@/components/community/CommunityBaseInfo';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import getCommunityNavs from '@/utils/community/getCommunityNavs';
-import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
+import CommunityInfoAndAction from '@/components/community/CommunityInfoAndAction';
 
 export default function CommunityMobileHeader({
   className,
@@ -78,12 +77,8 @@ export default function CommunityMobileHeader({
                 Info
               </button>
             </DrawerTrigger>
-            <DrawerContent className="rounded-tl-[20px] rounded-br-none rounded-tr-[20px] rounded-bl-none bg-[#20262F] border-none outline-none p-[20px] flex flex-col gap-[20px]">
-              <CommunityBaseInfo communityInfo={communityInfo} />
-              <hr className="border-[#39424C]" />
-              <div>
-                <JoinCommunityBtn communityInfo={communityInfo} />
-              </div>
+            <DrawerContent className="rounded-tl-[20px] rounded-br-none rounded-tr-[20px] rounded-bl-none bg-[#20262F] border-none outline-none p-[20px]">
+              <CommunityInfoAndAction communityInfo={communityInfo} />
             </DrawerContent>
           </Drawer>
         </SelectContent>
@@ -93,44 +88,5 @@ export default function CommunityMobileHeader({
         <AddPostMobileBtn />
       </div>
     </MobileHeaderWrapper>
-  );
-}
-
-function JoinCommunityBtn({
-  className,
-  communityInfo,
-  ...props
-}: ComponentPropsWithRef<'button'> & {
-  communityInfo: CommunityInfo;
-}) {
-  const { joined, isPending, isDisabled, joinChangeAction } =
-    useJoinCommunityAction(communityInfo);
-  return (
-    <button
-      type="button"
-      className={cn(
-        'w-auto text-[#F41F4C] text-[12px] font-normal leading-[15px]',
-        className
-      )}
-      disabled={isDisabled}
-      onClick={(e) => {
-        e.stopPropagation();
-        joinChangeAction();
-      }}
-      {...props}
-    >
-      {(() => {
-        if (joined) {
-          if (isPending) {
-            return 'Leaving ...';
-          }
-          return 'Leave Community';
-        }
-        if (isPending) {
-          return 'Joining ...';
-        }
-        return 'Join Community';
-      })()}
-    </button>
   );
 }
