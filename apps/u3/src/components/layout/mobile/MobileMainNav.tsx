@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 import NotificationIcon from '../nav-icons/NotificationIcon';
 import MessageIcon from '../nav-icons/MessageIcon';
 import ExploreIcon from '../nav-icons/ExploreIcon';
-import LoginButtonV2 from '../LoginButtonV2';
+import FavIcon from '../nav-icons/FavIcon';
 import useLogin from '@/hooks/shared/useLogin';
 
 export default function MobileMainNav({
@@ -42,7 +42,7 @@ export default function MobileMainNav({
 
   const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
-  const isProfileRoute = firstRouteKey === RouteKey.profile;
+  const isFavRoute = firstRouteKey === RouteKey.fav;
   return (
     <div
       className={cn(
@@ -68,9 +68,9 @@ export default function MobileMainNav({
         <NotificationIcon active={isNotificationRoute} />
         Notification
       </MobileNavItem>
-      <MobileNavItem active={isProfileRoute}>
-        <LoginButtonV2 />
-        {isLogin ? 'Profile' : 'Login'}
+      <MobileNavItem href="/fav/posts" active={isFavRoute}>
+        <FavIcon active={isFavRoute} />
+        Favorites
       </MobileNavItem>
     </div>
   );

@@ -12,7 +12,7 @@ import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
 export default function FavMobileHeader(props: ComponentPropsWithRef<'div'>) {
   return (
     <MobileHeaderWrapper {...props}>
-      <div className="text-[#FFF] text-[16px] font-medium">My Favorites</div>
+      <div className="text-[#FFF] text-[16px] font-medium">Notifications</div>
       <LoginButtonV2Mobile />
     </MobileHeaderWrapper>
   );

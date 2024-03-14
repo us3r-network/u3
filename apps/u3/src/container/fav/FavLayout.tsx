@@ -1,6 +1,7 @@
 import { Outlet } from 'react-router-dom';
 import FavMenu from './FavMenu';
 import FavMobileHeader from './FavMobileHeader';
+import FavMobileMenu from './FavMobileMenu';
 
 export default function FavLayout() {
   return (
@@ -17,6 +18,7 @@ export default function FavLayout() {
       {/* Mobile */}
       <div className="w-full h-full flex-col sm:hidden">
         <FavMobileHeader />
+        <FavMobileMenu />
         <div className="flex-1 h-full overflow-auto" id="profile-warper">
           <Outlet />
         </div>

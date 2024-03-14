@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { useIsAuthenticated } from '@us3r-network/auth-with-rainbowkit';
+import { isMobile } from 'react-device-detect';
 import {
   NotificationStoreProvider,
   useNotificationStore,
@@ -8,7 +8,6 @@ import NotificationList from '@/components/notification/ui/NotificationList';
 import { NotificationSettingsGroup } from '@/components/notification/PushNotificationsToogleBtn';
 import { NotificationType } from '@/services/notification/types/notifications';
 // import isInstalledPwa from '@/utils/shared/isInstalledPwa';
-
 export default function Notification() {
   const { fid, type } = useOutletContext<{
     fid: number;
@@ -34,12 +33,16 @@ function NotificationPage() {
   // const isPwa = isInstalledPwa();
   return (
     <>
-      {/* {isPwa && ( */}
-      <div className="text-white flex items-center justify-between pt-[10px]">
-        <h2 className="text-white font-bold">Notifications</h2>
-        <NotificationSettingsGroup />
-      </div>
-      {/* )} */}
+      {isMobile ? (
+        <div className="w-full pt-2 text-right">
+          <NotificationSettingsGroup />
+        </div>
+      ) : (
+        <div className="flex items-center justify-between pt-4">
+          <h2 className="text-white font-bold">Notifications</h2>
+          <NotificationSettingsGroup />
+        </div>
+      )}
 
       <NotificationList
         notifications={notifications}
