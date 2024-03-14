@@ -9,5 +9,9 @@ import { ComponentPropsWithRef } from 'react';
 import { MobileHeaderWrapper } from '@/components/layout/mobile/MobileHeaderCommon';
 
 export default function FavMobileHeader(props: ComponentPropsWithRef<'div'>) {
-  return <MobileHeaderWrapper {...props}>My Favorites</MobileHeaderWrapper>;
+  return (
+    <MobileHeaderWrapper {...props}>
+      <div className="text-[#FFF] text-[16px] font-medium">My Favorites</div>
+    </MobileHeaderWrapper>
+  );
 }
