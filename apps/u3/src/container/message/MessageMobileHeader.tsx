@@ -12,6 +12,8 @@ import {
 } from '@/components/layout/mobile/MobileHeaderCommon';
 import { MessageRoute, useXmtpClient } from '@/contexts/message/XmtpClientCtx';
 import ProfileInfoHeadless from '@/components/profile/info/ProfileInfoHeadless';
+import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
+import SearchIconBtn from '@/components/layout/SearchIconBtn';
 
 export default function MessageMobileHeader(
   props: ComponentPropsWithRef<'div'>
@@ -44,8 +46,12 @@ export default function MessageMobileHeader(
         }
         return (
           <>
-            <MobileHeaderBackBtn title="Messages" />
-            <div className="flex items-center gap-[20px]" />
+            <div className="text-[#FFF] text-[16px] font-medium">Messages</div>
+            {/* <MobileHeaderBackBtn title="Messages" /> */}
+            <div className="flex items-center gap-[20px]">
+              <SearchIconBtn />
+              <LoginButtonV2Mobile />
+            </div>
           </>
         );
       })()}

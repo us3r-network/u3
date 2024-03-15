@@ -15,6 +15,7 @@ import AddPostMobileBtn from '@/components/social/AddPostMobileBtn';
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer';
 import getCommunityNavs from '@/utils/community/getCommunityNavs';
 import CommunityInfoAndAction from '@/components/community/CommunityInfoAndAction';
+import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
 
 export default function CommunityMobileHeader({
   className,
@@ -85,6 +86,7 @@ export default function CommunityMobileHeader({
       </Select>
       <div className="flex items-center gap-[20px]">
         <SearchIconBtn />
+        <LoginButtonV2Mobile />
         <AddPostMobileBtn />
       </div>
     </MobileHeaderWrapper>

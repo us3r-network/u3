@@ -21,14 +21,24 @@ export default function HomeLayout({
         communities={hotCommunities.communities}
         isLoading={hotCommunities.isLoading}
       />
-      <ColorButton
-        className="hidden max-sm:flex"
-        onClick={() => {
-          navigate('/poster-gallery');
-        }}
-      >
-        Poster Gallery
-      </ColorButton>
+      <div className="items-center justify-between gap-[10px] hidden max-sm:flex">
+        <ColorButton
+          className="flex-1"
+          onClick={() => {
+            navigate('/caster-daily');
+          }}
+        >
+          Mint Poster
+        </ColorButton>
+        <ColorButton
+          className="flex-1"
+          onClick={() => {
+            navigate('/poster-gallery');
+          }}
+        >
+          Poster Gallery
+        </ColorButton>
+      </div>
     </MainWrapper>
   );
 }
