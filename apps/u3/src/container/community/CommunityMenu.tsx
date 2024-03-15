@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { CommunityInfo } from '@/services/community/types/community';
 import AddPost from '@/components/social/AddPost';
-import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 import CommunityBaseInfo from '@/components/community/CommunityBaseInfo';
 import getCommunityNavs from '@/utils/community/getCommunityNavs';
@@ -75,7 +74,6 @@ export default function CommunityMenu({
           })}
         </div>
       </div>
-      <LoginButtonV2 />
     </div>
   );
 }

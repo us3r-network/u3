@@ -1,6 +1,5 @@
 import { ComponentPropsWithRef, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import StartNewConversation from '@/components/message/StartNewConversation';
 import Conversations from '@/components/message/Conversations';
 import { MessageRoute, useXmtpClient } from '@/contexts/message/XmtpClientCtx';
@@ -49,7 +48,6 @@ export default function MessageMenu({
           })()}
         </div>
       </div>
-      <LoginButtonV2 />
     </div>
   );
 }

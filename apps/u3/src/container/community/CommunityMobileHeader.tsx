@@ -39,7 +39,7 @@ export default function CommunityMobileHeader({
         onValueChange={(href) => {
           navigate(href);
         }}
-        defaultValue={findHref}
+        value={findHref}
       >
         <SelectTrigger className="w-auto border-none rounded-[10px] bg-[#1B1E23] text-[#FFF] text-[14px] font-medium outline-none focus:outline-none focus:border-none">
           <svg

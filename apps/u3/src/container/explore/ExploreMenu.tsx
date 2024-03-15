@@ -1,7 +1,6 @@
 import { ComponentPropsWithRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 import AddPost from '@/components/social/AddPost';
 import DailyPosterBtn from '@/components/poster/DailyPosterBtn';
@@ -50,7 +49,6 @@ export default function ExploreMenu({
         {isPostsPath && <AddPost />}
         {isHomePath && <DailyPosterBtn {...dailyPosterLayoutData} />}
       </div>
-      <LoginButtonV2 />
     </div>
   );
 }

@@ -1,7 +1,6 @@
 import { ComponentPropsWithRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 
 export default function NotificationMenu({
@@ -40,7 +39,6 @@ export default function NotificationMenu({
           </NavLinkItem> */}
         </div>
       </div>
-      <LoginButtonV2 />
     </div>
   );
 }

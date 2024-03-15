@@ -1,7 +1,6 @@
 import { ComponentPropsWithRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 
 interface ProfileMenuProps extends ComponentPropsWithRef<'div'> {
@@ -70,7 +69,6 @@ export default function ProfileMenu({
           </NavLinkItem> */}
         </div>
       </div>
-      <LoginButtonV2 />
     </div>
   );
 }

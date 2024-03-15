@@ -13,12 +13,15 @@ import { cn } from '@/lib/utils';
 import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
 import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
 import SidebarCommunityItem from '../community/SidebarCommunityItem';
+import ExploreIcon from './nav-icons/ExploreIcon';
+import useRoute from '@/route/useRoute';
+import { RouteKey } from '@/route/routes';
+import LoginButtonV2 from './LoginButtonV2';
 
 export default function Menu({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
-  const navigate = useNavigate();
   return (
     <div
       className={cn(
@@ -27,10 +30,7 @@ export default function Menu({
       )}
       {...props}
     >
-      <div
-        className="w-full flex flex-col items-center gap-[4px] cursor-pointer max-sm:hidden"
-        onClick={() => navigate('/')}
-      >
+      <div className="w-full flex flex-col items-center gap-[4px] cursor-pointer max-sm:hidden">
         <LogoIconBox>
           <LogoIconSvg />
         </LogoIconBox>
@@ -43,9 +43,41 @@ export default function Menu({
         </span>
       </div>
       <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
-
+      <SidebarHomeLink />
       <UserCommunities />
+      <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
+      <div className="w-full max-sm:hidden">
+        <LoginButtonV2 />
+      </div>
     </div>
+  );
+}
+
+function SidebarHomeLink() {
+  const navigate = useNavigate();
+  const { firstRouteMeta } = useRoute();
+  const firstRouteKey = firstRouteMeta?.key;
+  const active = firstRouteKey === RouteKey.home;
+  return (
+    <a
+      href={'/'}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate('/');
+      }}
+      className="w-full flex justify-center items-center cursor-pointer relative mb-[20px] max-sm:hidden"
+    >
+      <div
+        className={cn(
+          'w-[5px] h-[40px] rounded-tl-none rounded-br-[10px] rounded-tr-[10px] rounded-bl-none bg-[#FFF] absolute left-0',
+          'transition-all duration-300',
+          active ? 'block' : 'hidden'
+        )}
+      />
+      <div className="flex w-[39px] h-[39px] justify-center items-center gap-[10px] rounded-[10px] bg-[#F41F4C]">
+        <ExploreIcon active />
+      </div>
+    </a>
   );
 }
 
@@ -63,7 +95,7 @@ function UserCommunities() {
   }
 
   return (
-    <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
+    <div className="flex-1 w-full overflow-scroll flex gap-5 flex-col">
       {showCommunities.map((item) => (
         <SidebarCommunityItem
           key={item.id}
