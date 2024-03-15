@@ -56,7 +56,7 @@ export default function CommunityItem({
             </div>
           )}
         </div>
-        <div className="text-[#FFF] text-[14px] font-normal leading-[20px] line-clamp-2">
+        <div className="text-[#FFF] text-[14px] font-normal leading-[20px] line-clamp-2 max-sm:line-clamp-1">
           {description}
         </div>
       </div>
