@@ -1,6 +1,6 @@
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Frame } from 'frames.js';
 import {
   sendTransaction,
@@ -9,10 +9,10 @@ import {
   waitForTransactionReceipt,
   writeContract,
 } from '@wagmi/core';
-import { useAccount, useConfig } from 'wagmi';
+import { useAccount, useConfig, useChains } from 'wagmi';
 
 import { CastId, Message, makeFrameAction } from '@farcaster/hub-web';
-import { formatEther, parseEther, toHex } from 'viem';
+import { formatEther, fromHex, parseEther, toHex } from 'viem';
 import { toast } from 'react-toastify';
 import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import { FarCast } from '../../services/social/types';
@@ -28,6 +28,7 @@ import {
   postFrameActionRedirectApi,
   postFrameActionTxApi,
 } from '@/services/social/api/farcaster';
+import { shortAddress } from '@/utils/message/xmtp';
 
 export default function EmbedCastFrame({
   url,
@@ -45,19 +46,23 @@ export default function EmbedCastFrame({
   const [frameRedirect, setFrameRedirect] = useState('');
   const [frameData, setFrameData] = useState<Frame>(data);
 
+  const [txSimulate, setTxSimulate] = useState<any>([]);
+  const [txData, setTxData] = useState<any>();
+  const [txBtnIdx, setTxBtnIdx] = useState(0);
+
   const config = useConfig();
 
-  const reportTransaction = useCallback(
-    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+  const generateFrameActionData = useCallback(
+    async (btnIdx: number, txId?: string) => {
       if (!castId) {
         console.error('no castId');
         toast.error('cast is required');
-        return;
+        throw new Error('cast is required');
       }
       if (!encryptedSigner || !currFid) {
         console.error('no encryptedSigner');
         toast.error('farcaster login is required');
-        return;
+        throw new Error('farcaster login is required');
       }
       const trustedDataResult = await makeFrameAction(
         {
@@ -65,8 +70,10 @@ export default function EmbedCastFrame({
           buttonIndex: btnIdx,
           castId,
           inputText: Buffer.from(frameText),
-          state: Buffer.from(state || ''),
-          transactionId: Buffer.from(txId),
+          state: Buffer.from(frameData.state || ''),
+          transactionId: Buffer.from(txId || ''),
+          address:
+            address && txId ? fromHex(address, 'bytes') : Buffer.from(''),
         },
         {
           fid: currFid,
@@ -80,24 +87,40 @@ export default function EmbedCastFrame({
 
       const trustedDataValue = trustedDataResult.value;
       const untrustedData = {
-        fid: currFid,
+        fid: Number(currFid),
         url,
         messageHash: toHex(trustedDataValue.hash),
         network: FARCASTER_NETWORK,
-        buttonIndex: btnIdx,
+        buttonIndex: trustedDataResult.value.data.frameActionBody.buttonIndex,
+        timestamp: trustedDataResult.value.data.timestamp,
         inputText: frameText,
         castId: {
-          fid: castId.fid,
+          fid: Number(castId.fid),
           hash: toHex(castId.hash),
         },
-        state: state || '',
-        transactionId: txId,
+        state: frameData.state || '',
+        transactionId: txId || '',
+        address: address && txId ? address : '',
       };
       const trustedData = {
         messageBytes: Buffer.from(
           Message.encode(trustedDataValue).finish()
         ).toString('hex'),
       };
+      return {
+        untrustedData,
+        trustedData,
+      };
+    },
+    [address, castId.fid, castId.hash, currFid, frameData, url]
+  );
+
+  const reportTransaction = useCallback(
+    async (txId: string, btnIdx: number, postUrl: string, state?: string) => {
+      const { untrustedData, trustedData } = await generateFrameActionData(
+        btnIdx,
+        txId
+      );
       const postData = {
         actionUrl: postUrl,
         untrustedData,
@@ -111,17 +134,17 @@ export default function EmbedCastFrame({
       const { frame } = resp.data.data;
       setFrameData(frame);
     },
-    [frameData, currFid, encryptedSigner, castId, frameText]
+    [frameData, currFid, encryptedSigner, castId, frameText, address]
   );
 
-  const sendEthTransactionAction = async ({
-    txData,
-    chainId,
-  }: {
-    txData: any;
-    chainId: string;
-  }) => {
-    console.log('txData', txData, chainId);
+  const sendEthTransactionAction = useCallback(async () => {
+    // console.log('txData', txData);
+    if (!txData) {
+      return undefined;
+    }
+
+    const chainId = txData.chainId.split(':')[1];
+
     try {
       const parsedChainId = parseInt(chainId, 10);
 
@@ -130,20 +153,10 @@ export default function EmbedCastFrame({
         await switchChain(config, { chainId: parsedChainId });
 
       const hash = await sendTransaction(config, {
-        ...txData,
+        ...txData.params,
         // value: txData.value ? BigInt(txData.value) : 0n,
         chainId: parsedChainId,
       });
-      // const { request: transferDegenRequest } = await simulateContract(config, {
-      //   ...txData,
-      //   value: txData.value ? BigInt(txData.value) : 0n,
-      //   chainId: parsedChainId,
-      // });
-      // const hash = await writeContract(config, transferDegenRequest);
-      // const degenTxReceipt = await waitForTransactionReceipt(config, {
-      //   hash: degenTxHash,
-      //   chainId: base.id,
-      // });
 
       const { status } = await waitForTransactionReceipt(config, {
         hash,
@@ -157,10 +170,10 @@ export default function EmbedCastFrame({
       //     toast.error(`mint action failed: ${status}`);
     } catch (e: any) {
       console.error(e);
-      // toast.error(e.message.split('\n')[0]);
+      toast.error(e.message.split('\n')[0]);
     }
     return undefined;
-  };
+  }, [txData]);
 
   const postFrameAction = useCallback(
     async (index: number, action: string, target?: string) => {
@@ -174,55 +187,9 @@ export default function EmbedCastFrame({
         setFrameRedirect(url);
         return;
       }
-      if (!castId) {
-        console.error('no castId');
-        toast.error('cast is required');
-        return;
-      }
-      if (!encryptedSigner || !currFid) {
-        console.error('no encryptedSigner');
-        toast.error('farcaster login is required');
-        return;
-      }
-      const trustedDataResult = await makeFrameAction(
-        {
-          url: Buffer.from(url),
-          buttonIndex: index,
-          castId,
-          inputText: Buffer.from(frameText),
-          state: Buffer.from(frameData.state || ''),
-          transactionId: Buffer.from(''),
-        },
-        {
-          fid: currFid,
-          network: FARCASTER_NETWORK,
-        },
-        encryptedSigner
+      const { untrustedData, trustedData } = await generateFrameActionData(
+        index
       );
-      if (trustedDataResult.isErr()) {
-        throw new Error(trustedDataResult.error.message);
-      }
-
-      const trustedDataValue = trustedDataResult.value;
-      const untrustedData = {
-        fid: currFid,
-        url,
-        messageHash: toHex(trustedDataValue.hash),
-        network: FARCASTER_NETWORK,
-        buttonIndex: index,
-        inputText: frameText,
-        castId: {
-          fid: castId.fid,
-          hash: toHex(castId.hash),
-        },
-        state: frameData.state || '',
-        transactionId: '',
-      };
-      const trustedData = {
-        messageBytes: Buffer.from(
-          Message.encode(trustedDataValue).finish()
-        ).toString('hex'),
-      };
       const postData = {
         actionUrl: target || frameData.postUrl,
         untrustedData,
@@ -239,23 +206,10 @@ export default function EmbedCastFrame({
           toast.error(resp.data.msg);
           return;
         }
-        const chainId = resp.data.data.chainId.split(':')[1];
-        console.log('tx resp', resp.data.data.params);
-        const txHash = await sendEthTransactionAction({
-          txData: resp.data.data.params,
-          chainId,
-        });
-        if (!txHash) {
-          toast.error('transaction failed');
-          return;
-        }
-        setFrameText('');
-        await reportTransaction(
-          txHash,
-          index,
-          frameData.postUrl,
-          frameData.state
-        );
+        const { txData: transactionData, simulateResult } = resp.data.data;
+        setTxData(transactionData);
+        setTxSimulate(simulateResult);
+        setTxBtnIdx(index);
         return;
       }
 
@@ -290,7 +244,7 @@ export default function EmbedCastFrame({
         <div className="w-full overflow-hidden flex items-center">
           <img src={frameData.image} alt="" className="w-full " />
         </div>
-        {frameData.inputText && (
+        {(frameData.inputText && (
           <div className="p-3">
             <input
               type="text"
@@ -302,8 +256,9 @@ export default function EmbedCastFrame({
               }}
             />
           </div>
-        )}
-        {isConnected && frameData.buttons.length && (
+        )) ||
+          null}
+        {(isConnected && frameData.buttons.length && (
           <div className="flex items-center justify-around gap-3 mt-1">
             {frameData.buttons.map((item, idx) => {
               if (!item) return null;
@@ -328,17 +283,148 @@ export default function EmbedCastFrame({
               );
             })}
           </div>
-        )}
+        )) ||
+          null}
       </div>
-      {frameRedirect && (
+      {(frameRedirect && (
         <EmbedCastFrameRedirect
           url={frameRedirect}
           resetUrl={() => {
             setFrameRedirect('');
           }}
         />
-      )}
+      )) ||
+        null}
+      {(txBtnIdx && (
+        <EmbedCastFrameTxSimulate
+          walletAddress={address}
+          txBtnIdx={txBtnIdx}
+          txSimulate={txSimulate}
+          txData={txData}
+          txAction={async () => {
+            try {
+              const txId = await sendEthTransactionAction();
+              if (txId) {
+                await reportTransaction(txId, txBtnIdx, frameData.postUrl);
+              }
+            } catch (e: any) {
+              console.error(e);
+            }
+          }}
+          close={() => {
+            setTxBtnIdx(0);
+          }}
+        />
+      )) ||
+        null}
     </>
+  );
+}
+
+function EmbedCastFrameTxSimulate({
+  walletAddress,
+  txBtnIdx,
+  txSimulate,
+  txData,
+  txAction,
+  close,
+}: {
+  walletAddress: string;
+  txBtnIdx: number;
+  txSimulate: any[];
+  txData: any;
+  txAction: () => void;
+  close: () => void;
+}) {
+  const chains = useChains();
+  const from = useMemo(() => {
+    return txSimulate.find(
+      (item) => item.from?.toLowerCase() === walletAddress.toLowerCase()
+    );
+  }, [txSimulate]);
+  const to = useMemo(() => {
+    return txSimulate.find(
+      (item) => item.to?.toLowerCase() === walletAddress.toLowerCase()
+    );
+  }, [txSimulate]);
+  const chainId = txData.chainId.split(':')[1];
+  const chain = chains.find((item) => item.id === parseInt(chainId, 10));
+  return (
+    <ModalContainerFixed
+      open={!!txBtnIdx}
+      closeModal={close}
+      className="w-full md:w-[420px]"
+    >
+      <div
+        className={cn(
+          'flex flex-col gap-5 w-full overflow-hidden rounded-2xl p-5',
+          ' text-white bg-inherit  max-h-[600px] overflow-y-auto'
+        )}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <div className="flex items-center justify-between text-[#718096] text-base">
+          <h3>⚠️ Transaction</h3>
+          <button type="button" onClick={close}>
+            <Cross2Icon />
+          </button>
+        </div>
+        <div>
+          <div className="bg-slate-300 rounded-md p-2">
+            {from && (
+              <div className="text-[#718096]">
+                <p>Send</p>
+                <p>
+                  {from.amount?.slice(0, 7)}
+                  {from.token_info.symbol}
+                </p>
+              </div>
+            )}
+            {to && (
+              <div className="text-[#718096]">
+                <p>Receive</p>
+                <p>
+                  {to.amount?.slice(0, 7)}
+                  {to.token_info.symbol}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className="p-2">
+            <p>
+              chain: <span className="text-[#718096]">{chain.name}</span>
+            </p>
+            <p>
+              wallet address:{' '}
+              <span className="text-[#718096]">
+                {shortAddress(walletAddress)}
+              </span>
+            </p>
+          </div>
+        </div>
+        <div className="flex items-end justify-between gap-5">
+          <button
+            type="button"
+            className={cn(
+              'h-10 w-full bg-white text-black font-bold rounded-xl',
+              'flex items-center justify-center'
+            )}
+            onClick={close}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className="h-10 bg-[#F41F4C] font-bold rounded-xl w-full"
+            onClick={txAction}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </ModalContainerFixed>
   );
 }
 
