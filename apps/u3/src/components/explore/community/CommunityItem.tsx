@@ -2,7 +2,7 @@ import { ComponentPropsWithRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CommunityInfo } from '@/services/community/types/community';
 import { cn } from '@/lib/utils';
-import JoinCommunityBtn from './JoinCommunityBtn';
+import JoinCommunityBtn from '@/components/community/JoinCommunityBtn';
 
 export default function CommunityItem({
   className,
@@ -56,7 +56,7 @@ export default function CommunityItem({
             </div>
           )}
         </div>
-        <div className="text-[#FFF] text-[14px] font-normal leading-[20px] line-clamp-2 max-sm:line-clamp-1">
+        <div className="text-[#FFF] text-[14px] font-normal leading-[20px] line-clamp-2  max-sm:line-clamp-1">
           {description}
         </div>
       </div>

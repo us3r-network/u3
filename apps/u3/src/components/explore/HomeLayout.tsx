@@ -2,12 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import { MainWrapper } from '../layout/Index';
 import HotPosts from './posts/HotPosts';
 import type { ExploreHomeState } from '../../container/explore/Home';
-import TopChannels from './channels/TopChannels';
 import ColorButton from '../common/button/ColorButton';
+import HotCommunities from './community/HotCommunities';
 
 export default function HomeLayout({
   hotPosts,
-  topChannels,
+  hotCommunities,
 }: ExploreHomeState) {
   const navigate = useNavigate();
   return (
@@ -17,9 +17,9 @@ export default function HomeLayout({
         isLoading={hotPosts.isLoading}
         farcasterUserData={hotPosts.farcasterUserData}
       />
-      <TopChannels
-        channels={topChannels.channels}
-        isLoading={topChannels.isLoading}
+      <HotCommunities
+        communities={hotCommunities.communities}
+        isLoading={hotCommunities.isLoading}
       />
       <ColorButton
         className="hidden max-sm:flex"

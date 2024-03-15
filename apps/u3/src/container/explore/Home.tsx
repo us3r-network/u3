@@ -13,6 +13,8 @@ import HomeLayout from '../../components/explore/HomeLayout';
 import { TopChannelsData } from '@/components/explore/channels/TopChannels';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import type { ExploreLayoutCtx } from './ExploreLayout';
+import { HotCommunitiesData } from '@/components/explore/community/HotCommunities';
+import { fetchTrendingCommunities } from '@/services/community/api/community';
 
 type FarcasterUserData = { [key: string]: { type: number; value: string }[] };
 type HotPostsState = {
@@ -32,11 +34,16 @@ type HighScoreDappsState = {
   dapps: HighScoreDappsData;
   isLoading: boolean;
 };
+type HotCommunitiesState = {
+  communities: HotCommunitiesData;
+  isLoading: boolean;
+};
 export type ExploreHomeState = {
   hotPosts: HotPostsState;
   topLinks: TopLinksState;
   topChannels: TopChannelsState;
   highScoreDapps: HighScoreDappsState;
+  hotCommunities: HotCommunitiesState;
 };
 
 export default function Home() {
@@ -59,6 +66,11 @@ export default function Home() {
 
   const [highScoreDapps, setHighScoreDapps] = useState<HighScoreDappsState>({
     dapps: [],
+    isLoading: true,
+  });
+
+  const [hotCommunities, setHotCommunities] = useState<HotCommunitiesState>({
+    communities: [],
     isLoading: true,
   });
 
@@ -125,6 +137,25 @@ export default function Home() {
       .catch(() => {
         setHighScoreDapps((pre) => ({ ...pre, dapps: [], isLoading: false }));
       });
+
+    fetchTrendingCommunities({
+      pageSize: 3,
+      pageNumber: 1,
+    })
+      .then((res) => {
+        const { data: communities } = res.data;
+        setHotCommunities({
+          communities,
+          isLoading: false,
+        });
+      })
+      .catch(() => {
+        setHotCommunities((pre) => ({
+          ...pre,
+          communities: [],
+          isLoading: false,
+        }));
+      });
   }, []);
 
   const { trendChannels, trendChannelsLoading } = useFarcasterCtx();
@@ -165,6 +196,7 @@ export default function Home() {
       topLinks={topLinks}
       topChannels={topChannels}
       highScoreDapps={highScoreDapps}
+      hotCommunities={hotCommunities}
     />
   );
 }
