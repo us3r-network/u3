@@ -4,15 +4,10 @@ import { cn } from '@/lib/utils';
 import LoginButtonV2 from '@/components/layout/LoginButtonV2';
 import NavLinkItem from '@/components/layout/NavLinkItem';
 
-interface ProfileMenuProps extends ComponentPropsWithRef<'div'> {
-  isSelf: boolean;
-}
-
 export default function ProfileMenu({
-  isSelf,
   className,
   ...props
-}: ProfileMenuProps) {
+}: ComponentPropsWithRef<'div'>) {
   const { user } = useParams();
   const { pathname } = useLocation();
   const pathSuffix = user ? `/${user}` : '';
@@ -48,14 +43,6 @@ export default function ProfileMenu({
           >
             Activity
           </NavLinkItem>
-          {isSelf && (
-            <NavLinkItem
-              href={`/u/fav${pathSuffix}`}
-              active={pathname === `/u/fav${pathSuffix}`}
-            >
-              Favorites
-            </NavLinkItem>
-          )}
           {/* <NavLinkItem
             href={`/u/asset${pathSuffix}`}
             active={pathname === `/u/asset${pathSuffix}`}
