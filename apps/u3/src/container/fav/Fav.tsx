@@ -33,8 +33,9 @@ export default function Fav() {
     if (pathname.includes('links')) return FavType.Link;
     return '';
   }, [pathname]);
-  const list = useMemo(
-    () => [
+  const list = useMemo(() => {
+    // console.log('personalFavors', personalFavors, savedLinks);
+    return [
       ...savedLinks.map((item) => {
         const createAt = item.createAt || new Date().getTime();
         return { ...item, createAt };
@@ -76,9 +77,8 @@ export default function Fav() {
           }),
         'id'
       ),
-    ],
-    [personalFavors, savedLinks]
-  );
+    ];
+  }, [personalFavors, savedLinks]);
   return (
     <MainWrapper className="flex flex-col gap-4">
       <SyncingBotSaves
