@@ -115,12 +115,12 @@ export default function useFarcasterQR() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const result = await axios
-        .get(`${WARPCAST_API}/v2/signed-key-request`, {
+        .get(`${REACT_APP_API_SOCIAL_URL}/3r-farcaster/signed-key-request`, {
           params: {
             token,
           },
         })
-        .then((response) => response.data.result);
+        .then((response) => response.data.data.result);
 
       const { signedKeyRequest } = result;
 
