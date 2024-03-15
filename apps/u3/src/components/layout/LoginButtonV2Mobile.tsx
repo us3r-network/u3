@@ -3,15 +3,11 @@ import React, { ComponentPropsWithRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useLogin from '../../hooks/shared/useLogin';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+  Drawer,
+  DrawerContent,
+  DrawerPortal,
+  DrawerTrigger,
+} from '../ui/drawer';
 import { cn } from '@/lib/utils';
 import { LogoutIcon2 } from '../common/icons/LogoutIcon';
 import SocialAccountIcon from '../common/icons/SocialAccountIcon';
@@ -29,6 +25,11 @@ import {
   LensAccount,
 } from '../profile/info/PlatformAccounts';
 import LoginIcon from './nav-icons/LoginIcon';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '../ui/collapsible';
 
 const CONTACT_LINKS = [
   {
@@ -69,7 +70,6 @@ export default function LoginButtonV2Mobile() {
       <ButtonWrapper onClick={login}>
         <div className="flex items-center gap-4">
           <LoginIcon />
-          <span className="max-sm:hidden">Login</span>
         </div>
       </ButtonWrapper>
     );
@@ -86,8 +86,8 @@ export default function LoginButtonV2Mobile() {
           setOpenLogoutConfirm(false);
         }}
       />
-      <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
-        <DropdownMenuTrigger
+      <Drawer open={openMenu} onOpenChange={setOpenMenu}>
+        <DrawerTrigger
           className="
           focus:outline-none focus:border-none
           active:outline-none active:border-none
@@ -99,84 +99,72 @@ export default function LoginButtonV2Mobile() {
             }}
           >
             <div className="flex items-center gap-4">
-              <UserAvatar style={{ width: '24px', height: '24px' }} />
-              <UserName className="max-sm:hidden" />
+              <UserAvatar style={{ width: '32px', height: '32px' }} />
             </div>
           </ButtonWrapper>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent
+        </DrawerTrigger>
+        <DrawerContent
           className={cn(
-            'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
+            'inline-flex w-full box-border p-[20px] flex-col items-start gap-4 rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
           )}
-          side="top"
-          align="center"
-          sideOffset={10}
         >
-          <DropdownMenuItemWarper onClick={() => navigate('/u')}>
+          <ItemWarper onClick={() => navigate('/u')}>
             <UserAvatar
               className="size-4 flex-shrink-0"
               style={{ width: '20px', height: '20px' }}
             />
             My Profile
-          </DropdownMenuItemWarper>
-
-          <DropdownMenuSub>
-            <DropdownMenuSubTriggerWarper>
-              <SocialAccountIcon />
-              Social Accounts
-            </DropdownMenuSubTriggerWarper>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent
-                className={cn(
-                  'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
-                )}
-                sideOffset={30}
+          </ItemWarper>
+          <Collapsible className="w-full">
+            <CollapsibleTrigger asChild className="w-full">
+              <ItemWarper>
+                <SocialAccountIcon />
+                Social Accounts
+              </ItemWarper>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="w-full px-4 gap-2">
+              <ItemWarper
+                onClick={() => {
+                  setOpenMenu(false);
+                }}
               >
-                <DropdownMenuItemWarper>
-                  <FarcasterAccount />
-                </DropdownMenuItemWarper>
-                <DropdownMenuItemWarper>
-                  <LensAccount />
-                </DropdownMenuItemWarper>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
+                <FarcasterAccount />
+              </ItemWarper>
+              <ItemWarper
+                onClick={() => {
+                  setOpenMenu(false);
+                }}
+              >
+                <LensAccount />
+              </ItemWarper>
+            </CollapsibleContent>
+          </Collapsible>
 
-          <DropdownMenuItemWarper disabled>
+          <ItemWarper>
             <EmailIcon />
             Subscribe
-          </DropdownMenuItemWarper>
+          </ItemWarper>
 
-          <DropdownMenuSub>
-            <DropdownMenuSubTriggerWarper>
-              <ContactUsIcon />
-              Contact us
-            </DropdownMenuSubTriggerWarper>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent
-                className={cn(
-                  'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
-                )}
-                sideOffset={30}
-              >
-                {CONTACT_LINKS.map((link) => (
-                  <DropdownMenuItemWarper
-                    key={link.link}
-                    onClick={() => window.open(link.link, '_blank')}
-                  >
-                    <img
-                      className="size-4"
-                      src={link.iconUrl}
-                      alt={link.name}
-                    />
-                    <span>{link.name}</span>
-                  </DropdownMenuItemWarper>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-
-          <DropdownMenuItemWarper
+          <Collapsible className="w-full">
+            <CollapsibleTrigger className="w-full">
+              <ItemWarper>
+                <ContactUsIcon />
+                Contact us
+              </ItemWarper>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="w-full px-4 gap-2">
+              {CONTACT_LINKS.map((link) => (
+                <ItemWarper
+                  key={link.link}
+                  onClick={() => window.open(link.link, '_blank')}
+                >
+                  <img className="size-4" src={link.iconUrl} alt={link.name} />
+                  <span>{link.name}</span>
+                </ItemWarper>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+          <ItemWarper
             onClick={(e) => {
               e.preventDefault();
               setOpenLogoutConfirm(true);
@@ -185,9 +173,9 @@ export default function LoginButtonV2Mobile() {
           >
             <LogoutIcon2 />
             Logout
-          </DropdownMenuItemWarper>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </ItemWarper>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 }
@@ -207,40 +195,16 @@ function ButtonWrapper({ className, ...props }: ComponentPropsWithRef<'div'>) {
   );
 }
 
-const DropdownMenuItemWarper = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuItem>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuItem>
-  // eslint-disable-next-line react/prop-types
->(({ className, ...props }, ref) => (
-  <DropdownMenuItem
-    ref={ref}
-    className={cn(
-      `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
+function ItemWarper({ className, ...props }: ComponentPropsWithRef<'div'>) {
+  return (
+    <div
+      className={cn(
+        `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
          text-[#718096] text-[16px] font-medium
          flex gap-[10px] items-center`,
-      `hover:bg-[#20262F]`,
-      'max-sm:text-[14px]',
-      className
-    )}
-    {...props}
-  />
-));
-
-const DropdownMenuSubTriggerWarper = React.forwardRef<
-  React.ElementRef<typeof DropdownMenuSubTrigger>,
-  React.ComponentPropsWithoutRef<typeof DropdownMenuSubTrigger>
-  // eslint-disable-next-line react/prop-types
->(({ className, ...props }, ref) => (
-  <DropdownMenuSubTrigger
-    ref={ref}
-    className={cn(
-      `w-full p-[10px] box-border select-none rounded-[10px] leading-none no-underline outline-none transition-colors
-         text-[#718096] text-[16px] font-medium
-         flex gap-[10px] items-center`,
-      `hover:bg-[#20262F]`,
-      'max-sm:text-[14px]',
-      className
-    )}
-    {...props}
-  />
-));
+        className
+      )}
+      {...props}
+    />
+  );
+}

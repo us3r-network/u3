@@ -40,7 +40,7 @@ export function FavListLinkItem({ data, ...props }: FavListItemProps) {
 
 export function FavListPostItem({ data, ...props }: FavListItemProps) {
   const navigate = useNavigate();
-  console.log('FavListPostItem', JSON.parse(data.data || ''));
+  // console.log('FavListPostItem', JSON.parse(data.data || ''));
   const { openFarcasterQR } = useFarcasterCtx();
   const [cast, setCast] = useState<FarCast>();
   const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
@@ -49,7 +49,7 @@ export function FavListPostItem({ data, ...props }: FavListItemProps) {
   useEffect(() => {
     if (castHex)
       getFarcasterCastInfo(castHex, {}).then((res) => {
-        console.log('getFarcasterCastInfo', res);
+        // console.log('getFarcasterCastInfo', res);
         if (res.data.code !== 0) {
           throw new Error(res.data.msg);
         }
