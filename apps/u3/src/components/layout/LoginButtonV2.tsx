@@ -70,10 +70,7 @@ export default function LoginButtonV2() {
   if (!isLogin) {
     return (
       <ButtonWrapper onClick={login}>
-        <div className="flex items-center gap-4">
-          <LoginIcon />
-          <span className="max-sm:hidden">Login</span>
-        </div>
+        <LoginIcon className="w-[40px] h-[40px]" />
       </ButtonWrapper>
     );
   }
@@ -92,6 +89,7 @@ export default function LoginButtonV2() {
       <DropdownMenu open={openMenu} onOpenChange={setOpenMenu}>
         <DropdownMenuTrigger
           className="
+          w-full
           focus:outline-none focus:border-none
           active:outline-none active:border-none
         "
@@ -101,19 +99,15 @@ export default function LoginButtonV2() {
               setOpenMenu((pre) => !pre);
             }}
           >
-            <div className="flex items-center gap-4">
-              <UserAvatar style={{ width: '24px', height: '24px' }} />
-              <UserName className="max-sm:hidden" />
-            </div>
+            <UserAvatar style={{ width: '40px', height: '40px' }} />
           </ButtonWrapper>
         </DropdownMenuTrigger>
         <DropdownMenuContent
           className={cn(
             'inline-flex w-[280px] box-border p-[20px] flex-col items-start gap-[20px] rounded-[20px] border-[1px] border-solid border-[#39424C] bg-[#14171A]'
           )}
-          side="top"
-          align="center"
-          sideOffset={10}
+          side="right"
+          align="end"
         >
           <DropdownMenuItemWarper onClick={() => navigate('/u')}>
             <UserAvatar
@@ -220,9 +214,9 @@ function ButtonWrapper({ className, ...props }: ComponentPropsWithRef<'div'>) {
   return (
     <div
       className={cn(
-        `flex items-center justify-between
+        `w-full flex items-center justify-center
         text-white text-[16px] font-bold
-        sm:h-[76px] sm:w-full sm:p-[20px] box-border
+        p-[0px] box-border
         outline-none border-none`,
         className
       )}
