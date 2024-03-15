@@ -39,6 +39,7 @@ import {
   setDefaultFarcaster,
 } from '@/utils/social/farcaster/farcaster-default';
 import useLogin from '@/hooks/shared/useLogin';
+import { REACT_APP_API_SOCIAL_URL } from '@/constants';
 
 const stopSign = {
   stop: false,
@@ -104,7 +105,7 @@ export default function useFarcasterQR() {
     let signerSuccess = false;
     let stopped = false;
 
-    while (tries < 60) {
+    while (tries < 100) {
       if (stopSign.stop) {
         stopped = true;
         break;
@@ -185,14 +186,17 @@ export default function useFarcasterQR() {
 
     const { signature, appFid, deadline } = resp.data.data;
 
-    const { token, deeplinkUrl } = await axios
-      .post(`${WARPCAST_API}/v2/signed-key-requests`, {
+    const req = await axios.post(
+      `${REACT_APP_API_SOCIAL_URL}/3r-farcaster/signer-request`,
+      {
         key: convertedKey,
         requestFid: appFid,
         signature,
         deadline,
-      })
-      .then((response) => response.data.result.signedKeyRequest);
+      }
+    );
+    // console.log('signer-request data', req.data.data);
+    const { token, deeplinkUrl } = req.data.data;
 
     // save-temp
     saveTempFarsignPrivateKey(keyPair.privateKey);
