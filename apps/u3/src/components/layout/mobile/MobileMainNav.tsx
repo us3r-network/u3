@@ -16,14 +16,12 @@ import NotificationIcon from '../nav-icons/NotificationIcon';
 import MessageIcon from '../nav-icons/MessageIcon';
 import ExploreIcon from '../nav-icons/ExploreIcon';
 import FavIcon from '../nav-icons/FavIcon';
-import useLogin from '@/hooks/shared/useLogin';
 
 export default function MobileMainNav({
   className,
   ...props
 }: ComponentPropsWithRef<'div'>) {
   const { firstRouteMeta, lastRouteMeta } = useRoute();
-  const { isLogin } = useLogin();
 
   const firstRouteKey = firstRouteMeta?.key;
   const lastRouteKey = lastRouteMeta?.key;
@@ -52,21 +50,21 @@ export default function MobileMainNav({
       )}
       {...props}
     >
-      <MobileNavItem href="/communities" active={isCommunityRoute}>
-        <CommunityIcon active={isCommunityRoute} />
-        Communities
-      </MobileNavItem>
       <MobileNavItem href="/" active={isExploreRoute}>
         <ExploreIcon active={isExploreRoute} />
         Explore
       </MobileNavItem>
-      <MobileNavItem active={isMessageRoute} href="/message">
-        <MessageIcon active={isMessageRoute} />
-        Message
+      <MobileNavItem href="/communities" active={isCommunityRoute}>
+        <CommunityIcon active={isCommunityRoute} />
+        Communities
       </MobileNavItem>
       <MobileNavItem href="/notification" active={isNotificationRoute}>
         <NotificationIcon active={isNotificationRoute} />
         Notification
+      </MobileNavItem>
+      <MobileNavItem active={isMessageRoute} href="/message">
+        <MessageIcon active={isMessageRoute} />
+        Message
       </MobileNavItem>
       <MobileNavItem href="/fav/posts" active={isFavRoute}>
         <FavIcon active={isFavRoute} />

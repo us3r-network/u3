@@ -13,18 +13,18 @@ import {
   MobileHeaderWrapper,
 } from '@/components/layout/mobile/MobileHeaderCommon';
 import SearchIconBtn from '@/components/layout/SearchIconBtn';
-import ColorButton from '@/components/common/button/ColorButton';
+import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
 
 export default function ExploreMobileHeader(
   props: ComponentPropsWithRef<'div'>
 ) {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const isHomePath = pathname === '/';
   const isCommunitiesPath = pathname.startsWith('/communities');
   const isPosterGalleryPath = pathname === '/poster-gallery';
   const isCasterDailyPath = pathname === '/caster-daily';
   const isPostsPath = pathname.startsWith('/social');
+  const isPostDetailPath = pathname.startsWith('/social/post-detail');
 
   return (
     <MobileHeaderWrapper {...props}>
@@ -32,21 +32,10 @@ export default function ExploreMobileHeader(
         if (isHomePath) {
           return (
             <>
-              <div
-                className="text-[#FFF] text-[16px] font-medium"
-                onClick={() => navigate('/')}
-              >
-                Explore
-              </div>
+              <div className="text-[#FFF] text-[16px] font-medium">Explore</div>
               <div className="flex items-center gap-[20px]">
                 <SearchIconBtn />
-                <ColorButton
-                  onClick={() => {
-                    navigate('/caster-daily');
-                  }}
-                >
-                  Mint
-                </ColorButton>
+                <LoginButtonV2Mobile />
               </div>
             </>
           );
@@ -54,9 +43,13 @@ export default function ExploreMobileHeader(
         if (isCommunitiesPath) {
           return (
             <>
-              <MobileHeaderBackBtn title="Communities" />
+              <div className="text-[#FFF] text-[16px] font-medium">
+                Communities
+              </div>
+              {/* <MobileHeaderBackBtn title="Communities" backToPath="/" /> */}
               <div className="flex items-center gap-[20px]">
                 <SearchIconBtn />
+                <LoginButtonV2Mobile />
               </div>
             </>
           );
@@ -70,11 +63,15 @@ export default function ExploreMobileHeader(
         if (isPostsPath) {
           return (
             <>
-              <MobileHeaderBackBtn title="Posts" />
+              <MobileHeaderBackBtn
+                title="Posts"
+                backToPath={isPostDetailPath ? undefined : '/'}
+              />
               <div className="flex items-center gap-[20px]">
                 <SearchIconBtn />
-                <AddPostMobileBtn />
+                <LoginButtonV2Mobile />
               </div>
+              <AddPostMobileBtn />
             </>
           );
         }

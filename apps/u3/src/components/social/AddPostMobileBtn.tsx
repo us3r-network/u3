@@ -9,7 +9,7 @@ export default function AddPostMobileBtn() {
   return (
     <>
       <ColorButton
-        className="h-[36px] px-[12px] py-[0px]"
+        className="w-[60px] h-[60px] max-sm:w-[60px] max-sm:h-[60px] rounded-full p-[0px] fixed right-[10px] bottom-[90px] text-[64px] font-normal"
         onClick={() => {
           if (!isLogin) {
             login();
@@ -18,7 +18,7 @@ export default function AddPostMobileBtn() {
           setOpen(true);
         }}
       >
-        Post
+        +
       </ColorButton>
       <AddPostModal
         open={open}
