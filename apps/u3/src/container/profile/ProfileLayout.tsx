@@ -85,7 +85,7 @@ export default function ProfileLayout() {
       {/* Desktop */}
       <div className="w-full h-full flex max-sm:hidden">
         <div className="bg-[#1B1E23] w-[280px] h-full">
-          <ProfileMenu isSelf={isSelf} />
+          <ProfileMenu />
         </div>
         <div className="flex-1 h-full overflow-auto" id="profile-warper">
           <Outlet

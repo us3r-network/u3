@@ -8,12 +8,16 @@
 import { ComponentPropsWithRef } from 'react';
 import { MobileHeaderWrapper } from '@/components/layout/mobile/MobileHeaderCommon';
 import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
+import SearchIconBtn from '@/components/layout/SearchIconBtn';
 
 export default function FavMobileHeader(props: ComponentPropsWithRef<'div'>) {
   return (
     <MobileHeaderWrapper {...props}>
       <div className="text-[#FFF] text-[16px] font-medium">My Favorites</div>
-      <LoginButtonV2Mobile />
+      <div className="flex items-center gap-[20px]">
+        <SearchIconBtn />
+        <LoginButtonV2Mobile />
+      </div>
     </MobileHeaderWrapper>
   );
 }

@@ -6,30 +6,23 @@
  * @Description: file description
  */
 import { ComponentPropsWithRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
 import {
   MobileHeaderBackBtn,
   MobileHeaderWrapper,
 } from '@/components/layout/mobile/MobileHeaderCommon';
+import LoginButtonV2Mobile from '@/components/layout/LoginButtonV2Mobile';
+import SearchIconBtn from '@/components/layout/SearchIconBtn';
 
 export default function ProfileMobileHeader(
   props: ComponentPropsWithRef<'div'>
 ) {
-  const { pathname } = useLocation();
-  const { user } = useParams();
-  // const isPostsPath = pathname === '/u';
-  // const isContactsPath = pathname === '/u/contacts';
-  // const isActivityPath = pathname === '/u/activity';
-  const isFavPath = pathname === '/u/fav';
-
   return (
     <MobileHeaderWrapper {...props}>
-      {(() => {
-        if (isFavPath) {
-          return <MobileHeaderBackBtn title="My Favorites" />;
-        }
-        return <MobileHeaderBackBtn title={user || 'My Profile'} />;
-      })()}
+      <MobileHeaderBackBtn title="My Profile" />;
+      <div className="flex items-center gap-[20px]">
+        <SearchIconBtn />
+        <LoginButtonV2Mobile />
+      </div>
     </MobileHeaderWrapper>
   );
 }
