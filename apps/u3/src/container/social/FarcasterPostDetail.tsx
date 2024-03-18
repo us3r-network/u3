@@ -102,7 +102,7 @@ export default function FarcasterPostDetail() {
         // setIsPending(false);
       }
     },
-    [cast, loadCastInfo]
+    [cast, loadCastInfo, isLoginU3, isConnected, encryptedSigner]
   );
 
   useEffect(() => {

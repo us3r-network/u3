@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@airstack/airstack-react": "^0.4.7",
-    "@farcaster/hub-web": "^0.7.3",
+    "@farcaster/hub-web": "^0.8.5",
     "@lens-protocol/metadata": "^1.1.5",
     "@lens-protocol/react-web": "^2.0.0-alpha.33",
     "@lens-protocol/wagmi": "^4.0.0-alpha.2",
@@ -60,6 +60,7 @@
     "dompurify": "^2.3.10",
     "ethers": "^5.7.2",
     "formik": "^2.2.9",
+    "frames.js": "^0.7.1",
     "html2canvas-strengthen": "0.0.1",
     "http-proxy-middleware": "^2.0.6",
     "immer": "^10.0.3",
@@ -131,7 +132,7 @@
     "yup": "^0.32.11"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "cross-env NODE_OPTIONS=--max-old-space-size=8192 craco start",
     "build": "craco build",
     "build:report": "craco build --report",
     "test": "craco test",

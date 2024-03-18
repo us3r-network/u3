@@ -327,6 +327,7 @@ export default function FCast({
           {!simpleLayout && (
             <Embed
               embedImgs={[...embeds.imgs]}
+              embedVideos={[...embeds.videos]}
               embedWebpages={!disableRenderUrl ? embeds.webpages : []}
               embedCasts={[...embeds.casts]}
               cast={cast}
@@ -511,6 +512,7 @@ export default function FCast({
       {!simpleLayout && (
         <Embed
           embedImgs={[...embeds.imgs]}
+          embedVideos={[...embeds.videos]}
           embedWebpages={!disableRenderUrl ? embeds.webpages : []}
           embedCasts={[...embeds.casts]}
           cast={cast}
