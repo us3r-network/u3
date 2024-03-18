@@ -264,7 +264,7 @@ export default function FCast({
                 avatar: userData.pfp,
                 name: userData.display,
                 handle: userData.userName,
-                createdAt: cast.created_at || cast.createdAt,
+                createdAt: cast.timestamp,
               }}
             />
             {(cast.parent_url || cast.rootParentUrl) && (
