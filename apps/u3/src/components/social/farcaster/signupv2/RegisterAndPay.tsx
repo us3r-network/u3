@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { ComponentPropsWithRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { idRegistryABI } from '@farcaster/hub-web';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
@@ -20,7 +20,9 @@ import { shortAddress } from '@/utils/message/xmtp';
 export default function RegisterAndPay({
   fid,
   setFid,
-}: {
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'> & {
   fid: number;
   setFid: (fid: number) => void;
 }) {
@@ -90,8 +92,10 @@ export default function RegisterAndPay({
     <div
       className={cn(
         'text-white flex flex-col border border-[#39424c] rounded-2xl',
-        'p-5 h-[350px] w-[320px]'
+        'p-5 h-[350px] w-[320px]',
+        className
       )}
+      {...props}
     >
       <Title checked={!!fid} text={'Step 1'} />
       <div className="italic py-5 text-xl font-bold border-b border-[#39424c]">
