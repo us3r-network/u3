@@ -11,21 +11,23 @@ export default function MessageList() {
   const { xmtpClient, messageRouteParams } = useXmtpClient();
   const { loadingConversations, convoMessages } = useXmtpStore();
 
-  const messages =
-    convoMessages.get(messageRouteParams?.peerAddress || '') || [];
+  const { peerAddress } = messageRouteParams;
+  const messages = convoMessages.get(peerAddress || '') || [];
 
   const messageListEndRef = useRef<HTMLDivElement>(null);
   const megLen = messages.length;
   useEffect(() => {
-    (async () => {
-      await new Promise((r) => {
-        setTimeout(r, 100);
-      });
+    if (messageListEndRef.current) {
       messageListEndRef?.current?.scrollIntoView({
         behavior: 'smooth',
       });
-    })();
+    }
   }, [megLen]);
+  useEffect(() => {
+    if (messageListEndRef.current) {
+      messageListEndRef?.current?.scrollIntoView();
+    }
+  }, [peerAddress]);
   return (
     <div className="w-full flex flex-col gap-[20px] py-[20px]">
       {!loadingConversations &&
