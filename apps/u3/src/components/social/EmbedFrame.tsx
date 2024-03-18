@@ -4,15 +4,14 @@ import { useCallback, useMemo, useState } from 'react';
 import { Frame } from 'frames.js';
 import {
   sendTransaction,
-  simulateContract,
   switchChain,
   waitForTransactionReceipt,
-  writeContract,
 } from '@wagmi/core';
 import { useAccount, useConfig, useChains } from 'wagmi';
+import { useConnectModal } from '@rainbow-me/rainbowkit';
 
 import { CastId, Message, makeFrameAction } from '@farcaster/hub-web';
-import { formatEther, fromHex, parseEther, toHex } from 'viem';
+import { fromHex, toHex } from 'viem';
 import { toast } from 'react-toastify';
 import { Cross2Icon, CaretLeftIcon } from '@radix-ui/react-icons';
 import { FarCast } from '../../services/social/types';
@@ -45,10 +44,11 @@ export default function EmbedCastFrame({
   const [frameText, setFrameText] = useState('');
   const [frameRedirect, setFrameRedirect] = useState('');
   const [frameData, setFrameData] = useState<Frame>(data);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [txSimulate, setTxSimulate] = useState<any>([]);
   const [txData, setTxData] = useState<any>();
   const [txBtnIdx, setTxBtnIdx] = useState(0);
+  const { openConnectModal } = useConnectModal();
 
   const config = useConfig();
 
@@ -198,6 +198,10 @@ export default function EmbedCastFrame({
       };
 
       if (action === 'tx') {
+        if (!address) {
+          openConnectModal();
+          return;
+        }
         console.log('tx', target);
         postData.actionUrl = target;
         postData.fromAddress = address;
@@ -241,7 +245,16 @@ export default function EmbedCastFrame({
           e.stopPropagation();
         }}
       >
-        <div className="w-full overflow-hidden flex items-center">
+        <div
+          className="w-full overflow-hidden flex items-center"
+          style={{
+            filter: isLoading ? 'blur(4px)' : undefined,
+            aspectRatio:
+              (frameData.imageAspectRatio ?? '1.91:1') === '1:1'
+                ? '1/1'
+                : '1.91/1',
+          }}
+        >
           <img src={frameData.image} alt="" className="w-full " />
         </div>
         {(frameData.inputText && (
@@ -267,7 +280,7 @@ export default function EmbedCastFrame({
                   key={idx}
                   type="button"
                   className="flex-grow p-2 m-2 mt-1 rounded-xl"
-                  onClick={(e) => {
+                  onClick={async (e) => {
                     e.stopPropagation();
                     console.log(
                       'postFrameAction',
@@ -275,10 +288,22 @@ export default function EmbedCastFrame({
                       item.action,
                       item.target
                     );
-                    postFrameAction(idx + 1, item.action, item.target);
+                    try {
+                      setIsLoading(true);
+                      await postFrameAction(idx + 1, item.action, item.target);
+                    } catch (err) {
+                      console.error(err);
+                    } finally {
+                      setIsLoading(false);
+                    }
                   }}
                 >
+                  {item.action === 'mint' ? `⬗ ` : ''}
                   {item.label}
+                  {item.action === 'tx' ? <TxIcon /> : ''}
+                  {item.action === 'post_redirect' || item.action === 'link'
+                    ? ` ↗`
+                    : ''}
                 </ColorButton>
               );
             })}
@@ -318,6 +343,23 @@ export default function EmbedCastFrame({
       )) ||
         null}
     </>
+  );
+}
+
+function TxIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      focusable="false"
+      role="img"
+      viewBox="0 0 16 16"
+      className="ml-1 mb-[2px] text-gray-400 inline-block select-none align-text-middle overflow-visible"
+      width="12"
+      height="12"
+      fill="currentColor"
+    >
+      <path d="M9.504.43a1.516 1.516 0 0 1 2.437 1.713L10.415 5.5h2.123c1.57 0 2.346 1.909 1.22 3.004l-7.34 7.142a1.249 1.249 0 0 1-.871.354h-.302a1.25 1.25 0 0 1-1.157-1.723L5.633 10.5H3.462c-1.57 0-2.346-1.909-1.22-3.004L9.503.429Zm1.047 1.074L3.286 8.571A.25.25 0 0 0 3.462 9H6.75a.75.75 0 0 1 .694 1.034l-1.713 4.188 6.982-6.793A.25.25 0 0 0 12.538 7H9.25a.75.75 0 0 1-.683-1.06l2.008-4.418.003-.006a.036.036 0 0 0-.004-.009l-.006-.006-.008-.001c-.003 0-.006.002-.009.004Z" />
+    </svg>
   );
 }
 
