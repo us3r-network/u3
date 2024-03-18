@@ -75,7 +75,6 @@ export default function ProfileLayout() {
     return (
       <div className="w-full h-full flex flex-col justify-center items-center text-[white] gap-4">
         <Loading />
-        loading profile from multiple sources and merge...
       </div>
     );
   }
