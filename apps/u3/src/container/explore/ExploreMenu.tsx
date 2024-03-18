@@ -36,14 +36,14 @@ export default function ExploreMenu({
           <NavLinkItem href="/" active={isHomePath}>
             Home
           </NavLinkItem>
-          <NavLinkItem href="/poster-gallery" active={isPosterGalleryPath}>
-            Poster Gallery
+          <NavLinkItem href="/social" active={isPostsPath}>
+            Feed
           </NavLinkItem>
           <NavLinkItem href="/communities" active={isCommunitiesPath}>
             Communities
           </NavLinkItem>
-          <NavLinkItem href="/social" active={isPostsPath}>
-            Posts
+          <NavLinkItem href="/poster-gallery" active={isPosterGalleryPath}>
+            Poster Gallery
           </NavLinkItem>
         </div>
         {isPostsPath && <AddPost />}
