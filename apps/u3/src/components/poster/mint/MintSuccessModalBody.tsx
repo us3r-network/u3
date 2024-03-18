@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import { ComponentPropsWithRef } from 'react';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 import TokenShare from './TokenShare';
 import {
@@ -7,12 +8,13 @@ import {
 } from '@/constants/zora';
 import { getZoraMintLink } from '@/utils/shared/zora';
 import CopyIcon from '@/components/common/icons/CopyIcon';
+import { cn } from '@/lib/utils';
 
-type Props = {
+type Props = ComponentPropsWithRef<'div'> & {
   img: string;
   tokenId: number;
   referrerAddress: string;
-  closeModal: () => void;
+  closeModal?: () => void;
 };
 
 export default function MintSuccessModalBody({
@@ -20,6 +22,8 @@ export default function MintSuccessModalBody({
   tokenId,
   referrerAddress,
   closeModal,
+  className,
+  ...props
 }: Props) {
   const mintLink = getZoraMintLink({
     chainId: casterZoraChainId,
@@ -28,12 +32,19 @@ export default function MintSuccessModalBody({
     referrerAddress,
   });
   return (
-    <div className="w-[310px] flex flex-col gap-[20px]">
-      <div className="flex justify-between items-center">
+    <div
+      className={cn('w-[310px] flex flex-col gap-[20px]', className)}
+      {...props}
+    >
+      <div className="flex justify-between items-center max-sm:hidden">
         <h1 className="text-[#FFF] text-[24px] font-bold leading-none">
           Minted - U3 Caster
         </h1>
-        <ModalCloseBtn onClick={closeModal} />
+        <ModalCloseBtn
+          onClick={() => {
+            closeModal?.();
+          }}
+        />
       </div>
       <img src={img} alt="" className="w-full object-cover" />
       <TokenShare mintLink={mintLink} />

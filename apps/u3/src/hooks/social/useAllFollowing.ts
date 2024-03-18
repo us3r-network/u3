@@ -1,25 +1,41 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 import { getAllFollowing } from 'src/services/social/api/all';
 
-const allFollowingData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-    hasFarcasterNextPage: true,
-    hasLensNextPage: true,
-    endFarcasterCursor: '',
-    endLensCursor: '',
-  },
-  userData: {},
-  userDataObj: {},
-  endTimestamp: Date.now(),
+export const getDefaultAllFollowingCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+      hasFarcasterNextPage: true,
+      hasLensNextPage: true,
+      endFarcasterCursor: '',
+      endLensCursor: '',
+    },
+    userData: {},
+    userDataObj: {},
+    endTimestamp: Date.now(),
+  };
+};
+type AllFollowingCachedData = ReturnType<
+  typeof getDefaultAllFollowingCachedData
+>;
+
+type AllFollowingOpts = {
+  channelId?: string;
+  cachedDataRefValue?: AllFollowingCachedData;
 };
 
-export default function useAllFollowing() {
+export default function useAllFollowing(opts?: AllFollowingOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultAllFollowingCachedData(),
+  });
+  const allFollowingData = cachedDataRefValue || defaultCachedDataRef.current;
+
   const { currFid } = useFarcasterCtx();
   const { sessionProfile: lensSessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = lensSessionProfile || {};
@@ -97,18 +113,4 @@ export default function useAllFollowing() {
     pageInfo,
     allUserDataObj,
   };
-}
-
-export function resetAllFollowingData() {
-  allFollowingData.data = [];
-  allFollowingData.pageInfo = {
-    hasNextPage: true,
-    hasLensNextPage: true,
-    hasFarcasterNextPage: true,
-    endFarcasterCursor: '',
-    endLensCursor: '',
-  };
-  allFollowingData.userData = {};
-  allFollowingData.userDataObj = {};
-  allFollowingData.endTimestamp = 0;
 }

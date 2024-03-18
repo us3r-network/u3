@@ -13,14 +13,13 @@ import {
   AttachmentCodec,
   RemoteAttachmentCodec,
 } from '@xmtp/content-type-remote-attachment';
-import { isMobile } from 'react-device-detect';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import { loadKeys, storeKeys } from '../../utils/message/xmtp';
 import { XMTP_ENV } from '../../constants/xmtp';
 
 export enum MessageRoute {
-  SEARCH = 'search',
-  DETAIL = 'detail',
+  HOME = 'home',
+  PRIVATE_CHAT = 'private-chat',
 }
 
 type MessageRouteParams = {
@@ -50,7 +49,7 @@ const defaultContextValue: XmtpClientCtxValue = {
   disconnectXmtp: () => {},
   canEnableXmtp: false,
   setCanEnableXmtp: () => {},
-  messageRouteParams: { route: MessageRoute.SEARCH },
+  messageRouteParams: { route: MessageRoute.HOME },
   setMessageRouteParams: () => {},
 };
 
@@ -64,7 +63,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   const { isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [messageRouteParams, setMessageRouteParams] =
-    useState<MessageRouteParams>({ route: MessageRoute.SEARCH });
+    useState<MessageRouteParams>({ route: MessageRoute.HOME });
 
   /**
    * // TODO wagmi 的 wallet对象中getAddress, signMessage方法不符合xmtp-js的Signer定义要求，这里是临时方案
@@ -133,7 +132,6 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
-    if (isMobile) return;
     if (canEnableXmtp) {
       if (signer) {
         enableXmtpWithSigner(signer);
@@ -141,7 +139,7 @@ export function XmtpClientProvider({ children }: PropsWithChildren) {
       }
     }
     setXmtpClient(null);
-  }, [signer, enableXmtpWithSigner, isMobile, canEnableXmtp]);
+  }, [signer, enableXmtpWithSigner, canEnableXmtp]);
 
   return (
     <XmtpClientCtx.Provider

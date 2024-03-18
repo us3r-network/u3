@@ -18,6 +18,7 @@ import {
 import useFarcasterNotifications from '../../hooks/social/farcaster/useFarcasterNotifications';
 import useUnreadFarcasterNotificationsCount from '../../hooks/social/farcaster/useUnreadFarcasterNotificationsCount';
 import { FarcasterNotification } from '../../services/social/api/farcaster';
+import { NotificationType } from '@/services/notification/types/notifications';
 
 interface NotificationStoreCtxValue {
   notifications: (LensNotification | FarcasterNotification)[] | undefined;
@@ -39,7 +40,7 @@ const defaultContextValue: NotificationStoreCtxValue = {
   loadMore: () => {},
 };
 
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 20;
 export const NotificationStoreCtx = createContext(defaultContextValue);
 
 // const mergeNotifications = (
@@ -138,6 +139,7 @@ const mergeNotifications = (
 
 export type NotificationConfig = {
   fid: number;
+  type?: NotificationType[];
   pageSize?: number;
 };
 
@@ -181,6 +183,7 @@ export function NotificationStoreProvider({
     farcasterUserData,
   } = useFarcasterNotifications(
     config.fid,
+    config.type || [],
     config.pageSize || DEFAULT_PAGE_SIZE
   );
 

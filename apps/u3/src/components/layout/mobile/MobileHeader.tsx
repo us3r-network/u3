@@ -5,27 +5,80 @@
  * @LastEditTime: 2023-02-28 23:32:58
  * @Description: file description
  */
+import { ComponentPropsWithRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useRoute from '../../../route/useRoute';
 import { RouteKey } from '../../../route/routes';
-import MobileHomeHeader from './MobileHomeHeader';
-import MobileSubPageHeader from './MobileSubPageHeader';
-import { capitalizeFirstLetter } from '../../../utils/shared/string';
+import { cn } from '@/lib/utils';
+import { MobileHeaderBackBtn, MobileHeaderWrapper } from './MobileHeaderCommon';
+import SearchIconBtn from '../SearchIconBtn';
+import AddPostMobileBtn from '@/components/social/AddPostMobileBtn';
 // import MobileDappHeader from './MobileDappHeader';
 // import MobileContentHeader from './MobileContentHeader';
 
-export default function MobileHeader() {
-  const { firstRouteMeta } = useRoute();
+export default function MobileHeader({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
+  const navigate = useNavigate();
+  const { firstRouteMeta, lastRouteMeta } = useRoute();
+  const firstRouteKey = firstRouteMeta?.key;
+  const lastRouteKey = lastRouteMeta?.key;
+  console.log(firstRouteMeta, lastRouteMeta);
 
-  // if ([RouteKey.contents, RouteKey.content].includes(firstRouteMeta.key)) {
-  //   const type = firstRouteMeta.key === RouteKey.contents ? 'list' : 'detail';
-  //   return <MobileContentHeader type={type} />;
-  // }
+  const isHomeRoute =
+    firstRouteKey === RouteKey.home && lastRouteKey !== RouteKey.communities;
 
-  if ([RouteKey.dapp, RouteKey.profile].includes(firstRouteMeta.key)) {
+  const isCommunityRoute = firstRouteKey === RouteKey.community;
+
+  const isCommunitiesRoute = lastRouteKey === RouteKey.communities;
+
+  const isExplorePostsRoute = false;
+  const isMessageRoute = false;
+  const isNotificationRoute = false;
+
+  if (isCommunityRoute) {
+    return null;
+  }
+  if (isHomeRoute) {
     return (
-      <MobileSubPageHeader name={capitalizeFirstLetter(firstRouteMeta?.key)} />
+      <MobileHeaderWrapper>
+        <div
+          className="text-[#FFF] text-[16px] font-medium"
+          onClick={() => navigate('/')}
+        >
+          Explore
+        </div>
+        <div className="flex items-center gap-[20px]">
+          <SearchIconBtn />
+        </div>
+      </MobileHeaderWrapper>
     );
   }
-
-  return <MobileHomeHeader />;
+  if (isCommunitiesRoute) {
+    return (
+      <MobileHeaderWrapper>
+        <MobileHeaderBackBtn title="Communities" />
+        <div className="flex items-center gap-[20px]">
+          <SearchIconBtn />
+        </div>
+      </MobileHeaderWrapper>
+    );
+  }
+  if (isExplorePostsRoute) {
+    return (
+      <MobileHeaderWrapper>
+        <MobileHeaderBackBtn title="Posts" />
+        <div className="flex items-center gap-[20px]">
+          <SearchIconBtn />
+          <AddPostMobileBtn />
+        </div>
+      </MobileHeaderWrapper>
+    );
+  }
+  return (
+    <MobileHeaderWrapper>
+      <MobileHeaderBackBtn title={lastRouteMeta.title} />
+    </MobileHeaderWrapper>
+  );
 }

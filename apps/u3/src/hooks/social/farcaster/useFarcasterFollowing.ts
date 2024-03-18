@@ -1,20 +1,35 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import { getFarcasterFollowing } from 'src/services/social/api/farcaster';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
-const farcasterFollowingData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  userData: {},
-  userDataObj: {},
-  endTimestamp: Date.now(),
-  endCursor: '',
+export const getDefaultFarcasterFollowingCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    userData: {},
+    userDataObj: {},
+    endTimestamp: Date.now(),
+    endCursor: '',
+  };
+};
+type FarcasterFollowingCachedData = ReturnType<
+  typeof getDefaultFarcasterFollowingCachedData
+>;
+type FarcasterFollowingOpts = {
+  cachedDataRefValue?: FarcasterFollowingCachedData;
 };
 
-export default function useFarcasterFollowing() {
+export default function useFarcasterFollowing(opts?: FarcasterFollowingOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultFarcasterFollowingCachedData(),
+  });
+  const farcasterFollowingData =
+    cachedDataRefValue || defaultCachedDataRef.current;
+
   const { currFid } = useFarcasterCtx();
   const [farcasterFollowing, setFarcasterFollowing] = useState<any[]>(
     farcasterFollowingData.data
@@ -73,15 +88,4 @@ export default function useFarcasterFollowing() {
     pageInfo,
     farcasterFollowingUserDataObj,
   };
-}
-
-export function resetFarcasterFollowingData() {
-  farcasterFollowingData.data = [];
-  farcasterFollowingData.pageInfo = {
-    hasNextPage: true,
-  };
-  farcasterFollowingData.userData = {};
-  farcasterFollowingData.userDataObj = {};
-  farcasterFollowingData.endTimestamp = Date.now();
-  farcasterFollowingData.endCursor = '';
 }

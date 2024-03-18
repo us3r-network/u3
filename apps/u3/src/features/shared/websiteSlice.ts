@@ -15,7 +15,13 @@ import {
   setHomeBannerHiddenToStore,
   verifyHomeBannerHiddenByStore,
 } from '../../utils/shared/homeStore';
-import { FeedsType } from '../../components/profile/ProfilePageNav';
+
+enum FeedsType {
+  POSTS = 'posts',
+  REPOSTS = 'reposts',
+  REPLIES = 'replies',
+  LIKES = 'likes',
+}
 
 type WebsiteState = {
   mobileNavDisplay: boolean;

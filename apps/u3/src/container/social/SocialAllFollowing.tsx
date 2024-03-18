@@ -7,7 +7,7 @@
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -20,19 +20,16 @@ import useAllFollowing from 'src/hooks/social/useAllFollowing';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
 import { useLensCtx } from 'src/contexts/social/AppLensCtx';
 
+import { MainCenter, NoLoginStyled } from './CommonStyles';
+import useLogin from '../../hooks/shared/useLogin';
+import FollowingDefault from '../../components/social/FollowingDefault';
+import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getExploreFcPostDetailPath } from '@/route/path';
 import {
   EndMsgContainer,
   LoadingMoreWrapper,
-  MainCenter,
-  NoLoginStyled,
   PostList,
-} from './CommonStyles';
-import useLogin from '../../hooks/shared/useLogin';
-import FollowingDefault from '../../components/social/FollowingDefault';
-
-export const AllFirst = {
-  done: false,
-};
+} from '@/components/social/CommonStyles';
 
 export default function SocialAllFollowing() {
   const [parentId] = useState('social-all-following');
@@ -41,21 +38,22 @@ export default function SocialAllFollowing() {
   const { id: lensSessionProfileId } = lensSessionProfile || {};
   const { currFid } = useFarcasterCtx();
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
 
   const { allFollowing, loadAllFollowing, loading, pageInfo, allUserDataObj } =
-    useAllFollowing();
+    useAllFollowing({
+      cachedDataRefValue: followingCachedData,
+    });
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (AllFirst.done) return;
     if (!mounted) return;
     if (!isLogin) return;
     if (!currFid && !lensSessionProfileId) return;
+    if (followingCachedData?.data?.length > 0) return;
 
-    loadAllFollowing().finally(() => {
-      AllFirst.done = true;
-    });
+    loadAllFollowing();
   }, [mounted, isLogin, currFid, lensSessionProfileId]);
 
   if (!isLogin) {
@@ -108,18 +106,20 @@ export default function SocialAllFollowing() {
             const key = Buffer.from(data.hash.data).toString('hex');
             return (
               <FCast
+                isV2Layout
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={allUserDataObj}
-                showMenuBtn
-                cardClickAction={(e) => {
+                shareLink={getSocialDetailShareUrlWithFarcaster(key)}
+                castClickAction={(e, castHex) => {
                   setPostScroll({
                     currentParent: parentId,
                     id: key,
                     top: (e.target as HTMLDivElement).offsetTop,
                   });
+                  navigate(getExploreFcPostDetailPath(castHex));
                 }}
               />
             );

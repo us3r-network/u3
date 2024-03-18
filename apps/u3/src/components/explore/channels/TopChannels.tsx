@@ -18,9 +18,9 @@ export default function TopChannels({
   return (
     <div className="w-full">
       <Title
-        text="👍 Top Topics"
+        text="Hot Communities"
         viewAllAction={() => {
-          navigate(`/social/trends`);
+          navigate(`/communities`);
         }}
       />
       <div className={cn('w-full mt-[20px]', 'max-sm:mt-[10px]')}>

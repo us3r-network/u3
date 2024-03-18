@@ -27,6 +27,7 @@ export default function AddPost({
         }
         setOpenPostModal(true);
       }}
+      {...props}
     >
       <CommandIcon />
       <span>Command + P to Post</span>

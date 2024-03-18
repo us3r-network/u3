@@ -62,3 +62,5 @@ export const CONTACT_US_LINKS = {
 export const RED_ENVELOPE_PLEDGE_ADDRESS =
   process.env.REACT_APP_RED_ENVELOPE_PLEDGE_ADDRESS ||
   '0xCFd3527F4334Ebb2E3b53b01f70B7BD5C3170cD5';
+
+export const POSTER_IMG_URL = `${API_BASE_URL}/static-assets/poster/poster.webp`;

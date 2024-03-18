@@ -14,7 +14,12 @@ import { LensListBox } from './CommonStyles';
 
 export default function SocialFarcaster() {
   const currentFeedType = useRef<FeedsType>();
-  const { feedsType, postScroll, setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { feedsType, postScroll, setPostScroll, postsCachedData } =
+    useOutletContext<any>(); // TODO: any
+
+  const trendingCachedData = postsCachedData?.lens?.trending;
+  const whatsnewCachedData = postsCachedData?.lens?.whatsnew;
+  const followingCachedData = postsCachedData?.lens?.following;
 
   useEffect(() => {
     if (feedsType === currentFeedType.current) return;
@@ -29,6 +34,10 @@ export default function SocialFarcaster() {
           postScroll,
           setPostScroll,
           feedsType,
+
+          trendingCachedData,
+          whatsnewCachedData,
+          followingCachedData,
         }}
       />
     </LensListBox>

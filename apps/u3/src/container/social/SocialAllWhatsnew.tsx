@@ -8,7 +8,7 @@
  */
 import { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import Loading from 'src/components/common/loading/Loading';
 import FCast from 'src/components/social/farcaster/FCast';
 import LensPostCard from 'src/components/social/lens/LensPostCard';
@@ -16,19 +16,28 @@ import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import useAllWhatsnew from 'src/hooks/social/useAllWhatsnew';
 import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { EndMsgContainer, LoadingMoreWrapper, PostList } from './CommonStyles';
+import {
+  EndMsgContainer,
+  LoadingMoreWrapper,
+  PostList,
+} from '@/components/social/CommonStyles';
+import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getExploreFcPostDetailPath } from '@/route/path';
 
 export default function SocialAllWhatsnew() {
   const [parentId] = useState('social-all-whatsnew');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>();
+  const { whatsnewCachedData, setPostScroll } = useOutletContext<any>();
+  const navigate = useNavigate();
 
   const { mounted } = useListScroll(parentId);
   const { loading, loadAllWhatsnew, allWhatsnew, allUserDataObj, pageInfo } =
-    useAllWhatsnew();
+    useAllWhatsnew({
+      cachedDataRefValue: whatsnewCachedData,
+    });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !whatsnewCachedData?.data?.length) {
       loadAllWhatsnew();
     }
   }, [mounted]);
@@ -72,18 +81,20 @@ export default function SocialAllWhatsnew() {
             const key = Buffer.from(data.hash.data).toString('hex');
             return (
               <FCast
+                isV2Layout
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={allUserDataObj}
-                showMenuBtn
-                cardClickAction={(e) => {
+                shareLink={getSocialDetailShareUrlWithFarcaster(key)}
+                castClickAction={(e, castHex) => {
                   setPostScroll({
                     currentParent: parentId,
                     id: key,
                     top: (e.target as HTMLDivElement).offsetTop,
                   });
+                  navigate(getExploreFcPostDetailPath(castHex));
                 }}
               />
             );

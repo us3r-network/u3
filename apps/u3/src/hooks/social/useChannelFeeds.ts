@@ -1,117 +1,106 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import {
-  FarcasterPageInfo,
-  getFarcasterChannelFeeds,
-} from 'src/services/social/api/farcaster';
+import { useCallback, useRef, useState } from 'react';
+import { getFarcasterChannelFeeds } from 'src/services/social/api/farcaster';
 import { FEEDS_PAGE_SIZE } from 'src/services/social/api/feeds';
 
+import { toast } from 'react-toastify';
 import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
-import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
-export default function useChannelFeeds() {
-  const { channelId } = useParams();
-  const [mounted, setMounted] = useState(false);
-  const { farcasterChannels } = useFarcasterCtx();
-  const [feeds, setFeeds] = useState<{ [key: string]: any[] }>({});
-  const [pageInfo, setPageInfo] = useState<FarcasterPageInfo>();
-  const [farcasterUserDataObj, setFarcasterUserDataObj] = useState({});
+export const getDefaultFarcasterWhatsnewCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    userData: {},
+    userDataObj: {},
+    endTimestamp: Date.now(),
+    endCursor: '',
+  };
+};
+type FarcasterWhatsnewCachedData = ReturnType<
+  typeof getDefaultFarcasterWhatsnewCachedData
+>;
 
-  const [firstLoading, setFirstLoading] = useState(false);
-  const [moreLoading, setMoreLoading] = useState(false);
+type FarcasterWhatsnewOpts = {
+  channelId?: string;
+  cachedDataRefValue?: FarcasterWhatsnewCachedData;
+};
 
-  const channel = useMemo(() => {
-    const channelData = farcasterChannels.find(
-      (c) => c.channel_id === channelId
-    );
-    return channelData;
-  }, [channelId, farcasterChannels]);
+// TODO useChannelFeeds 考虑合到 useFarcasterWhatsnew 逻辑中
+export default function useChannelFeeds(opts?: FarcasterWhatsnewOpts) {
+  const { channelId, cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultFarcasterWhatsnewCachedData(),
+  });
+  const farcasterWhatsnewData =
+    cachedDataRefValue || defaultCachedDataRef.current;
 
-  const loadChannelCasts = useCallback(async () => {
-    if (!channel) return;
-    if (feeds[channel.channel_id]?.length > 0) return;
+  // TODO any
+  const [farcasterWhatsnew, setFarcasterWhatsnew] = useState<any[]>(
+    farcasterWhatsnewData.data
+  );
+  const [loading, setLoading] = useState(false);
+  const [pageInfo, setPageInfo] = useState(farcasterWhatsnewData.pageInfo);
+
+  const [farcasterWhatsnewUserDataObj, setFarcasterWhatsnewUserDataObj] =
+    useState(farcasterWhatsnewData.userDataObj);
+
+  const loadFarcasterWhatsnew = useCallback(async () => {
+    if (pageInfo.hasNextPage === false) {
+      return;
+    }
+    setLoading(true);
     try {
-      setFirstLoading(true);
       const resp = await getFarcasterChannelFeeds({
-        channelId: channel.channel_id,
+        channelId,
         pageSize: FEEDS_PAGE_SIZE,
+        endCursor: farcasterWhatsnewData.endCursor,
+        endTimestamp: farcasterWhatsnewData.endTimestamp,
       });
       if (resp.data.code !== 0) {
-        console.error('loadChannelCasts error');
+        toast.error(`fail to get farcaster whatsnew ${resp.data.msg}`);
+        setLoading(false);
         return;
       }
+      const { data } = resp.data;
 
-      setFeeds((prev) => ({
-        ...prev,
-        [channel.channel_id]: resp.data.data.data,
-      }));
-      setPageInfo(resp.data.data.pageInfo);
-      const userDataObj = userDataObjFromArr(resp.data.data.farcasterUserData);
-      setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-    } catch (error) {
-      console.error(error);
-      setFeeds((prev) => ({ ...prev, [channel.channel_id]: [] }));
-      setPageInfo(undefined);
-      setFarcasterUserDataObj({});
-    } finally {
-      setFirstLoading(false);
-    }
-  }, [channel]);
+      const {
+        data: casts,
+        farcasterUserData,
+        pageInfo: whatsnewPageInfo,
+      } = data;
 
-  const loadMoreFeeds = useCallback(async () => {
-    console.log('loadMoreFeeds');
-    if (!channel) return;
-    try {
-      setMoreLoading(true);
-      const resp = await getFarcasterChannelFeeds({
-        channelId: channel.channel_id,
-        pageSize: FEEDS_PAGE_SIZE,
-        endCursor: pageInfo?.endCursor,
-        endTimestamp: pageInfo?.endTimestamp,
-      });
-      if (resp.data.code !== 0) {
-        console.error('loadChannelCasts error');
-        return;
+      if (casts.length > 0) {
+        setFarcasterWhatsnew((pre) => [...pre, ...casts]);
+        farcasterWhatsnewData.data = farcasterWhatsnewData.data.concat(casts);
       }
-      setFeeds((prev) => ({
-        ...prev,
-        [channel.channel_id]: [
-          ...prev[channel.channel_id],
-          ...resp.data.data.data,
-        ],
-      }));
-      setPageInfo(resp.data.data.pageInfo);
-      const userDataObj = userDataObjFromArr(resp.data.data.farcasterUserData);
-      setFarcasterUserDataObj((pre) => ({ ...pre, ...userDataObj }));
-    } catch (error) {
-      console.error(error);
+      if (farcasterUserData.length > 0) {
+        const userDataObj = userDataObjFromArr(farcasterUserData);
+
+        setFarcasterWhatsnewUserDataObj((pre) => ({ ...pre, ...userDataObj }));
+        farcasterWhatsnewData.userDataObj = {
+          ...farcasterWhatsnewData.userDataObj,
+          ...userDataObj,
+        };
+      }
+
+      setPageInfo(whatsnewPageInfo);
+      farcasterWhatsnewData.pageInfo = whatsnewPageInfo;
+      farcasterWhatsnewData.endCursor = whatsnewPageInfo.endCursor;
+      farcasterWhatsnewData.endTimestamp = whatsnewPageInfo.endTimestamp;
+    } catch (err) {
+      console.error(err);
+      toast.error('fail to get farcaster whatsnew');
     } finally {
-      setMoreLoading(false);
+      setLoading(false);
     }
-  }, [pageInfo]);
-
-  useEffect(() => {
-    if (!mounted) return;
-    loadChannelCasts();
-  }, [mounted, loadChannelCasts]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const channelFeeds = useMemo(() => {
-    if (!channel) return [];
-    return feeds[channel.channel_id] || [];
-  }, [feeds, channel]);
+  }, [pageInfo, channelId]);
 
   return {
-    firstLoading,
-    moreLoading,
-    loadFirstFeeds: loadChannelCasts,
-    loadMoreFeeds,
-    channel,
-    feeds: channelFeeds,
+    loading,
+    loadFarcasterWhatsnew,
+    farcasterWhatsnew,
+    farcasterWhatsnewUserDataObj,
     pageInfo,
-    farcasterUserDataObj,
   };
 }

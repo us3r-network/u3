@@ -19,6 +19,8 @@ import frensHandles from '../features/frens/frensHandles';
 import userGroupFavorites from '../features/shared/userGroupFavorites';
 import configsTopics from '../features/shared/topics';
 import configsPlatforms from '../features/shared/platforms';
+import joinCommunity from '@/features/community/joinCommunitySlice';
+import community from '@/features/community/communitySlice';
 
 export const store = configureStore({
   reducer: {
@@ -33,6 +35,8 @@ export const store = configureStore({
     frensHandles,
     configsTopics,
     configsPlatforms,
+    joinCommunity,
+    community,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

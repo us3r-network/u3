@@ -6,11 +6,7 @@
  * @Description: 站点主体内容（路由导航）
  */
 import { useRoutes } from 'react-router-dom';
-import styled from 'styled-components';
-import { useCallback, useEffect } from 'react';
-// import { isMobile } from 'react-device-detect';
-// import { useProfileState } from '@us3r-network/profile';
-// import { useSession } from '@us3r-network/auth-with-rainbowkit';
+import { ComponentPropsWithRef, useCallback, useEffect } from 'react';
 import { CutomRouteObject, RoutePermission, routes } from '../../route/routes';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import useU3Extension from '../../hooks/shared/useU3Extension';
@@ -18,27 +14,20 @@ import {
   selectWebsite,
   setU3ExtensionInstalled,
 } from '../../features/shared/websiteSlice';
-import EventCompleteGuideModal from '../news/event/EventCompleteGuideModal';
+// import EventCompleteGuideModal from '../news/event/EventCompleteGuideModal';
 import useLogin from '../../hooks/shared/useLogin';
 import NoLogin from './NoLogin';
-// import usePreference from '../../hooks/usePreference';
-// import OnboardModal from '../onboard/OnboardModal';
+import { cn } from '@/lib/utils';
 
-// import { store } from '../../store/store';
-
-function Main() {
+export default function Main(props: ComponentPropsWithRef<'div'>) {
   const dispatch = useAppDispatch();
-  // const session = useSession();
-  // const { profile, updateProfile, profileLoading } = useProfileState();
-  const { isLogin, user, isAdmin } = useLogin();
-  const { openEventCompleteGuideModal, eventCompleteGuideEndCallback } =
-    useAppSelector(selectWebsite);
+  const { isLogin, isAdmin } = useLogin();
+  // const { openEventCompleteGuideModal, eventCompleteGuideEndCallback } =
+  //   useAppSelector(selectWebsite);
   const { u3ExtensionInstalled } = useU3Extension();
   useEffect(() => {
     dispatch(setU3ExtensionInstalled(u3ExtensionInstalled));
   }, [u3ExtensionInstalled]);
-
-  // const { preferenceList } = usePreference(user?.token);
 
   const renderElement = useCallback(
     ({ element, permissions }: CutomRouteObject) => {
@@ -50,7 +39,7 @@ function Main() {
             if (isAdmin) {
               return element;
             }
-            return <NoPermission>Need Admin Permission</NoPermission>;
+            return <NoAdminPermission />;
           }
           return element;
         }
@@ -70,43 +59,20 @@ function Main() {
   const renderRoutes = useRoutes(routesMap);
 
   return (
-    <MainWrapper id="main-wrapper">
+    <div className={cn('w-full h-full relative')} {...props}>
       {renderRoutes}
-      <EventCompleteGuideModal
+      {/* <EventCompleteGuideModal
         isOpen={openEventCompleteGuideModal}
         onGuideEnd={eventCompleteGuideEndCallback}
-      />
-      {/* {!isMobile && (
-        <OnboardModal
-          show={
-            !!session?.id &&
-            !profileLoading &&
-            !!profile &&
-            (!profile?.tags || profile.tags.length === 0)
-          }
-          lists={preferenceList}
-          finishAction={async (data) => {
-            await updateProfile({
-              tags: data.tags,
-            });
-          }}
-        />
-      )} */}
-    </MainWrapper>
+      /> */}
+    </div>
   );
 }
-export default Main;
-const MainWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  position: relative;
-`;
-const NoPermission = styled.div`
-  width: 100%;
-  height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 30px;
-  color: #ffffff;
-`;
+
+function NoAdminPermission() {
+  return (
+    <div className={cn('w-full h-full flex justify-center items-center')}>
+      <div className={cn('text-white text-2xl')}>Need Admin Permission</div>
+    </div>
+  );
+}

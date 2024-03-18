@@ -1,5 +1,5 @@
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useOutletContext } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
@@ -11,21 +11,23 @@ import useListScroll from 'src/hooks/social/useListScroll';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
 import useFarcasterFollowing from 'src/hooks/social/farcaster/useFarcasterFollowing';
 import useLogin from 'src/hooks/shared/useLogin';
+import { MainCenter, NoLoginStyled } from './CommonStyles';
+import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getExploreFcPostDetailPath } from '@/route/path';
 import {
   EndMsgContainer,
   LoadingMoreWrapper,
-  MainCenter,
-  NoLoginStyled,
   PostList,
-} from './CommonStyles';
+} from '@/components/social/CommonStyles';
 
-export default function SocialFarcaster() {
+export default function SocialFarcasterFollowing() {
   const [parentId] = useState('social-farcaster-following');
   const { openFarcasterQR } = useFarcasterCtx();
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
   const { isConnected: isConnectedFarcaster } = useFarcasterCtx();
   const { isLogin } = useLogin();
+  const navigate = useNavigate();
 
   const {
     farcasterFollowing,
@@ -33,12 +35,15 @@ export default function SocialFarcaster() {
     loading: farcasterFollowingLoading,
     pageInfo: farcasterFollowingPageInfo,
     farcasterFollowingUserDataObj,
-  } = useFarcasterFollowing();
+  } = useFarcasterFollowing({
+    cachedDataRefValue: followingCachedData,
+  });
 
   useEffect(() => {
     if (!mounted) return;
     if (!isLogin) return;
     if (!isConnectedFarcaster) return;
+    if (followingCachedData?.data?.length > 0) return;
     loadFarcasterFollowing();
   }, [mounted, isLogin, isConnectedFarcaster]);
 
@@ -77,18 +82,20 @@ export default function SocialFarcaster() {
             const key = Buffer.from(data.hash.data).toString('hex');
             return (
               <FCast
+                isV2Layout
                 key={key}
                 cast={data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={farcasterFollowingUserDataObj}
-                showMenuBtn
-                cardClickAction={(e) => {
+                shareLink={getSocialDetailShareUrlWithFarcaster(key)}
+                castClickAction={(e, castHex) => {
                   setPostScroll({
                     currentParent: parentId,
                     id: key,
                     top: (e.target as HTMLDivElement).offsetTop,
                   });
+                  navigate(getExploreFcPostDetailPath(castHex));
                 }}
               />
             );

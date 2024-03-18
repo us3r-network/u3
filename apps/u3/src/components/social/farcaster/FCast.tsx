@@ -162,15 +162,18 @@ export default function FCast({
 
   const [linkParam, setLinkParam] = useState(null);
   useEffect(() => {
+    if (!castId.hash || !cast) return;
+    if (!userData.userName) return;
     setLinkParam({
       url: getOfficialCastUrl(
         userData.userName,
         Buffer.from(castId.hash).toString('hex')
       ),
-      type: 'link',
+      type: 'post',
       title: cast.text.slice(0, 200), // todo: expand this limit at model
+      data: JSON.stringify(cast),
     });
-  }, [castId.hash, isDetail]);
+  }, [castId.hash, userData.userName, cast]);
 
   const [updatedCast, setUpdatedCast] = useState(cast);
   const changeCastLikesWithCurrFid = (liked: boolean) => {
@@ -228,7 +231,12 @@ export default function FCast({
         {...wrapperProps}
       >
         {!simpleLayout && (
-          <div className="flex w-[50px] p-[10px] box-border flex-col items-center gap-[10px] self-stretch">
+          <div
+            className={cn(
+              'flex w-[50px] p-[10px] box-border flex-col items-center gap-[10px] self-stretch',
+              'max-sm:hidden'
+            )}
+          >
             <FCastSuperLike
               openFarcasterQR={openFarcasterQR}
               cast={updatedCast}
@@ -403,6 +411,24 @@ export default function FCast({
                   changeCastRecastsWithCurrFid(false);
                 }}
               />
+              <div className="w-[1px] h-[16px] bg-[#39424C] hidden max-sm:block" />
+              <div className="hidden max-sm:block">
+                <FCastSuperLike
+                  openFarcasterQR={openFarcasterQR}
+                  cast={updatedCast}
+                  linkId={linkId}
+                  link={formatLinkParam}
+                  onSaveSuccess={(newLinkId) => {
+                    setLinkId(newLinkId);
+                  }}
+                  onLikeSuccess={() => {
+                    changeCastLikesWithCurrFid(true);
+                  }}
+                  onRecastSuccess={() => {
+                    changeCastRecastsWithCurrFid(true);
+                  }}
+                />
+              </div>
             </PostCardActionsWrapper>
           </PostCardFooterWrapper>
         </PostCardMainWrapper>

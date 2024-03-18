@@ -1,18 +1,17 @@
 import { useEffect, useMemo } from 'react';
 import { useProfiles } from '@lens-protocol/react-web';
 import useBioLinkListWithWeb3Bio from './useBioLinkListWithWeb3Bio';
-import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import useUpsertFarcasterUserData from '../social/farcaster/useUpsertFarcasterUserData';
-import useFarcasterFollowNum from '../social/farcaster/useFarcasterFollowNum';
-import { PlatformAccountsData } from '../../components/profile/profile-info/PlatformAccounts';
-import { SocialPlatform } from '../../services/social/types';
-import getAvatar from '../../utils/social/lens/getAvatar';
+import useFarcasterUserStats from '../social/farcaster/useFarcasterUserStats';
+import { PlatformAccountData, SocialPlatform } from '@/services/social/types';
+import getAvatar from '@/utils/social/lens/getAvatar';
 import {
   getBio,
   getHandle,
   getName,
   getOwnedByAddress,
-} from '../../utils/social/lens/profile';
+} from '@/utils/social/lens/profile';
 import useFetchFidWithFname from '../social/farcaster/useFetchFidWithFname';
 
 export default function usePlatformProfileInfoData({
@@ -51,9 +50,9 @@ export default function usePlatformProfileInfoData({
     }
   }, [fid, farcasterUserData]);
 
-  const { farcasterFollowData } = useFarcasterFollowNum(fid);
+  const { farcasterUserStats } = useFarcasterUserStats(fid);
 
-  const platformAccounts: PlatformAccountsData = useMemo(() => {
+  const platformAccounts: PlatformAccountData[] = useMemo(() => {
     const accounts = [];
     for (const fcastProfile of fcastBioLinks) {
       accounts.push({
@@ -82,17 +81,20 @@ export default function usePlatformProfileInfoData({
     return accounts;
   }, [lensProfiles, fcastBioLinks, fid]);
 
-  const followersCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.followers || 0;
+  const postCount = useMemo(() => {
+    const lensCount = lensProfileFirst?.stats.posts || 0;
+    return lensCount + farcasterUserStats.postCount || 0;
+  }, [lensProfileFirst, farcasterUserStats]);
 
-    return lensFollowersCount + farcasterFollowData.followers;
-  }, [lensProfileFirst, farcasterFollowData]);
+  const followerCount = useMemo(() => {
+    const lensCount = lensProfileFirst?.stats.followers || 0;
+    return lensCount + farcasterUserStats.followerCount;
+  }, [lensProfileFirst, farcasterUserStats]);
 
   const followingCount = useMemo(() => {
-    const lensFollowersCount = lensProfileFirst?.stats.following || 0;
-
-    return lensFollowersCount + farcasterFollowData.following;
-  }, [lensProfileFirst, farcasterFollowData]);
+    const lensCount = lensProfileFirst?.stats.following || 0;
+    return lensCount + farcasterUserStats.followingCount;
+  }, [lensProfileFirst, farcasterUserStats]);
 
   return {
     fid,
@@ -100,7 +102,8 @@ export default function usePlatformProfileInfoData({
     lensProfiles,
     recommendAddress,
     platformAccounts,
-    followersCount,
+    postCount,
+    followerCount,
     followingCount,
     bioLinkLoading,
     lensProfilesLoading,

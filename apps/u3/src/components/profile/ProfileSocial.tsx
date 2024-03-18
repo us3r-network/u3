@@ -8,8 +8,7 @@ import LensPostCard from '../social/lens/LensPostCard';
 import FCast from '../social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
 import { ProfileFeedsGroups } from '../../services/social/api/feeds';
-import Rss3Content from '../fren/Rss3Content';
-import { NoActivity } from '../../container/Activity';
+import { EndMsgContainer } from '../social/CommonStyles';
 
 export function ProfileSocialPosts({
   lensProfileId,
@@ -54,7 +53,7 @@ export function ProfileSocialPosts({
   }, [activeLensProfileLoading, loadFirstSocialFeeds]);
 
   return (
-    <MainCenter>
+    <MainCenter id="posts-warper" className="h-full overflow-auto">
       {(() => {
         if (firstLoading) {
           return (
@@ -79,7 +78,9 @@ export function ProfileSocialPosts({
                 </LoadingMoreWrapper>
               ) : null
             }
-            scrollableTarget="layout-main-wrapper"
+            endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
+            scrollThreshold="5000px"
+            scrollableTarget="posts-warper"
           >
             <PostList>
               {feeds.map(({ platform, data }) => {
@@ -105,6 +106,7 @@ export function ProfileSocialPosts({
                   const key = Buffer.from(data.hash.data).toString('hex');
                   return (
                     <FCast
+                      isV2Layout
                       key={key}
                       cast={data}
                       openFarcasterQR={openFarcasterQR}
@@ -118,20 +120,6 @@ export function ProfileSocialPosts({
           </InfiniteScroll>
         );
       })()}
-    </MainCenter>
-  );
-}
-export function ProfileSocialActivity({ address }: { address: string }) {
-  return (
-    <MainCenter>
-      <Rss3Content
-        address={[address]}
-        empty={
-          <NoActivityWrapper>
-            <NoActivity />
-          </NoActivityWrapper>
-        }
-      />
     </MainCenter>
   );
 }
@@ -165,14 +153,5 @@ const PostList = styled.div`
   overflow: hidden;
   & > *:not(:first-child) {
     border-top: 1px solid #718096;
-  }
-`;
-const NoActivityWrapper = styled.div`
-  .no-item {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
   }
 `;

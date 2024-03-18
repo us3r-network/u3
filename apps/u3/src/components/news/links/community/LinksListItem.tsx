@@ -32,7 +32,6 @@ export default function ListItem({ data, ...otherProps }: Props) {
 
 const CardWrapper = styled.div`
   width: 100%;
-  background: #1b1e23;
   overflow: hidden;
   cursor: pointer;
 `;

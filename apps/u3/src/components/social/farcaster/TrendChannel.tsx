@@ -25,7 +25,7 @@ export default function TrendChannel() {
         <Title>Topics</Title>
         <MoreButton
           onClick={() => {
-            navigate(`/social/trends`);
+            navigate(`/communities`);
           }}
         >
           View All

@@ -46,36 +46,34 @@ export default function PostsFcMentionedLinks() {
   }, [hasMore, loadMore, moreLoading, currentSearchParams, channel]);
 
   return (
-    <div className="w-full h-full overflow-auto">
-      <div className="mt-[20px]">
-        <h3 className="text-[#718096] text-[14px] font-medium px-[20px] box-border">
-          🔗 Mentioned Links
-        </h3>
-        {links && links.length > 0 && (
-          <CommunityLinks
-            loading={loading}
-            hasMore={hasMore}
-            links={links}
-            getMore={getMore}
-            quickView={(link) => {
-              console.log('quickView', link);
-              setSelectLink(link);
-            }}
-          />
-        )}
-        <LinkModal
-          show={selectLink}
-          closeModal={() => {
-            setSelectLink(null);
-          }}
-          data={selectLink}
-          isV2Layout
-          castClickAction={(e, castHex) => {
-            setSelectLink(null);
-            navigate(getCommunityFcPostDetailPath(channelId, castHex));
+    <div className="w-full h-full overflow-auto mt-[20px] max-sm:mt-0">
+      <h3 className="text-[#718096] text-[14px] font-medium px-[20px] box-border max-sm:hidden">
+        🔗 Mentioned Links
+      </h3>
+      {links && links.length > 0 && (
+        <CommunityLinks
+          loading={loading}
+          hasMore={hasMore}
+          links={links}
+          getMore={getMore}
+          quickView={(link) => {
+            console.log('quickView', link);
+            setSelectLink(link);
           }}
         />
-      </div>
+      )}
+      <LinkModal
+        show={selectLink}
+        closeModal={() => {
+          setSelectLink(null);
+        }}
+        data={selectLink}
+        isV2Layout
+        castClickAction={(e, castHex) => {
+          setSelectLink(null);
+          navigate(getCommunityFcPostDetailPath(channelId, castHex));
+        }}
+      />
     </div>
   );
 }

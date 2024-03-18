@@ -6,216 +6,111 @@
  * @Description: file description
  */
 import styled from 'styled-components';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMemo, useState } from 'react';
-import LoginButton from './LoginButton';
-import Nav, { NavWrapper, PcNavItem, NavItemIconBox } from './Nav';
+import { useNavigate } from 'react-router-dom';
+import { ComponentPropsWithRef } from 'react';
 import { ReactComponent as LogoIconSvg } from '../common/assets/imgs/logo-icon.svg';
-import { ReactComponent as MessageChatSquareSvg } from '../common/assets/svgs/message-chat-square.svg';
-import { ReactComponent as ContactUsSvg } from '../common/assets/svgs/contact-us.svg';
-import MessageModal from '../message/MessageModal';
-import { NavModalName, useNav } from '../../contexts/NavCtx';
-import ContactUsModal from './ContactUsModal';
-import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
-import { getCommunityPath } from '@/route/path';
+import { cn } from '@/lib/utils';
+import useAllJoinedCommunities from '@/hooks/community/useAllJoinedCommunities';
+import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
+import SidebarCommunityItem from '../community/SidebarCommunityItem';
+import ExploreIcon from './nav-icons/ExploreIcon';
+import useRoute from '@/route/useRoute';
+import { RouteKey } from '@/route/routes';
+import LoginButtonV2 from './LoginButtonV2';
 
-export default function Menu() {
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  const { pathname } = useLocation();
-  const isCommunityRoute = pathname.includes('/community/');
-  return (
-    <MenuWrapper
-      onMouseEnter={() => setIsOpen(true)}
-      onMouseLeave={() => setIsOpen(false)}
-      isOpen={isOpen}
-    >
-      <LogoBox onlyIcon={!isOpen} onClick={() => navigate('/')}>
-        <LogoIconBox onlyIcon={!isOpen}>
-          <LogoIconSvg />
-        </LogoIconBox>
-        {isOpen ? (
-          <span className={'font-medium text-[24px] text-[#ffffff]'}>
-            U3.XYZ
-          </span>
-        ) : (
-          <span
-            className={
-              'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
-            }
-          >
-            Alpha
-          </span>
-        )}
-      </LogoBox>
-      <NavListBox>
-        <Nav onlyIcon={!isOpen} />
-      </NavListBox>
-
-      <hr className="border-t border-[#39424C] my-4 w-full" />
-
-      <UserChannels />
-
-      <hr className="border-t border-[#39424C] my-4 w-full" />
-
-      <div className="flex-grow" />
-
-      <FooterBox>
-        <NavWrapper>
-          <MessageButton />
-          <ContactUsButton />
-        </NavWrapper>
-        {!isCommunityRoute && (
-          <LoginButtonBox>
-            <LoginButton onlyIcon={!isOpen} />
-          </LoginButtonBox>
-        )}
-      </FooterBox>
-    </MenuWrapper>
-  );
-}
-
-function UserChannels() {
-  const { userChannels, currFid } = useFarcasterCtx();
-
-  if (!currFid) return null;
-
-  return (
-    <div className="w-full overflow-scroll h-full flex gap-5 flex-col">
-      {userChannels.map(({ parent_url }) => (
-        <ChannelItem parent_url={parent_url} key={parent_url} />
-      ))}
-    </div>
-  );
-}
-
-function ChannelItem({ parent_url }: { parent_url: string }) {
-  const { getChannelFromUrl } = useFarcasterCtx();
-  const navigate = useNavigate();
-
-  const item = useMemo(() => {
-    return getChannelFromUrl(parent_url);
-  }, [parent_url, getChannelFromUrl]);
-
-  if (!item) return null;
-
+export default function Menu({
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'>) {
   return (
     <div
-      onClick={() => {
-        navigate(getCommunityPath(item.channel_id));
-      }}
-      className="cursor-pointer relative"
+      className={cn(
+        'bg-[#14171A] w-[60px] h-full py-[20px] box-border flex flex-col gap-[20] items-start',
+        className
+      )}
+      {...props}
     >
-      <div className="flex items-center gap-3">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="rounded-md w-[40px] h-[40px]"
-        />
-        <div className="text-white font-bold">{item.name}</div>
+      <div className="w-full flex flex-col items-center gap-[4px] cursor-pointer max-sm:hidden">
+        <LogoIconBox>
+          <LogoIconSvg />
+        </LogoIconBox>
+        <span
+          className={
+            'w-[fit-content] flex px-[4px] py-[2px] items-center rounded-[22px] bg-[#454C99] text-[#ffffff] text-[10px] font-medium'
+          }
+        >
+          Alpha
+        </span>
+      </div>
+      <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
+      <SidebarHomeLink />
+      <UserCommunities />
+      <hr className="border-t border-[#39424C] my-4 w-full max-sm:hidden" />
+      <div className="w-full max-sm:hidden">
+        <LoginButtonV2 />
       </div>
     </div>
   );
 }
 
-function ContactUsButton() {
-  const { openContactUsModal, renderNavItemText, switchNavModal } = useNav();
-
+function SidebarHomeLink() {
+  const navigate = useNavigate();
+  const { firstRouteMeta } = useRoute();
+  const firstRouteKey = firstRouteMeta?.key;
+  const active = firstRouteKey === RouteKey.home;
   return (
-    <>
-      <PcNavItem
-        isActive={openContactUsModal}
-        onClick={() => {
-          switchNavModal(NavModalName.ContactUs);
-        }}
-      >
-        <NavItemIconBox isActive={openContactUsModal}>
-          <ContactUsSvg />
-        </NavItemIconBox>
-        {renderNavItemText('Contact US')}
-      </PcNavItem>
-      <ContactUsModal />
-    </>
+    <a
+      href={'/'}
+      onClick={(e) => {
+        e.preventDefault();
+        navigate('/');
+      }}
+      className="w-full flex justify-center items-center cursor-pointer relative mb-[20px] max-sm:hidden"
+    >
+      <div
+        className={cn(
+          'w-[5px] h-[40px] rounded-tl-none rounded-br-[10px] rounded-tr-[10px] rounded-bl-none bg-[#FFF] absolute left-0',
+          'transition-all duration-300',
+          active ? 'block' : 'hidden'
+        )}
+      />
+      <div className="flex w-[39px] h-[39px] justify-center items-center gap-[10px] rounded-[10px] bg-[#F41F4C]">
+        <ExploreIcon active />
+      </div>
+    </a>
   );
 }
 
-function MessageButton() {
-  const { openMessageModal, renderNavItemText, switchNavModal } = useNav();
+function UserCommunities() {
+  const { joinedCommunities } = useAllJoinedCommunities();
+  const { browsingCommunity } = useBrowsingCommunity();
+  const showCommunities = [...joinedCommunities];
+  if (browsingCommunity) {
+    const findCommunity = showCommunities.find(
+      (c) => c.id === browsingCommunity.id
+    );
+    if (!findCommunity) {
+      showCommunities.unshift(browsingCommunity);
+    }
+  }
 
   return (
-    <>
-      <PcNavItem
-        isActive={openMessageModal}
-        onClick={() => {
-          switchNavModal(NavModalName.Message);
-        }}
-      >
-        <NavItemIconBox isActive={openMessageModal}>
-          <MessageChatSquareSvg />
-        </NavItemIconBox>
-        {renderNavItemText('Message')}
-      </PcNavItem>
-      <MessageModal />
-    </>
+    <div className="flex-1 w-full overflow-scroll flex gap-5 flex-col">
+      {showCommunities.map((item) => (
+        <SidebarCommunityItem
+          key={item.id}
+          communityInfo={item}
+          active={browsingCommunity?.id === item.id}
+        />
+      ))}
+    </div>
   );
 }
 
-const MenuWrapper = styled.div<{ isOpen: boolean }>`
-  background: #1b1e23;
-  width: ${({ isOpen }) => (isOpen ? '200px' : '60px')};
-  height: 100%;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2;
-  padding: 20px 10px;
-  border-right: 1px solid #39424c;
-  box-sizing: border-box;
-  transition: all 0.3s ease-out;
-  display: flex;
-  flex-direction: column;
-  gap: 20;
-  align-items: flex-start;
-`;
-const LogoBox = styled.div<{ onlyIcon?: boolean }>`
-  width: ${({ onlyIcon }) => (onlyIcon ? '36px' : '142px')};
-  height: ${({ onlyIcon }) => (onlyIcon ? '194px' : '94px')};
-  display: flex;
-  flex-direction: ${({ onlyIcon }) => (onlyIcon ? 'column' : 'row')};
-  gap: ${({ onlyIcon }) => (onlyIcon ? '4px' : '10px')};
-  align-items: 'flex-start';
-  overflow: hidden;
-  transition: all 0.3s ease-out;
-  cursor: pointer;
-`;
-const LogoIconBox = styled.div<{ onlyIcon?: boolean }>`
+const LogoIconBox = styled.div`
   width: 36px;
   height: 36px;
   path {
-    transition: all 0.3s ease-out;
+    fill: #fff;
   }
-  ${({ onlyIcon }) =>
-    onlyIcon &&
-    `path {
-      fill: #fff;
-    }
-  `};
-`;
-const NavListBox = styled.div`
-  width: 100%;
-  flex: 1;
-  display: flex;
-  align-items: start;
-`;
-const FooterBox = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  justify-content: space-between;
-  align-items: flex-start;
-`;
-const LoginButtonBox = styled.div`
-  width: 100%;
-  transition: all 0.3s ease-out;
 `;

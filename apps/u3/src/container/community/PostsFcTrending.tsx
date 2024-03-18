@@ -5,18 +5,23 @@ import FCast from 'src/components/social/farcaster/FCast';
 import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
 import { FEEDS_SCROLL_THRESHOLD } from 'src/services/social/api/feeds';
-import { LoadingMoreWrapper } from '@/components/profile/FollowListWidgets';
 import useListScroll from '@/hooks/social/useListScroll';
 import useFarcasterTrending from '@/hooks/social/farcaster/useFarcasterTrending';
-import { EndMsgContainer, PostList } from './CommonStyles';
 import { getCommunityPostDetailShareUrlWithFarcaster } from '@/utils/shared/share';
 import { getCommunityFcPostDetailPath } from '@/route/path';
+import {
+  EndMsgContainer,
+  LoadingMoreWrapper,
+  PostList,
+} from '@/components/social/CommonStyles';
 
 export default function PostsFcTrending() {
-  const [parentId] = useState('posts-fc-trending');
+  const [parentId] = useState('community-posts-fc-trending');
   const { mounted } = useListScroll(parentId);
   const { openFarcasterQR } = useFarcasterCtx();
-  const { channelId, setPostScroll } = useOutletContext<any>();
+  const { channelId, setPostScroll, postsCachedData } = useOutletContext<any>();
+  const trendingCachedData = postsCachedData?.fc?.trending;
+
   const navigate = useNavigate();
 
   const {
@@ -25,10 +30,13 @@ export default function PostsFcTrending() {
     farcasterTrendingUserDataObj,
     loadFarcasterTrending,
     pageInfo: farcasterTrendingPageInfo,
-  } = useFarcasterTrending({ channelId });
+  } = useFarcasterTrending({
+    channelId,
+    cachedDataRefValue: trendingCachedData,
+  });
 
   useEffect(() => {
-    if (mounted) {
+    if (mounted && !trendingCachedData?.data?.length) {
       loadFarcasterTrending();
     }
   }, [mounted]);
@@ -50,7 +58,7 @@ export default function PostsFcTrending() {
         }
         endMessage={<EndMsgContainer>No more data</EndMsgContainer>}
         scrollThreshold={FEEDS_SCROLL_THRESHOLD}
-        scrollableTarget="posts-scroll-wrapper"
+        scrollableTarget="community-posts-scroll-wrapper"
       >
         <PostList>
           {farcasterTrending.map(({ platform, data }) => {
