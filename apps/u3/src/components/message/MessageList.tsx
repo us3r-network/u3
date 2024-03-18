@@ -11,21 +11,23 @@ export default function MessageList() {
   const { xmtpClient, messageRouteParams } = useXmtpClient();
   const { loadingConversations, convoMessages } = useXmtpStore();
 
-  const messages =
-    convoMessages.get(messageRouteParams?.peerAddress || '') || [];
+  const { peerAddress } = messageRouteParams;
+  const messages = convoMessages.get(peerAddress || '') || [];
 
   const messageListEndRef = useRef<HTMLDivElement>(null);
   const megLen = messages.length;
   useEffect(() => {
-    (async () => {
-      await new Promise((r) => {
-        setTimeout(r, 100);
-      });
+    if (messageListEndRef.current) {
       messageListEndRef?.current?.scrollIntoView({
         behavior: 'smooth',
       });
-    })();
+    }
   }, [megLen]);
+  useEffect(() => {
+    if (messageListEndRef.current) {
+      messageListEndRef?.current?.scrollIntoView();
+    }
+  }, [peerAddress]);
   return (
     <div className="w-full flex flex-col gap-[20px] py-[20px]">
       {!loadingConversations &&
@@ -128,20 +130,22 @@ const MessageWrapper = styled.div`
   flex-shrink: 0;
   border-radius: 10px 10px 10px 0px;
   background: #000;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 `;
-const Text = styled.span`
+const Text = styled.div`
+  width: 100%;
   color: #fff;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
-  margin: 20px;
+  word-break: break-all;
 `;
 const Image = styled.img`
   max-width: 120px;
   object-fit: cover;
-  margin: 20px;
 `;
 
 const MyMessageRowWrapper = styled(MessageRowWrapper)`

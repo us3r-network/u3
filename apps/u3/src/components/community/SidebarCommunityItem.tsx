@@ -46,7 +46,7 @@ export default function SidebarCommunityItem({
       </HoverCardTrigger>
       <HoverCardContent
         side="right"
-        className="w-[280px] h-auto bg-[#14171A] border-none"
+        className="w-[280px] h-auto bg-[#14171A] border-none max-sm:hidden"
       >
         <HoverCardArrow className="w-[30px] h-[10px] fill-[#14171A]" />
         <CommunityInfoAndAction communityInfo={communityInfo} />

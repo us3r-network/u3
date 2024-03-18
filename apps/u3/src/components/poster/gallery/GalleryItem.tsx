@@ -83,7 +83,7 @@ export default function GalleryItem({
         closeModal={() => setOpenPreviewModal(false)}
       />
       <img
-        className="w-full h-[300px] object-cover cursor-pointer"
+        className="w-full h-[240px] object-left-top cursor-pointer max-sm:h-[350px]"
         src={previewImg}
         alt=""
         onClick={() => setOpenPreviewModal(true)}
