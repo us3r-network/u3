@@ -163,7 +163,7 @@ export default function Home() {
   const { trendChannels, trendChannelsLoading } = useFarcasterCtx();
   useEffect(() => {
     setTopChannels({
-      channels: (trendChannels || []).splice(0, 4).map((item) => {
+      channels: (trendChannels || []).splice(0, 2).map((item) => {
         return {
           channel_id: item.channel_id,
           logo: item?.image,
