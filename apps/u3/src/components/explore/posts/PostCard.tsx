@@ -1,9 +1,11 @@
 import styled, { StyledComponentPropsWithRef } from 'styled-components';
 
 import { isMobile } from 'react-device-detect';
+import { ComponentPropsWithRef } from 'react';
 import CardBase from '../../common/card/CardBase';
 import EllipsisText from '../../common/text/EllipsisText';
 import { HeartIcon3 } from '../../common/icons/HeartIcon';
+import { cn } from '@/lib/utils';
 
 export type PostCardData = {
   title: string;
@@ -43,10 +45,11 @@ export default function PostCard({ data, ...wrapperProps }: Props) {
                 {authorDisplayName} {authorHandle && `@${authorHandle}`}
               </AuthorDisplayName>
             </UserWrapper>
-            {!isMobile && <RecReason>{recReason}</RecReason>}
+            <div className="flex items-center gap-[10px]">
+              {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
+              <RecReason>{recReason}</RecReason>
+            </div>
           </BottomLeft>
-
-          {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
         </BottomWrapper>
       </CardBody>
     </CardWrapper>
@@ -234,15 +237,15 @@ const RecReason = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
-const PlatformIcon = styled.img`
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  ${isMobile &&
-  `
-      width: 14px;
-      height: 14px;
-    `}
-`;
+function PlatformIcon({ className, ...props }: ComponentPropsWithRef<'img'>) {
+  return (
+    <img
+      className={cn(
+        'w-[14px] h-[14px] rounded-[50%]  object-cover flex-shrink-0',
+        className || ''
+      )}
+      alt=""
+      {...props}
+    />
+  );
+}
