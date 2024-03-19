@@ -32,6 +32,7 @@ import {
   LensAccount,
 } from '../profile/info/PlatformAccounts';
 import LoginIcon from './nav-icons/LoginIcon';
+import useUnreadNotificationsCount from '@/hooks/social/useUnreadNotificationsCount';
 
 const CONTACT_LINKS = [
   {
@@ -66,7 +67,7 @@ export default function LoginButtonV2() {
   const [openMenu, setOpenMenu] = useState(false);
   const [openLogoutConfirm, setOpenLogoutConfirm] = useState(false);
   const navigate = useNavigate();
-
+  const { unreadCount, clearUnread } = useUnreadNotificationsCount();
   if (!isLogin) {
     return (
       <ButtonWrapper onClick={login}>
@@ -99,7 +100,12 @@ export default function LoginButtonV2() {
               setOpenMenu((pre) => !pre);
             }}
           >
-            <UserAvatar style={{ width: '40px', height: '40px' }} />
+            <div className="relative">
+              <UserAvatar style={{ width: '40px', height: '40px' }} />
+              {unreadCount > 0 && (
+                <div className="absolute top-0 right-0 size-2 rounded-full bg-[#F81775] " />
+              )}
+            </div>
           </ButtonWrapper>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -124,10 +130,22 @@ export default function LoginButtonV2() {
 
           <DropdownMenuItemWarper
             className="max-sm:hidden"
-            onClick={() => navigate('/notification/activity')}
+            onClick={() => {
+              clearUnread();
+              navigate('/notification/activity');
+            }}
           >
-            <NotificationIcon />
-            Notifications
+            <div className="w-full flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <NotificationIcon />
+                Notifications
+              </div>
+              {unreadCount > 0 && (
+                <div className="flex items-center justify-center size-4 rounded-full bg-[#F81775] text-[12px] p-0 text-white">
+                  {unreadCount}
+                </div>
+              )}
+            </div>
           </DropdownMenuItemWarper>
 
           <DropdownMenuItemWarper
