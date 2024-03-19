@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import PosterPreviewModal from './PosterPreviewModal';
 import { PosterEntity, PosterMetadata } from '@/services/poster/types/poster';
 import { getSaleStatus } from '@/utils/shared/zora';
+import { DailyPosterLayoutData } from '../layout/DailyPosterLayout';
 
 interface GalleryItemProps extends ComponentPropsWithoutRef<'div'> {
   data: PosterEntity;
@@ -31,7 +32,14 @@ export default function GalleryItem({
 
   const { imageOriginUrl, createAt, posterDataJson } =
     metadata?.properties || {};
-  const posterData = JSON.parse(posterDataJson || '{}');
+  const posterData = JSON.parse(
+    posterDataJson || '{}'
+  ) as DailyPosterLayoutData;
+  // TODO 2024/3/19 的数据异常，存储的数据多了，需要截取下数据
+  posterData.links = posterData.links.slice(0, 4);
+  posterData.dapps = posterData.dapps.slice(0, 2);
+  posterData.topics = posterData.topics.slice(0, 2);
+
   const previewImg = imageOriginUrl;
 
   const { isLogin, login } = useLogin();
@@ -82,12 +90,13 @@ export default function GalleryItem({
         open={openPreviewModal}
         closeModal={() => setOpenPreviewModal(false)}
       />
-      <img
-        className="w-full h-[240px] object-left-top cursor-pointer max-sm:h-[350px]"
-        src={previewImg}
-        alt=""
+      <div
+        className="relative w-full cursor-pointer overflow-hidden pb-[100%]"
         onClick={() => setOpenPreviewModal(true)}
-      />
+      >
+        <img className="absolute inset-0 w-full" src={previewImg} alt="" />
+      </div>
+
       <div className="mt-[10px] flex justify-between items-center">
         <span className="text-white text-[16px] italic font-bold leading-[normal]">
           {dayjs(posterCreateTimestamp).format('MMMM DD, YYYY')}

@@ -16,7 +16,7 @@ export function getTopLinks(): RequestPromise<LinksListResponse> {
   return request({
     url: `/3r-farcaster/embedLinks`,
     params: {
-      pageSize: 6,
+      pageSize: 4,
       orderBy: 'TRENDING',
     },
     method: 'get',
@@ -26,7 +26,7 @@ export function getHighScoreDapps(): RequestPromise<DappExploreListResponse> {
   return request({
     url: `/dapps/searching`,
     params: {
-      pageSize: 4,
+      pageSize: 2,
       pageNumber: 0,
       keywords: '',
       type: '',
