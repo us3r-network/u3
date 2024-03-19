@@ -16,6 +16,7 @@ import NotificationIcon from '../nav-icons/NotificationIcon';
 import MessageIcon from '../nav-icons/MessageIcon';
 import ExploreIcon from '../nav-icons/ExploreIcon';
 import FavIcon from '../nav-icons/FavIcon';
+import useUnreadNotificationsCount from '@/hooks/social/useUnreadNotificationsCount';
 
 export default function MobileMainNav({
   className,
@@ -41,6 +42,8 @@ export default function MobileMainNav({
   const isMessageRoute = firstRouteKey === RouteKey.message;
   const isNotificationRoute = firstRouteKey === RouteKey.notification;
   const isFavRoute = firstRouteKey === RouteKey.fav;
+
+  const { unreadCount, clearUnread } = useUnreadNotificationsCount();
   return (
     <div
       className={cn(
@@ -58,8 +61,15 @@ export default function MobileMainNav({
         <CommunityIcon active={isCommunityRoute} />
         Communities
       </MobileNavItem>
-      <MobileNavItem href="/notification" active={isNotificationRoute}>
-        <NotificationIcon active={isNotificationRoute} />
+      <MobileNavItem
+        href="/notification"
+        active={isNotificationRoute}
+        onClick={() => clearUnread()}
+      >
+        <NotificationIcon
+          active={isNotificationRoute}
+          unread={unreadCount > 0}
+        />
         Notification
       </MobileNavItem>
       <MobileNavItem active={isMessageRoute} href="/message">
