@@ -22,7 +22,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
-import TooltipProfileNavigateLink from '../profile/profile-info/TooltipProfileNavigateLink';
+import TooltipProfileNavigateLink from '../profile/info/TooltipProfileNavigateLink';
 import { MultiPlatformShareMenuBtn } from '../shared/share/MultiPlatformShareMenuBtn';
 import { SOCIAL_SHARE_TITLE } from '../../constants';
 import { SaveButton } from '../shared/button/SaveButton';
@@ -98,10 +98,11 @@ export default function PostCard({
     if (isDetail)
       setLinkParam({
         url: getOfficialPublicationUrl(id),
-        type: 'link',
+        type: 'post',
         title: data?.content.slice(0, 200), // todo: expand this limit at model
+        data,
       });
-  }, [id, isDetail]);
+  }, [id, isDetail, data?.content]);
   return (
     <PostCardWrapper {...wrapperProps} id={id}>
       <PostCardHeaderWrapper>
@@ -216,6 +217,7 @@ export function PostCardWrapperV2({
     <div
       className={cn(
         'bg-[#20262F] hover:bg-[#000000] px-[20px] box-border flex cursor-pointer border-b border-[#39424c]',
+        'max-sm:px-0',
         isDetail && 'hover:bg-[#20262F] cursor-default',
         className
       )}
@@ -525,11 +527,14 @@ export const PostCardContentWrapper = styled.div<{ showMore?: boolean }>`
     }
   }
 `;
-export const PostCardActionsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 15px;
-`;
+export function PostCardActionsWrapper(props: ComponentPropsWithRef<'div'>) {
+  return (
+    <div
+      className={cn('flex items-center gap-[15px]', 'max-sm:gap-[10px]')}
+      {...props}
+    />
+  );
+}
 
 export const PostCardImgWrapper = styled.div<{ len: number }>`
   display: flex;

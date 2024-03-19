@@ -1,25 +1,37 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getFarcasterTrending } from 'src/services/social/api/farcaster';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
 const PAGE_SIZE = 30;
-const farcasterTrendingData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  userData: {},
-  userDataObj: {},
-  index: 0,
+export const getDefaultFarcasterTrendingCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    userData: {},
+    userDataObj: {},
+    index: 0,
+    trendingIdSet: new Set(),
+  };
 };
-const trendingIdSet: Set<string> = new Set();
+type FarcasterTrendingCachedData = ReturnType<
+  typeof getDefaultFarcasterTrendingCachedData
+>;
 
-type FarcasterTrendingParams = {
+type FarcasterTrendingOpts = {
   channelId?: string;
+  cachedDataRefValue?: FarcasterTrendingCachedData;
 };
-export default function useFarcasterTrending(params?: FarcasterTrendingParams) {
-  const { channelId } = params || {};
+export default function useFarcasterTrending(opts?: FarcasterTrendingOpts) {
+  const { channelId, cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultFarcasterTrendingCachedData(),
+  });
+  const farcasterTrendingData =
+    cachedDataRefValue || defaultCachedDataRef.current;
+
   const [farcasterTrending, setFarcasterTrending] = useState<any[]>(
     farcasterTrendingData.data
   ); // TODO any
@@ -30,6 +42,8 @@ export default function useFarcasterTrending(params?: FarcasterTrendingParams) {
     useState(farcasterTrendingData.userDataObj);
 
   const loadFarcasterTrending = useCallback(async () => {
+    console.log('pageInfo', pageInfo);
+
     if (pageInfo.hasNextPage === false) {
       return;
     }
@@ -51,10 +65,10 @@ export default function useFarcasterTrending(params?: FarcasterTrendingParams) {
 
       const newTrending = casts.filter((cast: any) => {
         const { id } = cast.data;
-        if (trendingIdSet.has(id)) {
+        if (farcasterTrendingData.trendingIdSet.has(id)) {
           return false;
         }
-        trendingIdSet.add(id);
+        farcasterTrendingData.trendingIdSet.add(id);
         return true;
       });
 

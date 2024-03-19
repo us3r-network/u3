@@ -29,11 +29,11 @@ import { injectStore, injectU3Token } from './services/shared/api/request';
 import U3LoginProvider from './contexts/U3LoginContext';
 import { XmtpClientProvider } from './contexts/message/XmtpClientCtx';
 import { AppLensProvider } from './contexts/social/AppLensCtx';
-import { NavProvider } from './contexts/NavCtx';
 import FarcasterProvider from './contexts/social/FarcasterCtx';
 import LensGlobalModals from './components/social/lens/LensGlobalModals';
 import { GlobalModalsProvider } from './contexts/shared/GlobalModalsCtx';
 import GlobalModals from './components/shared/modal/GlobalModals';
+import { ProfileInfoProvider } from './contexts/profile/ProfileInfoCtx';
 
 init(AIRSTACK_API_KEY);
 dayjs.extend(relativeTime);
@@ -47,6 +47,10 @@ function App() {
     <Us3rAuthWithRainbowkitProvider
       projectId={WALLET_CONNECT_PROJECT_ID}
       appName="U3"
+      authOpts={{
+        resources: ['ceramic://*'],
+        expirationTime: '',
+      }}
     >
       <ProfileStateProvider ceramicHost={CERAMIC_HOST}>
         <LinkStateProvider ceramicHost={CERAMIC_HOST}>
@@ -61,13 +65,13 @@ function App() {
                   <GlobalStyle />
                   <BrowserRouter>
                     <FarcasterProvider>
-                      <GlobalModalsProvider>
-                        <NavProvider>
+                      <ProfileInfoProvider>
+                        <GlobalModalsProvider>
                           <GlobalModals />
                           <LensGlobalModals />
                           <Layout />
-                        </NavProvider>
-                      </GlobalModalsProvider>
+                        </GlobalModalsProvider>
+                      </ProfileInfoProvider>
                     </FarcasterProvider>
                   </BrowserRouter>
                 </ReduxProvider>

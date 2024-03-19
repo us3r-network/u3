@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import { useCallback } from 'react';
+import { ComponentPropsWithRef, useCallback } from 'react';
 import { createWalletClient, custom, fromHex, toHex } from 'viem';
 import { optimism } from 'viem/chains';
 import { toast } from 'react-toastify';
@@ -28,7 +28,9 @@ export default function AddAccountKey({
   fid,
   signer,
   setSigner,
-}: {
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'> & {
   fid: number;
   signer: NobleEd25519Signer | null;
   setSigner: (s: NobleEd25519Signer | null) => void;
@@ -129,8 +131,10 @@ export default function AddAccountKey({
     <div
       className={cn(
         'text-white flex flex-col border border-[#39424c] rounded-2xl',
-        'p-5 h-[350px] w-[320px]'
+        'p-5 h-[350px] w-[320px]',
+        className
       )}
+      {...props}
     >
       <Title checked={!!fid && !!signer} text={'Step 2'} />
       <div className="italic py-5 text-xl font-bold border-b border-[#39424c]">

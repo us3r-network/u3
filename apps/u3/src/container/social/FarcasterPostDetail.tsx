@@ -1,7 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { isMobile } from 'react-device-detect';
+import { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Channelv1 } from '@mod-protocol/farcaster';
 import { CastAddBody, makeCastAdd } from '@farcaster/hub-web';
 import { toast } from 'react-toastify';
@@ -10,21 +9,22 @@ import { getFarcasterCastInfo } from '../../services/social/api/farcaster';
 import { FarCast } from '../../services/social/types';
 import FCast from '../../components/social/farcaster/FCast';
 import { useFarcasterCtx } from '../../contexts/social/FarcasterCtx';
-import {
-  PostDetailCommentsWrapper,
-  PostDetailWrapper,
-} from '../../components/social/PostDetail';
+import { PostDetailCommentsWrapper } from '../../components/social/PostDetail';
 import Loading from '../../components/common/loading/Loading';
 
 import { scrollToAnchor } from '../../utils/shared/scrollToAnchor';
-import { LoadingWrapper } from './CommonStyles';
 import { userDataObjFromArr } from '@/utils/social/farcaster/user-data';
 import useLogin from '@/hooks/shared/useLogin';
 
 import { FARCASTER_NETWORK, FARCASTER_WEB_CLIENT } from '@/constants/farcaster';
 import { ReplyCast } from '@/components/social/farcaster/FCastReply';
+import { getSocialDetailShareUrlWithFarcaster } from '@/utils/shared/share';
+import { getExploreFcPostDetailPath } from '@/route/path';
+import { LoadingWrapper } from '@/components/social/CommonStyles';
+import { cn } from '@/lib/utils';
 
 export default function FarcasterPostDetail() {
+  const navigate = useNavigate();
   const { castId } = useParams();
   const [loading, setLoading] = useState(true);
   const [cast, setCast] = useState<FarCast>();
@@ -129,16 +129,25 @@ export default function FarcasterPostDetail() {
   if (cast) {
     scrollToAnchor(window.location.hash.split('#')[1]);
     return (
-      <PostDetailWrapper isMobile={isMobile}>
+      <div className="w-full">
         <FCast
+          isV2Layout
           cast={cast}
           openFarcasterQR={openFarcasterQR}
           farcasterUserData={{}}
           farcasterUserDataObj={farcasterUserDataObj}
           isDetail
-          showMenuBtn
+          shareLink={getSocialDetailShareUrlWithFarcaster(castId)}
+          castClickAction={(e, castHex) => {
+            navigate(getExploreFcPostDetailPath(castHex));
+          }}
         />
-        <div className="flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]">
+        <div
+          className={cn(
+            'flex gap-3 w-full mb-2 p-5 border-t border-[#39424c]',
+            'max-sm:p-2'
+          )}
+        >
           <ReplyCast
             replyAction={async (data) => {
               await replyCastAction(data);
@@ -150,16 +159,21 @@ export default function FarcasterPostDetail() {
             const key = Buffer.from(item.data.hash.data).toString('hex');
             return (
               <FCast
+                isV2Layout
                 key={key}
                 cast={item.data}
                 openFarcasterQR={openFarcasterQR}
                 farcasterUserData={{}}
                 farcasterUserDataObj={farcasterUserDataObj}
+                shareLink={getSocialDetailShareUrlWithFarcaster(key)}
+                castClickAction={(e, castHex) => {
+                  navigate(getExploreFcPostDetailPath(castHex));
+                }}
               />
             );
           })}
         </PostDetailCommentsWrapper>
-      </PostDetailWrapper>
+      </div>
     );
   }
   return <LoadingWrapper />;

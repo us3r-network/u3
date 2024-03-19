@@ -1,16 +1,31 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAccessToken as useLensAccessToken } from '@lens-protocol/react-web';
 import { getLensTrending } from 'src/services/social/api/lens';
 
-const lensTrendingData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  endLensCursor: '',
+export const getDefaultLensTrendingCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    endLensCursor: '',
+  };
 };
-export default function useLensTrending() {
+type LensTrendingCachedData = ReturnType<
+  typeof getDefaultLensTrendingCachedData
+>;
+
+type LensTrendingOpts = {
+  cachedDataRefValue?: LensTrendingCachedData;
+};
+export default function useLensTrending(opts?: LensTrendingOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultLensTrendingCachedData(),
+  });
+  const lensTrendingData = cachedDataRefValue || defaultCachedDataRef.current;
+
   // TODO any
   const [lensTrending, setLensTrending] = useState<any[]>(
     lensTrendingData.data

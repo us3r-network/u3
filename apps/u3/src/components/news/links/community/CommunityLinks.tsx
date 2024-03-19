@@ -85,6 +85,7 @@ export default function CommunityLinks({
 
 const Box = styled(MainWrapper)`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 24px;

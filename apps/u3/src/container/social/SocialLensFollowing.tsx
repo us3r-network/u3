@@ -17,29 +17,31 @@ import LensPostCard from 'src/components/social/lens/LensPostCard';
 import useLensFollowing from 'src/hooks/social/lens/useLensFollowing';
 import FollowingDefault from 'src/components/social/FollowingDefault';
 import { useLensCtx } from '../../contexts/social/AppLensCtx';
+import { MainCenter, NoLoginStyled } from './CommonStyles';
 import {
-  MainCenter,
-  NoLoginStyled,
+  EndMsgContainer,
   LoadingMoreWrapper,
   PostList,
-  EndMsgContainer,
-} from './CommonStyles';
+} from '@/components/social/CommonStyles';
 
 export default function SocialLensFollowing() {
   const [parentId] = useState('social-lens-following');
-  const { setPostScroll } = useOutletContext<any>(); // TODO: any
+  const { followingCachedData, setPostScroll } = useOutletContext<any>(); // TODO: any
   const { mounted } = useListScroll(parentId);
   const { isLogin } = useLogin();
   const { sessionProfile } = useLensCtx();
   const { id: lensSessionProfileId } = sessionProfile || {};
 
   const { lensFollowing, loadLensFollowing, loading, pageInfo } =
-    useLensFollowing();
+    useLensFollowing({
+      cachedDataRefValue: followingCachedData,
+    });
 
   useEffect(() => {
     if (!mounted) return;
     if (!isLogin) return;
     if (!lensSessionProfileId) return;
+    if (followingCachedData?.data?.length > 0) return;
     loadLensFollowing();
   }, [mounted, isLogin, lensSessionProfileId]);
 

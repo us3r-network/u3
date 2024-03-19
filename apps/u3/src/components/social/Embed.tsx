@@ -20,6 +20,7 @@ import ModalImg from './ModalImg';
 import U3ZoraMinter from './farcaster/U3ZoraMinter';
 import LinkModal from '../news/links/LinkModal';
 import EmbedFrameWebsite from './EmbedFrameWebsite';
+import EmbedVideo from './EmbedVideo';
 
 const ValidFrameButtonValue = [
   [0, 0, 0, 0].join(''),
@@ -119,7 +120,9 @@ export default function Embed({
           />
         </>
       )}
-      {/* {embedVideos */}
+      {embedVideos.map((video) => {
+        return <EmbedVideo key={video.url} videoUrl={video.url} />;
+      })}
       <div className="w-full max-w-[630px] space-y-2">
         {[...metadataCasts].map((item) => {
           if (item.cast === undefined) return null;

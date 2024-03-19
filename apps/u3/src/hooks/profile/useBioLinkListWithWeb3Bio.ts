@@ -74,9 +74,9 @@ export default function useBioLinkListWithWeb3Bio(identity: string) {
       return lensFirstAddress;
     }
     return (
-      fcastFirstAddress ||
-      lensFirstAddress ||
       bioLinkList.find((item) => !!item.address)?.address ||
+      lensFirstAddress ||
+      fcastFirstAddress ||
       ''
     );
   }, [identity, fcastBioLinks, lensBioLinks, bioLinkList]);

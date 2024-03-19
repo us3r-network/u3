@@ -1,25 +1,22 @@
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useNav } from '../../contexts/NavCtx';
-import { SocialButtonPrimary } from '../social/button/SocialButton';
-import { FollowType } from '../profile/ProfilePageFollowNav';
+import ColorButton from '../common/button/ColorButton';
 
 export default function NoConversations() {
   const navigate = useNavigate();
-  const { setOpenMessageModal } = useNav();
   return (
     <Wrapper>
       <NoConvosImg src="/message/imgs/no-convos.png" />
       <Description>There is nothing here.</Description>
       <Description>Send a message to your friend?</Description>
-      <SocialButtonPrimary
+      <ColorButton
         onClick={() => {
-          setOpenMessageModal(false);
-          navigate(`/u?followType=${FollowType.FOLLOWERS}`);
+          navigate(`/u/contacts`);
         }}
       >
-        Find from my following/follower list
-      </SocialButtonPrimary>
+        Find from <br />
+        my following/follower list
+      </ColorButton>
     </Wrapper>
   );
 }

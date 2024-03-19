@@ -3,7 +3,7 @@ import DailyPosterLayout, {
   DailyPosterLayoutProps,
 } from './layout/DailyPosterLayout';
 import ModalBase from '../common/modal/ModalBase';
-import { API_BASE_URL } from '@/constants';
+import { POSTER_IMG_URL } from '@/constants';
 import { ModalCloseBtn } from '@/components/common/modal/ModalWidgets';
 import PosterShare from './PosterShare';
 import PosterMint from './mint/PosterMint';
@@ -13,7 +13,7 @@ type Props = DailyPosterLayoutProps & {
   open: boolean;
   closeModal: () => void;
 };
-const posterImg = `${API_BASE_URL}/static-assets/poster/poster.webp`;
+const posterImg = POSTER_IMG_URL;
 export default function DailyPosterModal({
   posts,
   farcasterUserData,

@@ -151,24 +151,25 @@ export function NotificationSettingsGroup() {
   return (
     // <div>
     //   <p>Web Push</p>
-    <>
+    <div className="flex items-center gap-2">
       <Switch
         onColor="#5057AA"
         disabled={webpushDisabled}
         checked={webpushSubscribed}
         onChange={handlePushChange}
       />
-      {(() => {
-        if (webpushLoading) {
-          if (webpushSubscribed) {
-            return 'Unsubscribing...';
+      <span className="text-white text-sm">
+        {(() => {
+          if (webpushLoading) {
+            if (webpushSubscribed) {
+              return 'Unsubscribing...';
+            }
+            return 'Subscribing...';
           }
-          return 'Subscribing...';
-        }
-        return 'Subscribe Notifications';
-      })()}
+          return 'Subscribe';
+        })()}
 
-      {/* {!(isLoginFarcaster && farcasterUserInfo) && (
+        {/* {!(isLoginFarcaster && farcasterUserInfo) && (
         <ColorButton
           className="h-[24px] text-[12px] font-normal"
           onClick={() => openFarcasterQR()}
@@ -176,7 +177,8 @@ export function NotificationSettingsGroup() {
           Login Farcaster
         </ColorButton>
       )} */}
-    </>
+      </span>
+    </div>
     // </div>
   );
 }

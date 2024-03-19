@@ -22,7 +22,7 @@ import {
   farcasterHandleToBioLinkHandle,
   lensHandleToBioLinkHandle,
 } from '../../utils/profile/biolink';
-import TooltipProfileNavigateLink from '../../components/profile/profile-info/TooltipProfileNavigateLink';
+import TooltipProfileNavigateLink from '../../components/profile/info/TooltipProfileNavigateLink';
 import { getBio, getHandle, getName } from '../../utils/social/lens/profile';
 
 const SUGGEST_NUM = 20;

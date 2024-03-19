@@ -10,12 +10,12 @@ import TopTopics, { TopTopicsProps } from './topics/TopTopics';
 export type DailyPosterLayoutData = TopPostsProps &
   TopTopicsProps &
   HighScoreDappsProps &
-  TopLinksProps;
-
-export type DailyPosterLayoutProps = ComponentPropsWithRef<'div'> &
-  DailyPosterLayoutData & {
+  TopLinksProps & {
     createAt?: number;
   };
+
+export type DailyPosterLayoutProps = ComponentPropsWithRef<'div'> &
+  DailyPosterLayoutData;
 
 export default function DailyPosterLayout({
   posts,

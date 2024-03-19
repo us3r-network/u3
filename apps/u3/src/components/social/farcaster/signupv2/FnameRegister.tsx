@@ -3,7 +3,7 @@ import { toHex } from 'viem';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
-import { useCallback, useState } from 'react';
+import { ComponentPropsWithRef, useCallback, useState } from 'react';
 import { NobleEd25519Signer, ViemWalletEip712Signer } from '@farcaster/hub-web';
 import { switchChain } from '@wagmi/core';
 import { mainnet } from 'viem/chains';
@@ -20,7 +20,9 @@ export default function AddAccountKey({
   signer,
   setFname,
   makePrimaryName,
-}: {
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'> & {
   fid: number;
   fname: string;
   signer?: NobleEd25519Signer;
@@ -97,8 +99,10 @@ export default function AddAccountKey({
     <div
       className={cn(
         'text-white flex flex-col border border-[#39424c] rounded-2xl',
-        'p-5 h-[350px] w-[320px]'
+        'p-5 h-[350px] w-[320px]',
+        className
       )}
+      {...props}
     >
       <Title checked={!!fid && !!fname} text={'Step 3'} />
       <div className="italic py-5 text-xl font-bold border-b border-[#39424c]">

@@ -198,6 +198,7 @@ function FloatingWindowWrapper({
         'fixed bottom-[20px] right-[54px] z-[100]',
         'w-[280px] h-auto flex flex-col items-start gap-[20px] rounded-[20px] bg-[#F41F4C] p-[20px] box-border',
         `transition-[height] duration-500`,
+        'max-sm:hidden',
         className
       )}
       {...props}
@@ -217,7 +218,8 @@ function FloatingWindowWrapper({
   ) : (
     <div
       className={cn(
-        `fixed bottom-[20px] right-[280px] z-[100] text-[50px] cursor-pointer flex flex-col`
+        `fixed bottom-[20px] right-[280px] z-[100] text-[50px] cursor-pointer flex flex-col`,
+        'max-sm:hidden'
       )}
       onClick={toggleExpand}
     >

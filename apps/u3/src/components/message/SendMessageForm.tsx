@@ -33,7 +33,8 @@ export default function SendMessageForm() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   return (
-    <SendMessageFormWrap
+    <form
+      className="w-full min-h-[40px] rounded-[10px] bg-[#1B1E23] p-[10px] box-border"
       onSubmit={(e) => {
         e.preventDefault();
         if (!peerAddress) return;
@@ -86,7 +87,7 @@ export default function SendMessageForm() {
         />
 
         <ImgLabel>
-          <ImgIcon stroke="black" />
+          <ImgIcon stroke="#718096" />
           <FileInput
             ref={fileInputRef}
             type="file"
@@ -101,21 +102,12 @@ export default function SendMessageForm() {
           {isSending ? 'Sending' : 'Send'}
         </SubmitButton>
       </FormWrapper>
-    </SendMessageFormWrap>
+    </form>
   );
 }
-const SendMessageFormWrap = styled.form`
-  width: 100%;
-  min-height: 40px;
-  border-radius: 10px;
-  background: #fff;
-  padding: 10px;
-  box-sizing: border-box;
-`;
 const FormWrapper = styled.div`
   width: 100%;
   border-radius: 10px;
-  background: #fff;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -134,7 +126,6 @@ const TextArea = styled(TextareaBase)`
   background: none;
   border: none;
   &:focus-within {
-    color: black;
     border-color: none;
     background: none;
   }
@@ -158,7 +149,6 @@ const DelFileIcon = styled.div`
   height: 20px;
   width: 20px;
   background-color: red;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,6 +156,7 @@ const DelFileIcon = styled.div`
   cursor: pointer;
 `;
 const SubmitButton = styled(ButtonPrimary)`
-  width: 16px;
   height: 16px;
+  background: red;
+  color: white;
 `;

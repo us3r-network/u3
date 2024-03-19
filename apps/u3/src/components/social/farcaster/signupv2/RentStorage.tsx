@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { ComponentPropsWithRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { useConnectModal } from '@rainbow-me/rainbowkit';
 import {
@@ -19,7 +19,9 @@ export default function RentStorage({
   fid,
   hasStorage,
   setHasStorage,
-}: {
+  className,
+  ...props
+}: ComponentPropsWithRef<'div'> & {
   fid: number;
   hasStorage: boolean;
   setHasStorage: (h: boolean) => void;
@@ -74,8 +76,10 @@ export default function RentStorage({
     <div
       className={cn(
         'text-white flex flex-col border border-[#39424c] rounded-2xl',
-        'p-5 h-[350px] w-[320px]'
+        'p-5 h-[350px] w-[320px]',
+        className
       )}
+      {...props}
     >
       <Title checked={!!fid && hasStorage} text={'Step 4'} />
       <div className="italic py-5 text-xl font-bold border-b border-[#39424c]">

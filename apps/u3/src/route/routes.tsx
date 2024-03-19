@@ -15,9 +15,11 @@ export enum RouteKey {
   home = 'home',
   // poster
   posterGallery = 'posterGallery',
+  casterDaily = 'casterDaily',
   // profile
   profile = 'profile',
   profileByUser = 'profileByUser',
+  contacts = 'contacts',
   asset = 'asset',
   gallery = 'gallery',
   activity = 'activity',
@@ -26,12 +28,17 @@ export enum RouteKey {
   farcasterSignup = 'farcasterSignup',
   farcasterProfile = 'farcasterProfile',
   // community
+  communities = 'communities',
+  trendingCommunities = 'trendingCommunities',
+  newestCommunities = 'newestCommunities',
+  joinedCommunities = 'joinedCommunities',
   community = 'community',
   communityPostsLayout = 'communityPostsLayout',
   communityPostsFcTrending = 'communityPostsFcTrending',
   communityPostsFcNewest = 'communityPostsFcNewest',
   communityPostFcDetail = 'communityPostFcDetail',
   communityMembers = 'communityMembers',
+  communityLinks = 'communityLinks',
   iframeLayout = 'iframeLayout',
   // news
   newsLayout = 'newsLayout',
@@ -69,10 +76,17 @@ export enum RouteKey {
   dappStore = 'dappStore',
   dapp = 'dapp',
   dappCreate = 'dappCreate',
-  // save
-  save = 'save',
+  // fav
+  fav = 'fav',
+  favPosts = 'favPosts',
+  favLinks = 'favLinks',
+  favApps = 'favApps',
   // notification
   notification = 'notification',
+  notificationActivity = 'notificationActivity',
+  notificationMention = 'notificationMention',
+  // message
+  message = 'message',
   // others
   noMatch = 'noMatch',
   policy = 'policy',
@@ -108,24 +122,321 @@ export const NoMatchRoute: CutomRouteObject = {
 export const routes: CutomRouteObject[] = [
   {
     path: '/',
-    element: loadContainerElement('Explore'),
+    element: loadContainerElement('explore/ExploreLayout'),
     key: RouteKey.home,
     title: 'Explore',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('explore/Home'),
+        key: RouteKey.home,
+        title: 'Explore',
+      },
+      {
+        path: '/poster-gallery',
+        element: loadContainerElement('poster/PosterGallery'),
+        key: RouteKey.posterGallery,
+        title: 'Poster Gallery',
+      } as CutomRouteObject,
+      {
+        path: '/caster-daily',
+        element: loadContainerElement('poster/CasterDaily'),
+        key: RouteKey.casterDaily,
+        title: 'Caster Daily',
+      } as CutomRouteObject,
+      {
+        path: 'communities',
+        element: loadContainerElement('community/Communities'),
+        key: RouteKey.communities,
+        title: 'Communities',
+        children: [
+          {
+            path: '',
+            element: <Navigate to="trending" />,
+            key: RouteKey.trendingCommunities,
+          } as CutomRouteObject,
+          {
+            path: 'trending',
+            element: loadContainerElement('community/CommunitiesTrending'),
+            key: RouteKey.trendingCommunities,
+            title: 'Trending Communities',
+          },
+          {
+            path: 'newest',
+            element: loadContainerElement('community/CommunitiesNewest'),
+            key: RouteKey.newestCommunities,
+            title: 'Newest Communities',
+          },
+          {
+            path: 'joined',
+            element: loadContainerElement('community/CommunitiesJoined'),
+            key: RouteKey.joinedCommunities,
+            title: 'Joined Communities',
+            permissions: [RoutePermission.login],
+          },
+        ],
+      },
+      // social
+      {
+        path: '/social',
+        element: loadContainerElement('social/SocialLayout'),
+        key: RouteKey.socialLayout,
+        title: 'Social',
+        children: [
+          {
+            path: '',
+            element: <Navigate to="all" />,
+            key: RouteKey.home,
+          } as CutomRouteObject,
+          {
+            path: 'all', // social allPlatform
+            element: loadContainerElement('social/SocialAll'),
+            key: RouteKey.socialAll,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialAllTrending'),
+                key: RouteKey.socialAllTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement('social/SocialAllFollowing'),
+                key: RouteKey.socialAllFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialAllWhatsnew'),
+                key: RouteKey.socialAllWhatsnew,
+              } as CutomRouteObject,
+            ],
+          },
+          {
+            path: 'farcaster',
+            element: loadContainerElement('social/SocialFarcaster'),
+            key: RouteKey.socialFarcaster,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialFarcasterTrending'),
+                key: RouteKey.socialFarcasterTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement(
+                  'social/SocialFarcasterFollowing'
+                ),
+                key: RouteKey.socialFarcasterFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialFarcasterWhatsnew'),
+                key: RouteKey.socialFarcasterWhatsnew,
+              },
+            ],
+          },
+          {
+            path: 'lens', // social Lens platform
+            element: loadContainerElement('social/SocialLens'),
+            key: RouteKey.socialLens,
+            children: [
+              {
+                path: '', // default trending
+                element: loadContainerElement('social/SocialLensTrending'),
+                key: RouteKey.socialLensTrending,
+              },
+              {
+                path: 'following',
+                element: loadContainerElement('social/SocialLensFollowing'),
+                key: RouteKey.socialLensFollowing,
+              } as CutomRouteObject,
+              {
+                path: 'whatsnew',
+                element: loadContainerElement('social/SocialLensWhatsnew'),
+                key: RouteKey.socialLensWhatsnew,
+              },
+            ],
+          },
+          {
+            path: 'channel/:channelId',
+            element: loadContainerElement('social/SocialChannel'),
+            key: RouteKey.socialChannel,
+          },
+          {
+            path: 'post-detail/lens/:publicationId',
+            element: loadContainerElement('social/LensPostDetail'),
+            key: RouteKey.socialPostDetailLens,
+          } as CutomRouteObject,
+          {
+            path: 'post-detail/fcast/:castId',
+            element: loadContainerElement('social/FarcasterPostDetail'),
+            key: RouteKey.socialPostDetailFcast,
+          },
+          {
+            path: 'suggest-follow',
+            element: loadContainerElement('social/SocialSuggestFollow'),
+            key: RouteKey.socialSuggestFollow,
+          },
+        ],
+      },
+    ],
   },
-  // poster
-  {
-    path: '/poster-gallery',
-    element: loadContainerElement('PosterGallery'),
-    key: RouteKey.posterGallery,
-    title: 'Poster Gallery',
-  },
+
   // profile
   {
     path: '/u',
-    element: loadContainerElement('profile/Profile'),
+    element: loadContainerElement('profile/ProfileLayout'),
     key: RouteKey.profile,
     permissions: [RoutePermission.login],
     title: 'Profile',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('profile/Posts'),
+        key: RouteKey.profile,
+        permissions: [RoutePermission.login],
+        title: 'Posts',
+      },
+      {
+        path: 'contacts',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+        permissions: [RoutePermission.login],
+      },
+      {
+        path: 'fav',
+        element: loadContainerElement('profile/Fav'),
+        key: RouteKey.fav,
+        title: 'Favorites',
+        permissions: [RoutePermission.login],
+      },
+      {
+        path: 'activity',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        permissions: [RoutePermission.login],
+        title: 'Activity',
+      },
+      {
+        path: 'asset',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        permissions: [RoutePermission.login],
+        title: 'Asset',
+      },
+      {
+        path: 'gallery',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        permissions: [RoutePermission.login],
+        title: 'Gallery',
+      },
+      {
+        path: ':user',
+        element: loadContainerElement('profile/Posts'),
+        key: RouteKey.profileByUser,
+        title: 'Posts',
+      } as CutomRouteObject,
+      {
+        path: 'contacts/:user',
+        element: loadContainerElement('profile/Contacts'),
+        key: RouteKey.contacts,
+        title: 'Contacts',
+      } as CutomRouteObject,
+      {
+        path: 'fav/:user',
+        element: loadContainerElement('profile/Fav'),
+        key: RouteKey.fav,
+        title: 'Favorites',
+      } as CutomRouteObject,
+      {
+        path: 'activity/:user',
+        element: loadContainerElement('profile/Activity'),
+        key: RouteKey.activity,
+        title: 'Activity',
+      } as CutomRouteObject,
+      {
+        path: 'asset/:user',
+        element: loadContainerElement('profile/Asset'),
+        key: RouteKey.asset,
+        title: 'Asset',
+      } as CutomRouteObject,
+      {
+        path: 'gallery/:user',
+        element: loadContainerElement('profile/Gallery'),
+        key: RouteKey.gallery,
+        title: 'Gallery',
+      } as CutomRouteObject,
+    ],
+  },
+  {
+    path: '/policy',
+    element: loadContainerElement('Policy'),
+    key: RouteKey.policy,
+  },
+  // fav
+  {
+    path: '/fav',
+    element: loadContainerElement('fav/FavLayout'),
+    key: RouteKey.fav,
+    permissions: [RoutePermission.login],
+    title: 'Favorites',
+    children: [
+      {
+        path: 'posts',
+        element: loadContainerElement('fav/Fav'),
+        key: RouteKey.favPosts,
+        title: 'Favorite Posts',
+      },
+      {
+        path: 'links',
+        element: loadContainerElement('fav/Fav'),
+        key: RouteKey.favLinks,
+        title: 'Favorite Links',
+      },
+      {
+        path: 'apps',
+        element: loadContainerElement('fav/Apps'),
+        key: RouteKey.favApps,
+        title: 'Favorite Apps',
+      },
+    ],
+  },
+  // notification
+  {
+    path: '/notification',
+    element: loadContainerElement('notification/NotificationLayout'),
+    key: RouteKey.notification,
+    permissions: [RoutePermission.login],
+    title: 'Notifications',
+    children: [
+      {
+        path: '',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notification,
+        title: 'Notifications',
+      },
+      {
+        path: 'activity',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notificationActivity,
+        title: 'Notifications',
+      },
+      {
+        path: 'mention',
+        element: loadContainerElement('notification/Notification'),
+        key: RouteKey.notificationMention,
+        title: 'Notifications',
+      },
+    ],
+  },
+  // message
+  {
+    path: '/message',
+    element: loadContainerElement('message/MessageLayout'),
+    key: RouteKey.message,
+    title: 'Message',
+    permissions: [RoutePermission.login],
   },
   // community
   {
@@ -184,6 +495,12 @@ export const routes: CutomRouteObject[] = [
         title: 'Members',
       },
       {
+        path: 'links',
+        element: loadContainerElement('community/PostsFcMentionedLinks'),
+        key: RouteKey.communityLinks,
+        title: 'Links',
+      },
+      {
         path: 'point',
         element: loadContainerElement('community/IframeLayout'),
         key: RouteKey.iframeLayout,
@@ -196,33 +513,6 @@ export const routes: CutomRouteObject[] = [
         title: 'App',
       },
     ],
-  },
-  {
-    path: '/u/:user',
-    element: loadContainerElement('profile/Profile'),
-    key: RouteKey.profileByUser,
-    title: 'Profile',
-  },
-  {
-    path: '/activity',
-    element: loadContainerElement('Activity'),
-    key: RouteKey.activity,
-    permissions: [RoutePermission.login],
-    title: 'Activity',
-  },
-  {
-    path: '/asset',
-    element: loadContainerElement('Asset'),
-    key: RouteKey.asset,
-    permissions: [RoutePermission.login],
-    title: 'Asset',
-  },
-  {
-    path: '/gallery',
-    element: loadContainerElement('Gallery'),
-    key: RouteKey.gallery,
-    permissions: [RoutePermission.login],
-    title: 'Gallery',
   },
   // news
   {
@@ -296,111 +586,6 @@ export const routes: CutomRouteObject[] = [
       },
     ],
   },
-  // social
-  {
-    path: '/social',
-    element: loadContainerElement('social/SocialLayout'),
-    key: RouteKey.socialLayout,
-    title: 'Social',
-    children: [
-      {
-        path: '',
-        element: <Navigate to="all" />,
-        key: RouteKey.home,
-      } as CutomRouteObject,
-      {
-        path: 'all', // social allPlatform
-        element: loadContainerElement('social/SocialAll'),
-        key: RouteKey.socialAll,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialAllTrending'),
-            key: RouteKey.socialAllTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialAllFollowing'),
-            key: RouteKey.socialAllFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialAllWhatsnew'),
-            key: RouteKey.socialAllWhatsnew,
-          } as CutomRouteObject,
-        ],
-      },
-      {
-        path: 'farcaster',
-        element: loadContainerElement('social/SocialFarcaster'),
-        key: RouteKey.socialFarcaster,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialFarcasterTrending'),
-            key: RouteKey.socialFarcasterTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialFarcasterFollowing'),
-            key: RouteKey.socialFarcasterFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialFarcasterWhatsnew'),
-            key: RouteKey.socialFarcasterWhatsnew,
-          },
-        ],
-      },
-      {
-        path: 'lens', // social Lens platform
-        element: loadContainerElement('social/SocialLens'),
-        key: RouteKey.socialLens,
-        children: [
-          {
-            path: '', // default trending
-            element: loadContainerElement('social/SocialLensTrending'),
-            key: RouteKey.socialLensTrending,
-          },
-          {
-            path: 'following',
-            element: loadContainerElement('social/SocialLensFollowing'),
-            key: RouteKey.socialLensFollowing,
-          } as CutomRouteObject,
-          {
-            path: 'whatsnew',
-            element: loadContainerElement('social/SocialLensWhatsnew'),
-            key: RouteKey.socialLensWhatsnew,
-          },
-        ],
-      },
-      {
-        path: 'trends',
-        element: loadContainerElement('social/SocialTrends'),
-        key: RouteKey.socialTrendsChannel,
-      },
-      {
-        path: 'channel/:channelId',
-        element: loadContainerElement('social/SocialChannel'),
-        key: RouteKey.socialChannel,
-      },
-      {
-        path: 'post-detail/lens/:publicationId',
-        element: loadContainerElement('social/LensPostDetail'),
-        key: RouteKey.socialPostDetailLens,
-      } as CutomRouteObject,
-      {
-        path: 'post-detail/fcast/:castId',
-        element: loadContainerElement('social/FarcasterPostDetail'),
-        key: RouteKey.socialPostDetailFcast,
-      },
-      {
-        path: 'suggest-follow',
-        element: loadContainerElement('social/SocialSuggestFollow'),
-        key: RouteKey.socialSuggestFollow,
-      },
-    ],
-  },
   {
     path: '/farcaster',
     element: loadContainerElement('social/FarcasterLayout'),
@@ -441,25 +626,6 @@ export const routes: CutomRouteObject[] = [
     element: loadContainerElement('dapp/DappCreate'),
     key: RouteKey.dappCreate,
     permissions: [RoutePermission.login, RoutePermission.admin],
-  },
-  // save
-  {
-    path: '/save',
-    element: loadContainerElement('Save'),
-    key: RouteKey.save,
-    permissions: [RoutePermission.login],
-  },
-  {
-    path: '/policy',
-    element: loadContainerElement('Policy'),
-    key: RouteKey.policy,
-  },
-  // notification
-  {
-    path: '/notification',
-    element: loadContainerElement('Notification'),
-    key: RouteKey.notification,
-    title: 'Notifications',
   },
   NoMatchRoute,
 

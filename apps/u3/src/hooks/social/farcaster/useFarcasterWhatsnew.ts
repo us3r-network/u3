@@ -1,20 +1,35 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import { getFarcasterWhatsnew } from 'src/services/social/api/farcaster';
 import { userDataObjFromArr } from 'src/utils/social/farcaster/user-data';
 
-const farcasterWhatsnewData = {
-  data: [],
-  pageInfo: {
-    hasNextPage: true,
-  },
-  userData: {},
-  userDataObj: {},
-  endTimestamp: Date.now(),
-  endCursor: '',
+export const getDefaultFarcasterWhatsnewCachedData = () => {
+  return {
+    data: [],
+    pageInfo: {
+      hasNextPage: true,
+    },
+    userData: {},
+    userDataObj: {},
+    endTimestamp: Date.now(),
+    endCursor: '',
+  };
 };
+type FarcasterWhatsnewCachedData = ReturnType<
+  typeof getDefaultFarcasterWhatsnewCachedData
+>;
 
-export default function useFarcasterWhatsnew() {
+type FarcasterWhatsnewOpts = {
+  cachedDataRefValue?: FarcasterWhatsnewCachedData;
+};
+export default function useFarcasterWhatsnew(opts?: FarcasterWhatsnewOpts) {
+  const { cachedDataRefValue } = opts || {};
+  const defaultCachedDataRef = useRef({
+    ...getDefaultFarcasterWhatsnewCachedData(),
+  });
+  const farcasterWhatsnewData =
+    cachedDataRefValue || defaultCachedDataRef.current;
+
   // TODO any
   const [farcasterWhatsnew, setFarcasterWhatsnew] = useState<any[]>(
     farcasterWhatsnewData.data

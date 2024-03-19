@@ -12,12 +12,12 @@ export function shortPubKey(
 ) {
   if (!key) return '';
   const split = ops?.split;
-  const len = ops?.len || 6;
+  const len = ops?.len || 4;
 
   if (split) {
     return key.slice(0, len) + split + key.slice(-len);
   }
-  return key.slice(0, len) + '..'.repeat(len / 4) + key.slice(-len);
+  return key.slice(0, len + 2) + '..'.repeat(len / 4) + key.slice(-len);
 }
 
 export function shortPubKeyHash(hashKey: string) {

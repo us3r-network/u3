@@ -1,22 +1,35 @@
 import styled from 'styled-components';
 import { DecodedMessage } from '@xmtp/xmtp-js';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useXmtpClient } from '../../contexts/message/XmtpClientCtx';
 import { useXmtpStore } from '../../contexts/message/XmtpStoreCtx';
 import { getAttachmentUrl, isAttachment } from '../../utils/message/xmtp';
-import Avatar from './Avatar';
-import { useNav } from '../../contexts/NavCtx';
+import ProfileInfoHeadless from '../profile/info/ProfileInfoHeadless';
 
 export default function MessageList() {
   const { xmtpClient, messageRouteParams } = useXmtpClient();
   const { loadingConversations, convoMessages } = useXmtpStore();
 
-  const messages =
-    convoMessages.get(messageRouteParams?.peerAddress || '') || [];
+  const { peerAddress } = messageRouteParams;
+  const messages = convoMessages.get(peerAddress || '') || [];
 
+  const messageListEndRef = useRef<HTMLDivElement>(null);
+  const megLen = messages.length;
+  useEffect(() => {
+    if (messageListEndRef.current) {
+      messageListEndRef?.current?.scrollIntoView({
+        behavior: 'smooth',
+      });
+    }
+  }, [megLen]);
+  useEffect(() => {
+    if (messageListEndRef.current) {
+      messageListEndRef?.current?.scrollIntoView();
+    }
+  }, [peerAddress]);
   return (
-    <MessageListWrap>
+    <div className="w-full flex flex-col gap-[20px] py-[20px]">
       {!loadingConversations &&
         messages.map((msg) => {
           const isMe = xmtpClient?.address === msg.senderAddress;
@@ -25,19 +38,13 @@ export default function MessageList() {
           }
           return <MessageRow key={msg.id} msg={msg} />;
         })}
-    </MessageListWrap>
+      <div id="message-list-end" ref={messageListEndRef} />
+    </div>
   );
 }
-const MessageListWrap = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-`;
 
 function MessageRow({ msg }: { msg: DecodedMessage }) {
   const navigate = useNavigate();
-  const { setOpenMessageModal } = useNav();
   const { xmtpClient } = useXmtpClient();
   const [attachmentUrl, setAttachmentUrl] = useState<string>('');
   useEffect(() => {
@@ -54,17 +61,26 @@ function MessageRow({ msg }: { msg: DecodedMessage }) {
   );
   return (
     <MessageRowWrapper>
-      <a
-        href={profileUrl}
-        onClick={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          navigate(profileUrl);
-          setOpenMessageModal(false);
+      <ProfileInfoHeadless identity={msg.senderAddress}>
+        {({ displayAvatar }) => {
+          return (
+            <a
+              href={profileUrl}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                navigate(profileUrl);
+              }}
+            >
+              <img
+                src={displayAvatar}
+                alt=""
+                className="w-[50px] h-[50px] rounded-full"
+              />
+            </a>
+          );
         }}
-      >
-        <AvatarStyled address={msg.senderAddress} />
-      </a>
+      </ProfileInfoHeadless>
 
       <MessageWrapper>
         {(() => {
@@ -99,7 +115,6 @@ function MyMessageRow({ msg }: { msg: DecodedMessage }) {
           return <MyText>{msg.content}</MyText>;
         })()}
       </MyMessageWrapper>
-      <AvatarStyled address={msg.senderAddress} />
     </MyMessageRowWrapper>
   );
 }
@@ -110,29 +125,27 @@ const MessageRowWrapper = styled.div`
   gap: 15px;
 `;
 
-const AvatarStyled = styled(Avatar)`
-  width: 20px;
-  height: 20px;
-`;
 const MessageWrapper = styled.div`
   max-width: calc(100% - (15px + 20px) * 2);
   flex-shrink: 0;
   border-radius: 10px 10px 10px 0px;
   background: #000;
+  overflow: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 `;
-const Text = styled.span`
+const Text = styled.div`
+  width: 100%;
   color: #fff;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-
-  margin: 20px;
+  word-break: break-all;
 `;
 const Image = styled.img`
   max-width: 120px;
   object-fit: cover;
-  margin: 20px;
 `;
 
 const MyMessageRowWrapper = styled(MessageRowWrapper)`
