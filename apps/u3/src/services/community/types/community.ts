@@ -40,11 +40,8 @@ export type CommunityStatistics = {
 };
 
 export type MemberEntity = {
-  id: number;
-  name: string;
-  avatar: string;
-  address: string;
-  bio: string;
+  fid: string;
+  data: Array<{ fid: string; type: number; value: string }>;
 };
 
 export type CommunityInfo = CommunityEntity & CommunityStatistics;

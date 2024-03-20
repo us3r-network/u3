@@ -131,24 +131,21 @@ export function fetchCommunity(
   });
 }
 
-export type CommunityMembersPageInfo = {
-  endCursor?: number;
-  hasNextPage: boolean;
-};
 export type CommunityMembersParams = {
   pageSize?: number;
-  endCursor?: number;
+  pageNumber?: number;
+  type?: string;
 };
-export type CommunityMembersResponse = {
+export type CommunityMembersData = {
   members: Array<MemberEntity>;
-  pageInfo: CommunityMembersPageInfo;
+  totalNum: number;
 };
 export function fetchCommunityMembers(
   id: string | number,
   params: CommunityMembersParams
-): RequestPromise<ApiResp<CommunityMembersResponse>> {
+): RequestPromise<ApiResp<CommunityMembersData>> {
   return request({
-    url: `/community/${id}/members`,
+    url: `/topics/${id}/members`,
     method: 'get',
     params,
   });
@@ -159,7 +156,7 @@ export function fetchCommunityTopMembers(
   id: string | number
 ): RequestPromise<ApiResp<CommunityTopMembersResponse>> {
   return request({
-    url: `/community/${id}/members/top`,
+    url: `/topics/${id}/members/top`,
     method: 'get',
   });
 }

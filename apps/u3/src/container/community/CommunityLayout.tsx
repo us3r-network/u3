@@ -4,13 +4,12 @@ import { cn } from '@/lib/utils';
 import CommunityMenu from './CommunityMenu';
 import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 import Loading from '@/components/common/loading/Loading';
-import useLoadCommunityMembers from '@/hooks/community/useLoadCommunityMembers';
-import useLoadCommunityTopMembers from '@/hooks/community/useLoadCommunityTopMembers';
 import { CommunityInfo } from '@/services/community/types/community';
 import { fetchCommunity } from '@/services/community/api/community';
 import CommunityMobileHeader from './CommunityMobileHeader';
 import useJoinCommunityAction from '@/hooks/community/useJoinCommunityAction';
 import useBrowsingCommunity from '@/hooks/community/useBrowsingCommunity';
+import useLoadCommunityMembersTotalNum from '@/hooks/community/useLoadCommunityMembersTotalNum';
 
 export default function CommunityLayout() {
   const { channelId } = useParams();
@@ -56,23 +55,16 @@ export default function CommunityLayout() {
     };
   }, [communityInfo, setBrowsingCommunity, clearBrowsingCommunity]);
 
-  // members state
-  const {
-    members,
-    pageInfo: membersPageInfo,
-    firstLoading: membersFirstLoading,
-    moreLoading: membersMoreLoading,
-    loadFirst: loadFirstMembers,
-    loadMore: loadMoreMembers,
-  } = useLoadCommunityMembers(channelId);
-
-  const {
-    members: topMembers,
-    loading: topMembersLoading,
-    load: loadTopMembers,
-  } = useLoadCommunityTopMembers(channelId);
-
   const { joined } = useJoinCommunityAction(communityInfo);
+
+  const id = communityInfo?.id;
+  const { totalNum: totalMembers, loadCommunityMembersTotalNum } =
+    useLoadCommunityMembersTotalNum();
+  useEffect(() => {
+    if (id) {
+      loadCommunityMembersTotalNum({ id });
+    }
+  }, [id]);
 
   if (communityLoading) {
     <div className="w-full h-full flex justify-center items-center">
@@ -102,6 +94,7 @@ export default function CommunityLayout() {
           className="min-sm:hidden"
           communityInfo={communityInfo}
           channelId={channel?.channel_id}
+          totalMembers={totalMembers}
         />
         <div
           className={cn(
@@ -113,20 +106,7 @@ export default function CommunityLayout() {
             context={{
               channelId,
               communityInfo,
-
-              // TODO mentioned links
-
-              // members state
-              members,
-              membersPageInfo,
-              membersFirstLoading,
-              membersMoreLoading,
-              loadFirstMembers,
-              loadMoreMembers,
-
-              topMembers,
-              topMembersLoading,
-              loadTopMembers,
+              totalMembers,
             }}
           />
         </div>
