@@ -141,7 +141,7 @@ export default function Home() {
       });
 
     fetchTrendingCommunities({
-      pageSize: 6,
+      pageSize: 12,
       pageNumber: 1,
     })
       .then((res) => {
