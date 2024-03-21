@@ -27,7 +27,7 @@ export default function TabLayout() {
         headerShown: useClientOnlyValue(false, true),
       }}>
       <Tabs.Screen
-        name="explore"
+        name="index"
         options={{
           title: 'Explore',
           tabBarLabelPosition: 'below-icon',
