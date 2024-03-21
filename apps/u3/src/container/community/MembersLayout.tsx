@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useFarcasterCtx } from 'src/contexts/social/FarcasterCtx';
 import Loading from 'src/components/common/loading/Loading';
+import { useEffect } from 'react';
+import useLoadCommunityMembers from '@/hooks/community/useLoadCommunityMembers';
+import FarcasterMemberItem from '@/components/community/FarcasterMemberItem';
+import { useFarcasterCtx } from '@/contexts/social/FarcasterCtx';
 
 export default function MembersLayout() {
   return (
@@ -10,102 +12,61 @@ export default function MembersLayout() {
       <div className="flex-1 h-full">
         <TotalMembers />
       </div>
-      <div className="w-[320px] h-full">
-        <TopMembers />
-      </div>
+      {/* <div className="w-[320px] h-full">top members</div> */}
     </div>
   );
 }
 
 function TotalMembers() {
-  const { openFarcasterQR } = useFarcasterCtx();
+  const { following } = useFarcasterCtx();
+  const { totalMembers, communityInfo } = useOutletContext<any>();
+  const id = communityInfo?.id;
   const {
-    members,
-    membersPageInfo,
-    membersFirstLoading,
-    membersMoreLoading,
-    loadFirstMembers,
-    loadMoreMembers,
-  } = useOutletContext<any>();
-  const membersLen = members.length;
+    communityMembers,
+    loadCommunityMembers,
+    loading: membersLoading,
+    pageInfo,
+  } = useLoadCommunityMembers();
+
   useEffect(() => {
-    if (membersLen === 0) {
-      loadFirstMembers();
+    if (id) {
+      loadCommunityMembers({ id });
     }
-  }, [membersLen]);
+  }, [id]);
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <div>Total Members ({membersLen})</div>
-      <div id="total-members-scroll-wrapper" className="flex-1 overflow-y-auto">
-        {(membersFirstLoading && (
-          <div className="w-full h-full flex justify-center items-center">
-            <Loading />
-          </div>
-        )) || (
-          <InfiniteScroll
-            style={{ overflow: 'hidden' }}
-            dataLength={membersLen}
-            next={() => {
-              if (membersMoreLoading) return;
-              loadMoreMembers();
-            }}
-            hasMore={membersPageInfo?.hasNextPage || false}
-            loader={
-              <div className="w-full h-full flex justify-center items-center">
-                <Loading />
-              </div>
-            }
-            scrollableTarget="total-members-scroll-wrapper"
-          >
-            <div>
-              {members.map((member) => {
-                return (
-                  <div key={member.id} className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-200" />
-                    <div className="ml-3">{member.name}</div>
-                  </div>
-                );
-              })}
-            </div>
-          </InfiniteScroll>
-        )}
+    <div className="w-full h-full flex flex-col px-[20px] max-sm:px-0">
+      <div className="text-[#FFF] text-[14px] font-medium py-[20px] max-sm:hidden">
+        Total Members ({totalMembers})
       </div>
-    </div>
-  );
-}
-
-function TopMembers() {
-  const { openFarcasterQR } = useFarcasterCtx();
-  const { topMembers, topMembersLoading, loadTopMembers } =
-    useOutletContext<any>();
-  const membersLen = topMembers.length;
-  useEffect(() => {
-    if (membersLen === 0) {
-      loadTopMembers();
-    }
-  }, [membersLen]);
-
-  return (
-    <div className="w-full h-full flex flex-col">
-      <div>✨ Top 10 Community Stars</div>
-      <div className="flex-1 overflow-y-auto">
-        {topMembersLoading ? (
-          <div className="w-full h-full flex justify-center items-center">
-            <Loading />
-          </div>
-        ) : (
-          <div className="w-full">
-            {topMembers.map((member) => {
+      <div id="total-members-scroll-wrapper" className="flex-1 overflow-y-auto">
+        <InfiniteScroll
+          style={{ overflow: 'hidden' }}
+          dataLength={communityMembers.length}
+          next={() => {
+            if (!id || membersLoading) return;
+            loadCommunityMembers({ id });
+          }}
+          hasMore={pageInfo?.hasNextPage || false}
+          loader={
+            <div className="w-full h-full flex justify-center items-center">
+              <Loading />
+            </div>
+          }
+          scrollableTarget="total-members-scroll-wrapper"
+        >
+          <div className="flex flex-col divide-y divide-[#39424C]">
+            {communityMembers.map((data) => {
               return (
-                <div key={member.id} className="flex items-center">
-                  <div className="w-8 h-8 rounded-full bg-gray-200" />
-                  <div className="ml-3">{member.name}</div>
-                </div>
+                <FarcasterMemberItem
+                  key={data.fid}
+                  following={following}
+                  data={data}
+                />
               );
             })}
           </div>
-        )}
+        </InfiniteScroll>
       </div>
     </div>
   );

@@ -21,10 +21,12 @@ export default function CommunityMobileHeader({
   className,
   communityInfo,
   channelId,
+  totalMembers,
   ...props
 }: ComponentPropsWithRef<'div'> & {
   communityInfo: CommunityInfo;
   channelId: string;
+  totalMembers: number;
 }) {
   const navigate = useNavigate();
   const { mainNavs } = getCommunityNavs(channelId, communityInfo);
@@ -65,7 +67,8 @@ export default function CommunityMobileHeader({
                 value={nav.href}
                 className="hover:bg-[#20262F]"
               >
-                {nav.title}
+                {nav.title}{' '}
+                {nav.href.includes('/members') && `(${totalMembers})`}
               </SelectItem>
             );
           })}

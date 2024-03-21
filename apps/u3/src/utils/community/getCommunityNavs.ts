@@ -16,7 +16,7 @@ export default function getCommunityNavs(
   const mainNavs = [
     { title: 'Posts', href: getCommunityPostsPath(channelId) },
     { title: 'Links', href: getCommunityLinksPath(channelId) },
-    // { title: 'Members', href: `/community/${channelId}/members` },
+    { title: 'Members', href: `/community/${channelId}/members` },
   ];
   const nft = nfts?.length > 0 ? nfts[0] : null;
   if (nft) {

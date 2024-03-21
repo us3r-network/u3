@@ -83,10 +83,11 @@ function FirstCard({ data, ...wrapperProps }: Props) {
                 </AuthorDisplayName>
               </UserNameWrapper>
             </div>
-            {!isMobile && <RecReason>{recReason}</RecReason>}
+            <div className="flex items-center gap-[10px]">
+              {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
+              <RecReason>{recReason}</RecReason>
+            </div>
           </div>
-
-          {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
         </div>
       </CardBody>
     </CardWrapper>
@@ -139,9 +140,11 @@ function RightCard({ idx, data, ...wrapperProps }: Props) {
                   {authorDisplayName} {authorHandle && `@${authorHandle}`}
                 </AuthorDisplayName>
               </UserNameWrapper>
-              {!isMobile && <RecReason>{recReason}</RecReason>}
+              <div className="flex items-center gap-[10px]">
+                {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
+                <RecReason>{recReason}</RecReason>
+              </div>
             </div>
-            {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
           </div>
         </div>
       </CardBody>
@@ -194,9 +197,11 @@ function BottomCard({ idx, data, ...wrapperProps }: Props) {
                   {authorDisplayName} {authorHandle && `@${authorHandle}`}
                 </AuthorDisplayName>
               </UserNameWrapper>
-              {!isMobile && <RecReason>{recReason}</RecReason>}
+              <div className="flex items-center gap-[10px]">
+                {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
+                <RecReason>{recReason}</RecReason>
+              </div>
             </div>
-            {platformIconUrl && <PlatformIcon src={platformIconUrl} />}
           </div>
         </div>
       </CardBody>
@@ -223,7 +228,7 @@ function CardBody({ className, ...props }: ComponentPropsWithRef<'div'>) {
     <div
       className={cn(
         'w-full h-full [transition:all_0.3s] flex gap-[20px] relative',
-        isMobile ? 'flex-col gap-[10px]' : '',
+        'max-sm:flex-col max-sm:gap-[10px]',
         className || ''
       )}
       {...props}
@@ -236,7 +241,7 @@ function Title({ className, ...props }: ComponentPropsWithRef<'span'>) {
     <span
       className={cn(
         'font-bold text-[18px] leading-[19px] text-[#ffffff]',
-        isMobile ? 'text-[16px] leading-[19px] font-medium' : '',
+        'max-sm:text-[16px] max-sm:leading-[19px] max-sm:font-medium',
         className || ''
       )}
       {...props}
@@ -311,8 +316,7 @@ function PlatformIcon({ className, ...props }: ComponentPropsWithRef<'img'>) {
   return (
     <img
       className={cn(
-        'w-[30px] h-[30px] rounded-[50%] object-cover flex-shrink-0',
-        isMobile ? 'w-[14px] h-[14px]' : '',
+        'w-[14px] h-[14px] rounded-[50%]  object-cover flex-shrink-0',
         className || ''
       )}
       alt=""
