@@ -1,10 +1,10 @@
-import { NAV_THEME } from '@/lib/constants';
-import { useColorScheme } from '@/lib/useColorScheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { NAV_THEME } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 // Import global CSS file
 import "../global.css";
