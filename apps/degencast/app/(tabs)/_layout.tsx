@@ -2,7 +2,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useTheme } from '@react-navigation/native';
 import { Link, Tabs } from 'expo-router';
 import React from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useClientOnlyValue } from '~/components/useClientOnlyValue';
 import { useColorScheme } from '~/lib/useColorScheme';
 
@@ -32,35 +32,33 @@ export default function TabLayout() {
           tabBarLabelPosition: 'below-icon',
           tabBarIcon: ({ color }) => <TabBarIcon name="compass" color={color} />,
           headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={theme.colors.text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+            <View className="flex-row items-center gap-2">
+              <Link href="/search" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="search"
+                      size={25}
+                      color={theme.colors.text}
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+              <Link href="/create" asChild>
+                <Pressable>
+                  {({ pressed }) => (
+                    <FontAwesome
+                      name="edit"
+                      size={25}
+                      color={theme.colors.text}
+                      style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
+                    />
+                  )}
+                </Pressable>
+              </Link>
+            </View>
           ),
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: 'Search',
-          tabBarLabelPosition: 'below-icon',
-          tabBarIcon: ({ color }) => <TabBarIcon name="search" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="create"
-        options={{
-          title: 'Create',
-          tabBarLabelPosition: 'below-icon',
-          tabBarIcon: ({ color }) => <TabBarIcon name="edit" color={color} />,
         }}
       />
       <Tabs.Screen
