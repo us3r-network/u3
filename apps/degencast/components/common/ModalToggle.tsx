@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 import { CircleUserRound } from './Icons';
-import { cn } from '@/lib/utils';
+import { cn } from '~/lib/utils';
 
 export function ModalToggle() {
   return (

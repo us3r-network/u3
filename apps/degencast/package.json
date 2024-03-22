@@ -18,6 +18,8 @@
     "@react-navigation/native": "^6.0.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "@reduxjs/toolkit": "^2.2.2",
+    "axios": "^1.6.8",
     "expo": "~50.0.14",
     "expo-font": "~11.10.3",
     "expo-linking": "~6.2.2",
@@ -38,7 +40,8 @@
     "react-native-web": "~0.19.6",
     "tailwind-merge": "^2.2.2",
     "tailwindcss": "^3.4.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "react-redux": "^9.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
