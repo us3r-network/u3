@@ -1,9 +1,9 @@
 import { Text, View } from 'react-native';
 
-export default function RankScreen() {
+export default function TradeScreen() {
   return (
     <View>
-      <Text>Rank Page</Text>
+      <Text>Trade Page</Text>
     </View>
   );
 }
