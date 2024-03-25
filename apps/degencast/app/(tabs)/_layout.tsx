@@ -62,17 +62,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="rank"
+        name="trade"
         options={{
-          title: 'Rank',
+          title: 'Trade',
           tabBarLabelPosition: 'below-icon',
           tabBarIcon: ({ color }) => <TabBarIcon name="bar-chart" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="portfolio"
         options={{
-          title: 'Profile',
+          title: 'Portfolio',
           tabBarLabelPosition: 'below-icon',
           tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
         }}

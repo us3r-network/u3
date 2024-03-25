@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import UserInfo from '~/components/profile/user';
 import { Button } from '~/components/ui/button';
 
-export default function ProfileScreen() {
+export default function PortfolioScreen() {
   const { login, ready, authenticated } = usePrivy();
   return (
     <View className="h-full mt-12 flex items-center justify-center">
