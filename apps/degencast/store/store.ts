@@ -7,12 +7,10 @@
  */
 import { configureStore } from "@reduxjs/toolkit";
 import joinCommunity from "~/features/community/joinCommunitySlice";
-import community from "~/features/community/communitySlice";
 
 export const store = configureStore({
   reducer: {
     joinCommunity,
-    community,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

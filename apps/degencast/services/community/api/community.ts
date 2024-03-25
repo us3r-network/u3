@@ -150,13 +150,3 @@ export function fetchCommunityMembers(
     params,
   });
 }
-
-export type CommunityTopMembersResponse = Array<MemberEntity>;
-export function fetchCommunityTopMembers(
-  id: string | number
-): RequestPromise<ApiResp<CommunityTopMembersResponse>> {
-  return request({
-    url: `/topics/${id}/members/top`,
-    method: "get",
-  });
-}
