@@ -1,3 +1,4 @@
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Theme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
@@ -10,6 +11,9 @@ import { useColorScheme } from '~/lib/useColorScheme';
 
 // Import global CSS file
 import "../global.css";
+import { PrivyProvider } from '@privy-io/react-auth';
+
+const PRIVY_APP_ID = process.env.EXPO_PUBLIC_PRIVY_APP_ID || ''
 
 const LIGHT_THEME: Theme = {
   dark: false,
@@ -69,12 +73,28 @@ export default function RootLayout() {
 
   return (
     <ReduxProvider store={store}>
-          <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
-    </ThemeProvider>
+      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+        <PrivyProvider
+          appId={PRIVY_APP_ID}
+          config={{
+            // Customize Privy's appearance in your app
+            appearance: {
+              theme: isDarkColorScheme?'dark':'light',
+              accentColor: '#676FFF',
+              logo: 'https://u3.xyz/logo192.png',
+            },
+            // Create embedded wallets for users who don't have a wallet
+            embeddedWallets: {
+              createOnLogin: 'users-without-wallets',
+            },
+          }}
+        >
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+        </PrivyProvider>
+      </ThemeProvider>
     </ReduxProvider>
   );
 }
